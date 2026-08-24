@@ -60,7 +60,7 @@ function DashboardForm() {
     >
 
 	
-	<FaRegCircleUser className="h-24 w-24 text-brand-mint" />	
+	
 				
 				
 
