@@ -70,16 +70,16 @@ function DashboardForm() {
 									</span>
 								</button>
 
-								<button
-									type="button"
-									className="flex w-full items-center gap-4 py-4 text-left text-white"
+								<Link
+									to="/menuManagment"
+									className="flex w-full items-center gap-4 py-4 text-left text-white cursor-pointer"
 								>
 									<IoRestaurantOutline className="h-6 w-6 shrink-0" />
 
 									<span className="text-xl font-bold">
 										Menú
 									</span>
-								</button>
+								</Link>
 
 								<button
 									type="button"
