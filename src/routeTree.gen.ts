@@ -16,6 +16,7 @@ import { Route as ChangePasswordRouteImport } from './routes/changePassword'
 import { Route as ChangePasswordErrorRouteImport } from './routes/changePasswordError'
 import { Route as ChangePasswordSuccessRouteImport } from './routes/changePasswordSuccess'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as EditMenuRouteImport } from './routes/editMenu'
 import { Route as ForgotPasswordRouteImport } from './routes/forgotPassword'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MenuManagmentRouteImport } from './routes/menuManagment'
@@ -60,6 +61,11 @@ const ChangePasswordSuccessRoute = ChangePasswordSuccessRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EditMenuRoute = EditMenuRouteImport.update({
+  id: '/editMenu',
+  path: '/editMenu',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/changePasswordError': typeof ChangePasswordErrorRoute
   '/changePasswordSuccess': typeof ChangePasswordSuccessRoute
   '/dashboard': typeof DashboardRoute
+  '/editMenu': typeof EditMenuRoute
   '/forgotPassword': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/menuManagment': typeof MenuManagmentRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/changePasswordError': typeof ChangePasswordErrorRoute
   '/changePasswordSuccess': typeof ChangePasswordSuccessRoute
   '/dashboard': typeof DashboardRoute
+  '/editMenu': typeof EditMenuRoute
   '/forgotPassword': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/menuManagment': typeof MenuManagmentRoute
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/changePasswordError': typeof ChangePasswordErrorRoute
   '/changePasswordSuccess': typeof ChangePasswordSuccessRoute
   '/dashboard': typeof DashboardRoute
+  '/editMenu': typeof EditMenuRoute
   '/forgotPassword': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/menuManagment': typeof MenuManagmentRoute
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/changePasswordError'
     | '/changePasswordSuccess'
     | '/dashboard'
+    | '/editMenu'
     | '/forgotPassword'
     | '/login'
     | '/menuManagment'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/changePasswordError'
     | '/changePasswordSuccess'
     | '/dashboard'
+    | '/editMenu'
     | '/forgotPassword'
     | '/login'
     | '/menuManagment'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/changePasswordError'
     | '/changePasswordSuccess'
     | '/dashboard'
+    | '/editMenu'
     | '/forgotPassword'
     | '/login'
     | '/menuManagment'
@@ -239,6 +251,7 @@ export interface RootRouteChildren {
   ChangePasswordErrorRoute: typeof ChangePasswordErrorRoute
   ChangePasswordSuccessRoute: typeof ChangePasswordSuccessRoute
   DashboardRoute: typeof DashboardRoute
+  EditMenuRoute: typeof EditMenuRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   MenuManagmentRoute: typeof MenuManagmentRoute
@@ -300,6 +313,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/editMenu': {
+      id: '/editMenu'
+      path: '/editMenu'
+      fullPath: '/editMenu'
+      preLoaderRoute: typeof EditMenuRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgotPassword': {
@@ -383,6 +403,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChangePasswordErrorRoute: ChangePasswordErrorRoute,
   ChangePasswordSuccessRoute: ChangePasswordSuccessRoute,
   DashboardRoute: DashboardRoute,
+  EditMenuRoute: EditMenuRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   MenuManagmentRoute: MenuManagmentRoute,

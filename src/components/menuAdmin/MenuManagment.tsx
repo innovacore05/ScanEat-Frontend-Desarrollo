@@ -1,233 +1,225 @@
-import { useState } from "react";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { FaRegCircleUser } from "react-icons/fa6";
-import { RiSettingsLine } from "react-icons/ri";
-import { IoMdInformationCircleOutline } from "react-icons/io";
-import { RiNotification2Line } from "react-icons/ri";
-import { LuLogOut } from "react-icons/lu";
-import { GoHome } from "react-icons/go";
-import { IoRestaurantOutline } from "react-icons/io5";
-import { LuShoppingBag } from "react-icons/lu";
 import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { getProfile } from "../../services/authService";
 import { HiArrowLeft } from "react-icons/hi";
+import { GoPlus } from "react-icons/go";
+import { IoSearch } from "react-icons/io5";
+import { LuCakeSlice } from "react-icons/lu";
+import { RiDrinks2Line } from "react-icons/ri";
+import { GiCoffeeCup } from "react-icons/gi";
+import { LuSandwich } from "react-icons/lu";
+import { LuUtensils } from "react-icons/lu";
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import DishCard from "../menu/DishCard";
 
-function DashboardForm() {
-    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+function MenuManagment() {
 
-    return (
-        <main className="min-h-screen bg-white px-6 py-8">
+    const [firstName, setFirstName] = useState("");
+    
+        useEffect(() => {
+            const loadProfile = async () => {
+                try {
+                    const data = await getProfile();
+                    setFirstName(data.user.firstName);
+                } catch (error) {
+                    console.error("Error loading profile:", error);
+                }
+            };
+    
+            loadProfile();
+        }, []);
+    
+	return (
+		<DashboardLayout>
+			<main className="min-h-screen bg-brand-white px-8 py-8">
 
-            <div className="flex justify-start">
-                <img
-                    src="/img/logoS.png"
-                    alt="Logo del negocio"
-                />
-            </div>
+				{/* Celular */}
+				<section className="lg:hidden">
 
-            <div className="mt-8 flex items-center justify-between">
-                <button
-                    type="button"
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="cursor-pointer text-brand-mint-dark"
-                    aria-label="Abrir menú"
-                >
-                    <GiHamburgerMenu className="h-8 w-8" />
-                </button>
+					<div className="flex items-center gap-2">
+						<Link
+							to="/dashboard"
+							className="flex items-center gap-2 text-brand-mint-dark"
+						>
+							<HiArrowLeft className="h-6 w-6" />
 
-                <button
-                    type="button"
-                    onClick={() =>
-                        setIsProfileMenuOpen(!isProfileMenuOpen)
-                    }
-                    className="cursor-pointer text-brand-mint-dark"
-                    aria-label="Abrir perfil"
-                >
-                    <FaRegCircleUser className="h-8 w-8" />
-                </button>
-            </div>
+							<span className="text-[32px] font-bold">
+								Gestión de menús
+							</span>
+						</Link>
+					</div>
 
-            {/* regresar al home */}
-            <div className="mt-8 flex items-center gap-2">
-                <Link
-                    to="/dashboard"
-                    className="flex items-center gap-2 text-brand-mint-dark"
-                >
-                    <HiArrowLeft className="h-6 w-6" />
-                    <span className="text-[32px] font-bold">Gestión de menús</span>
-                </Link>
-            </div>
+					<div className="mt-8 flex flex-col gap-5">
 
-            <div className="mt-8 gap-5 flex flex-col">
+						<Link
+							to=""
+							className="flex items-center rounded-lg border border-border px-4 py-3"
+						>
+							<span className="text-base font-bold text-text-primary">
+								Añadir un platillo simple
+							</span>
+						</Link>
 
-            <Link
-                to=""
-                className="flex items-center px-4 py-1 rounded-lg border border-border"
-            >
-                <span className="text-[16px]  text-text-primary font-bold">Añadir un patillo simple</span>
-            </Link>
+						<Link
+							to=""
+							className="flex items-center rounded-lg border border-border px-4 py-3"
+						>
+							<span className="text-base font-bold text-text-primary">
+								Añadir un platillo personalizado
+							</span>
+						</Link>
 
-            <Link
-                to=""
-                className="flex items-center px-4 py-1 rounded-lg border border-border"
-            >
-                <span className="text-[16px] text-text-primary font-bold">Añadir un patillo personalizado</span>
-            </Link>
+						<Link
+							to="/editMenu"
+							className="flex items-center rounded-lg border border-border px-4 py-3"
+						>
+							<span className="text-base font-bold text-text-primary">
+								Editar menú
+							</span>
+						</Link>
 
-            <Link
-                to=""
-                className="flex items-center px-4 py-1 rounded-lg border border-border"
-            >
-                <span className="text-[16px] text-text-primary font-bold">Editar menú</span>
-            </Link>
+					</div>
+				</section>
 
-            
-            
+                {/* Computadora */}
+                
+				<section className="hidden lg:block">
 
+					<div className="rounded-2xl bg-brand-mint-dark px-8 py-6">
+						<h1 className="text-3xl font-bold text-white">
+							Hola, {firstName + "!"|| "Usuario !"}
+						</h1>
+					</div>
 
-            </div>
+					<h2 className="mt-8 text-2xl font-bold text-black">
+						Menú
+					</h2>
 
-            {/* Menú lateral izquierdo */}
-            {isMenuOpen && (
-                <>
-                    <button
-                        type="button"
-                        aria-label="Cerrar menú"
-                        onClick={() => setIsMenuOpen(false)}
-                        className="fixed inset-0 z-40 cursor-default bg-transparent"
-                    />
+					<div className="mt-6 flex gap-4">
 
-                    <div className="fixed left-0 top-0 z-50 flex h-screen w-72 flex-col items-center rounded-r-[30px] bg-brand-mint-dark px-8 pt-10">
-                        <div className="mt-14 w-48">
-                            <div className="flex flex-col gap-2">
-                                <button
-                                    type="button"
-                                    className="flex w-full items-center gap-4 py-4 text-left text-white"
-                                >
-                                    <GoHome className="h-6 w-6 shrink-0" />
+						<Link
+							to=""
+							className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
+						>
+							<span className="text-base font-bold text-text-primary">
+								Añadir un platillo simple
+							</span>
 
-                                    <span className="text-xl font-bold">
-                                        Inicio
-                                    </span>
-                                </button>
+							<GoPlus className="h-6 w-6 shrink-0 text-brand-mint-dark" />
+						</Link>
 
-                                <button
-                                    type="button"
-                                    className="flex w-full items-center gap-4 py-4 text-left text-white"
-                                >
-                                    <IoRestaurantOutline className="h-6 w-6 shrink-0" />
+						<Link
+							to=""
+							className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
+						>
+							<span className="text-base font-bold text-text-primary">
+								Añadir un platillo personalizado
+							</span>
 
-                                    <span className="text-xl font-bold">
-                                        Menú
-                                    </span>
-                                </button>
+							<GoPlus className="h-6 w-6 shrink-0 text-brand-mint-dark" />
+						</Link>
 
-                                <button
-                                    type="button"
-                                    className="flex w-full items-center gap-4 py-4 text-left text-white"
-                                >
-                                    <LuShoppingBag className="h-6 w-6 shrink-0" />
+					</div>
 
-                                    <span className="text-xl font-bold">
-                                        Pedidos
-                                    </span>
-                                </button>
-                            </div>
+					<div className="mt-8 w-2/5 flex items-center rounded-lg border border-border bg-white px-4 py-3">
 
-                            <div className="mt-10 flex flex-col gap-2">
-                                <button
-                                    type="button"
-                                    className="flex w-full items-center py-4 text-left text-white"
-                                >
-                                    <span className="text-xl font-bold">
-                                        Descuentos
-                                    </span>
-                                </button>
+						<input
+							type="text"
+							placeholder="Buscar un platillo"
+							className="w-full bg-transparent text-base font-normal text-text-primary outline-none placeholder:text-text-primary"
+						/>
 
-                                <button
-                                    type="button"
-                                    className="flex w-full items-center py-4 text-left text-white"
-                                >
-                                    <span className="text-xl font-bold">
-                                        Reporte de ventas
-                                    </span>
-                                </button>
+						<IoSearch className="ml-3 h-6 w-6 shrink-0 text-brand-mint-dark" />
 
-                                <button
-                                    type="button"
-                                    className="flex w-full items-center py-4 text-left text-white"
-                                >
-                                    <span className="text-xl font-bold">
-                                        Mesas
-                                    </span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </>
-            )}
+					</div>
 
-            {/* Menú de perfil derecho */}
-            {isProfileMenuOpen && (
-                <>
-                    <button
-                        type="button"
-                        aria-label="Cerrar menú"
-                        onClick={() => setIsProfileMenuOpen(false)}
-                        className="fixed inset-0 z-40 cursor-default bg-transparent"
-                    />
+					<div className="mt-6">
 
-                    <div className="fixed right-0 top-0 z-50 flex h-screen w-72 flex-col items-center rounded-l-[30px] bg-brand-mint-dark px-8 pt-10">
-                        <div className="mt-14 w-48">
-                            <Link
-                                to="/profileSettings"
-                                className="flex w-full items-center gap-4 py-4 text-left text-white"
-                            >
-                                <RiSettingsLine className="h-6 w-6 shrink-0" />
+						<p className="mb-3 text-base font-bold text-text-primary">
+							Filtro
+						</p>
 
-                                <span className="text-xl font-bold">
-                                    Perfil
-                                </span>
-                            </Link>
+						<div className="flex items-center gap-5">
 
-                            <button
-                                type="button"
-                                className="flex w-full items-center gap-4 py-4 text-left text-white"
-                            >
-                                <IoMdInformationCircleOutline className="h-6 w-6 shrink-0" />
+							<button
+								type="button"
+								className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-mint-dark text-white"
+								aria-label="Postres"
+							>
+								<LuCakeSlice className="h-8 w-8" />
+							</button>
 
-                                <span className="text-xl font-bold">
-                                    Negocio
-                                </span>
-                            </button>
+							<button
+								type="button"
+								className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-mint-dark text-white"
+								aria-label="Bebidas"
+							>
+								<RiDrinks2Line className="h-8 w-8" />
+							</button>
 
-                            <button
-                                type="button"
-                                className="flex w-full items-center gap-4 py-4 text-left text-white"
-                            >
-                                <RiNotification2Line className="h-6 w-6 shrink-0" />
+							<button
+								type="button"
+								className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-mint-dark text-white"
+								aria-label="Café"
+							>
+								<GiCoffeeCup className="h-8 w-8" />
+							</button>
 
-                                <span className="text-xl font-bold">
-                                    Notificaciones
-                                </span>
-                            </button>
+							<button
+								type="button"
+								className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-mint-dark text-white"
+								aria-label="Salados"
+							>
+								<LuSandwich className="h-8 w-8" />
+							</button>
 
-                            <Link
-                                to="/login"
-                                className="mt-10 flex w-full items-center gap-4 py-4 text-left text-white"
-                            >
-                                <LuLogOut className="h-6 w-6 shrink-0" />
+							<button
+								type="button"
+								className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-mint-dark text-white"
+								aria-label="Almuerzos"
+							>
+								<LuUtensils className="h-8 w-8" />
+							</button>
 
-                                <span className="text-xl font-bold">
-                                    Cerrar sesión
-                                </span>
-                            </Link>
-                        </div>
-                    </div>
-                </>
-            )}
-        </main>
-    );
+						</div>
+					</div>
+
+					<h2 className="mt-8 text-2xl font-bold text-black">
+						Menú popular
+					</h2>
+
+					{/* Platillos */}
+					<div className="mt-6 flex flex-wrap gap-4">
+
+						<div className="w-full lg:w-[350px]">
+							<DishCard
+								name="Casado con chuleta"
+								description="Casado con chuleta, frijoles, plátano maduro, ensalada y huevo frito."
+								price={3500}
+								image="/img/01Garabatos_Oct25-46.jpg"
+								rating={4}
+								isAdmin={true}
+							/>
+						</div>
+
+						<div className="w-full lg:w-[350px]">
+							<DishCard
+								name="Lasaña"
+								description="Lasaña acompañada de pan tostado y ensalada fresca."
+								price={4000}
+								image="/img/01Garabatos_Oct25-62.jpg"
+								rating={5}
+								isAdmin={true}
+							/>
+						</div>
+
+					</div>
+
+				</section>
+
+			</main>
+		</DashboardLayout>
+	);
 }
 
-export default DashboardForm;
+export default MenuManagment;
