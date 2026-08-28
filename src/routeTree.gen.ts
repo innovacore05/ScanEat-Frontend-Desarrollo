@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AddtableRouteImport } from './routes/Addtable'
+import { Route as TablesManagmentRouteImport } from './routes/TablesManagment'
 import { Route as AccountSuccessRouteImport } from './routes/accountSuccess'
 import { Route as AccountVerificationRouteImport } from './routes/accountVerification'
 import { Route as ChangePasswordRouteImport } from './routes/changePassword'
@@ -31,6 +33,16 @@ import { Route as VerificationCodeRouteImport } from './routes/verificationCode'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AddtableRoute = AddtableRouteImport.update({
+  id: '/Addtable',
+  path: '/Addtable',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TablesManagmentRoute = TablesManagmentRouteImport.update({
+  id: '/TablesManagment',
+  path: '/TablesManagment',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountSuccessRoute = AccountSuccessRouteImport.update({
@@ -121,6 +133,8 @@ const VerificationCodeRoute = VerificationCodeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/Addtable': typeof AddtableRoute
+  '/TablesManagment': typeof TablesManagmentRoute
   '/accountSuccess': typeof AccountSuccessRoute
   '/accountVerification': typeof AccountVerificationRoute
   '/changePassword': typeof ChangePasswordRoute
@@ -141,6 +155,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/Addtable': typeof AddtableRoute
+  '/TablesManagment': typeof TablesManagmentRoute
   '/accountSuccess': typeof AccountSuccessRoute
   '/accountVerification': typeof AccountVerificationRoute
   '/changePassword': typeof ChangePasswordRoute
@@ -162,6 +178,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/Addtable': typeof AddtableRoute
+  '/TablesManagment': typeof TablesManagmentRoute
   '/accountSuccess': typeof AccountSuccessRoute
   '/accountVerification': typeof AccountVerificationRoute
   '/changePassword': typeof ChangePasswordRoute
@@ -184,6 +202,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/Addtable'
+    | '/TablesManagment'
     | '/accountSuccess'
     | '/accountVerification'
     | '/changePassword'
@@ -204,6 +224,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/Addtable'
+    | '/TablesManagment'
     | '/accountSuccess'
     | '/accountVerification'
     | '/changePassword'
@@ -224,6 +246,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/Addtable'
+    | '/TablesManagment'
     | '/accountSuccess'
     | '/accountVerification'
     | '/changePassword'
@@ -245,6 +269,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AddtableRoute: typeof AddtableRoute
+  TablesManagmentRoute: typeof TablesManagmentRoute
   AccountSuccessRoute: typeof AccountSuccessRoute
   AccountVerificationRoute: typeof AccountVerificationRoute
   ChangePasswordRoute: typeof ChangePasswordRoute
@@ -271,6 +297,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/Addtable': {
+      id: '/Addtable'
+      path: '/Addtable'
+      fullPath: '/Addtable'
+      preLoaderRoute: typeof AddtableRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/TablesManagment': {
+      id: '/TablesManagment'
+      path: '/TablesManagment'
+      fullPath: '/TablesManagment'
+      preLoaderRoute: typeof TablesManagmentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/accountSuccess': {
@@ -397,6 +437,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AddtableRoute: AddtableRoute,
+  TablesManagmentRoute: TablesManagmentRoute,
   AccountSuccessRoute: AccountSuccessRoute,
   AccountVerificationRoute: AccountVerificationRoute,
   ChangePasswordRoute: ChangePasswordRoute,

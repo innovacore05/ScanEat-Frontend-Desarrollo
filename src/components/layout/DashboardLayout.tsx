@@ -44,7 +44,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
             
             {/* Barra lateral - COMPUTADORA */}
             
-			<aside className="fixed left-0 top-0 hidden h-screen w-64 bg-neutral-50 rounded-4xl px-8 py-8 lg:flex lg:flex-col">
+			<aside className="fixed left-0 top-0 hidden h-screen w-64 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
 				
 				<div className="flex justify-start">
 					<img
@@ -293,14 +293,17 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 									</span>
 								</button>
 
-								<button
-									type="button"
-									className="flex w-full items-center py-4 text-left text-white"
+								<Link
+									to="/TablesManagment"
+									onClick={() => setIsMenuOpen(false)}
+									className="flex w-full items-center gap-4 py-4 text-left text-white"
 								>
-									<span className="text-xl font-bold">
-										Mesas
-									</span>
-								</button>
+									
+								<span className="text-xl font-bold">
+								Mesas
+								</span>
+								</Link>
+								
 							</div>
 						</div>
 					</div>

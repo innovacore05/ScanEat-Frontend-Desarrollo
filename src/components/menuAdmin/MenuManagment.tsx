@@ -191,7 +191,7 @@ function MenuManagment() {
 					{/* Platillos */}
 					<div className="mt-6 flex flex-wrap gap-4">
 
-						<div className="w-full lg:w-[350px]">
+						<div className="w-full lg:w-87.5">
 							<DishCard
 								name="Casado con chuleta"
 								description="Casado con chuleta, frijoles, plátano maduro, ensalada y huevo frito."
@@ -202,7 +202,7 @@ function MenuManagment() {
 							/>
 						</div>
 
-						<div className="w-full lg:w-[350px]">
+						<div className="w-full lg:w-87.5">
 							<DishCard
 								name="Lasaña"
 								description="Lasaña acompañada de pan tostado y ensalada fresca."
