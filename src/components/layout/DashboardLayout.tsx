@@ -40,12 +40,12 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 	}, []);
 
 	return (
-        <main className="min-h-screen bg-white">
-            
-            {/* Barra lateral - COMPUTADORA */}
-            
+		<main className="min-h-screen bg-white">
+
+			{/* Barra lateral - COMPUTADORA */}
+
 			<aside className="fixed left-0 top-0 hidden h-screen w-64 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
-				
+
 				<div className="flex justify-start">
 					<img
 						src="/img/logoS.png"
@@ -106,14 +106,16 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 							</span>
 						</button>
 
-						<button
-							type="button"
+						<Link
+							to="/tablesManagment"
+							onClick={() => setIsMenuOpen(false)}
 							className="flex w-full items-center py-3 text-left text-text-primary"
 						>
+
 							<span className="text-[15px] font-bold cursor-pointer">
 								Mesas
 							</span>
-						</button>
+						</Link>
 					</div>
 				</nav>
 
@@ -180,13 +182,13 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 				</div>
 			</aside>
 
-            
+
 
 			<div className="lg:ml-64">
-				
+
 				{/* Barra superior - TELÉFONO Y TABLET */}
 				<div className="px-6 pt-8 lg:hidden">
-					
+
 					<div className="flex justify-start">
 						<img
 							src="/img/logoS.png"
@@ -236,7 +238,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
 					<div className="fixed left-0 top-0 z-50 flex h-screen w-72 flex-col rounded-r-[30px] bg-brand-mint-dark px-8 pt-10 lg:hidden">
 						<div className="mt-14 w-full">
-							
+
 							<div className="flex flex-col gap-2">
 								<Link
 									to="/dashboard"
@@ -294,16 +296,16 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 								</button>
 
 								<Link
-									to="/TablesManagment"
+									to="/tablesManagment"
 									onClick={() => setIsMenuOpen(false)}
 									className="flex w-full items-center gap-4 py-4 text-left text-white"
 								>
-									
-								<span className="text-xl font-bold">
-								Mesas
-								</span>
+
+									<span className="text-xl font-bold">
+										Mesas
+									</span>
 								</Link>
-								
+
 							</div>
 						</div>
 					</div>

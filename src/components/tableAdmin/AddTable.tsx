@@ -53,7 +53,7 @@ const [isSubmitting, setIsSubmitting] = useState(false);
 						/>
 					    </div>
                         <div className="flex gap-4 align-center justify-end mt-3">
-                        <button type="button" className="flex justify-center w-[159px] cursor-pointer rounded-lg bg-brand-mint-dark px-3 py-2 text-base font-bold text-white hover:bg-brand-mint-dark/90">
+                        <button type="button" className="flex justify-center w-39.75 cursor-pointer rounded-lg bg-brand-mint-dark px-3 py-2 text-base font-bold text-white hover:bg-brand-mint-dark/90">
                             Generar QR
                         </button>
                         </div>
