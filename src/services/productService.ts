@@ -20,11 +20,19 @@ rating:number;
 categoryId:number;
 };
 
+export type ProductsPage = {
+	products: Product[];
+	hasMore: boolean;
+};
+
+
 //obtener lista de productos , filtrado por categoria y busqueda
 
 export const getProducts=async(params?:{
     category?:number|string;
     search?:string;
+    limit?:number;
+    offset?:number;
 })=>{
     const query=new URLSearchParams();
 
@@ -34,7 +42,12 @@ if(params?.category){
 if (params?.search){
     query.append("search",params.search);
 }
-
+if (params?.limit){
+    query.append("limit", String(params.limit));  
+}
+if (params?.offset) {
+    query.append("offset", String(params.offset));
+}
 
 const queryString=query.toString();
 const url=queryString
@@ -51,7 +64,7 @@ if(!response.ok){
     throw data as ApiError;
 }
 
-return data as Product[];
+return data as ProductsPage;
 
 };
 

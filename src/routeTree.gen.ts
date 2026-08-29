@@ -28,7 +28,6 @@ import { Route as ProfileSettingsRouteImport } from './routes/profileSettings'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/resetPassword'
 import { Route as SimpleDishFormRouteImport } from './routes/simpleDishForm'
-import { Route as TablesManagmentRouteImport } from './routes/tablesManagment'
 import { Route as UnexpectedIssueRouteImport } from './routes/unexpectedIssue'
 import { Route as UnexpectedIssueVRouteImport } from './routes/unexpectedIssueV'
 import { Route as VerificationCodeRouteImport } from './routes/verificationCode'
@@ -128,11 +127,6 @@ const SimpleDishFormRoute = SimpleDishFormRouteImport.update({
   path: '/simpleDishForm',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TablesManagmentRoute = TablesManagmentRouteImport.update({
-  id: '/tablesManagment',
-  path: '/tablesManagment',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const UnexpectedIssueRoute = UnexpectedIssueRouteImport.update({
   id: '/unexpectedIssue',
   path: '/unexpectedIssue',
@@ -169,7 +163,6 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/resetPassword': typeof ResetPasswordRoute
   '/simpleDishForm': typeof SimpleDishFormRoute
-  '/tablesManagment': typeof TablesManagmentRoute
   '/unexpectedIssue': typeof UnexpectedIssueRoute
   '/unexpectedIssueV': typeof UnexpectedIssueVRoute
   '/verificationCode': typeof VerificationCodeRoute
@@ -194,7 +187,6 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/resetPassword': typeof ResetPasswordRoute
   '/simpleDishForm': typeof SimpleDishFormRoute
-  '/tablesManagment': typeof TablesManagmentRoute
   '/unexpectedIssue': typeof UnexpectedIssueRoute
   '/unexpectedIssueV': typeof UnexpectedIssueVRoute
   '/verificationCode': typeof VerificationCodeRoute
@@ -220,7 +212,6 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/resetPassword': typeof ResetPasswordRoute
   '/simpleDishForm': typeof SimpleDishFormRoute
-  '/tablesManagment': typeof TablesManagmentRoute
   '/unexpectedIssue': typeof UnexpectedIssueRoute
   '/unexpectedIssueV': typeof UnexpectedIssueVRoute
   '/verificationCode': typeof VerificationCodeRoute
@@ -247,7 +238,6 @@ export interface FileRouteTypes {
     | '/register'
     | '/resetPassword'
     | '/simpleDishForm'
-    | '/tablesManagment'
     | '/unexpectedIssue'
     | '/unexpectedIssueV'
     | '/verificationCode'
@@ -272,7 +262,6 @@ export interface FileRouteTypes {
     | '/register'
     | '/resetPassword'
     | '/simpleDishForm'
-    | '/tablesManagment'
     | '/unexpectedIssue'
     | '/unexpectedIssueV'
     | '/verificationCode'
@@ -297,7 +286,6 @@ export interface FileRouteTypes {
     | '/register'
     | '/resetPassword'
     | '/simpleDishForm'
-    | '/tablesManagment'
     | '/unexpectedIssue'
     | '/unexpectedIssueV'
     | '/verificationCode'
@@ -323,7 +311,6 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SimpleDishFormRoute: typeof SimpleDishFormRoute
-  TablesManagmentRoute: typeof TablesManagmentRoute
   UnexpectedIssueRoute: typeof UnexpectedIssueRoute
   UnexpectedIssueVRoute: typeof UnexpectedIssueVRoute
   VerificationCodeRoute: typeof VerificationCodeRoute
@@ -464,13 +451,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SimpleDishFormRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tablesManagment': {
-      id: '/tablesManagment'
-      path: '/tablesManagment'
-      fullPath: '/tablesManagment'
-      preLoaderRoute: typeof TablesManagmentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/unexpectedIssue': {
       id: '/unexpectedIssue'
       path: '/unexpectedIssue'
@@ -515,7 +495,6 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SimpleDishFormRoute: SimpleDishFormRoute,
-  TablesManagmentRoute: TablesManagmentRoute,
   UnexpectedIssueRoute: UnexpectedIssueRoute,
   UnexpectedIssueVRoute: UnexpectedIssueVRoute,
   VerificationCodeRoute: VerificationCodeRoute,
