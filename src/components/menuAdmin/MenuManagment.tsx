@@ -52,7 +52,7 @@ function MenuManagment() {
 					<div className="mt-8 flex flex-col gap-5">
 
 						<Link
-							to=""
+							to="/simpleDishForm"
 							className="flex items-center rounded-lg border border-border px-4 py-3"
 						>
 							<span className="text-base font-bold text-text-primary">
@@ -81,6 +81,8 @@ function MenuManagment() {
 					</div>
 				</section>
 
+
+
                 {/* Computadora */}
                 
 				<section className="hidden lg:block">
@@ -98,7 +100,7 @@ function MenuManagment() {
 					<div className="mt-6 flex gap-4">
 
 						<Link
-							to=""
+							to="/simpleDishForm"
 							className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
 						>
 							<span className="text-base font-bold text-text-primary">
