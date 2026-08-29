@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { FaRegCheckCircle } from "react-icons/fa";
 import { ImEye, ImEyeBlocked } from "react-icons/im";
 import { Link,useNavigate } from "@tanstack/react-router";
 import { register as registerUser } from "../../services/authService";
