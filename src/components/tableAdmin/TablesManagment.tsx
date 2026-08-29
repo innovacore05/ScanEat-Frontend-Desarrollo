@@ -3,6 +3,9 @@ import { getProfile } from "../../services/authService";
 import { HiArrowLeft } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import DashboardLayout from "../layout/DashboardLayout";
+import { RiErrorWarningLine } from "react-icons/ri";
+import { IoIosAdd } from "react-icons/io";
+import { MdOutlineModeEditOutline } from "react-icons/md";
 
 function TablesManagment() {
 	const [firstName, setFirstName] = useState("");
@@ -72,18 +75,22 @@ function TablesManagment() {
 
 				{/* Computadora */}
 
-				<section className="hidden px-4 py-8 lg:block">
-					<div className="rounded-lg bg-brand-mint-dark px-4 py-4">
+				<section className="hidden px-8 py-8 lg:block">
+					<div className="rounded-lg bg-brand-mint-dark px-8 py-8">
 						<h1 className="text-2xl font-bold text-white">
 							¡Hola, {firstName || "Usuario"}!
 						</h1>
 					</div>
 
-					<div className="mt-3 rounded-lg border border-pink-400 px-4 py-3">
-						<p className="font-bold text-pink-500">Mesa esperando</p>
-						<p className="text-xs text-text-primary">
-							Mesa #1 lleva 00:00 esperando
-						</p>
+					<div className="mt-6 flex items-start gap-2 rounded-lg border border-border px-6 py-5">
+						<div>
+							<p className="text-[24px] text-pink-500">Mesa esperando</p>
+							<p className="text-[14px] text-text-primary">
+								Mesa #1 lleva 00:00 esperando
+							</p>
+						</div>
+
+						<RiErrorWarningLine className="ml-auto mt-0.5 h-15 w-15 shrink-0 text-pink-500" />
 					</div>
 
 					<div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-2">
@@ -96,16 +103,18 @@ function TablesManagment() {
 								<div className="flex gap-8">
 									<Link
 										to="/addTable"
-										className="rounded border w-[167px] h-[34px] border-border px-3 py-2 text-xs"
+										className="flex items-center justify-between rounded border w-41.75 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
 									>
-										Añadir mesa +
+										<span>Añadir mesa</span>
+										<IoIosAdd className="text-brand-mint-darker w-8 h-8" />
 									</Link>
 
 									<Link
 										to="/editTable"
-										className="rounded w-[167px] h-[34px] border border-border px-3 py-2 text-xs"
+										className="flex items-center justify-between rounded border w-41.75 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
 									>
-										Editar mesa
+										<span>Editar mesa</span>
+										<MdOutlineModeEditOutline className="text-brand-mint-darker w-6 h-6" />
 									</Link>
 								</div>
 							</div>
@@ -115,7 +124,7 @@ function TablesManagment() {
 									<button
 										key={index}
 										type="button"
-										className="rounded border border-border px-3 py-2 text-left text-xs hover:border-brand-mint-dark"
+										className="rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-brand-mint-dark"
 									>
 										Mesa #{index + 10}
 									</button>
@@ -124,19 +133,19 @@ function TablesManagment() {
 						</div>
 
 						<div>
-							<p className="text-xs font-bold text-text-primary">
+							<p className="text-lg font-bold text-text-primary">
 								Detalles de mesa
 							</p>
 
 							<div className="mt-2 rounded-lg bg-brand-mint-dark px-4 py-3 text-white">
-								<p className="font-bold">Mesa #10</p>
-								<p className="mt-2 text-xs">Asientos: 4</p>
-								<p className="text-xs">Mesero asignado: Luisa</p>
-								<p className="text-xs">Zona: Segunda planta</p>
+								<p className="font-bold text-lg">Mesa #10</p>
+								<p className="mt-2 text-s">Asientos: 4</p>
+								<p className="text-s">Mesero asignado: Luisa</p>
+								<p className="text-s">Zona: Segunda planta</p>
 							</div>
 
 							<div className="mt-5 rounded-lg bg-neutral-100 px-4 py-4">
-								<p className="font-bold text-brand-mint-dark">
+								<p className="text-lg font-bold text-text-primary">
 									Orden actual
 								</p>
 

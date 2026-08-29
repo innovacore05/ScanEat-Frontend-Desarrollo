@@ -26,6 +26,8 @@ import { Route as PasswordSuccessRouteImport } from './routes/passwordSuccess'
 import { Route as ProfileSettingsRouteImport } from './routes/profileSettings'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/resetPassword'
+import { Route as SimpleDishFormRouteImport } from './routes/simpleDishForm'
+import { Route as TablesManagmentRouteImport } from './routes/tablesManagment'
 import { Route as UnexpectedIssueRouteImport } from './routes/unexpectedIssue'
 import { Route as UnexpectedIssueVRouteImport } from './routes/unexpectedIssueV'
 import { Route as VerificationCodeRouteImport } from './routes/verificationCode'
@@ -115,6 +117,16 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/resetPassword',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SimpleDishFormRoute = SimpleDishFormRouteImport.update({
+  id: '/simpleDishForm',
+  path: '/simpleDishForm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TablesManagmentRoute = TablesManagmentRouteImport.update({
+  id: '/tablesManagment',
+  path: '/tablesManagment',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UnexpectedIssueRoute = UnexpectedIssueRouteImport.update({
   id: '/unexpectedIssue',
   path: '/unexpectedIssue',
@@ -149,6 +161,8 @@ export interface FileRoutesByFullPath {
   '/profileSettings': typeof ProfileSettingsRoute
   '/register': typeof RegisterRoute
   '/resetPassword': typeof ResetPasswordRoute
+  '/simpleDishForm': typeof SimpleDishFormRoute
+  '/tablesManagment': typeof TablesManagmentRoute
   '/unexpectedIssue': typeof UnexpectedIssueRoute
   '/unexpectedIssueV': typeof UnexpectedIssueVRoute
   '/verificationCode': typeof VerificationCodeRoute
@@ -171,6 +185,8 @@ export interface FileRoutesByTo {
   '/profileSettings': typeof ProfileSettingsRoute
   '/register': typeof RegisterRoute
   '/resetPassword': typeof ResetPasswordRoute
+  '/simpleDishForm': typeof SimpleDishFormRoute
+  '/tablesManagment': typeof TablesManagmentRoute
   '/unexpectedIssue': typeof UnexpectedIssueRoute
   '/unexpectedIssueV': typeof UnexpectedIssueVRoute
   '/verificationCode': typeof VerificationCodeRoute
@@ -194,6 +210,8 @@ export interface FileRoutesById {
   '/profileSettings': typeof ProfileSettingsRoute
   '/register': typeof RegisterRoute
   '/resetPassword': typeof ResetPasswordRoute
+  '/simpleDishForm': typeof SimpleDishFormRoute
+  '/tablesManagment': typeof TablesManagmentRoute
   '/unexpectedIssue': typeof UnexpectedIssueRoute
   '/unexpectedIssueV': typeof UnexpectedIssueVRoute
   '/verificationCode': typeof VerificationCodeRoute
@@ -218,6 +236,8 @@ export interface FileRouteTypes {
     | '/profileSettings'
     | '/register'
     | '/resetPassword'
+    | '/simpleDishForm'
+    | '/tablesManagment'
     | '/unexpectedIssue'
     | '/unexpectedIssueV'
     | '/verificationCode'
@@ -240,6 +260,8 @@ export interface FileRouteTypes {
     | '/profileSettings'
     | '/register'
     | '/resetPassword'
+    | '/simpleDishForm'
+    | '/tablesManagment'
     | '/unexpectedIssue'
     | '/unexpectedIssueV'
     | '/verificationCode'
@@ -262,6 +284,8 @@ export interface FileRouteTypes {
     | '/profileSettings'
     | '/register'
     | '/resetPassword'
+    | '/simpleDishForm'
+    | '/tablesManagment'
     | '/unexpectedIssue'
     | '/unexpectedIssueV'
     | '/verificationCode'
@@ -285,6 +309,8 @@ export interface RootRouteChildren {
   ProfileSettingsRoute: typeof ProfileSettingsRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SimpleDishFormRoute: typeof SimpleDishFormRoute
+  TablesManagmentRoute: typeof TablesManagmentRoute
   UnexpectedIssueRoute: typeof UnexpectedIssueRoute
   UnexpectedIssueVRoute: typeof UnexpectedIssueVRoute
   VerificationCodeRoute: typeof VerificationCodeRoute
@@ -411,6 +437,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/simpleDishForm': {
+      id: '/simpleDishForm'
+      path: '/simpleDishForm'
+      fullPath: '/simpleDishForm'
+      preLoaderRoute: typeof SimpleDishFormRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tablesManagment': {
+      id: '/tablesManagment'
+      path: '/tablesManagment'
+      fullPath: '/tablesManagment'
+      preLoaderRoute: typeof TablesManagmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/unexpectedIssue': {
       id: '/unexpectedIssue'
       path: '/unexpectedIssue'
@@ -453,6 +493,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileSettingsRoute: ProfileSettingsRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SimpleDishFormRoute: SimpleDishFormRoute,
+  TablesManagmentRoute: TablesManagmentRoute,
   UnexpectedIssueRoute: UnexpectedIssueRoute,
   UnexpectedIssueVRoute: UnexpectedIssueVRoute,
   VerificationCodeRoute: VerificationCodeRoute,
