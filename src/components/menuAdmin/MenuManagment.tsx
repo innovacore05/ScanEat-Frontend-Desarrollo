@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getProfile } from "../../services/authService";
+import { getProducts, type Product} from "../../services/productService";
 import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus } from "react-icons/go";
 import { IoSearch } from "react-icons/io5";
@@ -15,7 +16,11 @@ import DishCard from "../menu/DishCard";
 function MenuManagment() {
 
     const [firstName, setFirstName] = useState("");
-    
+	const [products,setProducts]=useState<Product[]>([]);
+	const [initialLoading, setInitialLoading] = useState(true);
+	const [searchTerm,setSearchTerm]=useState("");
+ 
+	// cargar el perfil
         useEffect(() => {
             const loadProfile = async () => {
                 try {
@@ -25,10 +30,31 @@ function MenuManagment() {
                     console.error("Error loading profile:", error);
                 }
             };
-    
-            loadProfile();
-        }, []);
-    
+			loadProfile();
+  }, []);
+
+			//cargar los productos 
+	useEffect(()=>{
+const timeoutId=setTimeout(()=>{
+const loadProducts=async ()=>{
+		try{
+			const data=await getProducts({search:searchTerm});
+			setProducts(data);
+		}catch(error){
+			console.error("Error loading products:",error);
+		}finally{
+			 setInitialLoading(false);
+		}
+	};
+			loadProducts();
+      
+},400);
+return ()=> clearTimeout(timeoutId);
+
+},[searchTerm]);
+
+
+
 	return (
 		<DashboardLayout>
 			<main className="min-h-screen bg-brand-white px-8 py-8">
@@ -126,6 +152,8 @@ function MenuManagment() {
 						<input
 							type="text"
 							placeholder="Buscar un platillo"
+							value={searchTerm}
+							onChange={(e)=>setSearchTerm(e.target.value)}
 							className="w-full bg-transparent text-base font-normal text-text-primary outline-none placeholder:text-text-primary"
 						/>
 
@@ -191,7 +219,28 @@ function MenuManagment() {
 					{/* Platillos */}
 					<div className="mt-6 flex flex-wrap gap-4">
 
-						<div className="w-full lg:w-87.5">
+{initialLoading  &&(
+	<p className="text-text-primary">Cargando platillos...</p>
+)}
+{!initialLoading && products.length=== 0 &&(
+	<p className="text-text-primary">No hay platillos...</p>
+)}
+
+{products.map((product)=>(
+<div key={product.productId} className="w-full lg:w-87.5">
+	<DishCard
+		name={product.productName ?? ""}
+		description={product.description ?? ""}
+		price={product.price}
+		image={product.image ?? ""}
+		rating={product.rating}
+		isAdmin={true}
+	/>
+</div>
+
+))}
+
+						{/* <div className="w-full lg:w-87.5">
 							<DishCard
 								name="Casado con chuleta"
 								description="Casado con chuleta, frijoles, plátano maduro, ensalada y huevo frito."
@@ -211,7 +260,7 @@ function MenuManagment() {
 								rating={5}
 								isAdmin={true}
 							/>
-						</div>
+						</div> */}
 
 					</div>
 
