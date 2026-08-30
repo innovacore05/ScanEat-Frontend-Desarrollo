@@ -6,9 +6,27 @@ import DashboardLayout from "../layout/DashboardLayout";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { IoIosAdd } from "react-icons/io";
 import { MdOutlineModeEditOutline } from "react-icons/md";
+import { getTables } from "../../services/tableService";
+import QrCodeModal from "./QRCodeModal";
+
+type TableItem = {
+	id: string;
+	tableNumber: number;
+	chairNumber: number;
+	active?: boolean;
+	createdAt?: string;
+};
 
 function TablesManagment() {
 	const [firstName, setFirstName] = useState("");
+	const [tables, setTables] = useState<TableItem[]>([]);
+	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+	const [qrValue, setQrValue] = useState("");
+
+	const handleShowQr = (tableId: string) => {
+		setQrValue(`https://scaneat.com/menu?mesaId=${tableId}`);
+		setIsQrModalOpen(true);
+	};
 
 	useEffect(() => {
 		const loadProfile = async () => {
@@ -22,6 +40,20 @@ function TablesManagment() {
 
 		loadProfile();
 	}, []);
+
+	useEffect(() => {
+		const loadTables = async () => {
+			try {
+				const data = await getTables();
+				setTables(data);
+			} catch (error) {
+				console.error("Error trayendo mesas:", error);
+			}
+		};
+
+		loadTables();
+	}, []);
+
 
 	return (
 		<DashboardLayout>
@@ -40,16 +72,30 @@ function TablesManagment() {
 					</div>
 
 					<div className="mt-2 flex flex-1 flex-col gap-6 rounded-t-4xl bg-neutral-50 px-6 py-8 sm:px-8">
-						<div className="flex flex-col gap-4 mt-3">
-							{Array.from({ length: 8 }, (_, index) => (
-								<div
-									key={index}
-									className="h-9 rounded border color-border px-3 py-2 text-xs text-text-primary"
-								>
-									Mesa #{index + 10}
-								</div>
-							))}
-						</div>
+						<div className="mt-4 flex flex-col gap-2">
+								{tables.length === 0 ? (
+									<p>No hay mesas creadas.</p>
+								) : (
+									tables.map((table) => (
+										<div key={table.id} className="flex items-center justify-between gap-3 rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-brand-mint-dark">
+											<span>Mesa #{table.tableNumber}</span>
+											<button
+												type="button"
+												onClick={() => handleShowQr(table.id)}
+												className="rounded bg-brand-mint-dark px-3 py-1 text-xs text-white hover:bg-brand-mint-dark/90"
+											>
+												Ver QR
+											</button>
+										</div>
+									))
+								)}
+							</div>
+
+							<QrCodeModal
+								isOpen={isQrModalOpen}
+								value={qrValue}
+								onClose={() => setIsQrModalOpen(false)}
+							/>
 
 						<div className="mt-auto flex flex-col gap-4">
 							<Link
@@ -120,16 +166,29 @@ function TablesManagment() {
 							</div>
 
 							<div className="mt-4 flex flex-col gap-2">
-								{Array.from({ length: 8 }, (_, index) => (
-									<button
-										key={index}
-										type="button"
-										className="rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-brand-mint-dark"
-									>
-										Mesa #{index + 10}
-									</button>
-								))}
+								{tables.length === 0 ? (
+									<p>No hay mesas creadas.</p>
+								) : (
+									tables.map((table) => (
+										<div key={table.id} className="flex items-center justify-between gap-3 rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-brand-mint-dark">
+											<span>Mesa #{table.tableNumber}</span>
+											<button
+												type="button"
+												onClick={() => handleShowQr(table.id)}
+												className="rounded bg-brand-mint-dark px-3 py-1 text-xs text-white hover:bg-brand-mint-dark/90"
+											>
+												Ver QR
+											</button>
+										</div>
+									))
+								)}
 							</div>
+
+							<QrCodeModal
+								isOpen={isQrModalOpen}
+								value={qrValue}
+								onClose={() => setIsQrModalOpen(false)}
+							/>
 						</div>
 
 						<div>
