@@ -17,6 +17,7 @@ import { Route as AccountVerificationRouteImport } from './routes/accountVerific
 import { Route as ChangePasswordRouteImport } from './routes/changePassword'
 import { Route as ChangePasswordErrorRouteImport } from './routes/changePasswordError'
 import { Route as ChangePasswordSuccessRouteImport } from './routes/changePasswordSuccess'
+import { Route as CustomDishFormRouteImport } from './routes/customDishForm'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as EditMenuRouteImport } from './routes/editMenu'
 import { Route as EditTableRouteImport } from './routes/editTable'
@@ -70,6 +71,11 @@ const ChangePasswordErrorRoute = ChangePasswordErrorRouteImport.update({
 const ChangePasswordSuccessRoute = ChangePasswordSuccessRouteImport.update({
   id: '/changePasswordSuccess',
   path: '/changePasswordSuccess',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomDishFormRoute = CustomDishFormRouteImport.update({
+  id: '/customDishForm',
+  path: '/customDishForm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/changePassword': typeof ChangePasswordRoute
   '/changePasswordError': typeof ChangePasswordErrorRoute
   '/changePasswordSuccess': typeof ChangePasswordSuccessRoute
+  '/customDishForm': typeof CustomDishFormRoute
   '/dashboard': typeof DashboardRoute
   '/editMenu': typeof EditMenuRoute
   '/editTable': typeof EditTableRoute
@@ -176,6 +183,7 @@ export interface FileRoutesByTo {
   '/changePassword': typeof ChangePasswordRoute
   '/changePasswordError': typeof ChangePasswordErrorRoute
   '/changePasswordSuccess': typeof ChangePasswordSuccessRoute
+  '/customDishForm': typeof CustomDishFormRoute
   '/dashboard': typeof DashboardRoute
   '/editMenu': typeof EditMenuRoute
   '/editTable': typeof EditTableRoute
@@ -201,6 +209,7 @@ export interface FileRoutesById {
   '/changePassword': typeof ChangePasswordRoute
   '/changePasswordError': typeof ChangePasswordErrorRoute
   '/changePasswordSuccess': typeof ChangePasswordSuccessRoute
+  '/customDishForm': typeof CustomDishFormRoute
   '/dashboard': typeof DashboardRoute
   '/editMenu': typeof EditMenuRoute
   '/editTable': typeof EditTableRoute
@@ -227,6 +236,7 @@ export interface FileRouteTypes {
     | '/changePassword'
     | '/changePasswordError'
     | '/changePasswordSuccess'
+    | '/customDishForm'
     | '/dashboard'
     | '/editMenu'
     | '/editTable'
@@ -251,6 +261,7 @@ export interface FileRouteTypes {
     | '/changePassword'
     | '/changePasswordError'
     | '/changePasswordSuccess'
+    | '/customDishForm'
     | '/dashboard'
     | '/editMenu'
     | '/editTable'
@@ -275,6 +286,7 @@ export interface FileRouteTypes {
     | '/changePassword'
     | '/changePasswordError'
     | '/changePasswordSuccess'
+    | '/customDishForm'
     | '/dashboard'
     | '/editMenu'
     | '/editTable'
@@ -300,6 +312,7 @@ export interface RootRouteChildren {
   ChangePasswordRoute: typeof ChangePasswordRoute
   ChangePasswordErrorRoute: typeof ChangePasswordErrorRoute
   ChangePasswordSuccessRoute: typeof ChangePasswordSuccessRoute
+  CustomDishFormRoute: typeof CustomDishFormRoute
   DashboardRoute: typeof DashboardRoute
   EditMenuRoute: typeof EditMenuRoute
   EditTableRoute: typeof EditTableRoute
@@ -372,6 +385,13 @@ declare module '@tanstack/react-router' {
       path: '/changePasswordSuccess'
       fullPath: '/changePasswordSuccess'
       preLoaderRoute: typeof ChangePasswordSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customDishForm': {
+      id: '/customDishForm'
+      path: '/customDishForm'
+      fullPath: '/customDishForm'
+      preLoaderRoute: typeof CustomDishFormRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -484,6 +504,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChangePasswordRoute: ChangePasswordRoute,
   ChangePasswordErrorRoute: ChangePasswordErrorRoute,
   ChangePasswordSuccessRoute: ChangePasswordSuccessRoute,
+  CustomDishFormRoute: CustomDishFormRoute,
   DashboardRoute: DashboardRoute,
   EditMenuRoute: EditMenuRoute,
   EditTableRoute: EditTableRoute,
