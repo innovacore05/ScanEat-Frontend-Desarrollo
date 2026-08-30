@@ -47,7 +47,7 @@ function AddTable() {
 	}, []);
 
 	const openQrForTable = (tableId: string) => {
-  const qrUrl = `https://scaneat.com/menu?mesaId=${tableId}`;
+  const qrUrl = `https://scaneat-frontend-produccion-production.up.railway.app/menu?mesaId=${tableId}`;
   setQrValue(qrUrl);
   setIsQrModalOpen(true);
 };

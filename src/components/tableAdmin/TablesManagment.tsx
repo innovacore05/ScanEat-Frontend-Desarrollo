@@ -24,7 +24,7 @@ function TablesManagment() {
 	const [qrValue, setQrValue] = useState("");
 
 	const handleShowQr = (tableId: string) => {
-		setQrValue(`https://scaneat.com/menu?mesaId=${tableId}`);
+		setQrValue(`https://scaneat-frontend-produccion-production.up.railway.app/dashboard?mesaId=${tableId}`);
 		setIsQrModalOpen(true);
 	};
 
