@@ -1,7 +1,4 @@
 //Este archivo contiene funciones para interactuar con la API de autenticación
-
-
-
 type ApiError = {
     message?: string;
     [key: string]: unknown;

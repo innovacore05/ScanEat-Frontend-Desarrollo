@@ -5,11 +5,11 @@ import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus } from "react-icons/go";
 import { FiCamera } from "react-icons/fi";
 import DashboardLayout from "../../components/layout/DashboardLayout";
+import { createProduct } from "../../services/productService";
 
 
 function SimpleDishForm() {
 
-    // const [isSubmitting, setIsSubmitting] = useState(false);
     const [image, setImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [name, setName] = useState("");
@@ -17,8 +17,10 @@ function SimpleDishForm() {
     const [price, setPrice] = useState("");
     const [category, setCategory] = useState("");
     const [discount, setDiscount] = useState<number | "">("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [firstName, setFirstName] = useState("");
 
+    {/* useEffect para cargar el nombre del usuario */ }
     useEffect(() => {
         const loadProfile = async () => {
             try {
@@ -32,6 +34,7 @@ function SimpleDishForm() {
         loadProfile();
     }, []);
 
+    {/* useEffect para actualizar la vista previa de la imagen */ }
     useEffect(() => {
         if (!image) {
             setImagePreview(null);
@@ -43,6 +46,68 @@ function SimpleDishForm() {
 
         return () => URL.revokeObjectURL(previewUrl);
     }, [image]);
+
+    {/* Manejo del envío del formulario */ }
+    const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+) => {
+    event.preventDefault();
+
+    if (!name.trim()) {
+        alert("Ingresa el nombre del platillo");
+        return;
+    }
+
+    if (!price) {
+        alert("Ingresa el precio del platillo");
+        return;
+    }
+
+    if (!category) {
+        alert("Selecciona una categoría");
+        return;
+    }
+
+    try {
+        setIsSubmitting(true);
+
+        const data = await createProduct({
+            name: name.trim(),
+            description: description.trim(),
+            price,
+            discount,
+            categoryId: Number(category),
+            image,
+        });
+
+        console.log("Producto creado:", data);
+
+        alert("Platillo guardado correctamente");
+
+        // Limpiar formulario
+        setName("");
+        setDescription("");
+        setPrice("");
+        setCategory("");
+        setDiscount("");
+        setImage(null);
+        setImagePreview(null);
+
+    } catch (error) {
+        console.error("Error al crear el platillo:", error);
+
+        const apiError = error as {
+            message?: string;
+        };
+
+        alert(
+            apiError.message ??
+            "No se pudo guardar el platillo"
+        );
+    } finally {
+        setIsSubmitting(false);
+    }
+};
 
     return (
         <DashboardLayout>
@@ -65,7 +130,7 @@ function SimpleDishForm() {
 
                     <div className="flex items-center gap-2">
                         {/* Aquí va el form de platillo simple pero en celular */}
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             {/* Input image*/}
                             <label
                                 htmlFor="image"
@@ -129,14 +194,15 @@ function SimpleDishForm() {
                                 id="category"
                                 value={category}
                                 onChange={(event) => setCategory(event.target.value)}
-                                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                                className="w-full mt-5 text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
                             >
                                 <option value="">Categoría</option>
-                                <option value="Entradas">Postres</option>
-                                <option value="Platos fuertes">Bebidas</option>
-                                <option value="Postres">Café</option>
-                                <option value="Bebidas">Salados</option>
-                                <option value="Bebidas">Almuerzos</option>
+
+                                <option value="1">Postres</option>
+                                <option value="2">Bebidas</option>
+                                <option value="3">Café</option>
+                                <option value="4">Salados</option>
+                                <option value="5">Almuerzos</option>
                             </select>
 
                             {/* Input Discount*/}
@@ -148,20 +214,20 @@ function SimpleDishForm() {
                                 onChange={(event) => setDiscount(event.target.value ? Number(event.target.value) : "")}
                                 className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
                             />
-                            
+
                             <Link
-                            to="/MenuManagment"
-                            className="mt-10 flex w-full cursor-pointer items-center justify-center rounded-lg border text-brand-mint-darker border-brand-mint-darker px-4 py-3 font-bold"
-                        >
-                          Cancelar
-                        </Link>
+                                to="/MenuManagment"
+                                className="mt-10 flex w-full cursor-pointer items-center justify-center rounded-lg border text-brand-mint-darker border-brand-mint-darker px-4 py-3 font-bold"
+                            >
+                                Cancelar
+                            </Link>
 
                             <button
-                            type="submit"
-                            className="mt-6 w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-white font-bold"
-                        >
-                           Guardar cambios
-                        </button>
+                                type="submit"
+                                className="mt-6 w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-white font-bold"
+                            >
+                                Guardar cambios
+                            </button>
                         </form>
 
                     </div>
@@ -212,7 +278,9 @@ function SimpleDishForm() {
                     </h2>
 
                     {/*Form platillo simple*/}
-                    <form className="mt-6 grid max-w-5xl grid-cols-[280px_minmax(0,1fr)] gap-10">
+                    <form
+                        onSubmit={handleSubmit}
+                        className="mt-6 grid max-w-5xl grid-cols-[280px_minmax(0,1fr)] gap-10">
                         <div>
                             <label
                                 htmlFor="image"
@@ -271,12 +339,13 @@ function SimpleDishForm() {
                                 onChange={(event) => setCategory(event.target.value)}
                                 className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
                             >
-                                 <option value="">Categoría</option>
-                                <option value="Entradas">Postres</option>
-                                <option value="Platos fuertes">Bebidas</option>
-                                <option value="Postres">Café</option>
-                                <option value="Bebidas">Salados</option>
-                                <option value="Bebidas">Almuerzos</option>
+                                <option value="">Categoría</option>
+
+                                <option value="1">Postres</option>
+                                <option value="2">Bebidas</option>
+                                <option value="3">Café</option>
+                                <option value="4">Salados</option>
+                                <option value="5">Almuerzos</option>
                             </select>
 
                             <input

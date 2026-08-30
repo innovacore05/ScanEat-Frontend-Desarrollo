@@ -1,5 +1,3 @@
-
-
 type ApiError={
 
 
@@ -8,6 +6,12 @@ message?:string;
 };
 
 const MENU_BASE_URL=`${import.meta.env.VITE_API_URL}/api/menu`;
+
+const getImageUrl = (image: string | null) => {
+    if (!image) return image;
+
+    return new URL(image, `${import.meta.env.VITE_API_URL}/`).toString();
+};
 
 export type Product={
 
@@ -24,6 +28,11 @@ export type ProductsPage = {
 	products: Product[];
 	hasMore: boolean;
 };
+
+const normalizeProduct = (product: Product): Product => ({
+    ...product,
+    image: getImageUrl(product.image),
+});
 
 
 //obtener lista de productos , filtrado por categoria y busqueda
@@ -64,7 +73,12 @@ if(!response.ok){
     throw data as ApiError;
 }
 
-return data as ProductsPage;
+    const page = data as ProductsPage;
+
+    return {
+        ...page,
+        products: page.products.map(normalizeProduct),
+    };
 
 };
 
@@ -80,6 +94,51 @@ export const getProductById= async (id: number | string)=>{
     if(!response.ok){
         throw data as ApiError;
     }
-    return data as Product;
+    return normalizeProduct(data as Product);
 }
 
+
+//crear producto simple
+export const createProduct = async ({
+    name,
+    description,
+    price,
+    discount,
+    categoryId,
+    image,
+}: {
+    name: string;
+    description: string;
+    price: string;
+    discount: number | "";
+    categoryId: number;
+    image: File | null;
+}) => {
+    const formData = new FormData();
+
+    formData.append("productName", name);
+    formData.append("description", description);
+    formData.append("price", price);
+    formData.append("categoryId", String(categoryId));
+
+    if (discount !== "") {
+        formData.append("discount", String(discount));
+    }
+
+    if (image) {
+        formData.append("image", image);
+    }
+
+    const response = await fetch(`${MENU_BASE_URL}/products`, {
+        method: "POST",
+        body: formData,
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw data as ApiError;
+    }
+
+    return data;
+};
