@@ -20,7 +20,7 @@ function DishCard({
 	isAdmin,
 }: DishCardProps) {
 	return (
-		<article className="flex w-full flex-row overflow-hidden rounded-2xl bg-white shadow-sm lg:h-[360px] lg:flex-col">
+		<article className="flex w-full flex-row overflow-hidden rounded-2xl bg-white shadow-sm lg:h-90 lg:flex-col">
 
             <div className="w-32 shrink-0 self-stretch lg:h-48 lg:w-full">
 				<img

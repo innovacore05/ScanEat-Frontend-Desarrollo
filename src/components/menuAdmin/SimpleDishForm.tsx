@@ -195,7 +195,7 @@ function SimpleDishForm() {
                         </Link>
 
                         <Link
-                            to=""
+                            to="/customDishForm"
                             className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
                         >
                             <span className="text-base font-bold text-text-primary">

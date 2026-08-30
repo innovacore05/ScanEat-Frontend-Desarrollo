@@ -153,6 +153,8 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 						</span>
 					</button>
 
+
+{/* //cerrar sesion normal , regresa al registro inicio de sesion/ */}
 					<Link
 						to="/login"
 						className="flex items-center gap-4 py-3 pb-8 text-left text-text-primary border-b border-neutral-300"
@@ -163,6 +165,19 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 							Cerrar sesión
 						</span>
 					</Link>
+
+
+{/* regresa a la pagina informativa */}
+{/* <a
+    href={import.meta.env.VITE_LANDING_URL}
+    className="flex items-center gap-4 py-3 pb-8 text-left text-text-primary border-b border-neutral-300"
+>
+    <LuLogOut className="h-6 w-6 shrink-0" />
+    <span className="text-[15px] font-bold cursor-pointer">
+        Cerrar sesión
+    </span>
+</a> */}
+
 				</div>
 
 				<div className="mt-10  pt-5">
@@ -355,7 +370,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 									Notificaciones
 								</span>
 							</button>
-
+{/* cerrar sesion regresa al registro/inicio de sesion */}
 							<Link
 								to="/login"
 								className="mt-10 flex w-full items-center gap-4 py-4 text-left text-white"
@@ -366,6 +381,16 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 									Cerrar sesión
 								</span>
 							</Link>
+							{/* cerrar sesion regresa a la pagina informativa */}
+							{/* <a
+    href={import.meta.env.VITE_LANDING_URL}
+    className="mt-10 flex w-full items-center gap-4 py-4 text-left text-white"
+>
+    <LuLogOut className="h-6 w-6 shrink-0" />
+    <span className="text-xl font-bold">
+        Cerrar sesión
+    </span>
+</a> */}
 						</div>
 					</div>
 				</>
