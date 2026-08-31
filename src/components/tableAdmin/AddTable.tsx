@@ -3,7 +3,6 @@ import { HiArrowLeft } from "react-icons/hi";
 import { getProfile } from "../../services/authService";
 import DashboardLayout from "../layout/DashboardLayout";
 import { useEffect, useState } from "react";
-import { RiErrorWarningLine } from "react-icons/ri";
 import { IoIosAdd } from "react-icons/io";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import QrCodeModal from "../tableAdmin/QRCodeModal";
@@ -16,6 +15,7 @@ function AddTable() {
 	const [firstName, setFirstName] = useState("");
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 	const [qrValue, setQrValue] = useState("");
+	const [qrTableNumber, setQrTableNumber] = useState<number | string>("");
 	const [tables, setTables] = useState<any[]>([]);
 	const [createdTableId, setCreatedTableId] = useState<string | null>(null);
 
@@ -46,9 +46,10 @@ function AddTable() {
 		loadTables();
 	}, []);
 
-	const openQrForTable = (tableId: string) => {
+	const openQrForTable = (tableId: string, numeroMesa: number | string) => {
   const qrUrl = `https://scaneat-frontend-produccion-production.up.railway.app/menu?mesaId=${tableId}`;
   setQrValue(qrUrl);
+	  setQrTableNumber(numeroMesa);
   setIsQrModalOpen(true);
 };
 
@@ -64,7 +65,7 @@ function AddTable() {
 
 			const table = await createTable(tableNumberValue, chairNumberValue);
 			setCreatedTableId(table.id);
-			openQrForTable(table.id);
+			openQrForTable(table.id, tableNumberValue);
 		} catch (error) {
 			console.error(error);
 		} finally {
@@ -73,7 +74,7 @@ function AddTable() {
 	};
 
 	const handleGenerateQr = () => {
-		if (createdTableId) openQrForTable(createdTableId);
+		if (createdTableId) openQrForTable(createdTableId, qrTableNumber);
 	};
 
 	return (
@@ -107,7 +108,7 @@ function AddTable() {
 									setTableNumber(e.target.value);
 									setCreatedTableId(null);
 								}}
-								placeholder="Mesa"
+								placeholder="Numero de mesa"
 								className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brand-brown"
 							/>
 						</div>
@@ -120,7 +121,7 @@ function AddTable() {
 									setChairNumber(e.target.value);
 									setCreatedTableId(null);
 								}}
-								placeholder="Sillas"
+								placeholder="Cantidad de sillas"
 								className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brand-brown"
 							/>
 						</div>
@@ -135,9 +136,10 @@ function AddTable() {
 										Generar QR
 									</button>
 									<QrCodeModal
-										isOpen={isQrModalOpen}
-										value={qrValue}
-										onClose={() => setIsQrModalOpen(false)}
+									isOpen={isQrModalOpen}
+									value={qrValue}
+									numeroMesa={qrTableNumber}
+									onClose={() => setIsQrModalOpen(false)}
 									/>
 						</div>
 
@@ -173,16 +175,7 @@ function AddTable() {
 						</h1>
 					</div>
 
-					<div className="mt-6 flex items-start gap-2 rounded-lg border border-border px-6 py-5">
-						<div>
-							<p className="text-[24px] text-pink-500">Mesa esperando</p>
-							<p className="text-[14px] text-text-primary">
-								Mesa #1 lleva 00:00 esperando
-							</p>
-						</div>
-
-						<RiErrorWarningLine className="ml-auto mt-0.5 h-15 w-15 shrink-0 text-pink-500" />
-					</div>
+					
 
 					<div className="mt-8 px-2 py-2">
 						<div>
@@ -229,7 +222,7 @@ function AddTable() {
 
 							<div className="mt-2 flex flex-1 flex-col gap-3 px-8 py-3">
 
-								<div className="mt-1 font-extrabold text-brand-mint-darker">
+								<div className="mt-1  text-brand-mint-darker">
 									<input
 										type="number"
 										value={tableNumber}
@@ -237,12 +230,12 @@ function AddTable() {
 											setTableNumber(e.target.value);
 											setCreatedTableId(null);
 										}}
-										placeholder="Mesa"
+										placeholder="Numero de mesa"
 										className="w-full rounded-lg border border-border px-4 py-2 outline-none focus:border-2 focus:border-brand-brown"
 									/>
 								</div>
 
-								<div className="mt-1 font-extrabold text-brand-mint-darker">
+								<div className="mt-1 text-brand-mint-darker">
 									<input
 										type="number"
 										value={chairNumber}
@@ -250,7 +243,7 @@ function AddTable() {
 											setChairNumber(e.target.value);
 											setCreatedTableId(null);
 										}}
-										placeholder="Sillas"
+										placeholder="Cantidad de sillas"
 										className="w-full rounded-lg border border-border px-4 py-2 outline-none focus:border-2 focus:border-brand-brown"
 									/>
 								</div>
@@ -265,9 +258,10 @@ function AddTable() {
 										Generar QR
 									</button>
 									<QrCodeModal
-										isOpen={isQrModalOpen}
-										value={qrValue}
-										onClose={() => setIsQrModalOpen(false)}
+									isOpen={isQrModalOpen}
+									value={qrValue}
+									numeroMesa={qrTableNumber}
+									onClose={() => setIsQrModalOpen(false)}
 									/>
 
 									<button

@@ -1,5 +1,6 @@
 function Menu() {
-  return <h1>menu cliente</h1>
+  return <h1>Menú de clientes</h1>
+
 }
 
 export default Menu
