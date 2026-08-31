@@ -1,3 +1,7 @@
+
+{/* Cambio:ninguno no se toco*/}
+
+
 type ApiError={
 
 
@@ -131,6 +135,63 @@ export const createProduct = async ({
 
     const response = await fetch(`${MENU_BASE_URL}/products`, {
         method: "POST",
+        body: formData,
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw data as ApiError;
+    }
+
+    return data;
+};
+
+
+
+
+//crear producto personalizado 
+export const createCustomDish = async ({
+    name,
+    description,
+    price,
+    discount,
+    categoryId,
+    image,
+    optionGroups,
+}: {
+    name: string;
+    description: string;
+    price: string;
+    discount: number | "";
+    categoryId: number;
+    image: File | null;
+    optionGroups: { id: string; name: string; options: string[] }[];
+}) => {
+    const token = localStorage.getItem("authToken");
+
+    const formData = new FormData();
+
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("price", price);
+    formData.append("categoryId", String(categoryId));
+
+    if (discount !== "") {
+        formData.append("discount", String(discount));
+    }
+
+    if (image) {
+        formData.append("image", image);
+    }
+
+    formData.append("optionGroups", JSON.stringify(optionGroups));
+
+    const response = await fetch(`${MENU_BASE_URL}/products/custom`, {
+        method: "POST",
+        headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: formData,
     });
 

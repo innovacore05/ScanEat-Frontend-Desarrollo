@@ -7,384 +7,384 @@ import { FiCamera } from "react-icons/fi";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { createProduct } from "../../services/productService";
 
-
 function SimpleDishForm() {
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [category, setCategory] = useState("");
+  const [discount, setDiscount] = useState<number | "">("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [firstName, setFirstName] = useState("");
 
-    const [image, setImage] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [price, setPrice] = useState("");
-    const [category, setCategory] = useState("");
-    const [discount, setDiscount] = useState<number | "">("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [firstName, setFirstName] = useState("");
+  {
+    /* useEffect para cargar el nombre del usuario */
+  }
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const data = await getProfile();
+        setFirstName(data.user.firstName);
+      } catch (error) {
+        console.error("Error loading profile:", error);
+      }
+    };
 
-    {/* useEffect para cargar el nombre del usuario */ }
-    useEffect(() => {
-        const loadProfile = async () => {
-            try {
-                const data = await getProfile();
-                setFirstName(data.user.firstName);
-            } catch (error) {
-                console.error("Error loading profile:", error);
-            }
-        };
+    loadProfile();
+  }, []);
 
-        loadProfile();
-    }, []);
+  {
+    /* useEffect para actualizar la vista previa de la imagen */
+  }
+  useEffect(() => {
+    if (!image) {
+      setImagePreview(null);
+      return;
+    }
 
-    {/* useEffect para actualizar la vista previa de la imagen */ }
-    useEffect(() => {
-        if (!image) {
-            setImagePreview(null);
-            return;
-        }
+    const previewUrl = URL.createObjectURL(image);
+    setImagePreview(previewUrl);
 
-        const previewUrl = URL.createObjectURL(image);
-        setImagePreview(previewUrl);
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [image]);
 
-        return () => URL.revokeObjectURL(previewUrl);
-    }, [image]);
-
-    {/* Manejo del envío del formulario */ }
-    const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
-) => {
+  {
+    /* Manejo del envío del formulario */
+  }
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!name.trim()) {
-        alert("Ingresa el nombre del platillo");
-        return;
+      alert("Ingresa el nombre del platillo");
+      return;
     }
 
     if (!price) {
-        alert("Ingresa el precio del platillo");
-        return;
+      alert("Ingresa el precio del platillo");
+      return;
     }
 
     if (!category) {
-        alert("Selecciona una categoría");
-        return;
+      alert("Selecciona una categoría");
+      return;
     }
 
     try {
-        setIsSubmitting(true);
+      setIsSubmitting(true);
 
-        const data = await createProduct({
-            name: name.trim(),
-            description: description.trim(),
-            price,
-            discount,
-            categoryId: Number(category),
-            image,
-        });
+      const data = await createProduct({
+        name: name.trim(),
+        description: description.trim(),
+        price,
+        discount,
+        categoryId: Number(category),
+        image,
+      });
 
-        console.log("Producto creado:", data);
+      console.log("Producto creado:", data);
 
-        alert("Platillo guardado correctamente");
+      alert("Platillo guardado correctamente");
 
-        // Limpiar formulario
-        setName("");
-        setDescription("");
-        setPrice("");
-        setCategory("");
-        setDiscount("");
-        setImage(null);
-        setImagePreview(null);
-
+      // Limpiar formulario
+      setName("");
+      setDescription("");
+      setPrice("");
+      setCategory("");
+      setDiscount("");
+      setImage(null);
+      setImagePreview(null);
     } catch (error) {
-        console.error("Error al crear el platillo:", error);
+      console.error("Error al crear el platillo:", error);
 
-        const apiError = error as {
-            message?: string;
-        };
+      const apiError = error as {
+        message?: string;
+      };
 
-        alert(
-            apiError.message ??
-            "No se pudo guardar el platillo"
-        );
+      alert(apiError.message ?? "No se pudo guardar el platillo");
     } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false);
     }
-};
+  };
 
-    return (
-        <DashboardLayout>
-            <main className="min-h-screen bg-brand-white px-8 py-8">
+  return (
+    <DashboardLayout>
+      <main className="min-h-screen bg-brand-white px-8 py-8">
+        {/* Celular */}
+        <section className="lg:hidden">
+          <div className="flex items-center gap-2">
+            <Link
+              to="/dashboard"
+              className="flex items-center gap-2 text-brand-mint-dark"
+            >
+              <HiArrowLeft className="h-6 w-6" />
 
-                {/* Celular */}
-                <section className="lg:hidden">
-                    <div className="flex items-center gap-2">
-                        <Link
-                            to="/dashboard"
-                            className="flex items-center gap-2 text-brand-mint-dark"
-                        >
-                            <HiArrowLeft className="h-6 w-6" />
+              <span className="text-[32px] font-bold">Platillo simple</span>
+            </Link>
+          </div>
 
-                            <span className="text-[32px] font-bold">
-                                Platillo simple
-                            </span>
-                        </Link>
-                    </div>
+          <div className="flex items-center gap-2">
+            {/* Aquí va el form de platillo simple pero en celular */}
+            <form onSubmit={handleSubmit}>
+              {/* Input image*/}
+              <label
+                htmlFor="image"
+                className="flex h-48 w-full cursor-pointer items-center justify-center rounded-2xl bg-brand-mint-dark transition hover:opacity-90 mt-6"
+              >
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Vista previa del platillo"
+                    className="h-full w-full rounded-2xl object-cover"
+                  />
+                ) : (
+                  <FiCamera className="h-20 w-20 text-white" />
+                )}
+              </label>
+              <input
+                id="image"
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
 
-                    <div className="flex items-center gap-2">
-                        {/* Aquí va el form de platillo simple pero en celular */}
-                        <form onSubmit={handleSubmit}>
-                            {/* Input image*/}
-                            <label
-                                htmlFor="image"
-                                className="flex h-48 w-full cursor-pointer items-center justify-center rounded-2xl bg-brand-mint-dark transition hover:opacity-90 mt-6"
-                            >
-                                {imagePreview ? (
-                                    <img
-                                        src={imagePreview}
-                                        alt="Vista previa del platillo"
-                                        className="h-full w-full rounded-2xl object-cover"
-                                    />
-                                ) : (
-                                    <FiCamera className="h-20 w-20 text-white" />
-                                )}
-                            </label>
-                            <input
-                                id="image"
-                                type="file"
-                                accept="image/*"
-                                className="sr-only"
-                                onChange={(event) => {
-                                    const file = event.target.files?.[0];
+                  if (file) {
+                    setImage(file);
+                  }
+                }}
+              />
+              {/* Input name*/}
+              <input
+                id="name"
+                type="text"
+                placeholder="Nombre"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-2 py-1.5 "
+              />
 
-                                    if (file) {
-                                        setImage(file);
-                                    }
-                                }}
-                            />
-                            {/* Input name*/}
-                            <input
-                                id="name"
-                                type="text"
-                                placeholder="Nombre"
-                                value={name}
-                                onChange={(event) => setName(event.target.value)}
-                                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-2 py-1.5 "
-                            />
+              {/* Input Description*/}
+              <input
+                id="description"
+                type="text"
+                placeholder="Descripción del platillo"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-4"
+              />
 
-                            {/* Input Description*/}
-                            <input
-                                id="description"
-                                type="text"
-                                placeholder="Descripción del platillo"
-                                value={description}
-                                onChange={(event) => setDescription(event.target.value)}
-                                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-4"
-                            />
+              {/* Input Price*/}
+              <input
+                id="price"
+                type="number"
+                placeholder="Precio del platillo"
+                value={price}
+                onChange={(event) => setPrice(event.target.value)}
+                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+              />
 
-                            {/* Input Price*/}
-                            <input
-                                id="price"
-                                type="number"
-                                placeholder="Precio del platillo"
-                                value={price}
-                                onChange={(event) => setPrice(event.target.value)}
-                                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
-                            />
+              {/* Input Category son varias en formato desplegable*/}
+              <select
+                id="category"
+                value={category}
+                onChange={(event) => setCategory(event.target.value)}
+                className="w-full mt-5 text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+              >
+                <option value="">Categoría</option>
 
-                            {/* Input Category son varias en formato desplegable*/}
-                            <select
-                                id="category"
-                                value={category}
-                                onChange={(event) => setCategory(event.target.value)}
-                                className="w-full mt-5 text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
-                            >
-                                <option value="">Categoría</option>
+                <option value="1">Postres</option>
+                <option value="2">Bebidas</option>
+                <option value="3">Café</option>
+                <option value="4">Salados</option>
+                <option value="5">Almuerzos</option>
+              </select>
 
-                                <option value="1">Postres</option>
-                                <option value="2">Bebidas</option>
-                                <option value="3">Café</option>
-                                <option value="4">Salados</option>
-                                <option value="5">Almuerzos</option>
-                            </select>
+              {/* Input Discount*/}
+              <input
+                id="discount"
+                type="number"
+                placeholder="Descuento del platillo (opcional)"
+                value={discount}
+                onChange={(event) =>
+                  setDiscount(
+                    event.target.value ? Number(event.target.value) : "",
+                  )
+                }
+                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+              />
 
-                            {/* Input Discount*/}
-                            <input
-                                id="discount"
-                                type="number"
-                                placeholder="Descuento del platillo (opcional)"
-                                value={discount}
-                                onChange={(event) => setDiscount(event.target.value ? Number(event.target.value) : "")}
-                                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
-                            />
+              <Link
+                to="/MenuManagment"
+                className="mt-10 flex w-full cursor-pointer items-center justify-center rounded-lg border text-brand-mint-darker border-brand-mint-darker px-4 py-3 font-bold"
+              >
+                Cancelar
+              </Link>
 
-                            <Link
-                                to="/MenuManagment"
-                                className="mt-10 flex w-full cursor-pointer items-center justify-center rounded-lg border text-brand-mint-darker border-brand-mint-darker px-4 py-3 font-bold"
-                            >
-                                Cancelar
-                            </Link>
+  {/* Cambio:boton solo permite una subida de daros por tasnto de la imagen un solo paso mientras llega  a la bd */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="mt-6 w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-white font-bold disabled:opacity-50"
+              >
+                {isSubmitting ? "Guardando..." : "Guardar cambios"}
+              </button>
 
-                            <button
-                                type="submit"
-                                className="mt-6 w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-white font-bold"
-                            >
-                                Guardar cambios
-                            </button>
-                        </form>
 
-                    </div>
-                </section>
+            </form>
+          </div>
+        </section>
 
-                {/* Computadora */}
+        {/* Computadora */}
 
-                <section className="hidden lg:block">
+        <section className="hidden lg:block">
+          <div className="rounded-2xl bg-brand-mint-dark px-8 py-6">
+            <h1 className="text-3xl font-bold text-white">
+              Hola, {firstName + "!" || "Usuario !"}
+            </h1>
+          </div>
 
-                    <div className="rounded-2xl bg-brand-mint-dark px-8 py-6">
-                        <h1 className="text-3xl font-bold text-white">
-                            Hola, {firstName + "!" || "Usuario !"}
-                        </h1>
-                    </div>
+          <h2 className="mt-8 text-2xl font-bold text-black">Menú</h2>
 
-                    <h2 className="mt-8 text-2xl font-bold text-black">
-                        Menú
-                    </h2>
+          <div className="mt-6 flex gap-4">
+            <Link
+              to="/simpleDishForm"
+              className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
+            >
+              <span className="text-base font-bold text-text-primary">
+                Añadir un platillo simple
+              </span>
 
-                    <div className="mt-6 flex gap-4">
+              <GoPlus className="h-6 w-6 shrink-0 text-brand-mint-dark" />
+            </Link>
 
-                        <Link
-                            to="/simpleDishForm"
-                            className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
-                        >
-                            <span className="text-base font-bold text-text-primary">
-                                Añadir un platillo simple
-                            </span>
+            <Link
+              to="/customDishForm"
+              className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
+            >
+              <span className="text-base font-bold text-text-primary">
+                Añadir un platillo personalizado
+              </span>
 
-                            <GoPlus className="h-6 w-6 shrink-0 text-brand-mint-dark" />
-                        </Link>
+              <GoPlus className="h-6 w-6 shrink-0 text-brand-mint-dark" />
+            </Link>
+          </div>
 
-                        <Link
-                            to="/customDishForm"
-                            className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
-                        >
-                            <span className="text-base font-bold text-text-primary">
-                                Añadir un platillo personalizado
-                            </span>
+          <h2 className="mt-8 text-2xl font-bold text-black">
+            Platillo Simple
+          </h2>
 
-                            <GoPlus className="h-6 w-6 shrink-0 text-brand-mint-dark" />
-                        </Link>
+          {/*Form platillo simple*/}
+          <form
+            onSubmit={handleSubmit}
+            className="mt-6 grid max-w-5xl grid-cols-[280px_minmax(0,1fr)] gap-10"
+          >
+            <div>
+              <label
+                htmlFor="image"
+                className="flex h-72 w-full cursor-pointer items-center justify-center rounded-2xl bg-brand-mint-dark transition hover:opacity-90"
+              >
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Vista previa del platillo"
+                    className="h-full w-full rounded-2xl object-cover"
+                  />
+                ) : (
+                  <FiCamera className="h-20 w-20 text-white" />
+                )}
+              </label>
+              <input
+                id="image"
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
 
-                    </div>
+                  if (file) setImage(file);
+                }}
+              />
+            </div>
 
-                    <h2 className="mt-8 text-2xl font-bold text-black">
-                        Platillo Simple
-                    </h2>
+            <div className="flex flex-col gap-4">
+              <input
+                id="name"
+                type="text"
+                placeholder="Nombre"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+              />
+              <input
+                id="description"
+                placeholder="Descripcion del platillo"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                className="w-full text-brand-mint-darker font-bold resize-none rounded-lg border border-border px-4 py-4 focus:border-2 focus:border-brand-brown focus:outline-none"
+              />
+              <input
+                id="price"
+                type="number"
+                placeholder="Precio del platillo"
+                value={price}
+                onChange={(event) => setPrice(event.target.value)}
+                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+              />
+              <select
+                id="category"
+                value={category}
+                onChange={(event) => setCategory(event.target.value)}
+                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+              >
 
-                    {/*Form platillo simple*/}
-                    <form
-                        onSubmit={handleSubmit}
-                        className="mt-6 grid max-w-5xl grid-cols-[280px_minmax(0,1fr)] gap-10">
-                        <div>
-                            <label
-                                htmlFor="image"
-                                className="flex h-72 w-full cursor-pointer items-center justify-center rounded-2xl bg-brand-mint-dark transition hover:opacity-90"
-                            >
-                                {imagePreview ? (
-                                    <img
-                                        src={imagePreview}
-                                        alt="Vista previa del platillo"
-                                        className="h-full w-full rounded-2xl object-cover"
-                                    />
-                                ) : (
-                                    <FiCamera className="h-20 w-20 text-white" />
-                                )}
-                            </label>
-                            <input
-                                id="image"
-                                type="file"
-                                accept="image/*"
-                                className="sr-only"
-                                onChange={(event) => {
-                                    const file = event.target.files?.[0];
+                <option value="">Categoría</option>
+                <option value="1">Postres</option>
+                <option value="2">Bebidas</option>
+                <option value="3">Café</option>
+                <option value="4">Salados</option>
+                <option value="5">Almuerzos</option>
+              </select>
 
-                                    if (file) setImage(file);
-                                }}
-                            />
-                        </div>
+              <input
+                id="discount"
+                type="number"
+                placeholder="Descuento del platillo (opcional)"
+                value={discount}
+                onChange={(event) =>
+                  setDiscount(
+                    event.target.value ? Number(event.target.value) : "",
+                  )
+                }
+                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+              />
 
-                        <div className="flex flex-col gap-4">
-                            <input
-                                id="name"
-                                type="text"
-                                placeholder="Nombre"
-                                value={name}
-                                onChange={(event) => setName(event.target.value)}
-                                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
-                            />
-                            <input
-                                id="description"
-                                placeholder="Descripcion del platillo"
-                                value={description}
-                                onChange={(event) => setDescription(event.target.value)}
-                                className="w-full text-brand-mint-darker font-bold resize-none rounded-lg border border-border px-4 py-4 focus:border-2 focus:border-brand-brown focus:outline-none"
-                            />
-                            <input
-                                id="price"
-                                type="number"
-                                placeholder="Precio del platillo"
-                                value={price}
-                                onChange={(event) => setPrice(event.target.value)}
-                                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
-                            />
-                            <select
-                                id="category"
-                                value={category}
-                                onChange={(event) => setCategory(event.target.value)}
-                                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
-                            >
-                                <option value="">Categoría</option>
+              <div className="mt-6 flex flex-col items-end gap-4">
+                <Link
+                  to="/menuManagment"
+                  className="flex w-90 items-center justify-center rounded-lg border border-brand-mint-dark px-4 py-3 text-brand-mint-dark transition hover:bg-brand-mint-dark/10"
+                >
+                  Cancelar
+                </Link>
 
-                                <option value="1">Postres</option>
-                                <option value="2">Bebidas</option>
-                                <option value="3">Café</option>
-                                <option value="4">Salados</option>
-                                <option value="5">Almuerzos</option>
-                            </select>
 
-                            <input
-                                id="discount"
-                                type="number"
-                                placeholder="Descuento del platillo (opcional)"
-                                value={discount}
-                                onChange={(event) => setDiscount(event.target.value ? Number(event.target.value) : "")}
-                                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
-                            />
+{/* Cambio:boton solo permite una subida de daros por tasnto de la imagen un solo paso mientras llega  a la bd se agrego el [isSubmitting setIsSubmitting]*/}
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="mt-6 w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-white font-bold disabled:opacity-50"
+                >
+                  {isSubmitting ? "Guardando..." : "Guardar cambios"}
+                </button>
 
-                            <div className="mt-6 flex flex-col items-end gap-4">
-                                <Link
-                                    to="/menuManagment"
-                                    className="flex w-90 items-center justify-center rounded-lg border border-brand-mint-dark px-4 py-3 text-brand-mint-dark transition hover:bg-brand-mint-dark/10"
-                                >
-                                    Cancelar
-                                </Link>
-                                <button
-                                    type="submit"
-                                    className="w-90 cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-white transition hover:bg-brand-mint-dark/90"
-                                >
-                                    Guardar cambios
-                                </button>
-                            </div>
-                        </div>
-                    </form>
 
-                </section>
-
-            </main>
-        </DashboardLayout>
-    );
+              </div>
+            </div>
+          </form>
+        </section>
+      </main>
+    </DashboardLayout>
+  );
 }
-
-
-
-
-
-
 
 export default SimpleDishForm;
