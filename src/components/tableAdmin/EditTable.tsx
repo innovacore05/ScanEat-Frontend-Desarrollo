@@ -11,7 +11,7 @@ import { MdOutlineModeEditOutline } from "react-icons/md";
 function EditTable() {
     const [tableNumber, setTableNumber] = useState("");
     const [chairs, setChairs] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, ] = useState(false);
     const [firstName, setFirstName] = useState("");
   
   
