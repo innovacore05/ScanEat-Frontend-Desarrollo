@@ -43,15 +43,13 @@ function QrCodeModal({ isOpen, value, numeroMesa, onClose }: QrCodeModalProps) {
                 context.fillRect(0, 0, canvas.width, canvas.height);
 
 
-                context.drawImage(image, margen, margen);
-
-                // Dibujar el texto "Mesa X" abajo del QR
                 context.font = "bold 22px sans-serif";
                 context.fillStyle = "#1F2937"; 
                 context.textAlign = "center";
                 
-                const textoMesa = numeroMesa ? `Mesa #${numeroMesa}` : "Mesa";
-                context.fillText(textoMesa, canvas.width / 2, image.height + margen + 40);
+                const textoMesa = numeroMesa ? `Mesa# ${numeroMesa}` : "Mesa";
+                context.fillText(textoMesa, canvas.width / 2, margen + 25);
+                context.drawImage(image, margen, margen + espacioTexto);
 
                 // Descargar el archivo JPG
                 const jpgUrl = canvas.toDataURL("image/jpeg", 1.0);
@@ -61,6 +59,7 @@ function QrCodeModal({ isOpen, value, numeroMesa, onClose }: QrCodeModalProps) {
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
+                URLObj.revokeObjectURL(blobURL);
             }
         };
 
@@ -74,7 +73,7 @@ function QrCodeModal({ isOpen, value, numeroMesa, onClose }: QrCodeModalProps) {
                 {/* Texto visible arriba del QR en el modal */}
                 {numeroMesa && (
                     <p className="text-center font-bold text-gray-800 text-lg mb-1">
-                        Mesa #{numeroMesa}
+                        Mesa# {numeroMesa}
                     </p>
                 )}
 

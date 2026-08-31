@@ -3,7 +3,6 @@ import { HiArrowLeft } from "react-icons/hi";
 import { getProfile } from "../../services/authService";
 import DashboardLayout from "../layout/DashboardLayout";
 import { useEffect, useState } from "react";
-import { RiErrorWarningLine } from "react-icons/ri";
 import { IoIosAdd } from "react-icons/io";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 
@@ -11,7 +10,6 @@ import { MdOutlineModeEditOutline } from "react-icons/md";
 function EditTable() {
     const [tableNumber, setTableNumber] = useState("");
     const [chairs, setChairs] = useState("");
-  const [isSubmitting, ] = useState(false);
     const [firstName, setFirstName] = useState("");
   
   
@@ -56,7 +54,7 @@ function EditTable() {
                             type="text"
                             value={tableNumber}
                             onChange={(event) => setTableNumber(event.target.value)}
-                            placeholder="Mesa"
+                            placeholder="Numero de mesa"
                             className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brand-brown"
                         />
                         </div>
@@ -66,7 +64,7 @@ function EditTable() {
                             type="number"
                             value={chairs}
                             onChange={(event) => setChairs(event.target.value)}
-                            placeholder="Sillas"
+                            placeholder="Cantidad de sillas"
                             className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brand-brown"
                         />
                         </div>
@@ -86,11 +84,10 @@ function EditTable() {
                         </Link>
 
                         <button
-                            type="submit"
-                            disabled={isSubmitting}
+                            type="button"
                             className="mt-6 w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-brand-mint-dark/90"
                         >
-                            {isSubmitting ? "Guardando..." : "Guardar"}
+                            Guardar
                         </button>
                         </div>
 
@@ -106,16 +103,6 @@ function EditTable() {
 						</h1>
 					</div>
 
-					<div className="mt-6 flex items-start gap-2 rounded-lg border border-border px-6 py-5">
-						<div>
-							<p className="text-[24px] text-pink-500">Mesa esperando</p>
-							<p className="text-[14px] text-text-primary">
-								Mesa #1 lleva 00:00 esperando
-							</p>
-						</div>
-
-						<RiErrorWarningLine className="ml-auto mt-0.5 h-15 w-15 shrink-0 text-pink-500" />
-					</div>
 
 					<div className="mt-5 px-2 py-2">
 						<div>
@@ -149,24 +136,24 @@ function EditTable() {
 
 							<div className="mt-2 flex flex-1 flex-col gap-3 px-8 py-3">
 
-								<div className="mt-1 font-extrabold text-brand-mint-darker">
+								<div className="mt-1  text-brand-mint-darker">
 									<input
 										id="firstName"
 										name="firstName"
 										type="text"
 										value=""
-										placeholder="Mesa"
+										placeholder="Numero de mesa"
 										className="w-full rounded-lg border border-border px-4 py-2 outline-none focus:border-2 focus:border-brand-brown"
 									/>
 								</div>
 
-								<div className="mt-1 font-extrabold text-brand-mint-darker">
+								<div className="mt-1  text-brand-mint-darker">
 									<input
 										id="firstName"
 										name="firstName"
 										type="number"
 										value=""
-										placeholder="Sillas"
+										placeholder="Cantidad de sillas"
 										className="w-full rounded-lg border border-border px-4 py-2 outline-none focus:border-2 focus:border-brand-brown"
 									/>
 								</div>

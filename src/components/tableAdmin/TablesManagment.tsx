@@ -3,7 +3,6 @@ import { getProfile } from "../../services/authService";
 import { HiArrowLeft } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import DashboardLayout from "../layout/DashboardLayout";
-import { RiErrorWarningLine } from "react-icons/ri";
 import { IoIosAdd } from "react-icons/io";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import { getTables } from "../../services/tableService";
@@ -22,9 +21,12 @@ function TablesManagment() {
 	const [tables, setTables] = useState<TableItem[]>([]);
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 	const [qrValue, setQrValue] = useState("");
+	const [qrTableNumber, setQrTableNumber] = useState<number | string>("");
+	const [selectedTable, setSelectedTable] = useState<TableItem | null>(null);
 
-	const handleShowQr = (tableId: string) => {
-		setQrValue(`https://scaneat.com/menu?mesaId=${tableId}`);
+	const handleShowQr = (tableId: string, tableNumber: number) => {
+		setQrValue(`https://scaneat-frontend-produccion-production.up.railway.app/menu?mesaId=${tableId}`);
+		setQrTableNumber(tableNumber);
 		setIsQrModalOpen(true);
 	};
 
@@ -77,11 +79,18 @@ function TablesManagment() {
 									<p>No hay mesas creadas.</p>
 								) : (
 									tables.map((table) => (
-										<div key={table.id} className="flex items-center justify-between gap-3 rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-brand-mint-dark">
+									<div
+										key={table.id}
+										onClick={() => setSelectedTable(table)}
+										className="flex cursor-pointer items-center justify-between gap-3 rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-brand-mint-dark"
+									>
 											<span>Mesa #{table.tableNumber}</span>
 											<button
 												type="button"
-												onClick={() => handleShowQr(table.id)}
+								onClick={(event) => {
+									event.stopPropagation();
+									handleShowQr(table.id, table.tableNumber);
+								}}
 												className="rounded bg-brand-mint-dark px-3 py-1 text-xs text-white hover:bg-brand-mint-dark/90"
 											>
 												Ver QR
@@ -94,6 +103,7 @@ function TablesManagment() {
 							<QrCodeModal
 								isOpen={isQrModalOpen}
 								value={qrValue}
+								numeroMesa={qrTableNumber}
 								onClose={() => setIsQrModalOpen(false)}
 							/>
 
@@ -128,16 +138,6 @@ function TablesManagment() {
 						</h1>
 					</div>
 
-					<div className="mt-6 flex items-start gap-2 rounded-lg border border-border px-6 py-5">
-						<div>
-							<p className="text-[24px] text-pink-500">Mesa esperando</p>
-							<p className="text-[14px] text-text-primary">
-								Mesa #1 lleva 00:00 esperando
-							</p>
-						</div>
-
-						<RiErrorWarningLine className="ml-auto mt-0.5 h-15 w-15 shrink-0 text-pink-500" />
-					</div>
 
 					<div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-2">
 						<div>
@@ -170,11 +170,18 @@ function TablesManagment() {
 									<p>No hay mesas creadas.</p>
 								) : (
 									tables.map((table) => (
-										<div key={table.id} className="flex items-center justify-between gap-3 rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-brand-mint-dark">
+										<div
+											key={table.id}
+											onClick={() => setSelectedTable(table)}
+											className="flex cursor-pointer items-center justify-between gap-3 rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-brand-mint-dark"
+										>
 											<span>Mesa #{table.tableNumber}</span>
 											<button
 												type="button"
-												onClick={() => handleShowQr(table.id)}
+								onClick={(event) => {
+									event.stopPropagation();
+									handleShowQr(table.id, table.tableNumber);
+								}}
 												className="rounded bg-brand-mint-dark px-3 py-1 text-xs text-white hover:bg-brand-mint-dark/90"
 											>
 												Ver QR
@@ -187,6 +194,7 @@ function TablesManagment() {
 							<QrCodeModal
 								isOpen={isQrModalOpen}
 								value={qrValue}
+								numeroMesa={qrTableNumber}
 								onClose={() => setIsQrModalOpen(false)}
 							/>
 						</div>
@@ -196,12 +204,15 @@ function TablesManagment() {
 								Detalles de mesa
 							</p>
 
-							<div className="mt-2 rounded-lg bg-brand-mint-dark px-4 py-3 text-white">
-								<p className="font-bold text-lg">Mesa #10</p>
-								<p className="mt-2 text-s">Asientos: 4</p>
-								<p className="text-s">Mesero asignado: Luisa</p>
-								<p className="text-s">Zona: Segunda planta</p>
-							</div>
+							{selectedTable ? (
+								<div className="mt-2 rounded-lg bg-brand-mint-dark px-4 py-3 text-white">
+									<p className="text-lg font-bold">Mesa #{selectedTable.tableNumber}</p>
+									<p className="mt-2 text-s">Asientos: {selectedTable.chairNumber}</p>
+									<p className="text-s">Mesero asignado: Luisa</p>
+								</div>
+							) : (
+								<p className="mt-2 text-text-primary">Selecciona una mesa para ver sus detalles.</p>
+							)}
 
 							<div className="mt-5 rounded-lg bg-neutral-100 px-4 py-4">
 								<p className="text-lg font-bold text-text-primary">
