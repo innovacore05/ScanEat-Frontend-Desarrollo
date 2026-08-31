@@ -11,7 +11,7 @@ function EditTable() {
     const [tableNumber, setTableNumber] = useState("");
     const [chairs, setChairs] = useState("");
     const [firstName, setFirstName] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting] = useState(false);
   
     useEffect(() => {
         const loadProfile = async () => {
