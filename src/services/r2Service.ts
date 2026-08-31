@@ -1,1 +1,0 @@
-// R2 cloudflare subida de imagenes conexion 
