@@ -4,27 +4,15 @@ import { getProfile } from "../../services/authService";
 import { getProducts, type Product } from "../../services/productService";
 import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus } from "react-icons/go";
-import { IoSearch } from "react-icons/io5";
-import { LuCakeSlice } from "react-icons/lu";
-import { RiDrinks2Line } from "react-icons/ri";
-import { GiCoffeeCup } from "react-icons/gi";
-import { LuSandwich } from "react-icons/lu";
-import { LuUtensils } from "react-icons/lu";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import DishCard from "../menu/DishCard";
+import CategoryFilter from "../menu/CategoryFilter";
+import SearchBar from "../menu/SearchBar";
 
 
 //limite de muestras
 const PAGE_SIZE = 10;
 
-//categorias asociadas a iconos
-const CATEGORIES = [
-  { id: 1, name: "Postres", icon: LuCakeSlice },
-  { id: 2, name: "Bebidas", icon: RiDrinks2Line },
-  { id: 3, name: "Café", icon: GiCoffeeCup },
-  { id: 4, name: "Salados", icon: LuSandwich },
-  { id: 5, name: "Almuerzos", icon: LuUtensils },
-];
 
 //funcion de carga de datos de platillos/productos desde la bd:
 function ProductList({
@@ -69,44 +57,6 @@ function ProductList({
   );
 }
 
-// filtro de categoria apagado visual
-function CategoryFilter({
-
-selected,
-onSelect,
-disabled,
-
-}:{
-	 selected: number | null;
-  onSelect: (id: number | null) => void;
-  disabled: boolean;
-}){
-	return(
-
-<div>
-      <p className="mb-3 text-base font-bold text-text-primary">Filtro</p>
-      <div className="flex items-center gap-5">
-        {CATEGORIES.map(({ id, name, icon: Icon }) => {
-          const active = !disabled && selected === id;
-          return (
-            <button
-              key={id}
-              type="button"
-              onClick={() => onSelect(active ? null : id)}
-              className={`flex h-14 w-14 items-center justify-center rounded-2xl text-white transition
-                ${active ? "bg-brand-mint-darker" : "bg-brand-mint-dark"}`}
-              aria-label={name}
-              aria-pressed={active}
-            >
-              <Icon className="h-8 w-8" />
-            </button>
-          );
-        })}
-      </div>
-    </div>
-
-	);
-}
 
 
 function MenuManagment() {
@@ -224,16 +174,11 @@ function MenuManagment() {
           </div>
 
           <div className="mt-4 flex flex-col gap-5">
-            <div className="mt-6 flex items-center rounded-lg border border-border bg-white px-4 py-3">
-              <input
-                type="text"
-                placeholder="Buscar un platillo"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-transparent text-base font-normal text-text-primary outline-none placeholder:text-text-primary"
-              /> 
-              <IoSearch className="ml-3 h-6 w-6 shrink-0 text-brand-mint-dark" />
-            </div>
+            <SearchBar
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              className="mt-6 w-full"
+            />
 
             <div className="mt-2">
               <CategoryFilter
@@ -265,25 +210,6 @@ function MenuManagment() {
                 {isLoadingMore ? "Cargando..." : "Cargar más"}
               </button>
             )}
-
-
-  {/* <Link
-              to="/simpleDishForm"
-              className="flex items-center rounded-lg border border-border px-4 py-3"
-            >
-              <span className="text-base font-bold text-text-primary">
-                Añadir un platillo simple
-              </span>
-            </Link>
-
-            <Link
-              to=""
-              className="flex items-center rounded-lg border border-border px-4 py-3"
-            >
-              <span className="text-base font-bold text-text-primary">
-                Añadir un platillo personalizado
-              </span>
-            </Link> */}
 
           </div>
         </section>
@@ -323,17 +249,11 @@ function MenuManagment() {
             </Link>
           </div>
 
-          <div className="mt-8 w-2/5 flex items-center rounded-lg border border-border bg-white px-4 py-3">
-            <input
-              type="text"
-              placeholder="Buscar un platillo"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-transparent text-base font-normal text-text-primary outline-none placeholder:text-text-primary"
-            />
-
-            <IoSearch className="ml-3 h-6 w-6 shrink-0 text-brand-mint-dark" />
-          </div>
+          <SearchBar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            className="mt-8 w-153"
+          />
 
           <div className="mt-6">
             <CategoryFilter
