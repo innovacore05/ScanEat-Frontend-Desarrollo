@@ -31,10 +31,12 @@ function ProductList({
   initialLoading,
   isFiltering,
   products,
+  onDeleteProduct,
 }: {
   initialLoading: boolean;
   isFiltering: boolean;
   products: Product[];
+  onDeleteProduct: (productId: number) => void;
 }) {
   return (
     <div
@@ -58,6 +60,8 @@ function ProductList({
             image={product.image ?? ""}
             rating={product.rating}
             isAdmin={true}
+            productId={product.productId}
+            onDelete={onDeleteProduct}
           />
         </div>
       ))}
@@ -138,8 +142,8 @@ function MenuManagment() {
           search: searchTerm,
 		  //si hay texto en elbuscador se ignora categoria
           category: searchTerm ? undefined : selectedCategory ?? undefined,
-		  limit:PAGE_SIZE,
-		  offset:0
+          limit:PAGE_SIZE,
+          offset:0
         });
         setProducts(data.products);
         setHasMore(data.hasMore);
@@ -156,27 +160,27 @@ function MenuManagment() {
     return () => clearTimeout(timeoutId);
   }, [searchTerm, selectedCategory]);
 
-
-const handleLoadMore=async()=>{
-
-	setIsLoadingMore(true);
-	try{
-		const data = await getProducts({
-search: searchTerm,
+  const handleLoadMore=async()=>{
+    setIsLoadingMore(true);
+    try{
+      const data = await getProducts({
+        search: searchTerm,
         category: searchTerm ? undefined : selectedCategory ?? undefined,
         limit: PAGE_SIZE,
         offset: products.length,
-
-		});
+      });
 		setProducts((prev)=>[...prev, ...data.products]);
 		setHasMore(data.hasMore)
 	}catch(error){
-			 console.error("Error loading more products:", error);
-    } finally {
+      console.error("Error loading more products:", error);
+  } finally {
       setIsLoadingMore(false);
     }
 };
 
+  const handleDeleteProduct = (productId: number) => {
+    setProducts((prev) => prev.filter((product) => product.productId !== productId));
+  };
 
 
   return (
@@ -194,7 +198,8 @@ search: searchTerm,
               <span className="text-[32px] font-bold">Menú</span>
             </Link>
           </div>
-   <div className="mt-6 flex flex-col gap-4">
+          
+          <div className="mt-6 flex flex-col gap-4">
             <Link
               to="/simpleDishForm"
               className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
@@ -217,19 +222,19 @@ search: searchTerm,
               <GoPlus className="h-6 w-6 shrink-0 text-brand-mint-dark" />
             </Link>
           </div>
+
           <div className="mt-4 flex flex-col gap-5">
-  <div className="mt-6 flex items-center rounded-lg border border-border bg-white px-4 py-3">
+            <div className="mt-6 flex items-center rounded-lg border border-border bg-white px-4 py-3">
               <input
                 type="text"
                 placeholder="Buscar un platillo"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-transparent text-base font-normal text-text-primary outline-none placeholder:text-text-primary"
-              />
- 
+              /> 
               <IoSearch className="ml-3 h-6 w-6 shrink-0 text-brand-mint-dark" />
             </div>
- 
+
             <div className="mt-2">
               <CategoryFilter
                 selected={selectedCategory}
@@ -246,19 +251,20 @@ search: searchTerm,
                 initialLoading={initialLoading}
                 isFiltering={isFiltering}
                 products={products}
+                onDeleteProduct={handleDeleteProduct}
               />
             </div>
 
- {hasMore && (
-      <button
-        type="button"
-        onClick={handleLoadMore}
-        disabled={isLoadingMore}
-        className="rounded-lg border border-border py-3 text-base font-bold text-brand-mint-dark disabled:opacity-50"
-      >
-        {isLoadingMore ? "Cargando..." : "Cargar más"}
-      </button>
-    )}
+            {hasMore && (
+              <button
+                type="button"
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="rounded-lg border border-border py-3 text-base font-bold text-brand-mint-dark disabled:opacity-50"
+              >
+                {isLoadingMore ? "Cargando..." : "Cargar más"}
+              </button>
+            )}
 
 
   {/* <Link
@@ -280,7 +286,6 @@ search: searchTerm,
             </Link> */}
 
           </div>
-       
         </section>
 
         {/* Computadora */}
@@ -329,18 +334,18 @@ search: searchTerm,
 
             <IoSearch className="ml-3 h-6 w-6 shrink-0 text-brand-mint-dark" />
           </div>
- <div className="mt-6">
+
+          <div className="mt-6">
             <CategoryFilter
-  selected={selectedCategory}
-  onSelect={(id) => {
-    setSelectedCategory(id);
-    setSearchTerm(""); 
-  }}
-  disabled={!!searchTerm}
-/>
+              selected={selectedCategory}
+              onSelect={(id) => {
+                setSelectedCategory(id);
+                setSearchTerm(""); 
+              }}
+              disabled={!!searchTerm}
+            />
           </div>
   
-
           <h2 className="mt-8 text-2xl font-bold text-black">Menú popular</h2>
 
           {/* Platillos */}
@@ -349,23 +354,22 @@ search: searchTerm,
               initialLoading={initialLoading}
               isFiltering={isFiltering}
               products={products}
+              onDeleteProduct={handleDeleteProduct}
             />
           </div>
 
-{hasMore && (
-  <div className="mt-6 flex justify-center">
-    <button
-      type="button"
-      onClick={handleLoadMore}
-      disabled={isLoadingMore}
-      className="rounded-lg border border-border px-8 py-3 text-base font-bold text-brand-mint-dark disabled:opacity-50"
-    >
-      {isLoadingMore ? "Cargando..." : "Cargar más"}
-    </button>
-  </div>
-)}
-
-
+          {hasMore && (
+            <div className="mt-6 flex justify-center">
+              <button
+                type="button"
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="rounded-lg border border-border px-8 py-3 text-base font-bold text-brand-mint-dark disabled:opacity-50"
+              >
+                {isLoadingMore ? "Cargando..." : "Cargar más"}
+              </button>
+            </div>
+          )}
         </section>
       </main>
     </DashboardLayout>

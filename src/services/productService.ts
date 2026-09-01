@@ -147,8 +147,52 @@ export const createProduct = async ({
     return data;
 };
 
+export const updateProduct = async (
+    id: number,
+    {
+        name,
+        description,
+        price,
+        discount,
+        categoryId,
+        image,
+    }: {
+        name: string;
+        description: string;
+        price: string;
+        discount: number | "";
+        categoryId: number;
+        image: File | null;
+    },
+) => {
+    const formData = new FormData();
 
+    formData.append("productName", name);
+    formData.append("description", description);
+    formData.append("price", price);
+    formData.append("categoryId", String(categoryId));
 
+    if (discount !== "") {
+        formData.append("discount", String(discount));
+    }
+
+    if (image) {
+        formData.append("image", image);
+    }
+
+    const response = await fetch(`${MENU_BASE_URL}/products/${id}`, {
+        method: "PUT",
+        body: formData,
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw data as ApiError;
+    }
+
+    return data;
+};
 
 //crear producto personalizado 
 export const createCustomDish = async ({
@@ -189,6 +233,97 @@ export const createCustomDish = async ({
 
     const response = await fetch(`${MENU_BASE_URL}/products/custom`, {
         method: "POST",
+        headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: formData,
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw data as ApiError;
+    }
+
+    return data;
+};
+
+
+export const deleteProduct = async (id: number) => {
+    const endpoints = [
+        `${MENU_BASE_URL}/products/${id}`,
+        `${MENU_BASE_URL}/products/custom/${id}`,
+    ];
+
+    let lastError: ApiError | unknown = { message: "No se pudo eliminar el platillo" };
+
+    for (const url of endpoints) {
+        try {
+            const response = await fetch(url, {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                return true;
+            }
+
+            const data = await response.json().catch(() => ({}));
+
+            if (response.status === 404 || response.status === 405) {
+                lastError = data as ApiError;
+                continue;
+            }
+
+            throw data as ApiError;
+        } catch (error) {
+            lastError = error as ApiError;
+        }
+    }
+
+    throw lastError as ApiError;
+};
+
+export const updateCustomDish = async (
+    id: number,
+    {
+        name,
+        description,
+        price,
+        discount,
+        categoryId,
+        image,
+        optionGroups,
+    }: {
+        name: string;
+        description: string;
+        price: string;
+        discount: number | "";
+        categoryId: number;
+        image: File | null;
+        optionGroups: { id: string; name: string; options: string[] }[];
+    },
+) => {
+    const token = localStorage.getItem("authToken");
+
+    const formData = new FormData();
+
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("price", price);
+    formData.append("categoryId", String(categoryId));
+
+    if (discount !== "") {
+        formData.append("discount", String(discount));
+    }
+
+    if (image) {
+        formData.append("image", image);
+    }
+
+    formData.append("optionGroups", JSON.stringify(optionGroups));
+
+    const response = await fetch(`${MENU_BASE_URL}/products/custom/${id}`, {
+        method: "PUT",
         headers: {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },

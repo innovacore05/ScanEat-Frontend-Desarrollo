@@ -1,6 +1,8 @@
+import { Link } from "@tanstack/react-router";
 import { FaRegStar, FaStar } from "react-icons/fa6";
 import { FaPlusCircle } from "react-icons/fa";
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
+import { deleteProduct } from "../../services/productService";
 
 interface DishCardProps {
 	name: string;
@@ -9,6 +11,8 @@ interface DishCardProps {
 	image: string;
 	rating: number;
 	isAdmin: boolean;
+	productId?: number;
+	onDelete?: (productId: number) => void;
 }
 
 function DishCard({
@@ -18,7 +22,24 @@ function DishCard({
 	image,
 	rating,
 	isAdmin,
+	productId,
+	onDelete,
 }: DishCardProps) {
+	const handleDelete = async () => {
+		if (!productId) return;
+
+		const confirmed = window.confirm(`¿Deseas eliminar "${name}"?`);
+		if (!confirmed) return;
+
+		try {
+			await deleteProduct(productId);
+			onDelete?.(productId);
+		} catch (error) {
+			console.error("Error deleting product:", error);
+			const apiError = error as { message?: string };
+			alert(apiError.message ?? "No se pudo eliminar el platillo");
+		}
+	};
 	return (
 		<article className="flex w-full flex-row overflow-hidden rounded-2xl bg-white shadow-sm lg:h-90 lg:flex-col">
 
@@ -57,16 +78,28 @@ function DishCard({
 					<div className="flex items-center gap-2">
 						{isAdmin ? (
 							<>
-								<button
-									type="button"
-									className="cursor-pointer text-brand-mint-dark"
-									aria-label={`Editar ${name}`}
-								>
-									<MdOutlineEdit className="h-6 w-6" />
-								</button>
+								{productId ? (
+									<Link
+										to="/simpleDishForm"
+										search={{ mode: "edit", productId }}
+										className="cursor-pointer text-brand-mint-dark"
+										aria-label={`Editar ${name}`}
+									>
+										<MdOutlineEdit className="h-6 w-6" />
+									</Link>
+								) : (
+									<button
+										type="button"
+										className="cursor-pointer text-brand-mint-dark"
+										aria-label={`Editar ${name}`}
+									>
+										<MdOutlineEdit className="h-6 w-6" />
+									</button>
+								)}
 
 								<button
 									type="button"
+									onClick={handleDelete}
 									className="cursor-pointer text-red-600"
 									aria-label={`Eliminar ${name}`}
 								>

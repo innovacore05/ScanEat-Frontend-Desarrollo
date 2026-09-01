@@ -2,9 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import SimpleDishForm from "../components/menuAdmin/SimpleDishForm";
 
 export const Route = createFileRoute("/simpleDishForm")({
+    validateSearch: (search) => ({
+        mode: search.mode === "edit" ? "edit" : "create",
+        productId: search.productId ? Number(search.productId) : undefined,
+    }),
     component: SimpleDishFormPage,
 });
 
 function SimpleDishFormPage() {
-    return <SimpleDishForm />;
+    const { mode, productId } = Route.useSearch();
+
+    return <SimpleDishForm mode={mode} productId={productId} />;
 }

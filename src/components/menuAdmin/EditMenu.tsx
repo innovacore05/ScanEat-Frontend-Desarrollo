@@ -81,6 +81,7 @@ function EditMenu() {
 						image="/img/01Garabatos_Oct25-46.jpg"
 						rating={4}
 						isAdmin={true}
+						productId={1}
 					/>
 
 					<DishCard
@@ -90,6 +91,7 @@ function EditMenu() {
 						image="/img/01Garabatos_Oct25-62.jpg"
 						rating={5}
 						isAdmin={true}
+						productId={2}
 					/>
 				</div>
 

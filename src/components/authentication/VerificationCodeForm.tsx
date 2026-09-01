@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import { BsFillArrowLeftCircleFill } from "react-icons/bs";
 import { Link, useNavigate } from "@tanstack/react-router";
-import {
-  resendLoginCode,
-  resendResetCode,
-  verifyLoginCode,
-  verifyResetCode,
-} from "../../services/authService";
+import {resendLoginCode,resendResetCode,verifyLoginCode,verifyResetCode } from "../../services/authService";
 
 function VerificationCodeForm() {
   const navigate = useNavigate();

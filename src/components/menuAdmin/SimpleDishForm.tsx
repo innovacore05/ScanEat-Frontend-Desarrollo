@@ -5,9 +5,14 @@ import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus } from "react-icons/go";
 import { FiCamera } from "react-icons/fi";
 import DashboardLayout from "../../components/layout/DashboardLayout";
-import { createProduct } from "../../services/productService";
+import {createProduct,getProductById,updateProduct,} from "../../services/productService";
 
-function SimpleDishForm() {
+interface SimpleDishFormProps {
+  mode?: "create" | "edit";
+  productId?: number;
+}
+
+function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -17,6 +22,7 @@ function SimpleDishForm() {
   const [discount, setDiscount] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [firstName, setFirstName] = useState("");
+  const isEditMode = mode === "edit" && Boolean(productId);
 
   {
     /* useEffect para cargar el nombre del usuario */
@@ -49,6 +55,29 @@ function SimpleDishForm() {
     return () => URL.revokeObjectURL(previewUrl);
   }, [image]);
 
+  useEffect(() => {
+    if (!isEditMode || !productId) {
+      return;
+    }
+
+    const loadProduct = async () => {
+      try {
+        const product = await getProductById(productId);
+        setName(product.productName ?? "");
+        setDescription(product.description ?? "");
+        setPrice(String(product.price ?? ""));
+        setCategory(String(product.categoryId ?? ""));
+        setImagePreview(product.image ?? null);
+        setImage(null);
+      } catch (error) {
+        console.error("Error loading product to edit:", error);
+        alert("No se pudo cargar la información del platillo");
+      }
+    };
+
+    loadProduct();
+  }, [isEditMode, productId]);
+
   {
     /* Manejo del envío del formulario */
   }
@@ -73,6 +102,22 @@ function SimpleDishForm() {
     try {
       setIsSubmitting(true);
 
+      
+      if (isEditMode && productId) {
+        const data = await updateProduct(productId, {
+          name: name.trim(),
+          description: description.trim(),
+          price,
+          discount,
+          categoryId: Number(category),
+          image,
+        });
+
+        console.log("Producto actualizado:", data);
+        alert("Platillo actualizado correctamente");
+        return;
+      }
+
       const data = await createProduct({
         name: name.trim(),
         description: description.trim(),
@@ -95,7 +140,7 @@ function SimpleDishForm() {
       setImage(null);
       setImagePreview(null);
     } catch (error) {
-      console.error("Error al crear el platillo:", error);
+      console.error("Error al guardar el platillo:", error);
 
       const apiError = error as {
         message?: string;
@@ -244,7 +289,9 @@ function SimpleDishForm() {
             </h1>
           </div>
 
-          <h2 className="mt-8 text-2xl font-bold text-black">Menú</h2>
+          <h2 className="mt-8 text-2xl font-bold text-black">
+            {isEditMode ? "Editar platillo" : "Menú"}
+          </h2>
 
           <div className="mt-6 flex gap-4">
             <Link
@@ -271,7 +318,7 @@ function SimpleDishForm() {
           </div>
 
           <h2 className="mt-8 text-2xl font-bold text-black">
-            Platillo Simple
+            {isEditMode ? "Platillo Simple - Editar" : "Platillo Simple"}
           </h2>
 
           {/*Form platillo simple*/}
