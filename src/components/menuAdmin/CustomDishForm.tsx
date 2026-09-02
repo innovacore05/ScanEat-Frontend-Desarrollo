@@ -104,7 +104,7 @@ function CustomDishForm() {
           <div className="flex items-center gap-2">
             <Link
               to="/dashboard"
-              className="flex items-center gap-2 text-brand-mint-dark"
+              className="flex items-center gap-2 text-mint-dark"
             >
               <HiArrowLeft className="h-6 w-6" />
 
@@ -120,7 +120,7 @@ function CustomDishForm() {
               {/* Input image*/}
               <label
                 htmlFor="image"
-                className="flex h-48 w-full cursor-pointer items-center justify-center rounded-2xl bg-brand-mint-dark transition hover:opacity-90 mt-6"
+                className="flex h-48 w-full cursor-pointer items-center justify-center rounded-2xl bg-mint-dark transition hover:opacity-90 mt-6"
               >
                 {imagePreview ? (
                   <img
@@ -150,7 +150,7 @@ function CustomDishForm() {
                 placeholder="Nombre"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-2 py-1.5 "
+                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-2 py-1.5 "
               />
 
               {/* Input Description*/}
@@ -160,7 +160,7 @@ function CustomDishForm() {
                 placeholder="Descripción del platillo"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-4"
+                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-4"
               />
 
               {/* Input Price*/}
@@ -170,7 +170,7 @@ function CustomDishForm() {
                 placeholder="Precio del platillo"
                 value={price}
                 onChange={(event) => setPrice(event.target.value)}
-                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
               />
 
               {/* Input Category son varias en formato desplegable*/}
@@ -178,7 +178,7 @@ function CustomDishForm() {
                 id="category"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
               >
                 <option value="">Categoría</option>
                 <option value="1">Postres</option>
@@ -199,13 +199,13 @@ function CustomDishForm() {
                     event.target.value ? Number(event.target.value) : "",
                   )
                 }
-                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
               />
 
               {/* grupos de opciones */}
               <div className="mt-5">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-base font-bold text-brand-mint-darker">
+                  <h3 className="text-base font-bold text-mint-darker">
                     Grupos de opciones
                   </h3>
                   <button
@@ -216,7 +216,7 @@ function CustomDishForm() {
                         { id: crypto.randomUUID(), name: "", options: [] },
                       ]);
                     }}
-                    className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-4   text-brand-mint-darker  hover:border-brand-mint-dark my-5"
+                    className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-4   text-mint-darker  hover:border-mint-dark my-5"
                   >
                     Agregar grupo <GoPlus className="h-4 w-4" />
                   </button>
@@ -237,7 +237,7 @@ function CustomDishForm() {
                             ),
                           );
                         }}
-                        className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                        className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
                       />
                       <button
                         type="button"
@@ -267,7 +267,7 @@ function CustomDishForm() {
                                 ),
                               );
                             }}
-                            className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-4   text-brand-mint-darker  hover:border-brand-mint-dark my-5"
+                            className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-4   text-mint-darker  hover:border-mint-dark my-5"
                           >
                             Agregar opcion +
                           </button>
@@ -297,7 +297,7 @@ function CustomDishForm() {
                                   ),
                                 );
                               }}
-                              className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                              className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
                             />
                             <button
                               type="button"
@@ -330,7 +330,7 @@ function CustomDishForm() {
 
               <Link
                 to="/MenuManagment"
-                className="mt-10 flex w-full cursor-pointer items-center justify-center rounded-lg border text-brand-mint-darker border-brand-mint-darker px-4 py-3 font-bold"
+                className="mt-10 flex w-full cursor-pointer items-center justify-center rounded-lg border text-mint-darker border-mint-darker px-4 py-3 font-bold"
               >
                 Cancelar
               </Link>
@@ -338,7 +338,7 @@ function CustomDishForm() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-6 w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-white font-bold disabled:opacity-50"
+                className="mt-6 w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white font-bold disabled:opacity-50"
               >
                 {isSubmitting ? "Guardando..." : "Guardar cambios"}
               </button>
@@ -349,7 +349,7 @@ function CustomDishForm() {
         {/* Computadora */}
 
         <section className="hidden lg:block">
-          <div className="rounded-2xl bg-brand-mint-dark px-8 py-6">
+          <div className="rounded-2xl bg-mint-dark px-8 py-6">
             <h1 className="text-3xl font-bold text-white">
               Hola, {firstName + "!" || "Usuario !"}
             </h1>
@@ -366,7 +366,7 @@ function CustomDishForm() {
                 Añadir un platillo simple
               </span>
 
-              <GoPlus className="h-6 w-6 shrink-0 text-brand-mint-dark" />
+              <GoPlus className="h-6 w-6 shrink-0 text-mint-dark" />
             </Link>
 
             <Link
@@ -377,7 +377,7 @@ function CustomDishForm() {
                 Añadir un platillo personalizado
               </span>
 
-              <GoPlus className="h-6 w-6 shrink-0 text-brand-mint-dark" />
+              <GoPlus className="h-6 w-6 shrink-0 text-mint-dark" />
             </Link>
           </div>
 
@@ -393,7 +393,7 @@ function CustomDishForm() {
             <div>
               <label
                 htmlFor="image"
-                className="flex h-72 w-full cursor-pointer items-center justify-center rounded-2xl bg-brand-mint-dark transition hover:opacity-90"
+                className="flex h-72 w-full cursor-pointer items-center justify-center rounded-2xl bg-mint-dark transition hover:opacity-90"
               >
                 {imagePreview ? (
                   <img
@@ -425,14 +425,14 @@ function CustomDishForm() {
                 placeholder="Nombre"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               />
               <input
                 id="description"
                 placeholder="Descripcion del platillo"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="w-full text-brand-mint-darker font-bold resize-none rounded-lg border border-border px-4 py-4 focus:border-2 focus:border-brand-brown focus:outline-none"
+                className="w-full text-mint-darker font-bold resize-none rounded-lg border border-border px-4 py-4 focus:border-2 focus:border-brown focus:outline-none"
               />
               <input
                 id="price"
@@ -440,13 +440,13 @@ function CustomDishForm() {
                 placeholder="Precio del platillo"
                 value={price}
                 onChange={(event) => setPrice(event.target.value)}
-                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               />
               <select
                 id="category"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               >
                 <option value="">Categoría</option>
                 <option value="1">Postres</option>
@@ -466,7 +466,7 @@ function CustomDishForm() {
                     event.target.value ? Number(event.target.value) : "",
                   )
                 }
-                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               />
 
               {/* grupos de opciones */}
@@ -474,7 +474,7 @@ function CustomDishForm() {
               <div>
                 <div className="mt-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-base font-bold text-brand-mint-darker">
+                    <h3 className="text-base font-bold text-mint-darker">
                       Grupos de opciones
                     </h3>
 
@@ -486,7 +486,7 @@ function CustomDishForm() {
                           { id: crypto.randomUUID(), name: "", options: [] },
                         ]);
                       }}
-                      className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-3   text-brand-mint-darker  hover:border-brand-mint-dark my-5"
+                      className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-3   text-mint-darker  hover:border-mint-dark my-5"
                     >
                       {" "}
                       Agregar grupo <GoPlus className="h-4 w-4" />
@@ -508,7 +508,7 @@ function CustomDishForm() {
                               ),
                             );
                           }}
-                          className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                          className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
                         />
 
                         <button
@@ -553,7 +553,7 @@ function CustomDishForm() {
                                     ),
                                   );
                                 }}
-                                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
                               />
                               <button
                                 type="button"
@@ -590,7 +590,7 @@ function CustomDishForm() {
                                 ),
                               );
                             }}
-                            className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-4   text-brand-mint-darker  hover:border-brand-mint-dark my-5"
+                            className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-4   text-mint-darker  hover:border-mint-dark my-5"
                           >
                             Agregar opción <GoPlus className="h-4 w-4" />
                           </button>
@@ -604,7 +604,7 @@ function CustomDishForm() {
               <div className="mt-6 flex flex-col items-end gap-4">
                 <Link
                   to="/menuManagment"
-                  className="flex w-90 items-center justify-center rounded-lg border border-brand-mint-dark px-4 py-3 text-brand-mint-dark transition hover:bg-brand-mint-dark/10"
+                  className="flex w-90 items-center justify-center rounded-lg border border-mint-dark px-4 py-3 text-mint-dark transition hover:bg-brand-mint-dark/10"
                 >
                   Cancelar
                 </Link>
@@ -613,7 +613,7 @@ function CustomDishForm() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-90 cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-white transition hover:bg-brand-mint-dark/90 disabled:opacity-50" >
+                  className="w-90 cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white transition hover:bg-mint-dark/90 disabled:opacity-50" >
                   {isSubmitting ? "Guardando..." : "Guardar cambios"}
                 </button>
 

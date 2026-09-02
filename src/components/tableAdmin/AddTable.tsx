@@ -79,7 +79,7 @@ function AddTable() {
 
 	return (
 		<DashboardLayout>
-			<main className="flex min-h-screen flex-col bg-brand-white pt-8 pb-0">
+			<main className="flex min-h-screen flex-col bg-white pt-8 pb-0">
 
 				{/* Celular */}
 				<section className="flex flex-1 flex-col lg:hidden">
@@ -87,7 +87,7 @@ function AddTable() {
 					<div className="flex items-center gap-2">
 						<Link
 							to="/dashboard"
-							className="flex items-center gap-2 px-8 text-brand-mint-dark"
+							className="flex items-center gap-2 px-8 text-mint-dark"
 						>
 							<HiArrowLeft className="h-6 w-6" />
 
@@ -109,7 +109,7 @@ function AddTable() {
 									setCreatedTableId(null);
 								}}
 								placeholder="Numero de mesa"
-								className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brand-brown"
+								className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brown"
 							/>
 						</div>
 
@@ -122,7 +122,7 @@ function AddTable() {
 									setCreatedTableId(null);
 								}}
 								placeholder="Cantidad de sillas"
-								className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brand-brown"
+								className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brown"
 							/>
 						</div>
 
@@ -130,7 +130,7 @@ function AddTable() {
 							<button
 										type="button"
 										onClick={() => handleGenerateQr()}
-										className="flex w-39.75 cursor-pointer justify-center rounded-lg bg-brand-mint-dark px-3 py-2 text-base font-bold text-white hover:bg-brand-mint-dark/90"
+										className="flex w-39.75 cursor-pointer justify-center rounded-lg bg-mint-dark px-3 py-2 text-base font-bold text-white hover:bg-mint-dark/90"
 										disabled={!createdTableId}
 									>
 										Generar QR
@@ -147,7 +147,7 @@ function AddTable() {
 
 							<Link
 								to="/TablesManagment"
-								className="mt-16 block w-full cursor-pointer rounded-lg border border-brand-mint-dark px-4 py-3 text-center text-base font-bold text-brand-mint-dark hover:bg-brand-mint-dark/10"
+								className="mt-16 block w-full cursor-pointer rounded-lg border border-mint-dark px-4 py-3 text-center text-base font-bold text-mint-dark hover:bg-mint-dark/10"
 							>
 								Cancelar
 							</Link>
@@ -156,7 +156,7 @@ function AddTable() {
 								type="button"
 								onClick={handleCreateTable}
 								disabled={isSubmitting}
-								className="mt-6 w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-brand-mint-dark/90"
+								className="mt-6 w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-mint-dark/90"
 							>
 								{isSubmitting ? "Guardando..." : "Guardar"}
 							</button>
@@ -169,7 +169,7 @@ function AddTable() {
 				{/* Computadora */}
 
 				<section className="hidden px-8 py-8 lg:block">
-					<div className="rounded-lg bg-brand-mint-dark px-8 py-8">
+					<div className="rounded-lg bg-mint-dark px-8 py-8">
 						<h1 className="text-2xl font-bold text-white">
 							¡Hola, {firstName || "Usuario"}!
 						</h1>
@@ -180,17 +180,17 @@ function AddTable() {
 					<div className="mt-8 px-2 py-2">
 						<div>
 							<div className="flex items-center justify-between">
-								<h2 className="text-2xl font-bold text-brand-mint-dark">
+								<h2 className="text-2xl font-bold text-mint-dark">
 									Mesas
 								</h2>
 
 								<div className="flex gap-8 items-start">
 									<Link
 										to="/addTable"
-										className="flex items-center justify-between rounded border-4 w-41.75 h-8.5 border-brand-mint px-3 py-2 text-s font-bold text-text-primary"
+										className="flex items-center justify-between rounded border-4 w-41.75 h-8.5 border-mint px-3 py-2 text-s font-bold text-text-primary"
 									>
 										<span>Añadir mesa</span>
-										<IoIosAdd className="text-brand-mint-darker w-8 h-8" />
+										<IoIosAdd className="text-mint-darker w-8 h-8" />
 									</Link>
 
 									<Link
@@ -198,7 +198,7 @@ function AddTable() {
 										className="flex items-center justify-between rounded border w-41.75 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
 									>
 										<span>Editar mesa</span>
-										<MdOutlineModeEditOutline className="text-brand-mint-darker w-6 h-6" />
+										<MdOutlineModeEditOutline className="text-mint-darker w-6 h-6" />
 									</Link>
 								</div>
 							</div>
@@ -208,7 +208,7 @@ function AddTable() {
 									<p>No hay mesas creadas.</p>
 								) : (
 									tables.map((table) => (
-										<div key={table.id} className="rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-brand-mint-dark">
+										<div key={table.id} className="rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-mint-dark">
 											Mesa #{table.tableNumber}
 										</div>
 									))
@@ -222,7 +222,7 @@ function AddTable() {
 
 							<div className="mt-2 flex flex-1 flex-col gap-3 px-8 py-3">
 
-								<div className="mt-1  text-brand-mint-darker">
+								<div className="mt-1  text-mint-darker">
 									<input
 										type="number"
 										value={tableNumber}
@@ -231,11 +231,11 @@ function AddTable() {
 											setCreatedTableId(null);
 										}}
 										placeholder="Numero de mesa"
-										className="w-full rounded-lg border border-border px-4 py-2 outline-none focus:border-2 focus:border-brand-brown"
+										className="w-full rounded-lg border border-border px-4 py-2 outline-none focus:border-2 focus:border-brown"
 									/>
 								</div>
 
-								<div className="mt-1 text-brand-mint-darker">
+								<div className="mt-1 text-mint-darker">
 									<input
 										type="number"
 										value={chairNumber}
@@ -244,7 +244,7 @@ function AddTable() {
 											setCreatedTableId(null);
 										}}
 										placeholder="Cantidad de sillas"
-										className="w-full rounded-lg border border-border px-4 py-2 outline-none focus:border-2 focus:border-brand-brown"
+										className="w-full rounded-lg border border-border px-4 py-2 outline-none focus:border-2 focus:border-brown"
 									/>
 								</div>
 
@@ -252,7 +252,7 @@ function AddTable() {
 									<button
 										type="button"
 										onClick={() => handleGenerateQr()}
-										className="flex w-39.75 cursor-pointer justify-center rounded-lg bg-brand-mint-dark px-3 py-2 text-base font-bold text-white hover:bg-brand-mint-dark/90"
+										className="flex w-39.75 cursor-pointer justify-center rounded-lg bg-mint-dark px-3 py-2 text-base font-bold text-white hover:bg-mint-dark/90"
 										disabled={!createdTableId}
 									>
 										Generar QR
@@ -267,7 +267,7 @@ function AddTable() {
 									<button
 										type="button"
 										onClick={handleCreateTable}
-										className="flex justify-center w-39.75 cursor-pointer rounded-lg bg-brand-mint-dark px-3 py-2 text-base font-bold text-white hover:bg-brand-mint-dark/90"
+										className="flex justify-center w-39.75 cursor-pointer rounded-lg bg-mint-dark px-3 py-2 text-base font-bold text-white hover:bg-mint-dark/90"
 									>
 										{isSubmitting ? "Guardando..." : "Guardar"}
 									</button>

@@ -152,13 +152,13 @@ function VerificationCodeForm() {
         >
           {/* Título y descripción */}
           <div className="flex flex-col gap-4">
-            <h1 className="text-center font-bold text-brand-mint-dark">
+            <h1 className="text-center font-bold text-mint-dark">
               Código de Verificación
             </h1>
 
             <p className="text-center text-text-primary">
               Hemos enviado un código de 6 dígitos a{" "}
-              <span className="text-brand-mint-dark">
+              <span className="text-mint-dark">
                 {email || "tu correo"}
               </span>
             </p>
@@ -176,7 +176,7 @@ function VerificationCodeForm() {
                 value={digit}
                 onChange={(event) => handleChange(index, event.target.value)}
                 onKeyDown={(event) => handleKeyDown(index, event)}
-                className="h-12 w-10 rounded-lg border border-border text-center text-lg font-semibold text-text-primary outline-none focus:border-2 focus:border-brand-brown"
+                className="h-12 w-10 rounded-lg border border-border text-center text-lg font-semibold text-text-primary outline-none focus:border-2 focus:border-brown"
                 aria-label={`Dígito ${index + 1}`}
               />
             ))}
@@ -195,7 +195,7 @@ function VerificationCodeForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="mt-14 w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-center text-white disabled:cursor-not-allowed disabled:opacity-70"
+            className="mt-14 w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-center text-white disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isSubmitting ? "Verificando..." : "Verificar"}
           </button>
@@ -204,14 +204,14 @@ function VerificationCodeForm() {
             type="button"
             onClick={handleResendCode}
             disabled={isResending}
-            className="mt-4 text-sm text-brand-mint-dark disabled:cursor-not-allowed disabled:opacity-70"
+            className="mt-4 text-sm text-mint-dark disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isResending ? "Reenviando..." : "Reenviar código"}
           </button>
 
           <Link
             to={verificationFlow === "login" ? "/login" : "/forgotPassword"}
-            className="mx-auto mt-14 cursor-pointer text-brand-mint"
+            className="mx-auto mt-14 cursor-pointer text-mint"
             aria-label={
               verificationFlow === "login"
                 ? "Volver al inicio de sesión"

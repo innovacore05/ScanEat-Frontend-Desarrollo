@@ -38,8 +38,8 @@ disabled,
               key={id}
               type="button"
               onClick={() => onSelect(active ? null : id)}
-              className={`flex h-14 w-14 items-center justify-center rounded-2xl text-white transition
-                ${active ? "bg-brand-mint-darker" : "bg-brand-mint-dark"}`}
+              className={`cursor-pointer flex h-14 w-14 items-center justify-center rounded-2xl text-white transition
+                ${active ? "bg-mint-darker" : "bg-mint-dark"}`}
               aria-label={name}
               aria-pressed={active}
             >

@@ -64,7 +64,7 @@ function LoginForm() {
 					onSubmit={handleSubmit}
 					className="mx-auto flex w-full max-w-sm flex-col gap-5"
 				>
-					<h1 className="text-center font-bold text-brand-mint-dark">
+					<h1 className="text-center font-bold text-mint-dark">
 						¡Bienvenido de nuevo!
 					</h1>
 
@@ -74,7 +74,7 @@ function LoginForm() {
 						placeholder="Correo electrónico"
 						value={email}
 						onChange={(event) => setEmail(event.target.value)}
-						className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brand-brown focus:outline-none"
+						className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
 					/>
 
 					<div className="flex flex-col gap-1">
@@ -85,13 +85,13 @@ function LoginForm() {
 								placeholder="Contraseña"
 								value={password}
 								onChange={(event) => setPassword(event.target.value)}
-								className="w-full rounded-lg border border-border px-4 py-3 pr-12 focus:border-2 focus:border-brand-brown focus:outline-none"
+								className="w-full rounded-lg border border-border px-4 py-3 pr-12 focus:border-2 focus:border-brown focus:outline-none"
 							/>
 
 							<button
 								type="button"
 								onClick={() => setShowPassword(!showPassword)}
-								className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-brand-mint-dark"
+								className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-mint-dark"
 								aria-label={
 									showPassword
 										? "Ocultar contraseña"
@@ -117,7 +117,7 @@ function LoginForm() {
 					<button
 						type="submit"
 						disabled={isSubmitting}
-						className="w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-white hover:bg-brand-mint-dark/90 disabled:cursor-not-allowed disabled:opacity-70"
+						className="w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white hover:bg-mint-dark/90 disabled:cursor-not-allowed disabled:opacity-70"
 					>
 						{isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
 					</button>
@@ -127,7 +127,7 @@ function LoginForm() {
 						¿No tienes una cuenta?{" "}
 						<Link
 							to="/register"
-							className="text-brand-mint-dark hover:underline text-base"
+							className="text-mint-dark hover:underline text-base"
 						>
 							Regístrate aquí
 						</Link>

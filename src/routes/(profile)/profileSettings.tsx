@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import ProfileSettingsForm from "../components/profile/ProfileSettingsForm";
+import ProfileSettingsForm from "../../components/profile/ProfileSettingsForm";
 
-export const Route = createFileRoute("/profileSettings")({
+export const Route = createFileRoute("/(profile)/profileSettings")({
 	component: ProfileSettingsPage,
 });
 

@@ -117,13 +117,13 @@ function AccountVerificationForm() {
 					className="mx-auto flex w-full max-w-sm flex-col"
 				>
 					<div className="flex flex-col gap-4">
-						<h1 className="text-center text-2xl font-bold text-brand-mint-dark">
+						<h1 className="text-center text-2xl font-bold text-mint-dark">
 							Verificar cuenta
 						</h1>
 
 						<p className="text-center text-text-primary">
 							Hemos enviado un código de 6 dígitos a{" "}
-							<span className="text-brand-mint-dark">
+							<span className="text-mint-dark">
 								{email || "tu correo"}
 							</span>
 						</p>
@@ -144,7 +144,7 @@ function AccountVerificationForm() {
 								onKeyDown={(event) =>
 									handleKeyDown(index, event)
 								}
-								className="h-12 w-10 rounded-lg border border-border text-center text-lg font-semibold text-text-primary outline-none focus:border-2 focus:border-brand-brown"
+								className="h-12 w-10 rounded-lg border border-border text-center text-lg font-semibold text-text-primary outline-none focus:border-2 focus:border-brown"
 								aria-label={`Dígito ${index + 1}`}
 							/>
 						))}
@@ -163,7 +163,7 @@ function AccountVerificationForm() {
 					<button
 						type="submit"
 						disabled={isSubmitting}
-						className="mt-14 w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-center text-white disabled:cursor-not-allowed disabled:opacity-70"
+						className="mt-14 w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-center text-white disabled:cursor-not-allowed disabled:opacity-70"
 					>
 						{isSubmitting ? "Verificando..." : "Verificar"}
 					</button>
@@ -179,7 +179,7 @@ function AccountVerificationForm() {
 
 					<Link
 						to="/register"
-						className="mx-auto mt-14 cursor-pointer text-brand-mint"
+						className="mx-auto mt-14 cursor-pointer text-mint"
 						aria-label="Volver al registro"
 					>
 						<BsFillArrowLeftCircleFill className="h-10 w-10" />

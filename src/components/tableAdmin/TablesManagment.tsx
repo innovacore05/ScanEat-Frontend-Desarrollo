@@ -59,13 +59,13 @@ function TablesManagment() {
 
 	return (
 		<DashboardLayout>
-			<main className="flex min-h-screen flex-col bg-brand-white pt-8 pb-0">
+			<main className="flex min-h-screen flex-col bg-white ">
 				{/* Celular */}
 				<section className="flex flex-1 flex-col lg:hidden">
 					<div className="flex items-center gap-2">
 						<Link
 							to="/dashboard"
-							className="flex items-center gap-2 px-8 text-brand-mint-dark"
+							className="flex items-center gap-2 px-8 text-mint-dark"
 						>
 							<HiArrowLeft className="h-6 w-6" />
 
@@ -82,7 +82,7 @@ function TablesManagment() {
 									<div
 										key={table.id}
 										onClick={() => setSelectedTable(table)}
-										className="flex cursor-pointer items-center justify-between gap-3 rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-brand-mint-dark"
+										className="flex cursor-pointer items-center justify-between gap-3 rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-mint-dark"
 									>
 											<span>Mesa #{table.tableNumber}</span>
 											<button
@@ -91,7 +91,7 @@ function TablesManagment() {
 									event.stopPropagation();
 									handleShowQr(table.id, table.tableNumber);
 								}}
-												className="rounded bg-brand-mint-dark px-3 py-1 text-xs text-white hover:bg-brand-mint-dark/90"
+												className="rounded bg-mint-dark px-3 py-1 text-xs text-white hover:bg-mint-dark/90"
 											>
 												Ver QR
 											</button>
@@ -110,7 +110,7 @@ function TablesManagment() {
 						<div className="mt-auto flex flex-col gap-4">
 							<Link
 								to="/editTable"
-								className="mt-7 w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-brand-mint-dark/90"
+								className="mt-7 w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-mint-dark/90"
 							>
 								<span className="font-bold text-white justify-center flex">
 									Editar mesa
@@ -119,7 +119,7 @@ function TablesManagment() {
 
 							<Link
 								to="/addTable"
-								className="w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-brand-mint-dark/90"
+								className="w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-mint-dark/90"
 							>
 								<span className="font-bold text-white justify-center flex">
 									Añadir mesa
@@ -131,9 +131,9 @@ function TablesManagment() {
 
 				{/* Computadora */}
 
-				<section className="hidden px-8 py-8 lg:block">
-					<div className="rounded-lg bg-brand-mint-dark px-8 py-8">
-						<h1 className="text-2xl font-bold text-white">
+				<section className="hidden px-15 py-15 lg:block">
+					<div className="rounded-2xl bg-mint-dark px-8 py-6">
+						<h1 className="text-3xl font-bold text-white">
 							¡Hola, {firstName || "Usuario"}!
 						</h1>
 					</div>
@@ -142,7 +142,7 @@ function TablesManagment() {
 					<div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-2">
 						<div>
 							<div className="flex items-center justify-between">
-								<h2 className="text-2xl font-bold text-brand-mint-dark">
+								<h2 className="text-2xl font-bold text-mint-dark">
 									Mesas
 								</h2>
 
@@ -152,7 +152,7 @@ function TablesManagment() {
 										className="flex items-center justify-between rounded border w-41.75 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
 									>
 										<span>Añadir mesa</span>
-										<IoIosAdd className="text-brand-mint-darker w-8 h-8" />
+										<IoIosAdd className="text-mint-darker w-8 h-8" />
 									</Link>
 
 									<Link
@@ -160,7 +160,7 @@ function TablesManagment() {
 										className="flex items-center justify-between rounded border w-41.75 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
 									>
 										<span>Editar mesa</span>
-										<MdOutlineModeEditOutline className="text-brand-mint-darker w-6 h-6" />
+										<MdOutlineModeEditOutline className="text-mint-darker w-6 h-6" />
 									</Link>
 								</div>
 							</div>
@@ -173,7 +173,7 @@ function TablesManagment() {
 										<div
 											key={table.id}
 											onClick={() => setSelectedTable(table)}
-											className="flex cursor-pointer items-center justify-between gap-3 rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-brand-mint-dark"
+											className="flex cursor-pointer items-center justify-between gap-3 rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-mint-dark"
 										>
 											<span>Mesa #{table.tableNumber}</span>
 											<button
@@ -182,7 +182,7 @@ function TablesManagment() {
 									event.stopPropagation();
 									handleShowQr(table.id, table.tableNumber);
 								}}
-												className="rounded bg-brand-mint-dark px-3 py-1 text-xs text-white hover:bg-brand-mint-dark/90"
+												className="rounded bg-mint-dark px-3 py-1 text-xs text-white hover:bg-mint-dark/90"
 											>
 												Ver QR
 											</button>
@@ -205,7 +205,7 @@ function TablesManagment() {
 							</p>
 
 							{selectedTable ? (
-								<div className="mt-2 rounded-lg bg-brand-mint-dark px-4 py-3 text-white">
+								<div className="mt-2 rounded-lg bg-mint-dark px-4 py-3 text-white">
 									<p className="text-lg font-bold">Mesa #{selectedTable.tableNumber}</p>
 									<p className="mt-2 text-s">Asientos: {selectedTable.chairNumber}</p>
 									<p className="text-s">Mesero asignado: Luisa</p>

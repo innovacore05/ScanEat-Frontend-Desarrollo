@@ -1,10 +1,6 @@
-import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { getProfile } from "../../services/authService";
 import { getProducts, type Product } from "../../services/productService";
-import { HiArrowLeft } from "react-icons/hi";
-import { GoPlus } from "react-icons/go";
-import DashboardLayout from "../../components/layout/DashboardLayout";
+import { LuShoppingBag } from "react-icons/lu";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
@@ -47,7 +43,7 @@ function ProductList({
             price={product.price}
             image={product.image ?? ""}
             rating={product.rating}
-            isAdmin={true}
+            isAdmin={false}
             productId={product.productId}
             onDelete={onDeleteProduct}
           />
@@ -59,8 +55,7 @@ function ProductList({
 
 
 
-function MenuManagment() {
-  const [firstName, setFirstName] = useState("");
+function MenuClient() {
   const [products, setProducts] = useState<Product[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -70,18 +65,6 @@ function MenuManagment() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
 
-  // cargar el perfil
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const data = await getProfile();
-        setFirstName(data.user.firstName);
-      } catch (error) {
-        console.error("Error loading profile:", error);
-      }
-    };
-    loadProfile();
-  }, []);
 
   //cargar los productos
   useEffect(() => {
@@ -90,7 +73,7 @@ function MenuManagment() {
       try {
         const data = await getProducts({
           search: searchTerm,
-		  //si hay texto en elbuscador se ignora categoria
+          //si hay texto en elbuscador se ignora categoria
           category: searchTerm ? undefined : selectedCategory ?? undefined,
           limit:PAGE_SIZE,
           offset:0
@@ -119,9 +102,9 @@ function MenuManagment() {
         limit: PAGE_SIZE,
         offset: products.length,
       });
-		setProducts((prev)=>[...prev, ...data.products]);
-		setHasMore(data.hasMore)
-	}catch(error){
+        setProducts((prev)=>[...prev, ...data.products]);
+        setHasMore(data.hasMore)
+    }catch(error){
       console.error("Error loading more products:", error);
   } finally {
       setIsLoadingMore(false);
@@ -134,46 +117,16 @@ function MenuManagment() {
 
 
   return (
-    <DashboardLayout>
-      <main className="min-h-screen bg-brand-white  ">
+     
+      <main className="min-h-screen bg-white px-8 pt-8 lg:bg-neutral-50">
         {/* Celular */}
-        <section className="lg:hidden px-8 ">
-          <div className="flex items-center gap-2">
-            <Link
-              to="/dashboard" 
-              className="flex items-center gap-2 text-mint-dark"
-            >
-              <HiArrowLeft className="h-6 w-6" />
+        <section className="lg:hidden">
 
-              <span className="text-[32px] font-bold">Menú</span>
-            </Link>
+            <div className="mt-4 flex flex-col gap-5">
+            <div className="flex justify-start">
+            <img src="/img/logoS.png" alt="Logo del negocio" />
+            
           </div>
-          
-          <div className="mt-6 flex flex-col gap-4">
-            <Link
-              to="/simpleDishForm"
-              className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
-            >
-              <span className="text-base font-bold text-text-primary">
-                Añadir un platillo simple
-              </span>
-
-              <GoPlus className="h-6 w-6 shrink-0 text-mint-dark" />
-            </Link>
-
-            <Link
-              to="/customDishForm"
-              className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
-            >
-              <span className="text-base font-bold text-text-primary">
-                Añadir un platillo personalizado
-              </span>
-
-              <GoPlus className="h-6 w-6 shrink-0 text-mint-dark" />
-            </Link>
-          </div>
-
-          <div className="mt-4 flex flex-col gap-5  bg-white  ">
             <SearchBar
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
@@ -191,8 +144,8 @@ function MenuManagment() {
               />
             </div>
 
-             <div className="-mx-8  bg-neutral-50 px-8 pb-20 rounded-t-4xl ">
-            <div className=" mt-8 flex flex-col gap-4">
+            <div className="-mx-8  bg-neutral-50 px-8 pb-20 rounded-t-4xl ">
+            <div className="mt-8 flex flex-col gap-4">
               <ProductList
                 initialLoading={initialLoading}
                 isFiltering={isFiltering}
@@ -209,47 +162,21 @@ function MenuManagment() {
                 className="w-full mt-6  rounded-2xl bg-white border border-border py-3 text-base font-bold text-mint-dark disabled:opacity-50"
               >
                 {isLoadingMore ? "Cargando..." : "Cargar más"}
-              </button>
+              </button> 
             )}
 
-          </div>
-          </div>
+                  </div>
+                  </div>
         </section>
 
         {/* Computadora */}
 
-        <section className="hidden px-15 py-15 lg:block">
-          <div className="rounded-2xl bg-mint-dark px-8 py-6">
-            <h1 className="text-3xl font-bold text-white ">
-              ¡Hola, {firstName ? `${firstName}!` : "Usuario!"}
-            </h1>
-          </div>
+        <section className="hidden lg:block ml-44 pb-20">
+        
 
           <h2 className="mt-8 text-2xl font-bold text-black">Menú</h2>
 
-          <div className="mt-6 flex gap-4">
-            <Link
-              to="/simpleDishForm"
-              className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
-            >
-              <span className="text-base font-bold text-text-primary">
-                Añadir un platillo simple
-              </span>
-
-              <GoPlus className="h-6 w-6 shrink-0 text-mint-dark" />
-            </Link>
-
-            <Link
-              to="/customDishForm"
-              className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
-            >
-              <span className="text-base font-bold text-text-primary">
-                Añadir un platillo personalizado
-              </span>
-
-              <GoPlus className="h-6 w-6 shrink-0 text-mint-dark" />
-            </Link>
-          </div>
+          
 
           <SearchBar
             searchTerm={searchTerm}
@@ -286,16 +213,30 @@ function MenuManagment() {
                 type="button"
                 onClick={handleLoadMore}
                 disabled={isLoadingMore}
-                className="rounded-lg bg-white border border-border px-8 py-3 text-base font-bold text-mint-dark disabled:opacity-50"
+                className="rounded-lg cursor-pointer bg-white border border-border px-8 py-3 text-base font-bold text-mint-dark disabled:opacity-50"
               >
                 {isLoadingMore ? "Cargando..." : "Cargar más"}
               </button>
-            </div>
+                  </div>
+                  
           )}
-        </section>
+          </section>
+          
+          <div className="fixed bottom-2 left-8 right-8 z-50 flex h-12 items-center justify-center rounded-2xl border border-border bg-white lg:bottom-8 lg:left-10 lg:right-auto lg:top-8 lg:h-[calc(100vh-4rem)] lg:w-20 lg:rounded-full lg:border-0">
+            
+              <img
+                  src="/img/logoS.png"
+                  alt="Logo del negocio"
+                  className="absolute top-6 hidden h-15 w-15 object-contain lg:block"
+              />
+              <div className="absolute cursor-pointer flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2">
+                  <LuShoppingBag className="h-7 w-7 text-white " />
+              </div>
+          </div>
+
       </main>
-    </DashboardLayout>
+    
   );
 }
 
-export default MenuManagment;
+export default MenuClient;

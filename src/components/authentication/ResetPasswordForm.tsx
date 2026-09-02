@@ -83,7 +83,7 @@ function ResetPasswordForm() {
 					className="mx-auto flex w-full max-w-sm flex-col"
 				>
 					<div className="flex flex-col gap-4">
-						<h1 className="text-center font-bold text-brand-mint-dark">
+						<h1 className="text-center font-bold text-mint-dark">
 							Cambiar contraseña
 						</h1>
 
@@ -103,7 +103,7 @@ function ResetPasswordForm() {
 									setPassword(event.target.value);
 									setError("");
 								}}
-								className="w-full rounded-lg border border-border px-4 py-3 pr-12 focus:border-2 focus:border-brand-brown focus:outline-none"
+								className="w-full rounded-lg border border-border px-4 py-3 pr-12 focus:border-2 focus:border-brown focus:outline-none"
 							/>
 
 							<button
@@ -111,7 +111,7 @@ function ResetPasswordForm() {
 								onClick={() =>
 									setShowPassword(!showPassword)
 								}
-								className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-brand-mint-dark"
+								className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-mint-dark"
 								aria-label={
 									showPassword
 										? "Ocultar contraseña"
@@ -128,7 +128,7 @@ function ResetPasswordForm() {
 
 						<div className="flex flex-col gap-4">
 							<div className="flex items-center justify-center gap-2">
-								<FaRegCheckCircle className="text-brand-mint-dark" />
+								<FaRegCheckCircle className="text-mint-dark" />
 
 								<p className="text-text-primary">
 									Tu contraseña debe contener:
@@ -152,14 +152,14 @@ function ResetPasswordForm() {
 					<button
 						type="submit"
 						disabled={isSubmitting}
-						className="mt-14 w-full cursor-pointer whitespace-nowrap rounded-lg bg-brand-mint-dark px-4 py-3 text-center text-white disabled:cursor-not-allowed disabled:opacity-70"
+						className="mt-14 w-full cursor-pointer whitespace-nowrap rounded-lg bg-mint-dark px-4 py-3 text-center text-white disabled:cursor-not-allowed disabled:opacity-70"
 					>
 						{isSubmitting ? "Cambiando..." : "Cambiar contraseña"}
 					</button>
 
 					<Link
 						to="/verificationCode"
-						className="mx-auto mt-14 cursor-pointer text-brand-mint"
+						className="mx-auto mt-14 cursor-pointer text-mint"
 						aria-label="Volver al código de verificación"
 					>
 						<BsFillArrowLeftCircleFill className="h-10 w-10" />

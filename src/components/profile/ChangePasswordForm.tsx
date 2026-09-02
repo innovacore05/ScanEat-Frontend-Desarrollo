@@ -77,15 +77,15 @@ setIsSubmitting(true);
   }
 
   return (
-    <main className="min-h-screen bg-brand-white">
-      <div className="h-20 bg-brand-mint" />
+    <main className="min-h-screen bg-white">
+      <div className="h-20 bg-mint" />
 
       <section className="-mt-10 min-h-[calc(100vh-5rem)] rounded-t-[40px] bg-white px-6 py-10">
         <form
           className="mx-auto flex w-full max-w-sm flex-col"
           onSubmit={handleSubmit}
         >
-          <h1 className="text-center text-[32px] font-bold text-brand-mint-dark">
+          <h1 className="text-center text-[32px] font-bold text-mint-dark">
             Cambiar contraseña
           </h1>
 
@@ -100,13 +100,13 @@ setIsSubmitting(true);
                 setCurrentPassword(event.target.value);
                 setError("");
               }}
-              className="w-full rounded-lg border border-border px-4 py-3 pr-12 text-text-primary outline-none focus:border-2 focus:border-brand-brown"
+              className="w-full rounded-lg border border-border px-4 py-3 pr-12 text-text-primary outline-none focus:border-2 focus:border-brown"
             />
 
             <button
               type="button"
               onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-brand-mint-dark"
+              className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-mint-dark"
             >
               {showCurrentPassword ? <ImEye /> : <ImEyeBlocked />}
             </button>
@@ -123,13 +123,13 @@ setIsSubmitting(true);
                 setNewPassword(event.target.value);
                 setError("");
               }}
-              className="w-full rounded-lg border border-border px-4 py-3 pr-12 text-text-primary outline-none focus:border-2 focus:border-brand-brown"
+              className="w-full rounded-lg border border-border px-4 py-3 pr-12 text-text-primary outline-none focus:border-2 focus:border-brown"
             />
 
             <button
               type="button"
               onClick={() => setShowNewPassword(!showNewPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-brand-mint-dark"
+              className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-mint-dark"
             >
               {showNewPassword ? <ImEye /> : <ImEyeBlocked />}
             </button>
@@ -146,13 +146,13 @@ setIsSubmitting(true);
                 setConfirmPassword(event.target.value);
                 setError("");
               }}
-              className="w-full rounded-lg border border-border px-4 py-3 pr-12 text-text-primary outline-none focus:border-2 focus:border-brand-brown"
+              className="w-full rounded-lg border border-border px-4 py-3 pr-12 text-text-primary outline-none focus:border-2 focus:border-brown"
             />
 
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-brand-mint-dark"
+              className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-mint-dark"
             >
               {showConfirmPassword ? <ImEye /> : <ImEyeBlocked />}
             </button>
@@ -164,14 +164,14 @@ setIsSubmitting(true);
 
           <button
             type="submit"
-            className="mt-12 w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-center text-base font-bold text-white hover:bg-brand-mint-dark/90"
+            className="mt-12 w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-center text-base font-bold text-white hover:bg-mint-dark/90"
           >
            {isSubmitting ? "Cambiando..." : "Cambiar contraseña"}
           </button>
 
           <Link
             to="/profileSettings"
-            className="mt-6 block w-full cursor-pointer rounded-lg border border-brand-mint-dark px-4 py-3 text-center text-base font-bold text-brand-mint-dark hover:bg-brand-mint-dark/10"
+            className="mt-6 block w-full cursor-pointer rounded-lg border border-mint-dark px-4 py-3 text-center text-base font-bold text-mint-dark hover:bg-mint-dark/10"
           >
             Cancelar
           </Link>

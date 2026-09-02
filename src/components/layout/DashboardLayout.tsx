@@ -153,28 +153,19 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
             </span>
           </Link>
 
-          {/* regresa a la pagina informativa */}
-          {/* <a
-    href={import.meta.env.VITE_LANDING_URL}
-    className="flex items-center gap-4 py-3 pb-8 text-left text-text-primary border-b border-neutral-300"
->
-    <LuLogOut className="h-6 w-6 shrink-0" />
-    <span className="text-[15px] font-bold cursor-pointer">
-        Cerrar sesión
-    </span>
-</a> */}
+
         </div>
 
         <div className="mt-10  pt-5">
           <div className="flex items-center gap-3">
-            <FaRegCircleUser className="h-9 w-9 shrink-0 text-brand-mint-darker" />
+            <FaRegCircleUser className="h-9 w-9 shrink-0 text-mint-darker" />
 
             <div className="min-w-0">
-              <p className="truncate font-bold text-brand-mint-darker">
+              <p className="truncate font-bold text-mint-darker">
                 {firstName || "Usuario"} {lastName}
               </p>
 
-              <p className="truncate text-sm text-brand-mint-darker">
+              <p className="truncate text-sm text-mint-darker">
                 {email || "correo electrónico"}
               </p>
             </div>
@@ -196,7 +187,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
                 setIsMenuOpen(!isMenuOpen);
                 setIsProfileMenuOpen(false);
               }}
-              className="cursor-pointer text-brand-mint-dark"
+              className="cursor-pointer text-mint-dark"
               aria-label="Abrir menú"
             >
               <GiHamburgerMenu className="h-8 w-8" />
@@ -208,7 +199,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
                 setIsProfileMenuOpen(!isProfileMenuOpen);
                 setIsMenuOpen(false);
               }}
-              className="cursor-pointer text-brand-mint-dark"
+              className="cursor-pointer text-mint-dark"
               aria-label="Abrir perfil"
             >
               <FaRegCircleUser className="h-8 w-8" />
@@ -233,7 +224,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
             }`}
           />
           <div
-            className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col rounded-r-[30px] bg-brand-mint-dark px-8 pt-10 transition-transform duration-300 ease-in-out lg:hidden ${
+            className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col rounded-r-[30px] bg-mint-dark px-8 pt-10 transition-transform duration-300 ease-in-out lg:hidden ${
               isMenuOpen ? "translate-x-0" : "-translate-x-full"
             }`}
           >
@@ -314,7 +305,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
     />
 
     <div
-        className={`fixed right-0 top-0 z-50 flex h-screen w-72 flex-col items-center rounded-l-[30px] bg-brand-mint-dark px-8 pt-10 transition-transform duration-300 ease-in-out lg:hidden ${
+        className={`fixed right-0 top-0 z-50 flex h-screen w-72 flex-col items-center rounded-l-[30px] bg-mint-dark px-8 pt-10 transition-transform duration-300 ease-in-out lg:hidden ${
             isProfileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
     >

@@ -23,7 +23,7 @@ function SearchBar({
 				className="w-full bg-transparent text-base font-normal text-text-primary outline-none placeholder:text-text-primary"
 			/>
 
-			<IoSearch className="ml-3 h-6 w-6 shrink-0 text-brand-mint-dark" />
+			<IoSearch className="ml-3 h-6 w-6 shrink-0 text-mint-dark" />
 		</div>
 	);
 }

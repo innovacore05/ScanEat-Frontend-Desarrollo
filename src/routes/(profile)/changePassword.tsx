@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import ChangePasswordForm from "../components/profile/ChangePasswordForm";
+import ChangePasswordForm from "../../components/profile/ChangePasswordForm";
 
-export const Route = createFileRoute("/changePassword")({
+export const Route = createFileRoute("/(profile)/changePassword")({
 	component: ChangePasswordPage,
 });
 

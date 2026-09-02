@@ -7,7 +7,7 @@ import { Link } from "@tanstack/react-router";
 
 function UnexpectedIssueFormV() {
     return (
-        <main className="min-h-screen bg-brand-mint flex items-center justify-center px-6">
+        <main className="min-h-screen bg-mint flex items-center justify-center px-6">
             <section className="w-full max-w-sm rounded-[40px] bg-white px-8 py-22">
                 <div className="flex flex-col items-center text-center">
                     
@@ -23,7 +23,7 @@ function UnexpectedIssueFormV() {
 
                     <Link
                         to="/accountVerification"
-                        className="mt-8 cursor-pointer text-brand-mint"
+                        className="mt-8 cursor-pointer text-mint"
                         aria-label="Volver a verificar cuenta"
                     >
                         <BsFillArrowLeftCircleFill className="h-10 w-10" />

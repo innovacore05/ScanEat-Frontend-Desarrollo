@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { FaRegStar, FaStar } from "react-icons/fa6";
-import { FaPlusCircle } from "react-icons/fa";
+import { BsFillPlusCircleFill } from "react-icons/bs";
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
 import { deleteProduct } from "../../services/productService";
 
@@ -41,7 +41,7 @@ function DishCard({
 		}
 	};
 	return (
-		<article className="flex w-full flex-row overflow-hidden rounded-2xl bg-white shadow-sm lg:h-90 lg:flex-col">
+		<article className="flex w-full flex-row overflow-hidden rounded-2xl bg-white shadow-sm lg:h-105 lg:flex-col">
 
             <div className="w-32 shrink-0 self-stretch lg:h-48 lg:w-full">
 				<img
@@ -52,7 +52,7 @@ function DishCard({
 			</div>
 
 			<div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center px-4 py-3">
-				<h2 className="text-base font-bold text-brand-mint-darker">
+				<h2 className="text-base font-bold text-mint-darker">
 					{name}
 				</h2>
 
@@ -60,7 +60,7 @@ function DishCard({
 					{description}
 				</p>
 
-				<span className="mt-2 text-base font-bold text-brand-mint-darker">
+				<span className="mt-2 text-base font-bold text-mint-darker">
 					₡{price.toLocaleString("es-CR")}
 				</span>
 
@@ -73,7 +73,9 @@ function DishCard({
 								<FaRegStar key={star} />
 							),
 						)}
+						
 					</div>
+					
 
 					<div className="flex items-center gap-2">
 						{isAdmin ? (
@@ -82,7 +84,7 @@ function DishCard({
 									<Link
 										to="/simpleDishForm"
 										search={{ mode: "edit", productId }}
-										className="cursor-pointer text-brand-mint-dark"
+										className="cursor-pointer text-mint-dark"
 										aria-label={`Editar ${name}`}
 									>
 										<MdOutlineEdit className="h-6 w-6" />
@@ -90,7 +92,7 @@ function DishCard({
 								) : (
 									<button
 										type="button"
-										className="cursor-pointer text-brand-mint-dark"
+										className="cursor-pointer text-mint-dark"
 										aria-label={`Editar ${name}`}
 									>
 										<MdOutlineEdit className="h-6 w-6" />
@@ -109,14 +111,19 @@ function DishCard({
 						) : (
 							<button
 								type="button"
-								className="cursor-pointer text-brand-mint-dark"
+								className="cursor-pointer text-mint-dark"
 								aria-label={`Agregar ${name}`}
 							>
-								<FaPlusCircle className="h-7 w-7" />
+								<BsFillPlusCircleFill className="h-10 w-10" />
 							</button>
 						)}
 					</div>
 				</div>
+				<button
+					type="button"
+					className="mt-2 self-start text-sm font-bold text-brown lg: cursor-pointer lg: hover:underline">
+					Ver más
+				</button>
 			</div>
 		</article>
 	);

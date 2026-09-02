@@ -160,7 +160,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
           <div className="flex items-center gap-2">
             <Link
               to="/dashboard"
-              className="flex items-center gap-2 text-brand-mint-dark"
+              className="flex items-center gap-2 text-mint-dark"
             >
               <HiArrowLeft className="h-6 w-6" />
 
@@ -174,7 +174,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
               {/* Input image*/}
               <label
                 htmlFor="image"
-                className="flex h-48 w-full cursor-pointer items-center justify-center rounded-2xl bg-brand-mint-dark transition hover:opacity-90 mt-6"
+                className="flex h-48 w-full cursor-pointer items-center justify-center rounded-2xl bg-mint-dark transition hover:opacity-90 mt-6"
               >
                 {imagePreview ? (
                   <img
@@ -206,7 +206,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 placeholder="Nombre"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-2 py-1.5 "
+                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-2 py-1.5 "
               />
 
               {/* Input Description*/}
@@ -216,7 +216,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 placeholder="Descripción del platillo"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-4"
+                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-4"
               />
 
               {/* Input Price*/}
@@ -226,7 +226,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 placeholder="Precio del platillo"
                 value={price}
                 onChange={(event) => setPrice(event.target.value)}
-                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
               />
 
               {/* Input Category son varias en formato desplegable*/}
@@ -234,7 +234,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 id="category"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="w-full mt-5 text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+                className="w-full mt-5 text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               >
                 <option value="">Categoría</option>
 
@@ -256,12 +256,12 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                     event.target.value ? Number(event.target.value) : "",
                   )
                 }
-                className="mt-5 w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
               />
 
               <Link
                 to="/MenuManagment"
-                className="mt-10 flex w-full cursor-pointer items-center justify-center rounded-lg border text-brand-mint-darker border-brand-mint-darker px-4 py-3 font-bold"
+                className="mt-10 flex w-full cursor-pointer items-center justify-center rounded-lg border text-mint-darker border-mint-darker px-4 py-3 font-bold"
               >
                 Cancelar
               </Link>
@@ -270,7 +270,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-6 w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-white font-bold disabled:opacity-50"
+                className="mt-6 w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white font-bold disabled:opacity-50"
               >
                 {isSubmitting ? "Guardando..." : "Guardar cambios"}
               </button>
@@ -283,7 +283,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
         {/* Computadora */}
 
         <section className="hidden lg:block">
-          <div className="rounded-2xl bg-brand-mint-dark px-8 py-6">
+          <div className="rounded-2xl bg-mint-dark px-8 py-6">
             <h1 className="text-3xl font-bold text-white">
               Hola, {firstName + "!" || "Usuario !"}
             </h1>
@@ -302,7 +302,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 Añadir un platillo simple
               </span>
 
-              <GoPlus className="h-6 w-6 shrink-0 text-brand-mint-dark" />
+              <GoPlus className="h-6 w-6 shrink-0 text-mint-dark" />
             </Link>
 
             <Link
@@ -329,7 +329,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
             <div>
               <label
                 htmlFor="image"
-                className="flex h-72 w-full cursor-pointer items-center justify-center rounded-2xl bg-brand-mint-dark transition hover:opacity-90"
+                className="flex h-72 w-full cursor-pointer items-center justify-center rounded-2xl bg-mint-dark transition hover:opacity-90"
               >
                 {imagePreview ? (
                   <img
@@ -361,14 +361,14 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 placeholder="Nombre"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               />
               <input
                 id="description"
                 placeholder="Descripcion del platillo"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="w-full text-brand-mint-darker font-bold resize-none rounded-lg border border-border px-4 py-4 focus:border-2 focus:border-brand-brown focus:outline-none"
+                className="w-full text-mint-darker font-bold resize-none rounded-lg border border-border px-4 py-4 focus:border-2 focus:border-brown focus:outline-none"
               />
               <input
                 id="price"
@@ -376,13 +376,13 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 placeholder="Precio del platillo"
                 value={price}
                 onChange={(event) => setPrice(event.target.value)}
-                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               />
               <select
                 id="category"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               >
 
                 <option value="">Categoría</option>
@@ -403,13 +403,13 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                     event.target.value ? Number(event.target.value) : "",
                   )
                 }
-                className="w-full text-brand-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brand-brown focus:outline-none"
+                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               />
 
               <div className="mt-6 flex flex-col items-end gap-4">
                 <Link
                   to="/menuManagment"
-                  className="flex w-90 items-center justify-center rounded-lg border border-brand-mint-dark px-4 py-3 text-brand-mint-dark transition hover:bg-brand-mint-dark/10"
+                  className="flex w-90 items-center justify-center rounded-lg border border-mint-dark px-4 py-3 text-mint-dark transition hover:bg-mint-dark/10"
                 >
                   Cancelar
                 </Link>
@@ -419,7 +419,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="mt-6 w-90 cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-white font-bold disabled:opacity-50"
+                  className="mt-6 w-90 cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white font-bold disabled:opacity-50"
                 >
                   {isSubmitting ? "Guardando..." : "Guardar cambios"}
                 </button>

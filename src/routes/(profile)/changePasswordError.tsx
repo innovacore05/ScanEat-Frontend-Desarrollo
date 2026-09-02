@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import ChangePasswordError from "../components/profile/ChangePasswordError";
+import ChangePasswordError from "../../components/profile/ChangePasswordError";
 
-export const Route = createFileRoute("/changePasswordError")({
+export const Route = createFileRoute("/(profile)/changePasswordError")({
 	component: ChangePasswordErrorPage,
 });
 

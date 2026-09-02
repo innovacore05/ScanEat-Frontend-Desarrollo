@@ -10,98 +10,34 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AddtableRouteImport } from './routes/Addtable'
-import { Route as TablesManagmentRouteImport } from './routes/TablesManagment'
-import { Route as AccountSuccessRouteImport } from './routes/accountSuccess'
-import { Route as AccountVerificationRouteImport } from './routes/accountVerification'
-import { Route as ChangePasswordRouteImport } from './routes/changePassword'
-import { Route as ChangePasswordErrorRouteImport } from './routes/changePasswordError'
-import { Route as ChangePasswordSuccessRouteImport } from './routes/changePasswordSuccess'
-import { Route as CustomDishFormRouteImport } from './routes/customDishForm'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as EditMenuRouteImport } from './routes/editMenu'
-import { Route as EditTableRouteImport } from './routes/editTable'
-import { Route as ForgotPasswordRouteImport } from './routes/forgotPassword'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as MenuRouteImport } from './routes/menu'
-import { Route as MenuManagmentRouteImport } from './routes/menuManagment'
-import { Route as PasswordSuccessRouteImport } from './routes/passwordSuccess'
-import { Route as ProfileSettingsRouteImport } from './routes/profileSettings'
-import { Route as RegisterRouteImport } from './routes/register'
-import { Route as ResetPasswordRouteImport } from './routes/resetPassword'
-import { Route as SimpleDishFormRouteImport } from './routes/simpleDishForm'
-import { Route as UnexpectedIssueRouteImport } from './routes/unexpectedIssue'
-import { Route as UnexpectedIssueVRouteImport } from './routes/unexpectedIssueV'
-import { Route as VerificationCodeRouteImport } from './routes/verificationCode'
+import { Route as authenticationAccountSuccessRouteImport } from './routes/(authentication)/accountSuccess'
+import { Route as authenticationAccountVerificationRouteImport } from './routes/(authentication)/accountVerification'
+import { Route as authenticationForgotPasswordRouteImport } from './routes/(authentication)/forgotPassword'
+import { Route as authenticationLoginRouteImport } from './routes/(authentication)/login'
+import { Route as authenticationPasswordSuccessRouteImport } from './routes/(authentication)/passwordSuccess'
+import { Route as authenticationRegisterRouteImport } from './routes/(authentication)/register'
+import { Route as authenticationResetPasswordRouteImport } from './routes/(authentication)/resetPassword'
+import { Route as authenticationUnexpectedIssueRouteImport } from './routes/(authentication)/unexpectedIssue'
+import { Route as authenticationUnexpectedIssueVRouteImport } from './routes/(authentication)/unexpectedIssueV'
+import { Route as authenticationVerificationCodeRouteImport } from './routes/(authentication)/verificationCode'
+import { Route as dashboardDashboardRouteImport } from './routes/(dashboard)/dashboard'
+import { Route as menuAdminCustomDishFormRouteImport } from './routes/(menuAdmin)/customDishForm'
+import { Route as menuAdminEditMenuRouteImport } from './routes/(menuAdmin)/editMenu'
+import { Route as menuAdminMenuManagmentRouteImport } from './routes/(menuAdmin)/menuManagment'
+import { Route as menuAdminSimpleDishFormRouteImport } from './routes/(menuAdmin)/simpleDishForm'
+import { Route as menuClientMenuClientRouteImport } from './routes/(menuClient)/menuClient'
+import { Route as profileChangePasswordRouteImport } from './routes/(profile)/changePassword'
+import { Route as profileChangePasswordErrorRouteImport } from './routes/(profile)/changePasswordError'
+import { Route as profileChangePasswordSuccessRouteImport } from './routes/(profile)/changePasswordSuccess'
+import { Route as profileProfileSettingsRouteImport } from './routes/(profile)/profileSettings'
+import { Route as tableAdminAddtableRouteImport } from './routes/(tableAdmin)/Addtable'
+import { Route as tableAdminTablesManagmentRouteImport } from './routes/(tableAdmin)/TablesManagment'
+import { Route as tableAdminEditTableRouteImport } from './routes/(tableAdmin)/editTable'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AddtableRoute = AddtableRouteImport.update({
-  id: '/Addtable',
-  path: '/Addtable',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TablesManagmentRoute = TablesManagmentRouteImport.update({
-  id: '/TablesManagment',
-  path: '/TablesManagment',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AccountSuccessRoute = AccountSuccessRouteImport.update({
-  id: '/accountSuccess',
-  path: '/accountSuccess',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AccountVerificationRoute = AccountVerificationRouteImport.update({
-  id: '/accountVerification',
-  path: '/accountVerification',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChangePasswordRoute = ChangePasswordRouteImport.update({
-  id: '/changePassword',
-  path: '/changePassword',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChangePasswordErrorRoute = ChangePasswordErrorRouteImport.update({
-  id: '/changePasswordError',
-  path: '/changePasswordError',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChangePasswordSuccessRoute = ChangePasswordSuccessRouteImport.update({
-  id: '/changePasswordSuccess',
-  path: '/changePasswordSuccess',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CustomDishFormRoute = CustomDishFormRouteImport.update({
-  id: '/customDishForm',
-  path: '/customDishForm',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EditMenuRoute = EditMenuRouteImport.update({
-  id: '/editMenu',
-  path: '/editMenu',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EditTableRoute = EditTableRouteImport.update({
-  id: '/editTable',
-  path: '/editTable',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: '/forgotPassword',
-  path: '/forgotPassword',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MenuRoute = MenuRouteImport.update({
@@ -109,237 +45,325 @@ const MenuRoute = MenuRouteImport.update({
   path: '/menu',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MenuManagmentRoute = MenuManagmentRouteImport.update({
-  id: '/menuManagment',
-  path: '/menuManagment',
+const authenticationAccountSuccessRoute =
+  authenticationAccountSuccessRouteImport.update({
+    id: '/(authentication)/accountSuccess',
+    path: '/accountSuccess',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const authenticationAccountVerificationRoute =
+  authenticationAccountVerificationRouteImport.update({
+    id: '/(authentication)/accountVerification',
+    path: '/accountVerification',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const authenticationForgotPasswordRoute =
+  authenticationForgotPasswordRouteImport.update({
+    id: '/(authentication)/forgotPassword',
+    path: '/forgotPassword',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const authenticationLoginRoute = authenticationLoginRouteImport.update({
+  id: '/(authentication)/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PasswordSuccessRoute = PasswordSuccessRouteImport.update({
-  id: '/passwordSuccess',
-  path: '/passwordSuccess',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileSettingsRoute = ProfileSettingsRouteImport.update({
-  id: '/profileSettings',
-  path: '/profileSettings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RegisterRoute = RegisterRouteImport.update({
-  id: '/register',
+const authenticationPasswordSuccessRoute =
+  authenticationPasswordSuccessRouteImport.update({
+    id: '/(authentication)/passwordSuccess',
+    path: '/passwordSuccess',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const authenticationRegisterRoute = authenticationRegisterRouteImport.update({
+  id: '/(authentication)/register',
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/resetPassword',
-  path: '/resetPassword',
+const authenticationResetPasswordRoute =
+  authenticationResetPasswordRouteImport.update({
+    id: '/(authentication)/resetPassword',
+    path: '/resetPassword',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const authenticationUnexpectedIssueRoute =
+  authenticationUnexpectedIssueRouteImport.update({
+    id: '/(authentication)/unexpectedIssue',
+    path: '/unexpectedIssue',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const authenticationUnexpectedIssueVRoute =
+  authenticationUnexpectedIssueVRouteImport.update({
+    id: '/(authentication)/unexpectedIssueV',
+    path: '/unexpectedIssueV',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const authenticationVerificationCodeRoute =
+  authenticationVerificationCodeRouteImport.update({
+    id: '/(authentication)/verificationCode',
+    path: '/verificationCode',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const dashboardDashboardRoute = dashboardDashboardRouteImport.update({
+  id: '/(dashboard)/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SimpleDishFormRoute = SimpleDishFormRouteImport.update({
-  id: '/simpleDishForm',
+const menuAdminCustomDishFormRoute = menuAdminCustomDishFormRouteImport.update({
+  id: '/(menuAdmin)/customDishForm',
+  path: '/customDishForm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const menuAdminEditMenuRoute = menuAdminEditMenuRouteImport.update({
+  id: '/(menuAdmin)/editMenu',
+  path: '/editMenu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const menuAdminMenuManagmentRoute = menuAdminMenuManagmentRouteImport.update({
+  id: '/(menuAdmin)/menuManagment',
+  path: '/menuManagment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const menuAdminSimpleDishFormRoute = menuAdminSimpleDishFormRouteImport.update({
+  id: '/(menuAdmin)/simpleDishForm',
   path: '/simpleDishForm',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UnexpectedIssueRoute = UnexpectedIssueRouteImport.update({
-  id: '/unexpectedIssue',
-  path: '/unexpectedIssue',
+const menuClientMenuClientRoute = menuClientMenuClientRouteImport.update({
+  id: '/(menuClient)/menuClient',
+  path: '/menuClient',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UnexpectedIssueVRoute = UnexpectedIssueVRouteImport.update({
-  id: '/unexpectedIssueV',
-  path: '/unexpectedIssueV',
+const profileChangePasswordRoute = profileChangePasswordRouteImport.update({
+  id: '/(profile)/changePassword',
+  path: '/changePassword',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VerificationCodeRoute = VerificationCodeRouteImport.update({
-  id: '/verificationCode',
-  path: '/verificationCode',
+const profileChangePasswordErrorRoute =
+  profileChangePasswordErrorRouteImport.update({
+    id: '/(profile)/changePasswordError',
+    path: '/changePasswordError',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const profileChangePasswordSuccessRoute =
+  profileChangePasswordSuccessRouteImport.update({
+    id: '/(profile)/changePasswordSuccess',
+    path: '/changePasswordSuccess',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const profileProfileSettingsRoute = profileProfileSettingsRouteImport.update({
+  id: '/(profile)/profileSettings',
+  path: '/profileSettings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const tableAdminAddtableRoute = tableAdminAddtableRouteImport.update({
+  id: '/(tableAdmin)/Addtable',
+  path: '/Addtable',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const tableAdminTablesManagmentRoute =
+  tableAdminTablesManagmentRouteImport.update({
+    id: '/(tableAdmin)/TablesManagment',
+    path: '/TablesManagment',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const tableAdminEditTableRoute = tableAdminEditTableRouteImport.update({
+  id: '/(tableAdmin)/editTable',
+  path: '/editTable',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/Addtable': typeof AddtableRoute
-  '/TablesManagment': typeof TablesManagmentRoute
-  '/accountSuccess': typeof AccountSuccessRoute
-  '/accountVerification': typeof AccountVerificationRoute
-  '/changePassword': typeof ChangePasswordRoute
-  '/changePasswordError': typeof ChangePasswordErrorRoute
-  '/changePasswordSuccess': typeof ChangePasswordSuccessRoute
-  '/customDishForm': typeof CustomDishFormRoute
-  '/dashboard': typeof DashboardRoute
-  '/editMenu': typeof EditMenuRoute
-  '/editTable': typeof EditTableRoute
-  '/forgotPassword': typeof ForgotPasswordRoute
-  '/login': typeof LoginRoute
   '/menu': typeof MenuRoute
-  '/menuManagment': typeof MenuManagmentRoute
-  '/passwordSuccess': typeof PasswordSuccessRoute
-  '/profileSettings': typeof ProfileSettingsRoute
-  '/register': typeof RegisterRoute
-  '/resetPassword': typeof ResetPasswordRoute
-  '/simpleDishForm': typeof SimpleDishFormRoute
-  '/unexpectedIssue': typeof UnexpectedIssueRoute
-  '/unexpectedIssueV': typeof UnexpectedIssueVRoute
-  '/verificationCode': typeof VerificationCodeRoute
+  '/accountSuccess': typeof authenticationAccountSuccessRoute
+  '/accountVerification': typeof authenticationAccountVerificationRoute
+  '/forgotPassword': typeof authenticationForgotPasswordRoute
+  '/login': typeof authenticationLoginRoute
+  '/passwordSuccess': typeof authenticationPasswordSuccessRoute
+  '/register': typeof authenticationRegisterRoute
+  '/resetPassword': typeof authenticationResetPasswordRoute
+  '/unexpectedIssue': typeof authenticationUnexpectedIssueRoute
+  '/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
+  '/verificationCode': typeof authenticationVerificationCodeRoute
+  '/dashboard': typeof dashboardDashboardRoute
+  '/customDishForm': typeof menuAdminCustomDishFormRoute
+  '/editMenu': typeof menuAdminEditMenuRoute
+  '/menuManagment': typeof menuAdminMenuManagmentRoute
+  '/simpleDishForm': typeof menuAdminSimpleDishFormRoute
+  '/menuClient': typeof menuClientMenuClientRoute
+  '/changePassword': typeof profileChangePasswordRoute
+  '/changePasswordError': typeof profileChangePasswordErrorRoute
+  '/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
+  '/profileSettings': typeof profileProfileSettingsRoute
+  '/Addtable': typeof tableAdminAddtableRoute
+  '/TablesManagment': typeof tableAdminTablesManagmentRoute
+  '/editTable': typeof tableAdminEditTableRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/Addtable': typeof AddtableRoute
-  '/TablesManagment': typeof TablesManagmentRoute
-  '/accountSuccess': typeof AccountSuccessRoute
-  '/accountVerification': typeof AccountVerificationRoute
-  '/changePassword': typeof ChangePasswordRoute
-  '/changePasswordError': typeof ChangePasswordErrorRoute
-  '/changePasswordSuccess': typeof ChangePasswordSuccessRoute
-  '/customDishForm': typeof CustomDishFormRoute
-  '/dashboard': typeof DashboardRoute
-  '/editMenu': typeof EditMenuRoute
-  '/editTable': typeof EditTableRoute
-  '/forgotPassword': typeof ForgotPasswordRoute
-  '/login': typeof LoginRoute
   '/menu': typeof MenuRoute
-  '/menuManagment': typeof MenuManagmentRoute
-  '/passwordSuccess': typeof PasswordSuccessRoute
-  '/profileSettings': typeof ProfileSettingsRoute
-  '/register': typeof RegisterRoute
-  '/resetPassword': typeof ResetPasswordRoute
-  '/simpleDishForm': typeof SimpleDishFormRoute
-  '/unexpectedIssue': typeof UnexpectedIssueRoute
-  '/unexpectedIssueV': typeof UnexpectedIssueVRoute
-  '/verificationCode': typeof VerificationCodeRoute
+  '/accountSuccess': typeof authenticationAccountSuccessRoute
+  '/accountVerification': typeof authenticationAccountVerificationRoute
+  '/forgotPassword': typeof authenticationForgotPasswordRoute
+  '/login': typeof authenticationLoginRoute
+  '/passwordSuccess': typeof authenticationPasswordSuccessRoute
+  '/register': typeof authenticationRegisterRoute
+  '/resetPassword': typeof authenticationResetPasswordRoute
+  '/unexpectedIssue': typeof authenticationUnexpectedIssueRoute
+  '/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
+  '/verificationCode': typeof authenticationVerificationCodeRoute
+  '/dashboard': typeof dashboardDashboardRoute
+  '/customDishForm': typeof menuAdminCustomDishFormRoute
+  '/editMenu': typeof menuAdminEditMenuRoute
+  '/menuManagment': typeof menuAdminMenuManagmentRoute
+  '/simpleDishForm': typeof menuAdminSimpleDishFormRoute
+  '/menuClient': typeof menuClientMenuClientRoute
+  '/changePassword': typeof profileChangePasswordRoute
+  '/changePasswordError': typeof profileChangePasswordErrorRoute
+  '/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
+  '/profileSettings': typeof profileProfileSettingsRoute
+  '/Addtable': typeof tableAdminAddtableRoute
+  '/TablesManagment': typeof tableAdminTablesManagmentRoute
+  '/editTable': typeof tableAdminEditTableRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/Addtable': typeof AddtableRoute
-  '/TablesManagment': typeof TablesManagmentRoute
-  '/accountSuccess': typeof AccountSuccessRoute
-  '/accountVerification': typeof AccountVerificationRoute
-  '/changePassword': typeof ChangePasswordRoute
-  '/changePasswordError': typeof ChangePasswordErrorRoute
-  '/changePasswordSuccess': typeof ChangePasswordSuccessRoute
-  '/customDishForm': typeof CustomDishFormRoute
-  '/dashboard': typeof DashboardRoute
-  '/editMenu': typeof EditMenuRoute
-  '/editTable': typeof EditTableRoute
-  '/forgotPassword': typeof ForgotPasswordRoute
-  '/login': typeof LoginRoute
   '/menu': typeof MenuRoute
-  '/menuManagment': typeof MenuManagmentRoute
-  '/passwordSuccess': typeof PasswordSuccessRoute
-  '/profileSettings': typeof ProfileSettingsRoute
-  '/register': typeof RegisterRoute
-  '/resetPassword': typeof ResetPasswordRoute
-  '/simpleDishForm': typeof SimpleDishFormRoute
-  '/unexpectedIssue': typeof UnexpectedIssueRoute
-  '/unexpectedIssueV': typeof UnexpectedIssueVRoute
-  '/verificationCode': typeof VerificationCodeRoute
+  '/(authentication)/accountSuccess': typeof authenticationAccountSuccessRoute
+  '/(authentication)/accountVerification': typeof authenticationAccountVerificationRoute
+  '/(authentication)/forgotPassword': typeof authenticationForgotPasswordRoute
+  '/(authentication)/login': typeof authenticationLoginRoute
+  '/(authentication)/passwordSuccess': typeof authenticationPasswordSuccessRoute
+  '/(authentication)/register': typeof authenticationRegisterRoute
+  '/(authentication)/resetPassword': typeof authenticationResetPasswordRoute
+  '/(authentication)/unexpectedIssue': typeof authenticationUnexpectedIssueRoute
+  '/(authentication)/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
+  '/(authentication)/verificationCode': typeof authenticationVerificationCodeRoute
+  '/(dashboard)/dashboard': typeof dashboardDashboardRoute
+  '/(menuAdmin)/customDishForm': typeof menuAdminCustomDishFormRoute
+  '/(menuAdmin)/editMenu': typeof menuAdminEditMenuRoute
+  '/(menuAdmin)/menuManagment': typeof menuAdminMenuManagmentRoute
+  '/(menuAdmin)/simpleDishForm': typeof menuAdminSimpleDishFormRoute
+  '/(menuClient)/menuClient': typeof menuClientMenuClientRoute
+  '/(profile)/changePassword': typeof profileChangePasswordRoute
+  '/(profile)/changePasswordError': typeof profileChangePasswordErrorRoute
+  '/(profile)/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
+  '/(profile)/profileSettings': typeof profileProfileSettingsRoute
+  '/(tableAdmin)/Addtable': typeof tableAdminAddtableRoute
+  '/(tableAdmin)/TablesManagment': typeof tableAdminTablesManagmentRoute
+  '/(tableAdmin)/editTable': typeof tableAdminEditTableRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/Addtable'
-    | '/TablesManagment'
+    | '/menu'
     | '/accountSuccess'
     | '/accountVerification'
-    | '/changePassword'
-    | '/changePasswordError'
-    | '/changePasswordSuccess'
-    | '/customDishForm'
-    | '/dashboard'
-    | '/editMenu'
-    | '/editTable'
     | '/forgotPassword'
     | '/login'
-    | '/menu'
-    | '/menuManagment'
     | '/passwordSuccess'
-    | '/profileSettings'
     | '/register'
     | '/resetPassword'
-    | '/simpleDishForm'
     | '/unexpectedIssue'
     | '/unexpectedIssueV'
     | '/verificationCode'
+    | '/dashboard'
+    | '/customDishForm'
+    | '/editMenu'
+    | '/menuManagment'
+    | '/simpleDishForm'
+    | '/menuClient'
+    | '/changePassword'
+    | '/changePasswordError'
+    | '/changePasswordSuccess'
+    | '/profileSettings'
+    | '/Addtable'
+    | '/TablesManagment'
+    | '/editTable'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/Addtable'
-    | '/TablesManagment'
+    | '/menu'
     | '/accountSuccess'
     | '/accountVerification'
-    | '/changePassword'
-    | '/changePasswordError'
-    | '/changePasswordSuccess'
-    | '/customDishForm'
-    | '/dashboard'
-    | '/editMenu'
-    | '/editTable'
     | '/forgotPassword'
     | '/login'
-    | '/menu'
-    | '/menuManagment'
     | '/passwordSuccess'
-    | '/profileSettings'
     | '/register'
     | '/resetPassword'
-    | '/simpleDishForm'
     | '/unexpectedIssue'
     | '/unexpectedIssueV'
     | '/verificationCode'
+    | '/dashboard'
+    | '/customDishForm'
+    | '/editMenu'
+    | '/menuManagment'
+    | '/simpleDishForm'
+    | '/menuClient'
+    | '/changePassword'
+    | '/changePasswordError'
+    | '/changePasswordSuccess'
+    | '/profileSettings'
+    | '/Addtable'
+    | '/TablesManagment'
+    | '/editTable'
   id:
     | '__root__'
     | '/'
-    | '/Addtable'
-    | '/TablesManagment'
-    | '/accountSuccess'
-    | '/accountVerification'
-    | '/changePassword'
-    | '/changePasswordError'
-    | '/changePasswordSuccess'
-    | '/customDishForm'
-    | '/dashboard'
-    | '/editMenu'
-    | '/editTable'
-    | '/forgotPassword'
-    | '/login'
     | '/menu'
-    | '/menuManagment'
-    | '/passwordSuccess'
-    | '/profileSettings'
-    | '/register'
-    | '/resetPassword'
-    | '/simpleDishForm'
-    | '/unexpectedIssue'
-    | '/unexpectedIssueV'
-    | '/verificationCode'
+    | '/(authentication)/accountSuccess'
+    | '/(authentication)/accountVerification'
+    | '/(authentication)/forgotPassword'
+    | '/(authentication)/login'
+    | '/(authentication)/passwordSuccess'
+    | '/(authentication)/register'
+    | '/(authentication)/resetPassword'
+    | '/(authentication)/unexpectedIssue'
+    | '/(authentication)/unexpectedIssueV'
+    | '/(authentication)/verificationCode'
+    | '/(dashboard)/dashboard'
+    | '/(menuAdmin)/customDishForm'
+    | '/(menuAdmin)/editMenu'
+    | '/(menuAdmin)/menuManagment'
+    | '/(menuAdmin)/simpleDishForm'
+    | '/(menuClient)/menuClient'
+    | '/(profile)/changePassword'
+    | '/(profile)/changePasswordError'
+    | '/(profile)/changePasswordSuccess'
+    | '/(profile)/profileSettings'
+    | '/(tableAdmin)/Addtable'
+    | '/(tableAdmin)/TablesManagment'
+    | '/(tableAdmin)/editTable'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AddtableRoute: typeof AddtableRoute
-  TablesManagmentRoute: typeof TablesManagmentRoute
-  AccountSuccessRoute: typeof AccountSuccessRoute
-  AccountVerificationRoute: typeof AccountVerificationRoute
-  ChangePasswordRoute: typeof ChangePasswordRoute
-  ChangePasswordErrorRoute: typeof ChangePasswordErrorRoute
-  ChangePasswordSuccessRoute: typeof ChangePasswordSuccessRoute
-  CustomDishFormRoute: typeof CustomDishFormRoute
-  DashboardRoute: typeof DashboardRoute
-  EditMenuRoute: typeof EditMenuRoute
-  EditTableRoute: typeof EditTableRoute
-  ForgotPasswordRoute: typeof ForgotPasswordRoute
-  LoginRoute: typeof LoginRoute
   MenuRoute: typeof MenuRoute
-  MenuManagmentRoute: typeof MenuManagmentRoute
-  PasswordSuccessRoute: typeof PasswordSuccessRoute
-  ProfileSettingsRoute: typeof ProfileSettingsRoute
-  RegisterRoute: typeof RegisterRoute
-  ResetPasswordRoute: typeof ResetPasswordRoute
-  SimpleDishFormRoute: typeof SimpleDishFormRoute
-  UnexpectedIssueRoute: typeof UnexpectedIssueRoute
-  UnexpectedIssueVRoute: typeof UnexpectedIssueVRoute
-  VerificationCodeRoute: typeof VerificationCodeRoute
+  authenticationAccountSuccessRoute: typeof authenticationAccountSuccessRoute
+  authenticationAccountVerificationRoute: typeof authenticationAccountVerificationRoute
+  authenticationForgotPasswordRoute: typeof authenticationForgotPasswordRoute
+  authenticationLoginRoute: typeof authenticationLoginRoute
+  authenticationPasswordSuccessRoute: typeof authenticationPasswordSuccessRoute
+  authenticationRegisterRoute: typeof authenticationRegisterRoute
+  authenticationResetPasswordRoute: typeof authenticationResetPasswordRoute
+  authenticationUnexpectedIssueRoute: typeof authenticationUnexpectedIssueRoute
+  authenticationUnexpectedIssueVRoute: typeof authenticationUnexpectedIssueVRoute
+  authenticationVerificationCodeRoute: typeof authenticationVerificationCodeRoute
+  dashboardDashboardRoute: typeof dashboardDashboardRoute
+  menuAdminCustomDishFormRoute: typeof menuAdminCustomDishFormRoute
+  menuAdminEditMenuRoute: typeof menuAdminEditMenuRoute
+  menuAdminMenuManagmentRoute: typeof menuAdminMenuManagmentRoute
+  menuAdminSimpleDishFormRoute: typeof menuAdminSimpleDishFormRoute
+  menuClientMenuClientRoute: typeof menuClientMenuClientRoute
+  profileChangePasswordRoute: typeof profileChangePasswordRoute
+  profileChangePasswordErrorRoute: typeof profileChangePasswordErrorRoute
+  profileChangePasswordSuccessRoute: typeof profileChangePasswordSuccessRoute
+  profileProfileSettingsRoute: typeof profileProfileSettingsRoute
+  tableAdminAddtableRoute: typeof tableAdminAddtableRoute
+  tableAdminTablesManagmentRoute: typeof tableAdminTablesManagmentRoute
+  tableAdminEditTableRoute: typeof tableAdminEditTableRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -351,97 +375,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/Addtable': {
-      id: '/Addtable'
-      path: '/Addtable'
-      fullPath: '/Addtable'
-      preLoaderRoute: typeof AddtableRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/TablesManagment': {
-      id: '/TablesManagment'
-      path: '/TablesManagment'
-      fullPath: '/TablesManagment'
-      preLoaderRoute: typeof TablesManagmentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/accountSuccess': {
-      id: '/accountSuccess'
-      path: '/accountSuccess'
-      fullPath: '/accountSuccess'
-      preLoaderRoute: typeof AccountSuccessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/accountVerification': {
-      id: '/accountVerification'
-      path: '/accountVerification'
-      fullPath: '/accountVerification'
-      preLoaderRoute: typeof AccountVerificationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/changePassword': {
-      id: '/changePassword'
-      path: '/changePassword'
-      fullPath: '/changePassword'
-      preLoaderRoute: typeof ChangePasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/changePasswordError': {
-      id: '/changePasswordError'
-      path: '/changePasswordError'
-      fullPath: '/changePasswordError'
-      preLoaderRoute: typeof ChangePasswordErrorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/changePasswordSuccess': {
-      id: '/changePasswordSuccess'
-      path: '/changePasswordSuccess'
-      fullPath: '/changePasswordSuccess'
-      preLoaderRoute: typeof ChangePasswordSuccessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/customDishForm': {
-      id: '/customDishForm'
-      path: '/customDishForm'
-      fullPath: '/customDishForm'
-      preLoaderRoute: typeof CustomDishFormRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/editMenu': {
-      id: '/editMenu'
-      path: '/editMenu'
-      fullPath: '/editMenu'
-      preLoaderRoute: typeof EditMenuRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/editTable': {
-      id: '/editTable'
-      path: '/editTable'
-      fullPath: '/editTable'
-      preLoaderRoute: typeof EditTableRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgotPassword': {
-      id: '/forgotPassword'
-      path: '/forgotPassword'
-      fullPath: '/forgotPassword'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/menu': {
       id: '/menu'
       path: '/menu'
@@ -449,67 +382,165 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MenuRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/menuManagment': {
-      id: '/menuManagment'
-      path: '/menuManagment'
-      fullPath: '/menuManagment'
-      preLoaderRoute: typeof MenuManagmentRouteImport
+    '/(authentication)/accountSuccess': {
+      id: '/(authentication)/accountSuccess'
+      path: '/accountSuccess'
+      fullPath: '/accountSuccess'
+      preLoaderRoute: typeof authenticationAccountSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/passwordSuccess': {
-      id: '/passwordSuccess'
+    '/(authentication)/accountVerification': {
+      id: '/(authentication)/accountVerification'
+      path: '/accountVerification'
+      fullPath: '/accountVerification'
+      preLoaderRoute: typeof authenticationAccountVerificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(authentication)/forgotPassword': {
+      id: '/(authentication)/forgotPassword'
+      path: '/forgotPassword'
+      fullPath: '/forgotPassword'
+      preLoaderRoute: typeof authenticationForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(authentication)/login': {
+      id: '/(authentication)/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof authenticationLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(authentication)/passwordSuccess': {
+      id: '/(authentication)/passwordSuccess'
       path: '/passwordSuccess'
       fullPath: '/passwordSuccess'
-      preLoaderRoute: typeof PasswordSuccessRouteImport
+      preLoaderRoute: typeof authenticationPasswordSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/profileSettings': {
-      id: '/profileSettings'
-      path: '/profileSettings'
-      fullPath: '/profileSettings'
-      preLoaderRoute: typeof ProfileSettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/register': {
-      id: '/register'
+    '/(authentication)/register': {
+      id: '/(authentication)/register'
       path: '/register'
       fullPath: '/register'
-      preLoaderRoute: typeof RegisterRouteImport
+      preLoaderRoute: typeof authenticationRegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/resetPassword': {
-      id: '/resetPassword'
+    '/(authentication)/resetPassword': {
+      id: '/(authentication)/resetPassword'
       path: '/resetPassword'
       fullPath: '/resetPassword'
-      preLoaderRoute: typeof ResetPasswordRouteImport
+      preLoaderRoute: typeof authenticationResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/simpleDishForm': {
-      id: '/simpleDishForm'
-      path: '/simpleDishForm'
-      fullPath: '/simpleDishForm'
-      preLoaderRoute: typeof SimpleDishFormRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/unexpectedIssue': {
-      id: '/unexpectedIssue'
+    '/(authentication)/unexpectedIssue': {
+      id: '/(authentication)/unexpectedIssue'
       path: '/unexpectedIssue'
       fullPath: '/unexpectedIssue'
-      preLoaderRoute: typeof UnexpectedIssueRouteImport
+      preLoaderRoute: typeof authenticationUnexpectedIssueRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/unexpectedIssueV': {
-      id: '/unexpectedIssueV'
+    '/(authentication)/unexpectedIssueV': {
+      id: '/(authentication)/unexpectedIssueV'
       path: '/unexpectedIssueV'
       fullPath: '/unexpectedIssueV'
-      preLoaderRoute: typeof UnexpectedIssueVRouteImport
+      preLoaderRoute: typeof authenticationUnexpectedIssueVRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/verificationCode': {
-      id: '/verificationCode'
+    '/(authentication)/verificationCode': {
+      id: '/(authentication)/verificationCode'
       path: '/verificationCode'
       fullPath: '/verificationCode'
-      preLoaderRoute: typeof VerificationCodeRouteImport
+      preLoaderRoute: typeof authenticationVerificationCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(dashboard)/dashboard': {
+      id: '/(dashboard)/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof dashboardDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menuAdmin)/customDishForm': {
+      id: '/(menuAdmin)/customDishForm'
+      path: '/customDishForm'
+      fullPath: '/customDishForm'
+      preLoaderRoute: typeof menuAdminCustomDishFormRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menuAdmin)/editMenu': {
+      id: '/(menuAdmin)/editMenu'
+      path: '/editMenu'
+      fullPath: '/editMenu'
+      preLoaderRoute: typeof menuAdminEditMenuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menuAdmin)/menuManagment': {
+      id: '/(menuAdmin)/menuManagment'
+      path: '/menuManagment'
+      fullPath: '/menuManagment'
+      preLoaderRoute: typeof menuAdminMenuManagmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menuAdmin)/simpleDishForm': {
+      id: '/(menuAdmin)/simpleDishForm'
+      path: '/simpleDishForm'
+      fullPath: '/simpleDishForm'
+      preLoaderRoute: typeof menuAdminSimpleDishFormRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menuClient)/menuClient': {
+      id: '/(menuClient)/menuClient'
+      path: '/menuClient'
+      fullPath: '/menuClient'
+      preLoaderRoute: typeof menuClientMenuClientRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(profile)/changePassword': {
+      id: '/(profile)/changePassword'
+      path: '/changePassword'
+      fullPath: '/changePassword'
+      preLoaderRoute: typeof profileChangePasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(profile)/changePasswordError': {
+      id: '/(profile)/changePasswordError'
+      path: '/changePasswordError'
+      fullPath: '/changePasswordError'
+      preLoaderRoute: typeof profileChangePasswordErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(profile)/changePasswordSuccess': {
+      id: '/(profile)/changePasswordSuccess'
+      path: '/changePasswordSuccess'
+      fullPath: '/changePasswordSuccess'
+      preLoaderRoute: typeof profileChangePasswordSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(profile)/profileSettings': {
+      id: '/(profile)/profileSettings'
+      path: '/profileSettings'
+      fullPath: '/profileSettings'
+      preLoaderRoute: typeof profileProfileSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(tableAdmin)/Addtable': {
+      id: '/(tableAdmin)/Addtable'
+      path: '/Addtable'
+      fullPath: '/Addtable'
+      preLoaderRoute: typeof tableAdminAddtableRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(tableAdmin)/TablesManagment': {
+      id: '/(tableAdmin)/TablesManagment'
+      path: '/TablesManagment'
+      fullPath: '/TablesManagment'
+      preLoaderRoute: typeof tableAdminTablesManagmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(tableAdmin)/editTable': {
+      id: '/(tableAdmin)/editTable'
+      path: '/editTable'
+      fullPath: '/editTable'
+      preLoaderRoute: typeof tableAdminEditTableRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -517,29 +548,31 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AddtableRoute: AddtableRoute,
-  TablesManagmentRoute: TablesManagmentRoute,
-  AccountSuccessRoute: AccountSuccessRoute,
-  AccountVerificationRoute: AccountVerificationRoute,
-  ChangePasswordRoute: ChangePasswordRoute,
-  ChangePasswordErrorRoute: ChangePasswordErrorRoute,
-  ChangePasswordSuccessRoute: ChangePasswordSuccessRoute,
-  CustomDishFormRoute: CustomDishFormRoute,
-  DashboardRoute: DashboardRoute,
-  EditMenuRoute: EditMenuRoute,
-  EditTableRoute: EditTableRoute,
-  ForgotPasswordRoute: ForgotPasswordRoute,
-  LoginRoute: LoginRoute,
   MenuRoute: MenuRoute,
-  MenuManagmentRoute: MenuManagmentRoute,
-  PasswordSuccessRoute: PasswordSuccessRoute,
-  ProfileSettingsRoute: ProfileSettingsRoute,
-  RegisterRoute: RegisterRoute,
-  ResetPasswordRoute: ResetPasswordRoute,
-  SimpleDishFormRoute: SimpleDishFormRoute,
-  UnexpectedIssueRoute: UnexpectedIssueRoute,
-  UnexpectedIssueVRoute: UnexpectedIssueVRoute,
-  VerificationCodeRoute: VerificationCodeRoute,
+  authenticationAccountSuccessRoute: authenticationAccountSuccessRoute,
+  authenticationAccountVerificationRoute:
+    authenticationAccountVerificationRoute,
+  authenticationForgotPasswordRoute: authenticationForgotPasswordRoute,
+  authenticationLoginRoute: authenticationLoginRoute,
+  authenticationPasswordSuccessRoute: authenticationPasswordSuccessRoute,
+  authenticationRegisterRoute: authenticationRegisterRoute,
+  authenticationResetPasswordRoute: authenticationResetPasswordRoute,
+  authenticationUnexpectedIssueRoute: authenticationUnexpectedIssueRoute,
+  authenticationUnexpectedIssueVRoute: authenticationUnexpectedIssueVRoute,
+  authenticationVerificationCodeRoute: authenticationVerificationCodeRoute,
+  dashboardDashboardRoute: dashboardDashboardRoute,
+  menuAdminCustomDishFormRoute: menuAdminCustomDishFormRoute,
+  menuAdminEditMenuRoute: menuAdminEditMenuRoute,
+  menuAdminMenuManagmentRoute: menuAdminMenuManagmentRoute,
+  menuAdminSimpleDishFormRoute: menuAdminSimpleDishFormRoute,
+  menuClientMenuClientRoute: menuClientMenuClientRoute,
+  profileChangePasswordRoute: profileChangePasswordRoute,
+  profileChangePasswordErrorRoute: profileChangePasswordErrorRoute,
+  profileChangePasswordSuccessRoute: profileChangePasswordSuccessRoute,
+  profileProfileSettingsRoute: profileProfileSettingsRoute,
+  tableAdminAddtableRoute: tableAdminAddtableRoute,
+  tableAdminTablesManagmentRoute: tableAdminTablesManagmentRoute,
+  tableAdminEditTableRoute: tableAdminEditTableRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

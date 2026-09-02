@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import MenuManagment from '../components/menuAdmin/MenuManagment'
+import MenuManagment from '../../components/menuAdmin/MenuManagment'
 
-export const Route = createFileRoute('/menuManagment')({
+export const Route = createFileRoute('/(menuAdmin)/menuManagment')({
   component: RouteComponent,
 })
 

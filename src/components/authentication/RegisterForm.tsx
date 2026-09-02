@@ -89,7 +89,7 @@ if (password !== confirmPassword) {
 	onSubmit={handleSubmit}
 	className="mx-auto flex w-full max-w-sm flex-col gap-5"
 > 
-	<h1 className="text-center font-bold text-brand-mint-dark">
+	<h1 className="text-center font-bold text-mint-dark">
 		Crear cuenta
 	</h1>
 
@@ -101,7 +101,7 @@ if (password !== confirmPassword) {
 		onChange={(event) =>
 			setFirstName(event.target.value)
 		}
-		className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brand-brown focus:outline-none"
+		className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
 	/>
 
 	<input
@@ -112,7 +112,7 @@ if (password !== confirmPassword) {
 		onChange={(event) =>
 			setLastName(event.target.value)
 		}
-		className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brand-brown focus:outline-none"
+		className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
 	/>
 
 	<input
@@ -123,7 +123,7 @@ if (password !== confirmPassword) {
 		onChange={(event) =>
 			setEmail(event.target.value)
 		}
-		className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brand-brown focus:outline-none"
+		className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
 	/>
 
 	<div className="relative">
@@ -136,7 +136,7 @@ if (password !== confirmPassword) {
 				setPassword(event.target.value);
 				setError("");
 			}}
-			className="w-full rounded-lg border border-border px-4 py-3 pr-12 focus:border-2 focus:border-brand-brown focus:outline-none"
+			className="w-full rounded-lg border border-border px-4 py-3 pr-12 focus:border-2 focus:border-brown focus:outline-none"
 		/>
 
 		<button
@@ -144,7 +144,7 @@ if (password !== confirmPassword) {
 			onClick={() =>
 				setShowPassword(!showPassword)
 			}
-			className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-brand-mint-dark"
+			className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-mint-dark"
 			aria-label={
 				showPassword
 					? "Ocultar contraseña"
@@ -173,7 +173,7 @@ if (password !== confirmPassword) {
 				setConfirmPassword(event.target.value);
 				setError("");
 			}}
-			className="w-full rounded-lg border border-border px-4 py-3 pr-12 focus:border-2 focus:border-brand-brown focus:outline-none"
+			className="w-full rounded-lg border border-border px-4 py-3 pr-12 focus:border-2 focus:border-brown focus:outline-none"
 		/>
 
 		<button
@@ -183,7 +183,7 @@ if (password !== confirmPassword) {
 					!showConfirmPassword,
 				)
 			}
-			className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-brand-mint-dark"
+			className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-mint-dark"
 			aria-label={
 				showConfirmPassword
 					? "Ocultar contraseña"
@@ -204,7 +204,7 @@ if (password !== confirmPassword) {
 		onChange={(event) =>
 			setRoleId(Number(event.target.value))
 		}
-		className="w-full cursor-pointer rounded-lg border border-border bg-white px-4 py-3 text-text-primary focus:border-2 focus:border-brand-brown focus:outline-none"
+		className="w-full cursor-pointer rounded-lg border border-border bg-white px-4 py-3 text-text-primary focus:border-2 focus:border-brown focus:outline-none"
 	>
 		<option value="" disabled>
 			Tipo de empleado
@@ -222,7 +222,7 @@ if (password !== confirmPassword) {
 		onChange={(event) =>
 			setAuthorizationCode(event.target.value)
 		}
-		className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brand-brown focus:outline-none"
+		className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
 	/>
 
 	{error ? (
@@ -234,7 +234,7 @@ if (password !== confirmPassword) {
 	<button
 		type="submit"
 		disabled={isSubmitting}
-		className="w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-white hover:bg-brand-mint-dark/90 disabled:cursor-not-allowed disabled:opacity-70"
+		className="w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white hover:bg-mint-dark/90 disabled:cursor-not-allowed disabled:opacity-70"
 	>
 		{isSubmitting
 			? "Enviando código..."
@@ -245,7 +245,7 @@ if (password !== confirmPassword) {
 		¿Ya tienes una cuenta?{" "}
 		<Link
 			to="/login"
-			className="text-brand-mint-dark hover:underline"
+			className="text-mint-dark hover:underline"
 		>
 			Inicia sesión
 		</Link>

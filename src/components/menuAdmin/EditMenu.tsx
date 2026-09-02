@@ -20,7 +20,7 @@ function EditMenu() {
 						className="w-full bg-transparent text-base font-normal text-text-primary outline-none placeholder:text-text-primary"
 					/>
 
-					<IoSearch className="ml-3 h-6 w-6 shrink-0 text-brand-mint-dark" />
+					<IoSearch className="ml-3 h-6 w-6 shrink-0 text-mint-dark" />
 				</div>
 
 				<div className="mt-6">
@@ -32,7 +32,7 @@ function EditMenu() {
 
 						<button
 							type="button"
-							className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-mint-dark text-white"
+							className="flex h-14 w-14 items-center justify-center rounded-2xl bg-mint-dark text-white"
 							aria-label="Postres"
 						>
 							<LuCakeSlice className="h-8 w-8" />
@@ -40,7 +40,7 @@ function EditMenu() {
 
 						<button
 							type="button"
-							className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-mint-dark text-white"
+							className="flex h-14 w-14 items-center justify-center rounded-2xl bg-mint-dark text-white"
 							aria-label="Bebidas"
 						>
 							<RiDrinks2Line className="h-8 w-8" />
@@ -48,7 +48,7 @@ function EditMenu() {
 
 						<button
 							type="button"
-							className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-mint-dark text-white"
+							className="flex h-14 w-14 items-center justify-center rounded-2xl bg-mint-dark text-white"
 							aria-label="Café"
 						>
 							<GiCoffeeCup className="h-8 w-8" />
@@ -56,7 +56,7 @@ function EditMenu() {
 
 						<button
 							type="button"
-							className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-mint-dark text-white"
+							className="flex h-14 w-14 items-center justify-center rounded-2xl bg-mint-dark text-white"
 							aria-label="Sándwiches"
 						>
 							<LuSandwich className="h-8 w-8" />
@@ -64,7 +64,7 @@ function EditMenu() {
 
 						<button
 							type="button"
-							className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-mint-dark text-white"
+							className="flex h-14 w-14 items-center justify-center rounded-2xl bg-mint-dark text-white"
 							aria-label="Platos"
 						>
 							<LuUtensils className="h-8 w-8" />

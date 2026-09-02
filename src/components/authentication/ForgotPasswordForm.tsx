@@ -48,7 +48,7 @@ function ForgotPasswordForm() {
 
 					{/* Título y descripción */}
 					<div className="flex flex-col gap-4">
-						<h1 className="text-center font-bold text-brand-mint-dark">
+						<h1 className="text-center font-bold text-mint-dark">
 							Recuperar contraseña
 						</h1>
 
@@ -65,7 +65,7 @@ function ForgotPasswordForm() {
 							placeholder="Correo electrónico"
 							value={email}
 							onChange={(event) => setEmail(event.target.value)}
-							className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brand-brown focus:outline-none"
+							className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
 						/>
 
 						{error ? <p className="text-sm text-red-600">{error}</p> : null}
@@ -73,7 +73,7 @@ function ForgotPasswordForm() {
 						<button
 							type="submit"
 							disabled={isSubmitting}
-							className="w-full cursor-pointer rounded-lg bg-brand-mint-dark px-4 py-3 text-center text-white disabled:cursor-not-allowed disabled:opacity-70"
+							className="w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-center text-white disabled:cursor-not-allowed disabled:opacity-70"
 						>
 							{isSubmitting ? "Enviando..." : "Recuperar contraseña"}
 						</button>
@@ -82,7 +82,7 @@ function ForgotPasswordForm() {
 					{/* Volver al Login */}
 					<Link
 						to="/login"
-						className="mx-auto mt-14 cursor-pointer text-brand-mint"
+						className="mx-auto mt-14 cursor-pointer text-mint"
 						aria-label="Volver al inicio de sesión"
 					>
 						<BsFillArrowLeftCircleFill className="h-10 w-10" />
