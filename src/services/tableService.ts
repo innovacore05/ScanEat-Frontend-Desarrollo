@@ -89,3 +89,54 @@ export const getTableById = async (tableId: string) => {
     createdAt?: string;
   };
 };
+
+//update chairs number of a table 
+// El endpoint PUT valida la representación completa de la mesa, aunque solo se
+// modifique la cantidad de sillas.
+export const updateTableChairs = async (
+  tableId: string,
+  tableNumber: number,
+  chairNumber: number
+) => {
+  const token = localStorage.getItem("authToken");
+
+  const response = await fetch(`${TABLES_BASE_URL}/${tableId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({
+      tableNumber: Number(tableNumber),
+      chairNumber: Number(chairNumber),
+    }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw data;
+  }
+
+  return data;
+};
+
+//delete a table
+export const deleteTable = async (tableId: string) => {
+  const token = localStorage.getItem("authToken");
+
+  const response = await fetch(`${TABLES_BASE_URL}/${tableId}`, {
+    method: "DELETE",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw data;
+  }
+  return data as {
+    message: string;
+  };
+}

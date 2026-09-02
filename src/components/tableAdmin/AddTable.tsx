@@ -47,7 +47,7 @@ function AddTable() {
 	}, []);
 
 	const openQrForTable = (tableId: string, numeroMesa: number | string) => {
-  const qrUrl = `https://scaneat-frontend-produccion-production.up.railway.app/menu?mesaId=${tableId}`;
+  const qrUrl = `https://scaneat-frontend-produccion-production.up.railway.app/menuClient?mesaId=${tableId}`;
   setQrValue(qrUrl);
 	  setQrTableNumber(numeroMesa);
   setIsQrModalOpen(true);
