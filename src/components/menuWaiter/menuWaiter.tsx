@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { getProfile } from "../../services/authService";
 import { getProducts, type Product } from "../../services/productService";
 import { HiArrowLeft } from "react-icons/hi";
-import { GoPlus } from "react-icons/go";
 import DashboardLayoutWaiter from "../../components/layout/DashboardLayoutWaiter";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
