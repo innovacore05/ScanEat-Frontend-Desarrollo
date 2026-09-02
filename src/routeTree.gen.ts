@@ -22,11 +22,14 @@ import { Route as authenticationUnexpectedIssueRouteImport } from './routes/(aut
 import { Route as authenticationUnexpectedIssueVRouteImport } from './routes/(authentication)/unexpectedIssueV'
 import { Route as authenticationVerificationCodeRouteImport } from './routes/(authentication)/verificationCode'
 import { Route as dashboardDashboardRouteImport } from './routes/(dashboard)/dashboard'
+import { Route as dashboardDashboardCookRouteImport } from './routes/(dashboard)/dashboardCook'
+import { Route as dashboardDashboardWaiterRouteImport } from './routes/(dashboard)/dashboardWaiter'
 import { Route as menuAdminCustomDishFormRouteImport } from './routes/(menuAdmin)/customDishForm'
 import { Route as menuAdminEditMenuRouteImport } from './routes/(menuAdmin)/editMenu'
 import { Route as menuAdminMenuManagmentRouteImport } from './routes/(menuAdmin)/menuManagment'
 import { Route as menuAdminSimpleDishFormRouteImport } from './routes/(menuAdmin)/simpleDishForm'
 import { Route as menuClientMenuClientRouteImport } from './routes/(menuClient)/menuClient'
+import { Route as menuWaiterMenuWaiterRouteImport } from './routes/(menuWaiter)/menuWaiter'
 import { Route as profileChangePasswordRouteImport } from './routes/(profile)/changePassword'
 import { Route as profileChangePasswordErrorRouteImport } from './routes/(profile)/changePasswordError'
 import { Route as profileChangePasswordSuccessRouteImport } from './routes/(profile)/changePasswordSuccess'
@@ -108,6 +111,17 @@ const dashboardDashboardRoute = dashboardDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const dashboardDashboardCookRoute = dashboardDashboardCookRouteImport.update({
+  id: '/(dashboard)/dashboardCook',
+  path: '/dashboardCook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const dashboardDashboardWaiterRoute =
+  dashboardDashboardWaiterRouteImport.update({
+    id: '/(dashboard)/dashboardWaiter',
+    path: '/dashboardWaiter',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const menuAdminCustomDishFormRoute = menuAdminCustomDishFormRouteImport.update({
   id: '/(menuAdmin)/customDishForm',
   path: '/customDishForm',
@@ -131,6 +145,11 @@ const menuAdminSimpleDishFormRoute = menuAdminSimpleDishFormRouteImport.update({
 const menuClientMenuClientRoute = menuClientMenuClientRouteImport.update({
   id: '/(menuClient)/menuClient',
   path: '/menuClient',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const menuWaiterMenuWaiterRoute = menuWaiterMenuWaiterRouteImport.update({
+  id: '/(menuWaiter)/menuWaiter',
+  path: '/menuWaiter',
   getParentRoute: () => rootRouteImport,
 } as any)
 const profileChangePasswordRoute = profileChangePasswordRouteImport.update({
@@ -186,11 +205,14 @@ export interface FileRoutesByFullPath {
   '/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/dashboard': typeof dashboardDashboardRoute
+  '/dashboardCook': typeof dashboardDashboardCookRoute
+  '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
   '/customDishForm': typeof menuAdminCustomDishFormRoute
   '/editMenu': typeof menuAdminEditMenuRoute
   '/menuManagment': typeof menuAdminMenuManagmentRoute
   '/simpleDishForm': typeof menuAdminSimpleDishFormRoute
   '/menuClient': typeof menuClientMenuClientRoute
+  '/menuWaiter': typeof menuWaiterMenuWaiterRoute
   '/changePassword': typeof profileChangePasswordRoute
   '/changePasswordError': typeof profileChangePasswordErrorRoute
   '/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
@@ -213,11 +235,14 @@ export interface FileRoutesByTo {
   '/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/dashboard': typeof dashboardDashboardRoute
+  '/dashboardCook': typeof dashboardDashboardCookRoute
+  '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
   '/customDishForm': typeof menuAdminCustomDishFormRoute
   '/editMenu': typeof menuAdminEditMenuRoute
   '/menuManagment': typeof menuAdminMenuManagmentRoute
   '/simpleDishForm': typeof menuAdminSimpleDishFormRoute
   '/menuClient': typeof menuClientMenuClientRoute
+  '/menuWaiter': typeof menuWaiterMenuWaiterRoute
   '/changePassword': typeof profileChangePasswordRoute
   '/changePasswordError': typeof profileChangePasswordErrorRoute
   '/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
@@ -241,11 +266,14 @@ export interface FileRoutesById {
   '/(authentication)/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/(authentication)/verificationCode': typeof authenticationVerificationCodeRoute
   '/(dashboard)/dashboard': typeof dashboardDashboardRoute
+  '/(dashboard)/dashboardCook': typeof dashboardDashboardCookRoute
+  '/(dashboard)/dashboardWaiter': typeof dashboardDashboardWaiterRoute
   '/(menuAdmin)/customDishForm': typeof menuAdminCustomDishFormRoute
   '/(menuAdmin)/editMenu': typeof menuAdminEditMenuRoute
   '/(menuAdmin)/menuManagment': typeof menuAdminMenuManagmentRoute
   '/(menuAdmin)/simpleDishForm': typeof menuAdminSimpleDishFormRoute
   '/(menuClient)/menuClient': typeof menuClientMenuClientRoute
+  '/(menuWaiter)/menuWaiter': typeof menuWaiterMenuWaiterRoute
   '/(profile)/changePassword': typeof profileChangePasswordRoute
   '/(profile)/changePasswordError': typeof profileChangePasswordErrorRoute
   '/(profile)/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
@@ -270,11 +298,14 @@ export interface FileRouteTypes {
     | '/unexpectedIssueV'
     | '/verificationCode'
     | '/dashboard'
+    | '/dashboardCook'
+    | '/dashboardWaiter'
     | '/customDishForm'
     | '/editMenu'
     | '/menuManagment'
     | '/simpleDishForm'
     | '/menuClient'
+    | '/menuWaiter'
     | '/changePassword'
     | '/changePasswordError'
     | '/changePasswordSuccess'
@@ -297,11 +328,14 @@ export interface FileRouteTypes {
     | '/unexpectedIssueV'
     | '/verificationCode'
     | '/dashboard'
+    | '/dashboardCook'
+    | '/dashboardWaiter'
     | '/customDishForm'
     | '/editMenu'
     | '/menuManagment'
     | '/simpleDishForm'
     | '/menuClient'
+    | '/menuWaiter'
     | '/changePassword'
     | '/changePasswordError'
     | '/changePasswordSuccess'
@@ -324,11 +358,14 @@ export interface FileRouteTypes {
     | '/(authentication)/unexpectedIssueV'
     | '/(authentication)/verificationCode'
     | '/(dashboard)/dashboard'
+    | '/(dashboard)/dashboardCook'
+    | '/(dashboard)/dashboardWaiter'
     | '/(menuAdmin)/customDishForm'
     | '/(menuAdmin)/editMenu'
     | '/(menuAdmin)/menuManagment'
     | '/(menuAdmin)/simpleDishForm'
     | '/(menuClient)/menuClient'
+    | '/(menuWaiter)/menuWaiter'
     | '/(profile)/changePassword'
     | '/(profile)/changePasswordError'
     | '/(profile)/changePasswordSuccess'
@@ -352,11 +389,14 @@ export interface RootRouteChildren {
   authenticationUnexpectedIssueVRoute: typeof authenticationUnexpectedIssueVRoute
   authenticationVerificationCodeRoute: typeof authenticationVerificationCodeRoute
   dashboardDashboardRoute: typeof dashboardDashboardRoute
+  dashboardDashboardCookRoute: typeof dashboardDashboardCookRoute
+  dashboardDashboardWaiterRoute: typeof dashboardDashboardWaiterRoute
   menuAdminCustomDishFormRoute: typeof menuAdminCustomDishFormRoute
   menuAdminEditMenuRoute: typeof menuAdminEditMenuRoute
   menuAdminMenuManagmentRoute: typeof menuAdminMenuManagmentRoute
   menuAdminSimpleDishFormRoute: typeof menuAdminSimpleDishFormRoute
   menuClientMenuClientRoute: typeof menuClientMenuClientRoute
+  menuWaiterMenuWaiterRoute: typeof menuWaiterMenuWaiterRoute
   profileChangePasswordRoute: typeof profileChangePasswordRoute
   profileChangePasswordErrorRoute: typeof profileChangePasswordErrorRoute
   profileChangePasswordSuccessRoute: typeof profileChangePasswordSuccessRoute
@@ -459,6 +499,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(dashboard)/dashboardCook': {
+      id: '/(dashboard)/dashboardCook'
+      path: '/dashboardCook'
+      fullPath: '/dashboardCook'
+      preLoaderRoute: typeof dashboardDashboardCookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(dashboard)/dashboardWaiter': {
+      id: '/(dashboard)/dashboardWaiter'
+      path: '/dashboardWaiter'
+      fullPath: '/dashboardWaiter'
+      preLoaderRoute: typeof dashboardDashboardWaiterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(menuAdmin)/customDishForm': {
       id: '/(menuAdmin)/customDishForm'
       path: '/customDishForm'
@@ -492,6 +546,13 @@ declare module '@tanstack/react-router' {
       path: '/menuClient'
       fullPath: '/menuClient'
       preLoaderRoute: typeof menuClientMenuClientRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menuWaiter)/menuWaiter': {
+      id: '/(menuWaiter)/menuWaiter'
+      path: '/menuWaiter'
+      fullPath: '/menuWaiter'
+      preLoaderRoute: typeof menuWaiterMenuWaiterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(profile)/changePassword': {
@@ -561,11 +622,14 @@ const rootRouteChildren: RootRouteChildren = {
   authenticationUnexpectedIssueVRoute: authenticationUnexpectedIssueVRoute,
   authenticationVerificationCodeRoute: authenticationVerificationCodeRoute,
   dashboardDashboardRoute: dashboardDashboardRoute,
+  dashboardDashboardCookRoute: dashboardDashboardCookRoute,
+  dashboardDashboardWaiterRoute: dashboardDashboardWaiterRoute,
   menuAdminCustomDishFormRoute: menuAdminCustomDishFormRoute,
   menuAdminEditMenuRoute: menuAdminEditMenuRoute,
   menuAdminMenuManagmentRoute: menuAdminMenuManagmentRoute,
   menuAdminSimpleDishFormRoute: menuAdminSimpleDishFormRoute,
   menuClientMenuClientRoute: menuClientMenuClientRoute,
+  menuWaiterMenuWaiterRoute: menuWaiterMenuWaiterRoute,
   profileChangePasswordRoute: profileChangePasswordRoute,
   profileChangePasswordErrorRoute: profileChangePasswordErrorRoute,
   profileChangePasswordSuccessRoute: profileChangePasswordSuccessRoute,
