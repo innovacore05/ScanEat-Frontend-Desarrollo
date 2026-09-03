@@ -99,8 +99,8 @@ function CustomDishForm() {
       setError("Selecciona una imagen para el platillo");
       return;
     }
-    if (image && image.size > 5 * 1024 * 1024) {
-      setError("La imagen no debe superar los 5 MB");
+    if (image && image.size > 1 * 1024 * 1024) {
+      setError("La imagen no debe superar 1 MB");
       return;
     }
     
