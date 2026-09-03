@@ -87,7 +87,7 @@ function QrCodeModal({ isOpen, value, numeroMesa, onClose }: QrCodeModalProps) {
                         type="button"
                         onClick={onClose}
                         title="Cerrar"
-                        className="w-12 h-12 items-center justify-center flex rounded-full bg-brand-mint-dark text-base font-bold text-white hover:opacity-90 transition-opacity"
+                        className="w-12 h-12 items-center justify-center flex rounded-full bg-mint-dark text-base font-bold text-white hover:opacity-90 transition-opacity"
                     >
                         <IoCloseOutline className="w-8 h-8" />
                     </button>
@@ -97,7 +97,7 @@ function QrCodeModal({ isOpen, value, numeroMesa, onClose }: QrCodeModalProps) {
                         type="button"
                         onClick={descargarJPG}
                         title="Guardar como JPG"
-                        className="w-12 h-12 items-center justify-center flex rounded-full bg-brand-mint-dark text-base font-bold text-white hover:opacity-90 transition-opacity"
+                        className="w-12 h-12 items-center justify-center flex rounded-full bg-mint-dark text-base font-bold text-white hover:opacity-90 transition-opacity"
                     >
                         <LuSend className="w-6 h-6"/>
                     </button>

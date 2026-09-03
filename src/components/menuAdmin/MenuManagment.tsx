@@ -20,12 +20,21 @@ function ProductList({
   isFiltering,
   products,
   onDeleteProduct,
+	selectedProductId,
+	onViewMore,
+	onCloseDetails,
 }: {
   initialLoading: boolean;
   isFiltering: boolean;
   products: Product[];
   onDeleteProduct: (productId: number) => void;
+	selectedProductId: number | null;
+	onViewMore: (productId: number) => void;
+	onCloseDetails: () => void;
 }) {
+	const visibleProducts = selectedProductId === null
+		? products
+		: products.filter((product) => product.productId === selectedProductId);
   return (
     <div
       className={`contents transition-opacity duration-200 ${
@@ -39,8 +48,8 @@ function ProductList({
         <p className="text-text-primary">No hay platillos...</p>
       )}
 
-      {products.map((product) => (
-        <div key={product.productId} className="w-full lg:w-87.5">
+		{visibleProducts.map((product) => (
+		<div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
           <DishCard
             name={product.productName ?? ""}
             description={product.description ?? ""}
@@ -50,6 +59,9 @@ function ProductList({
             isAdmin={true}
             productId={product.productId}
             onDelete={onDeleteProduct}
+			isDetailView={selectedProductId === product.productId}
+			onViewMore={() => onViewMore(product.productId)}
+			onCloseDetails={onCloseDetails}
           />
         </div>
       ))}
@@ -68,6 +80,7 @@ function MenuManagment() {
   const [isFiltering, setIsFiltering] = useState(false);
   const [hasMore , setHasMore]=useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+	const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
 
 
   // cargar el perfil
@@ -86,6 +99,7 @@ function MenuManagment() {
   //cargar los productos
   useEffect(() => {
     const loadProducts = async () => {
+		setSelectedProductId(null);
       setIsFiltering(true);
       try {
         const data = await getProducts({
@@ -130,6 +144,7 @@ function MenuManagment() {
 
   const handleDeleteProduct = (productId: number) => {
     setProducts((prev) => prev.filter((product) => product.productId !== productId));
+		setSelectedProductId((current) => current === productId ? null : current);
   };
 
 
@@ -198,10 +213,13 @@ function MenuManagment() {
                 isFiltering={isFiltering}
                 products={products}
                 onDeleteProduct={handleDeleteProduct}
+				selectedProductId={selectedProductId}
+				onViewMore={setSelectedProductId}
+				onCloseDetails={() => setSelectedProductId(null)}
               />
             </div>
 
-            {hasMore && (
+			{hasMore && selectedProductId === null && (
               <button
                 type="button"
                 onClick={handleLoadMore}
@@ -277,10 +295,13 @@ function MenuManagment() {
               isFiltering={isFiltering}
               products={products}
               onDeleteProduct={handleDeleteProduct}
+				selectedProductId={selectedProductId}
+				onViewMore={setSelectedProductId}
+				onCloseDetails={() => setSelectedProductId(null)}
             />
           </div>
 
-          {hasMore && (
+		  {hasMore && selectedProductId === null && (
             <div className="mt-6 flex justify-center ">
               <button
                 type="button"

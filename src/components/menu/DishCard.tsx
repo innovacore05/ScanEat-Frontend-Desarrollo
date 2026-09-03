@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { FaRegStar, FaStar } from "react-icons/fa6";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
@@ -13,6 +14,10 @@ interface DishCardProps {
 	isAdmin: boolean;
 	productId?: number;
 	onDelete?: (productId: number) => void;
+	isDetailView?: boolean;
+	showReviews?: boolean;
+	onViewMore?: () => void;
+	onCloseDetails?: () => void;
 }
 
 function DishCard({
@@ -24,26 +29,39 @@ function DishCard({
 	isAdmin,
 	productId,
 	onDelete,
+	isDetailView = false,
+	showReviews = false,
+	onViewMore,
+	onCloseDetails,
 }: DishCardProps) {
+	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
+
 	const handleDelete = async () => {
 		if (!productId) return;
 
-		const confirmed = window.confirm(`¿Deseas eliminar "${name}"?`);
-		if (!confirmed) return;
-
 		try {
+			setIsDeleting(true);
 			await deleteProduct(productId);
 			onDelete?.(productId);
+			setIsDeleteDialogOpen(false);
 		} catch (error) {
 			console.error("Error deleting product:", error);
 			const apiError = error as { message?: string };
 			alert(apiError.message ?? "No se pudo eliminar el platillo");
+		} finally {
+			setIsDeleting(false);
 		}
 	};
 	return (
-		<article className="flex w-full flex-row overflow-hidden rounded-2xl bg-white shadow-sm lg:h-105 lg:flex-col">
+		<>
+			<article
+				className={`flex w-full overflow-hidden rounded-2xl bg-white shadow-sm ${
+				isDetailView ? "flex-col lg:h-107.5 lg:flex-row" : "flex-row lg:h-105 lg:flex-col"
+			}`}
+			>
 
-            <div className="w-32 shrink-0 self-stretch lg:h-48 lg:w-full">
+			<div className={isDetailView ? "h-82 w-full shrink-0 lg:h-full lg:w-[59%]" : "w-32 shrink-0 self-stretch lg:h-48 lg:w-full"}>
 				<img
 					src={image}
 					alt={name}
@@ -51,7 +69,7 @@ function DishCard({
 				/>
 			</div>
 
-			<div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center px-4 py-3">
+			<div className={`flex min-h-0 min-w-0 flex-1 flex-col justify-center px-4 py-3 ${isDetailView ? "lg:px-8 lg:py-8" : ""}`}>
 				<h2 className="text-base font-bold text-mint-darker">
 					{name}
 				</h2>
@@ -101,7 +119,7 @@ function DishCard({
 
 								<button
 									type="button"
-									onClick={handleDelete}
+									onClick={() => setIsDeleteDialogOpen(true)}
 									className="cursor-pointer text-red-600"
 									aria-label={`Eliminar ${name}`}
 								>
@@ -119,13 +137,57 @@ function DishCard({
 						)}
 					</div>
 				</div>
+				{isDetailView && showReviews && (
+					<a href="#reviews" className="mt-3 self-start text-sm font-medium text-text-primary hover:underline">
+						Reviews
+					</a>
+				)}
 				<button
 					type="button"
-					className="mt-2 self-start text-sm font-bold text-brown lg: cursor-pointer lg: hover:underline">
-					Ver más
+					onClick={isDetailView ? onCloseDetails : onViewMore}
+					className="mt-2 cursor-pointer self-start text-sm font-bold text-brown hover:underline"
+				>
+					{isDetailView ? "Ver menos" : "Ver más"}
 				</button>
 			</div>
-		</article>
+			</article>
+
+			{isDeleteDialogOpen && (
+				<div
+					className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="delete-dialog-title"
+				>
+					<div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+						<h3 id="delete-dialog-title" className="text-lg font-bold text-mint-darker">
+							¿Eliminar producto?
+						</h3>
+						<p className="mt-2 text-sm text-text-primary">
+							¿Deseas eliminar &ldquo;{name}&rdquo;? Esta acción no se puede deshacer.
+						</p>
+						<div className="mt-6 flex justify-end gap-3">
+							<button
+								type="button"
+								onClick={() => setIsDeleteDialogOpen(false)}
+								disabled={isDeleting}
+								className="cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold text-text-primary hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+							>
+								Cancelar
+							</button>
+							<button
+								type="button"
+								onClick={handleDelete}
+								disabled={isDeleting}
+								className="cursor-pointer rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+							>
+								{isDeleting ? "Eliminando..." : "Eliminar"}
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+		</>
 	);
 }
 

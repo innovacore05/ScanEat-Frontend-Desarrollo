@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getProfile } from "../../services/authService";
 import { HiArrowLeft } from "react-icons/hi";
@@ -13,6 +13,7 @@ interface SimpleDishFormProps {
 }
 
 function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
+	const navigate = useNavigate();
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -21,6 +22,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
   const [category, setCategory] = useState("");
   const [discount, setDiscount] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [firstName, setFirstName] = useState("");
   const isEditMode = mode === "edit" && Boolean(productId);
 
@@ -114,7 +116,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
         });
 
         console.log("Producto actualizado:", data);
-        alert("Platillo actualizado correctamente");
+        setSuccessMessage("Platillo actualizado correctamente");
         return;
       }
 
@@ -129,7 +131,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
 
       console.log("Producto creado:", data);
 
-      alert("Platillo guardado correctamente");
+      setSuccessMessage("Platillo guardado correctamente");
 
       // Limpiar formulario
       setName("");
@@ -154,6 +156,28 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
 
   return (
     <DashboardLayout>
+		{successMessage && (
+			<div
+				className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="success-dialog-title"
+			>
+				<div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl">
+					<h2 id="success-dialog-title" className="text-lg font-bold text-mint-darker">
+						¡Listo!
+					</h2>
+					<p className="mt-2 text-sm text-text-primary">{successMessage}</p>
+					<button
+						type="button"
+						onClick={() => navigate({ to: "/menuManagment" })}
+						className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
+					>
+						Aceptar
+					</button>
+				</div>
+			</div>
+		)}
       <main className="min-h-screen bg-brand-white px-8 py-8">
         {/* Celular */}
         <section className="lg:hidden">
