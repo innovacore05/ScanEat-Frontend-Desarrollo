@@ -19,6 +19,8 @@ function CustomDishForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [firstName, setFirstName] = useState("");
+  const [error, setError] = useState("");
+
 
   const [optionGroups, setOptionGroups] = useState<
     { id: string; name: string; options: string[] }[]
@@ -51,19 +53,57 @@ function CustomDishForm() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setError("");
 
     if (!name.trim()) {
-      alert("Ingresa el nombre del platillo");
+      setError("Ingresa el nombre del platillo");
+      return;
+    }
+    if (!description.trim()) {
+      setError("Ingresa la descripción del platillo");
       return;
     }
     if (!price) {
-      alert("Ingresa el precio del platillo");
+      setError("Ingresa el precio del platillo");
+      return;
+    }
+    if (isNaN(Number(price)) || Number(price) <= 0) {
+      setError("Ingresa un precio válido");
+      return;
+    }
+    if (discount !== "" && (isNaN(Number(discount)) || Number(discount) < 0)) {
+      setError("Ingresa un descuento válido");
       return;
     }
     if (!category) {
-      alert("Selecciona una categoría");
+      setError("Selecciona una categoría");
       return;
     }
+    if (optionGroups.length === 0) {
+      setError("Ingresa al menos un grupo de opciones");
+      return;
+    }
+    if (optionGroups.some((group) => !group.name.trim())) {
+      setError("Todos los grupos de opciones deben tener un nombre");
+      return;
+    }
+    if (optionGroups.some((group) => group.options.length === 0)) {
+      setError("Todos los grupos de opciones deben tener al menos una opción");
+      return;
+    }
+    if (optionGroups.some((group) => group.options.some((option) => !option.trim()))) {
+      setError("Todas las opciones deben tener un valor");
+      return;
+    }
+    if (!image && !imagePreview) {
+      setError("Selecciona una imagen para el platillo");
+      return;
+    }
+    if (image && image.size > 5 * 1024 * 1024) {
+      setError("La imagen no debe superar los 5 MB");
+      return;
+    }
+    
 
     try {
       setIsSubmitting(true);
@@ -174,7 +214,7 @@ function CustomDishForm() {
                 placeholder="Nombre"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-2 py-1.5 "
+                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5 "
               />
 
               {/* Input Description*/}
@@ -184,7 +224,7 @@ function CustomDishForm() {
                 placeholder="Descripción del platillo"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-4"
+                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
               />
 
               {/* Input Price*/}
@@ -194,7 +234,7 @@ function CustomDishForm() {
                 placeholder="Precio del platillo"
                 value={price}
                 onChange={(event) => setPrice(event.target.value)}
-                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
               />
 
               {/* Input Category son varias en formato desplegable*/}
@@ -202,7 +242,7 @@ function CustomDishForm() {
                 id="category"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-3 py-1.5"
               >
                 <option value="">Categoría</option>
                 <option value="1">Postres</option>
@@ -223,15 +263,16 @@ function CustomDishForm() {
                     event.target.value ? Number(event.target.value) : "",
                   )
                 }
-                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
               />
 
               {/* grupos de opciones */}
               <div className="mt-5">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-base font-bold text-mint-darker">
+                 <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-mint-darker text-lg">
                     Grupos de opciones
                   </h3>
+                 
                   <button
                     type="button"
                     onClick={() => {
@@ -261,7 +302,7 @@ function CustomDishForm() {
                             ),
                           );
                         }}
-                        className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                        className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
                       />
                       <button
                         type="button"
@@ -280,21 +321,7 @@ function CustomDishForm() {
                     {group.name.trim() !== "" && (
                       <div className="mt-2">
                         <div className="flex justify-end">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setOptionGroups((prev) =>
-                                prev.map((g) =>
-                                  g.id === group.id
-                                    ? { ...g, options: [...g.options, ""] }
-                                    : g,
-                                ),
-                              );
-                            }}
-                            className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-4   text-mint-darker  hover:border-mint-dark my-5"
-                          >
-                            Agregar opcion +
-                          </button>
+                          
                         </div>
 
                         {group.options.map((option, index) => (
@@ -321,7 +348,7 @@ function CustomDishForm() {
                                   ),
                                 );
                               }}
-                              className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                              className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
                             />
                             <button
                               type="button"
@@ -346,11 +373,31 @@ function CustomDishForm() {
                             </button>
                           </div>
                         ))}
+                        <button
+                            type="button"
+                            onClick={() => {
+                              setOptionGroups((prev) =>
+                                prev.map((g) =>
+                                  g.id === group.id
+                                    ? { ...g, options: [...g.options, ""] }
+                                    : g,
+                                ),
+                              );
+                            }}
+                            className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-4   text-mint-darker  hover:border-mint-dark my-5 mb-10"
+                          >
+                            Agregar opcion +
+                          </button>
                       </div>
+
+                      
                     )}
                   </div>
                 ))}
               </div>
+              {error ? (
+                <p className="text-sm text-red-600">{error}</p>
+              ) : null}
 
               <Link
                 to="/MenuManagment"
@@ -449,14 +496,14 @@ function CustomDishForm() {
                 placeholder="Nombre"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
+                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               />
               <input
                 id="description"
                 placeholder="Descripcion del platillo"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="w-full text-mint-darker font-bold resize-none rounded-lg border border-border px-4 py-4 focus:border-2 focus:border-brown focus:outline-none"
+                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-4 focus:border-2 focus:border-brown focus:outline-none"
               />
               <input
                 id="price"
@@ -464,13 +511,13 @@ function CustomDishForm() {
                 placeholder="Precio del platillo"
                 value={price}
                 onChange={(event) => setPrice(event.target.value)}
-                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
+                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               />
               <select
                 id="category"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
+                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               >
                 <option value="">Categoría</option>
                 <option value="1">Postres</option>
@@ -490,7 +537,7 @@ function CustomDishForm() {
                     event.target.value ? Number(event.target.value) : "",
                   )
                 }
-                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
+                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               />
 
               {/* grupos de opciones */}
@@ -498,10 +545,10 @@ function CustomDishForm() {
               <div>
                 <div className="mt-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-base font-bold text-mint-darker">
+                    <h3 className="font-bold text-mint-darker text-lg">
                       Grupos de opciones
-                    </h3>
-
+                  </h3>
+                  
                     <button
                       type="button"
                       onClick={() => {
@@ -532,7 +579,7 @@ function CustomDishForm() {
                               ),
                             );
                           }}
-                          className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                          className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
                         />
 
                         <button
@@ -551,6 +598,8 @@ function CustomDishForm() {
 
                       {/* opciones del grupo */}
 
+                     
+                      
                       {group.name.trim() !== "" && (
                         <div className="mt-3">
                           {group.options.map((option, index) => (
@@ -577,8 +626,9 @@ function CustomDishForm() {
                                     ),
                                   );
                                 }}
-                                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
                               />
+                              
                               <button
                                 type="button"
                                 onClick={() => {
@@ -600,9 +650,9 @@ function CustomDishForm() {
                               >
                                 ✕
                               </button>
+                              
                             </div>
                           ))}
-
                           <button
                             type="button"
                             onClick={() => {
@@ -614,16 +664,20 @@ function CustomDishForm() {
                                 ),
                               );
                             }}
-                            className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-4   text-mint-darker  hover:border-mint-dark my-5"
+                            className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-3   text-mint-darker  hover:border-mint-dark my-5"
                           >
                             Agregar opción <GoPlus className="h-4 w-4" />
-                          </button>
+                      </button>
                         </div>
                       )}
                     </div>
                   ))}
                 </div>
               </div>
+
+              {error ? (
+                <p className="text-sm text-red-600">{error}</p>
+              ) : null}
 
               <div className="mt-6 flex flex-col items-end gap-4">
                 <Link

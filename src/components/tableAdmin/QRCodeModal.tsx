@@ -73,7 +73,7 @@ function QrCodeModal({ isOpen, value, numeroMesa, onClose }: QrCodeModalProps) {
                 {/* Texto visible arriba del QR en el modal */}
                 {numeroMesa && (
                     <p className="text-center font-bold text-gray-800 text-lg mb-1">
-                        Mesa# {numeroMesa}
+                        Mesa #{numeroMesa}
                     </p>
                 )}
 

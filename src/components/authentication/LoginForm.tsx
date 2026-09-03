@@ -74,7 +74,7 @@ function LoginForm() {
 						placeholder="Correo electrónico"
 						value={email}
 						onChange={(event) => setEmail(event.target.value)}
-						className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
+						className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
 					/>
 
 					<div className="flex flex-col gap-1">
@@ -85,7 +85,7 @@ function LoginForm() {
 								placeholder="Contraseña"
 								value={password}
 								onChange={(event) => setPassword(event.target.value)}
-								className="w-full rounded-lg border border-border px-4 py-3 pr-12 focus:border-2 focus:border-brown focus:outline-none"
+								className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-3 pr-12 focus:border-2 focus:border-brown focus:outline-none"
 							/>
 
 							<button

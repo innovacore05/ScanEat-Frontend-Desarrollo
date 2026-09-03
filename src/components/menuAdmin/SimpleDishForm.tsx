@@ -25,6 +25,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [firstName, setFirstName] = useState("");
   const isEditMode = mode === "edit" && Boolean(productId);
+  const [error, setError] = useState("");
 
   {
     /* useEffect para cargar el nombre del usuario */
@@ -85,19 +86,39 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
   }
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setError("");
 
     if (!name.trim()) {
-      alert("Ingresa el nombre del platillo");
+      setError("Ingresa el nombre del platillo");
+      return;
+    }
+
+    if (!description.trim()) {
+      setError("Ingresa la descripción del platillo");
       return;
     }
 
     if (!price) {
-      alert("Ingresa el precio del platillo");
+      setError("Ingresa el precio del platillo");
+      return;
+    }
+
+    if (isNaN(Number(price)) || Number(price) <= 0) {
+      setError("Ingresa un precio válido");
+      return;
+    }
+
+    if (discount !== "" && (isNaN(Number(discount)) || Number(discount) < 0)) {
+      setError("Ingresa un descuento válido");
       return;
     }
 
     if (!category) {
-      alert("Selecciona una categoría");
+      setError("Selecciona una categoría");
+      return;
+    }
+    if (!image && !imagePreview) {
+      setError("Selecciona una imagen para el platillo");
       return;
     }
 
@@ -179,6 +200,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
 			</div>
 		)}
       <main className="min-h-screen bg-brand-white px-8 py-8">
+
         {/* Celular */}
         <section className="lg:hidden">
           <div className="flex items-center gap-2">
@@ -194,7 +216,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
 
           <div className="flex items-center gap-2">
             {/* Aquí va el form de platillo simple pero en celular */}
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} >
               {/* Input image*/}
               <label
                 htmlFor="image"
@@ -230,7 +252,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 placeholder="Nombre"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-2 py-1.5 "
+                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5 "
               />
 
               {/* Input Description*/}
@@ -240,7 +262,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 placeholder="Descripción del platillo"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-4"
+                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-4"
               />
 
               {/* Input Price*/}
@@ -250,7 +272,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 placeholder="Precio del platillo"
                 value={price}
                 onChange={(event) => setPrice(event.target.value)}
-                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
               />
 
               {/* Input Category son varias en formato desplegable*/}
@@ -258,7 +280,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 id="category"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="w-full mt-5 text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
+                className="w-full mt-5 font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-3 py-1.5"
               >
                 <option value="">Categoría</option>
 
@@ -280,8 +302,11 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                     event.target.value ? Number(event.target.value) : "",
                   )
                 }
-                className="mt-5 w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5"
+                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
               />
+              {error ? (
+                <p className="text-sm mt-3 text-red-600">{error}</p>
+              ) : null}
 
               <Link
                 to="/MenuManagment"
@@ -337,7 +362,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 Añadir un platillo personalizado
               </span>
 
-              <GoPlus className="h-6 w-6 shrink-0 text-brand-mint-dark" />
+              <GoPlus className="h-6 w-6 shrink-0 text-mint-dark" />
             </Link>
           </div>
 
@@ -385,14 +410,14 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 placeholder="Nombre"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
+                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
               />
               <input
                 id="description"
                 placeholder="Descripcion del platillo"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="w-full text-mint-darker font-bold resize-none rounded-lg border border-border px-4 py-4 focus:border-2 focus:border-brown focus:outline-none"
+                className="w-fullfont-normal text-black text-base resize-none rounded-lg border border-border px-4 py-4 focus:border-2 focus:border-brown focus:outline-none"
               />
               <input
                 id="price"
@@ -400,13 +425,13 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 placeholder="Precio del platillo"
                 value={price}
                 onChange={(event) => setPrice(event.target.value)}
-                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
+                className=" w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
               />
               <select
                 id="category"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
+                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               >
 
                 <option value="">Categoría</option>
@@ -427,8 +452,12 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                     event.target.value ? Number(event.target.value) : "",
                   )
                 }
-                className="w-full text-mint-darker font-bold rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
+                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               />
+
+              {error ? (
+                <p className="text-sm text-red-600">{error}</p>
+              ) : null}
 
               <div className="mt-6 flex flex-col items-end gap-4">
                 <Link
