@@ -118,6 +118,7 @@ export const createProduct = async ({
     categoryId: number;
     image: File | null;
 }) => {
+     const token = localStorage.getItem("authToken");
     const formData = new FormData();
 
     formData.append("name", name);
@@ -135,7 +136,11 @@ export const createProduct = async ({
 
     const response = await fetch(`${MENU_BASE_URL}/products`, {
         method: "POST",
+        headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← ahora sí dentro de headers
+        },
         body: formData,
+       
     });
 
     const data = await response.json().catch(() => ({}));
@@ -165,6 +170,9 @@ export const updateProduct = async (
         image: File | null;
     },
 ) => {
+
+const token = localStorage.getItem("authToken"); 
+
     const formData = new FormData();
 
     formData.append("name", name);
@@ -182,6 +190,9 @@ export const updateProduct = async (
 
     const response = await fetch(`${MENU_BASE_URL}/products/${id}`, {
         method: "PUT",
+         headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← agregar
+        },
         body: formData,
     });
 
@@ -250,6 +261,7 @@ export const createCustomDish = async ({
 
 
 export const deleteProduct = async (id: number) => {
+    const token = localStorage.getItem("authToken");
     const endpoints = [
         `${MENU_BASE_URL}/products/${id}`,
         `${MENU_BASE_URL}/products/custom/${id}`,
@@ -261,6 +273,9 @@ export const deleteProduct = async (id: number) => {
         try {
             const response = await fetch(url, {
                 method: "DELETE",
+                headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← agregar
+    },
             });
 
             if (response.ok) {
