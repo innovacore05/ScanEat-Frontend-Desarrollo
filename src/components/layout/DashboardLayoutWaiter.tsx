@@ -14,7 +14,7 @@ interface DashboardLayoutProps {
 }
 
 function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+ 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [firstName, setFirstName] = useState("");
@@ -157,7 +157,6 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
               type="button"
               onClick={() => {
                 setIsMenuOpen(!isMenuOpen);
-                setIsProfileMenuOpen(false);
               }}
               className="cursor-pointer text-mint-dark"
               aria-label="Abrir menú"

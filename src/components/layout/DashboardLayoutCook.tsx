@@ -12,7 +12,7 @@ interface DashboardLayoutCookProps {
 }
 
 function DashboardLayoutCook({ children }: DashboardLayoutCookProps) {
-      const [isMenuOpen, setIsMenuOpen] = useState(false);
+      // const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
