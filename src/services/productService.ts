@@ -120,7 +120,7 @@ export const createProduct = async ({
 }) => {
     const formData = new FormData();
 
-    formData.append("productName", name);
+    formData.append("name", name);
     formData.append("description", description);
     formData.append("price", price);
     formData.append("categoryId", String(categoryId));
@@ -167,7 +167,7 @@ export const updateProduct = async (
 ) => {
     const formData = new FormData();
 
-    formData.append("productName", name);
+    formData.append("name", name);
     formData.append("description", description);
     formData.append("price", price);
     formData.append("categoryId", String(categoryId));
