@@ -12,6 +12,7 @@ interface DishCardProps {
 	image: string;
 	rating: number;
 	isAdmin: boolean;
+	showActions?: boolean;
 	productId?: number;
 	onDelete?: (productId: number) => void;
 	isDetailView?: boolean;
@@ -27,6 +28,7 @@ function DishCard({
 	image,
 	rating,
 	isAdmin,
+	showActions = true,
 	productId,
 	onDelete,
 	isDetailView = false,
@@ -95,9 +97,10 @@ function DishCard({
 					</div>
 					
 
-					<div className="flex items-center gap-2">
-						{isAdmin ? (
-							<>
+					{showActions && (
+						<div className="flex items-center gap-2">
+							{isAdmin ? (
+								<>
 								{productId ? (
 									<Link
 										to="/simpleDishForm"
@@ -125,17 +128,18 @@ function DishCard({
 								>
 									<MdDeleteOutline className="h-6 w-6" />
 								</button>
-							</>
-						) : (
-							<button
-								type="button"
-								className="cursor-pointer text-mint-dark"
-								aria-label={`Agregar ${name}`}
-							>
-								<BsFillPlusCircleFill className="h-10 w-10" />
-							</button>
-						)}
-					</div>
+								</>
+							) : (
+								<button
+									type="button"
+									className="cursor-pointer text-mint-dark"
+									aria-label={`Agregar ${name}`}
+								>
+									<BsFillPlusCircleFill className="h-10 w-10" />
+								</button>
+							)}
+						</div>
+					)}
 				</div>
 				{isDetailView && showReviews && (
 					<a href="#reviews" className="mt-3 self-start text-sm font-medium text-text-primary hover:underline">

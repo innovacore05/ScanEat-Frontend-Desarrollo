@@ -7,6 +7,21 @@ type ApiError = {
 //Es la url base de la API de autenticación
 const AUTH_BASE_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
 
+export const logout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("authUser");
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("auth_user");
+    localStorage.removeItem("scanit_token");
+    localStorage.removeItem("scanit_user");
+    localStorage.removeItem("pendingLoginEmail");
+    localStorage.removeItem("pendingVerificationEmail");
+    localStorage.removeItem("pendingResetEmail");
+    localStorage.removeItem("pendingResetCode");
+    localStorage.removeItem("verificationFlow");
+    sessionStorage.clear();
+};
+
 //Función para registrar un nuevo usuario
 export const register = async (
     first_name: string,

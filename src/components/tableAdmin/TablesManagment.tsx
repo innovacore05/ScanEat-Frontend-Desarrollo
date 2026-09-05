@@ -8,6 +8,8 @@ import { MdOutlineModeEditOutline } from "react-icons/md";
 import { AiOutlineDelete } from "react-icons/ai";
 import { getTables, deleteTable } from "../../services/tableService";
 import QrCodeModal from "./QRCodeModal";
+import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
+import { ROLE_IDS } from "../../config/roles";
 
 
 export type TableItem = {
@@ -20,11 +22,14 @@ export type TableItem = {
 
 function TablesManagment() {
 	const [firstName, setFirstName] = useState("");
+	const [roleId, setRoleId] = useState<number | null>(null);
 	const [tables, setTables] = useState<TableItem[]>([]);
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 	const [qrValue, setQrValue] = useState("");
 	const [qrTableNumber, setQrTableNumber] = useState<number | string>("");
 	const [selectedTable, setSelectedTable] = useState<TableItem | null>(null);
+	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
 
 	const handleShowQr = (tableId: string, tableNumber: number) => {
 		setQrValue(`https://scaneat-frontend-produccion-production.up.railway.app/menuClient?mesaId=${tableId}`);
@@ -37,6 +42,7 @@ function TablesManagment() {
 			try {
 				const data = await getProfile();
 				setFirstName(data.user.firstName);
+				setRoleId(data.user.roleId);
 			} catch (error) {
 				console.error("Error loading profile:", error);
 			}
@@ -58,27 +64,36 @@ function TablesManagment() {
 		loadTables();
 	}, []);
 
-	const handleDeleteTable = async (tableId: string) => {
-		if (window.confirm("¿Estás seguro de que deseas eliminar esta mesa?")) {
-			try {
-				await deleteTable(tableId);
-				setTables(tables.filter((table) => table.id !== tableId));
-			} catch (error) {
-				console.error("Error eliminando mesa:", error);
-			}
+	const handleDeleteTable = async () => {
+		if (!selectedTable) return;
+
+		try {
+			setIsDeleting(true);
+			await deleteTable(selectedTable.id);
+			setTables((currentTables) =>
+				currentTables.filter((table) => table.id !== selectedTable.id),
+			);
+			setSelectedTable(null);
+			setIsDeleteDialogOpen(false);
+		} catch (error) {
+			console.error("Error eliminando mesa:", error);
+		} finally {
+			setIsDeleting(false);
 		}
 	};
 
-
+	const isOwner = roleId === ROLE_IDS.owner;
+	const Layout = isOwner ? DashboardLayout : DashboardLayoutWaiter;
+	const dashboardRoute = isOwner ? "/dashboard" : "/dashboardWaiter";
 
 	return (
-		<DashboardLayout>
+		<Layout>
 			<main className="flex min-h-screen flex-col bg-white ">
 				{/* Celular */}
 				<section className="flex flex-1 flex-col lg:hidden">
 					<div className="flex items-center gap-2">
 						<Link
-							to="/dashboard"
+							to={dashboardRoute}
 							className="flex items-center gap-2 px-8 text-mint-dark"
 						>
 							<HiArrowLeft className="h-6 w-6" />
@@ -102,7 +117,7 @@ function TablesManagment() {
 											}`}
 									>
 										<span>Mesa #{table.tableNumber}</span>
-										<button
+										{isOwner && <button
 											type="button"
 											onClick={(event) => {
 												event.stopPropagation();
@@ -111,20 +126,20 @@ function TablesManagment() {
 											className="rounded bg-mint-dark px-3 py-1 text-xs text-white hover:bg-mint-dark/90"
 										>
 											Ver QR
-										</button>
+										</button>}
 									</div>
 								))
 							)}
 						</div>
 
-						<QrCodeModal
+						{isOwner && <QrCodeModal
 							isOpen={isQrModalOpen}
 							value={qrValue}
 							numeroMesa={qrTableNumber}
 							onClose={() => setIsQrModalOpen(false)}
-						/>
+						/>}
 
-						<div className="mt-auto flex flex-col gap-4">
+						{isOwner && <div className="mt-auto flex flex-col gap-4">
 							<Link
 								to="/editTable"
 								search={{ tableId: selectedTable?.id }}
@@ -146,12 +161,12 @@ function TablesManagment() {
 							</Link>
 
 							<button className="w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-mint-dark/90"
-								onClick={() => selectedTable && handleDeleteTable(selectedTable.id)}>
+								onClick={() => selectedTable && setIsDeleteDialogOpen(true)}>
 								<span className="font-bold text-white justify-center flex">
 									Eliminar mesa
 								</span>
 							</button>
-						</div>
+						</div>}
 					</div>
 				</section>
 
@@ -172,7 +187,7 @@ function TablesManagment() {
 									Mesas
 								</h2>
 
-								<div className="flex gap-3">
+								{isOwner && <div className="flex gap-3">
 									<Link
 										to="/addTable"
 										className="flex items-center justify-between rounded border w-40 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
@@ -192,12 +207,12 @@ function TablesManagment() {
 									</Link>
 
 									<button className="flex items-center justify-between rounded border w-40 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
-										onClick={() => selectedTable && handleDeleteTable(selectedTable.id)}>
+										onClick={() => selectedTable && setIsDeleteDialogOpen(true)}>
 										<span>Eliminar mesa</span>
 										<AiOutlineDelete className="text-mint-darker w-5 h-5" />
 
 									</button>
-								</div>
+								</div>}
 							</div>
 
 							<div className="mt-4 flex flex-col gap-2">
@@ -214,7 +229,7 @@ function TablesManagment() {
 												}`}
 										>
 											<span>Mesa #{table.tableNumber}</span>
-											<button
+											{isOwner && <button
 												type="button"
 												onClick={(event) => {
 													event.stopPropagation();
@@ -223,18 +238,18 @@ function TablesManagment() {
 												className="rounded bg-mint-dark px-3 py-1 text-xs text-white hover:bg-mint-dark/90"
 											>
 												Ver QR
-											</button>
+											</button>}
 										</div>
 									))
 								)}
 							</div>
 
-							<QrCodeModal
+							{isOwner && <QrCodeModal
 								isOpen={isQrModalOpen}
 								value={qrValue}
 								numeroMesa={qrTableNumber}
 								onClose={() => setIsQrModalOpen(false)}
-							/>
+							/>}
 						</div>
 
 						<div>
@@ -265,7 +280,46 @@ function TablesManagment() {
 					</div>
 				</section>
 			</main>
-		</DashboardLayout>
+
+			{isDeleteDialogOpen && selectedTable && (
+				<div
+					className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="delete-table-dialog-title"
+				>
+					<div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+						<h3
+							id="delete-table-dialog-title"
+							className="text-lg font-bold text-mint-darker"
+						>
+							¿Eliminar mesa?
+						</h3>
+						<p className="mt-2 text-sm text-text-primary">
+							¿Deseas eliminar la mesa #{selectedTable.tableNumber}? Esta acción no se puede deshacer.
+						</p>
+						<div className="mt-6 flex justify-end gap-3">
+							<button
+								type="button"
+								onClick={() => setIsDeleteDialogOpen(false)}
+								disabled={isDeleting}
+								className="cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold text-text-primary hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+							>
+								Cancelar
+							</button>
+							<button
+								type="button"
+								onClick={handleDeleteTable}
+								disabled={isDeleting}
+								className="cursor-pointer rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+							>
+								{isDeleting ? "Eliminando..." : "Eliminar"}
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+		</Layout>
 	);
 }
 

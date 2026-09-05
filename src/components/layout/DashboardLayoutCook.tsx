@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { getProfile } from "../../services/authService";
+import { getProfile, logout } from "../../services/authService";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { RiNotification2Line } from "react-icons/ri";
 import { LuLogOut } from "react-icons/lu";
@@ -82,6 +82,7 @@ function DashboardLayoutCook({ children }: DashboardLayoutCookProps) {
           {/* //cerrar sesion normal , regresa al registro inicio de sesion/ */}
           <Link
             to="/login"
+            onClick={logout}
             className="flex items-center gap-4 py-3 pb-8 text-left text-text-primary border-b border-neutral-300"
           >
             <LuLogOut className="h-6 w-6 shrink-0" />
@@ -152,6 +153,7 @@ function DashboardLayoutCook({ children }: DashboardLayoutCookProps) {
                         
                         <Link
                             to="/login"
+                            onClick={logout}
                             className="mt-10 flex w-full items-center gap-4 py-4 text-left text-white"
                         >
                             <LuLogOut className="h-6 w-6 shrink-0" />

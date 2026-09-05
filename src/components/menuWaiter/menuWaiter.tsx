@@ -55,7 +55,8 @@ function ProductList({
             price={product.price}
             image={product.image ?? ""}
             rating={product.rating}
-            isAdmin={true}
+            isAdmin={false}
+            showActions={false}
             productId={product.productId}
             onDelete={onDeleteProduct}
 			isDetailView={selectedProductId === product.productId}
