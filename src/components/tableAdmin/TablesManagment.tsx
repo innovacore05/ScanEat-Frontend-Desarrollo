@@ -59,6 +59,7 @@ function TablesManagment() {
 	}, []);
 
 	const handleDeleteTable = async (tableId: string) => {
+		
 		if (window.confirm("¿Estás seguro de que deseas eliminar esta mesa?")) {
 			try {
 				await deleteTable(tableId);
