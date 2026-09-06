@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { BsFillArrowLeftCircleFill } from "react-icons/bs";
 import { Link, useNavigate } from "@tanstack/react-router";
-import {resendLoginCode,resendResetCode,verifyLoginCode,verifyResetCode } from "../../services/authService";
+import {
+  getProfile,
+  resendLoginCode,
+  resendResetCode,
+  verifyLoginCode,
+  verifyResetCode,
+} from "../../services/authService";
+import { getDashboardForRole } from "../../config/roles";
 
 function VerificationCodeForm() {
   const navigate = useNavigate();
@@ -114,10 +121,11 @@ function VerificationCodeForm() {
           localStorage.setItem("authUser", JSON.stringify(response.user));
         }
 
+        const profile = await getProfile();
         localStorage.removeItem("pendingLoginEmail");
         localStorage.removeItem("verificationFlow");
 
-        navigate({ to: "/dashboard" });
+        navigate({ to: getDashboardForRole(profile.user.roleId) });
 
         return;
       }
