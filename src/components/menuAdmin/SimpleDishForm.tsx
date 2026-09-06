@@ -121,6 +121,10 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
       setError("Selecciona una imagen para el platillo");
       return;
     }
+    if (image && !["image/jpeg", "image/png", "image/webp"].includes(image.type)) {
+      setError("La imagen debe ser JPG, JPEG, PNG o WEBP");
+      return;
+    }
     // if (image && image.size > 1 * 1024 * 1024) {
     //   setError("La imagen no debe superar 1 MB");
     //   return;

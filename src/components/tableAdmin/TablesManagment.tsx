@@ -206,7 +206,7 @@ function TablesManagment() {
 										<MdOutlineModeEditOutline className={`w-6 h-6 ${selectedTable ? 'text-mint-darker' : 'text-mint-darker/50'}`} />
 									</Link>
 
-									<button className="flex items-center justify-between rounded border w-40 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
+									<button className="cursor-pointer flex items-center justify-between rounded border w-40 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
 										onClick={() => selectedTable && setIsDeleteDialogOpen(true)}>
 										<span>Eliminar mesa</span>
 										<AiOutlineDelete className="text-mint-darker w-5 h-5" />
@@ -235,7 +235,7 @@ function TablesManagment() {
 													event.stopPropagation();
 													handleShowQr(table.id, table.tableNumber);
 												}}
-												className="rounded bg-mint-dark px-3 py-1 text-xs text-white hover:bg-mint-dark/90"
+												className=" cursor-pointer rounded bg-mint-dark px-3 py-1 text-xs text-white hover:bg-mint-dark/90"
 											>
 												Ver QR
 											</button>}

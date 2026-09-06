@@ -79,14 +79,14 @@ function AddTable() {
 
 	return (
 		<DashboardLayout>
-			<main className="flex min-h-screen flex-col bg-white pt-8 pb-0">
+			<main className="flex min-h-screen flex-col bg-white ">
 
 				{/* Celular */}
 				<section className="flex flex-1 flex-col lg:hidden">
 
 					<div className="flex items-center gap-2">
 						<Link
-							to="/dashboard"
+							to="/tablesManagment"
 							className="flex items-center gap-2 px-8 text-mint-dark"
 						>
 							<HiArrowLeft className="h-6 w-6" />
@@ -126,23 +126,6 @@ function AddTable() {
 							/>
 						</div>
 
-						<div className="mt-3 flex items-center justify-end gap-4">
-							<button
-										type="button"
-										onClick={() => handleGenerateQr()}
-										className="flex w-39.75 cursor-pointer justify-center rounded-lg bg-mint-dark px-3 py-2 text-base font-bold text-white hover:bg-mint-dark/90"
-										disabled={!createdTableId}
-									>
-										Generar QR
-									</button>
-									<QrCodeModal
-									isOpen={isQrModalOpen}
-									value={qrValue}
-									numeroMesa={qrTableNumber}
-									onClose={() => setIsQrModalOpen(false)}
-									/>
-						</div>
-
 						<div className="mt-auto flex flex-col">
 
 							<Link
@@ -168,9 +151,9 @@ function AddTable() {
 
 				{/* Computadora */}
 
-				<section className="hidden px-8 py-8 lg:block">
-					<div className="rounded-lg bg-mint-dark px-8 py-8">
-						<h1 className="text-2xl font-bold text-white">
+				<section className="hidden px-15 py-15 lg:block">
+					<div className="rounded-2xl bg-mint-dark px-8 py-6">
+						<h1 className="text-3xl font-bold text-white">
 							¡Hola, {firstName || "Usuario"}!
 						</h1>
 					</div>
@@ -180,9 +163,19 @@ function AddTable() {
 					<div className="mt-8 px-2 py-2">
 						<div>
 							<div className="flex items-center justify-between">
-								<h2 className="text-2xl font-bold text-mint-dark">
-									Mesas
-								</h2>
+								<div className="flex items-center gap-2">
+									<Link
+										to="/tablesManagment"
+										className="flex items-center text-mint-dark"
+									>
+										<HiArrowLeft className="h-6 w-6" />
+									</Link>
+
+									<h2 className="text-2xl font-bold text-mint-dark">
+										Mesas
+									</h2>
+								</div>
+								
 
 								<div className="flex gap-8 items-start">
 									<Link
@@ -249,14 +242,7 @@ function AddTable() {
 								</div>
 
 								<div className="mt-7 mb-4 flex gap-10 align-center justify-end">
-									<button
-										type="button"
-										onClick={() => handleGenerateQr()}
-										className="flex w-39.75 cursor-pointer justify-center rounded-lg bg-mint-dark px-3 py-2 text-base font-bold text-white hover:bg-mint-dark/90"
-										disabled={!createdTableId}
-									>
-										Generar QR
-									</button>
+									
 									<QrCodeModal
 									isOpen={isQrModalOpen}
 									value={qrValue}
