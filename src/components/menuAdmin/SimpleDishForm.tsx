@@ -70,6 +70,15 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
         setDescription(product.description ?? "");
         setPrice(String(product.price ?? ""));
         setCategory(String(product.categoryId ?? ""));
+        const productDiscount =
+          product.discount ??
+          product.discountPercentage ??
+          product.discount_percent;
+        setDiscount(
+          productDiscount !== undefined && productDiscount !== null
+            ? Number(productDiscount)
+            : "",
+        );
         setImagePreview(product.image ?? null);
         setImage(null);
       } catch (error) {

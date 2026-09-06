@@ -150,7 +150,11 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
         {/* Barra superior - TELÉFONO Y TABLET */}
         <div className="px-6 pt-8 lg:hidden">
           <div className="flex justify-start">
-            <img src="/img/logoS.png" alt="Logo del negocio" />
+            <img
+              src="/img/LogoS.svg"
+              alt="Logo del negocio"
+              className="h-[62px] w-[40px] object-contain"
+            />
           </div>
 
           <div className="mt-8 flex items-center justify-between">

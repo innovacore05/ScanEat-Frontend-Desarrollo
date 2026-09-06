@@ -1,14 +1,24 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getProfile } from "../../services/authService";
-import { createCustomDish } from "../../services/productService";
+import {
+  createCustomDish,
+  getProductById,
+  updateCustomDish,
+} from "../../services/productService";
 import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus } from "react-icons/go";
 import { FiCamera } from "react-icons/fi";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 
-function CustomDishForm() {
+interface CustomDishFormProps {
+  mode?: "create" | "edit";
+  productId?: number;
+}
+
+function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
 	const navigate = useNavigate();
+  const isEditMode = mode === "edit" && Boolean(productId);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -40,8 +50,39 @@ function CustomDishForm() {
   }, []);
 
   useEffect(() => {
+    if (!isEditMode || !productId) {
+      return;
+    }
+
+    const loadProduct = async () => {
+      try {
+        const product = await getProductById(productId);
+        setName(product.productName ?? "");
+        setDescription(product.description ?? "");
+        setPrice(String(product.price ?? ""));
+        setCategory(String(product.categoryId ?? ""));
+        setDiscount(
+          product.discount !== undefined && product.discount !== null
+            ? Number(product.discount)
+            : "",
+        );
+        setImagePreview(product.image ?? null);
+        setImage(null);
+        setOptionGroups(product.optionGroups ?? []);
+      } catch (error) {
+        console.error("Error loading custom product to edit:", error);
+        alert("No se pudo cargar la información del platillo personalizado");
+      }
+    };
+
+    loadProduct();
+  }, [isEditMode, productId]);
+
+  useEffect(() => {
     if (!image) {
-      setImagePreview(null);
+      if (!isEditMode) {
+        setImagePreview(null);
+      }
       return;
     }
 
@@ -113,7 +154,7 @@ function CustomDishForm() {
     try {
       setIsSubmitting(true);
 
-      const data = await createCustomDish({
+      const dishData = {
         name: name.trim(),
         description: description.trim(),
         price,
@@ -121,21 +162,40 @@ function CustomDishForm() {
         categoryId: Number(category),
         image,
         optionGroups,
-      });
+      };
+      const data = isEditMode && productId
+        ? await updateCustomDish(productId, dishData)
+        : await createCustomDish(dishData);
 
-      console.log("Platillo personalizado creado:", data);
-      setSuccessMessage("Platillo guardado correctamente");
+      console.log(
+        isEditMode
+          ? "Platillo personalizado actualizado:"
+          : "Platillo personalizado creado:",
+        data,
+      );
+      setSuccessMessage(
+        isEditMode
+          ? "Platillo actualizado correctamente"
+          : "Platillo guardado correctamente",
+      );
 
-      setName("");
-      setDescription("");
-      setPrice("");
-      setCategory("");
-      setDiscount("");
-      setImage(null);
-      setImagePreview(null);
-      setOptionGroups([]);
+      if (!isEditMode) {
+        setName("");
+        setDescription("");
+        setPrice("");
+        setCategory("");
+        setDiscount("");
+        setImage(null);
+        setImagePreview(null);
+        setOptionGroups([]);
+      }
     } catch (error) {
-      console.error("Error al crear el platillo:", error);
+      console.error(
+        isEditMode
+          ? "Error al actualizar el platillo:"
+          : "Error al crear el platillo:",
+        error,
+      );
       const apiError = error as { message?: string };
       alert(apiError.message ?? "No se pudo guardar el platillo");
     } finally {
@@ -178,7 +238,9 @@ function CustomDishForm() {
               <HiArrowLeft className="h-6 w-6" />
 
               <span className="text-[32px] font-bold">
-                Platillo personalizado
+                {isEditMode
+                  ? "Editar platillo"
+                  : "Platillo personalizado"}
               </span>
             </Link>
           </div>
@@ -458,7 +520,9 @@ function CustomDishForm() {
           </div>
 
           <h2 className="mt-8 text-2xl font-bold text-black">
-            Platillo Personalizado
+            {isEditMode
+              ? "Platillo Personalizado - Editar"
+              : "Platillo Personalizado"}
           </h2>
 
           {/*Form platillo simple*/}

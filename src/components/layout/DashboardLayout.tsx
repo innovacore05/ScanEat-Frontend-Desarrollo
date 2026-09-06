@@ -45,7 +45,11 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <aside className="fixed left-0 top-0 hidden h-screen w-64 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
         <div className="flex justify-start">
-          <img src="/img/logoS.png" alt="Logo del negocio" />
+          <img
+            src="/img/LogoS.svg"
+            alt="Logo del negocio"
+            className="h-[62px] w-[40px] object-contain"
+          />
         </div>
 
         <nav className="mt-10 flex flex-col">
@@ -178,7 +182,11 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Barra superior - TELÉFONO Y TABLET */}
         <div className="px-6 pt-8 lg:hidden">
           <div className="flex justify-start">
-            <img src="/img/logoS.png" alt="Logo del negocio" />
+            <img
+              src="/img/LogoS.svg"
+              alt="Logo del negocio"
+              className="h-[62px] w-[40px] object-contain"
+            />
           </div>
 
           <div className="mt-8 flex items-center justify-between">
