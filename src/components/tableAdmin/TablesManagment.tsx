@@ -82,9 +82,11 @@ function TablesManagment() {
 		}
 	};
 
+	// Keep the admin layout as the visual fallback, but wait for the role
+	// before displaying owner-only table actions.
 	const isOwner = roleId === ROLE_IDS.owner;
-	const Layout = isOwner ? DashboardLayout : DashboardLayoutWaiter;
-	const dashboardRoute = isOwner ? "/dashboard" : "/dashboardWaiter";
+	const Layout = roleId === ROLE_IDS.waiter ? DashboardLayoutWaiter : DashboardLayout;
+	const dashboardRoute = roleId === ROLE_IDS.waiter ? "/dashboardWaiter" : "/dashboard";
 
 	return (
 		<Layout>
