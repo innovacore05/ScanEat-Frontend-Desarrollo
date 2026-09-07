@@ -17,7 +17,7 @@ function AddTable() {
 	const [qrValue, setQrValue] = useState("");
 	const [qrTableNumber, setQrTableNumber] = useState<number | string>("");
 	const [tables, setTables] = useState<any[]>([]);
-	const [createdTableId, setCreatedTableId] = useState<string | null>(null);
+	//const [createdTableId, setCreatedTableId] = useState<string | null>(null);
 
 
 	useEffect(() => {
@@ -64,7 +64,7 @@ function AddTable() {
 			setIsSubmitting(true);
 
 			const table = await createTable(tableNumberValue, chairNumberValue);
-			setCreatedTableId(table.id);
+			//setCreatedTableId(table.id);
 			openQrForTable(table.id, tableNumberValue);
 		} catch (error) {
 			console.error(error);
@@ -106,7 +106,7 @@ function AddTable() {
 								value={tableNumber}
 								onChange={(e) => {
 									setTableNumber(e.target.value);
-									setCreatedTableId(null);
+									//setCreatedTableId(null);
 								}}
 								placeholder="Numero de mesa"
 								className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brown"
@@ -119,7 +119,7 @@ function AddTable() {
 								value={chairNumber}
 								onChange={(e) => {
 									setChairNumber(e.target.value);
-									setCreatedTableId(null);
+									//setCreatedTableId(null);
 								}}
 								placeholder="Cantidad de sillas"
 								className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brown"
@@ -221,7 +221,7 @@ function AddTable() {
 										value={tableNumber}
 										onChange={(e) => {
 											setTableNumber(e.target.value);
-											setCreatedTableId(null);
+										//setCreatedTableId(null);
 										}}
 										placeholder="Numero de mesa"
 										className="w-full rounded-lg border border-border px-4 py-2 outline-none focus:border-2 focus:border-brown"
@@ -234,7 +234,7 @@ function AddTable() {
 										value={chairNumber}
 										onChange={(e) => {
 											setChairNumber(e.target.value);
-											setCreatedTableId(null);
+											//setCreatedTableId(null);
 										}}
 										placeholder="Cantidad de sillas"
 										className="w-full rounded-lg border border-border px-4 py-2 outline-none focus:border-2 focus:border-brown"
