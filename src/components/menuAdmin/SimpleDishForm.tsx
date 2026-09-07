@@ -70,6 +70,15 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
         setDescription(product.description ?? "");
         setPrice(String(product.price ?? ""));
         setCategory(String(product.categoryId ?? ""));
+        const productDiscount =
+          product.discount ??
+          product.discountPercentage ??
+          product.discount_percent;
+        setDiscount(
+          productDiscount !== undefined && productDiscount !== null
+            ? Number(productDiscount)
+            : "",
+        );
         setImagePreview(product.image ?? null);
         setImage(null);
       } catch (error) {
@@ -119,6 +128,10 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
     }
     if (!image && !imagePreview) {
       setError("Selecciona una imagen para el platillo");
+      return;
+    }
+    if (image && !["image/jpeg", "image/png", "image/webp"].includes(image.type)) {
+      setError("La imagen debe ser JPG, JPEG, PNG o WEBP");
       return;
     }
     // if (image && image.size > 1 * 1024 * 1024) {

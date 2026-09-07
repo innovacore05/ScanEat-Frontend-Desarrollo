@@ -1,9 +1,14 @@
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { FaRegStar, FaStar } from "react-icons/fa6";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
-import { deleteProduct } from "../../services/productService";
+import {
+	deleteProduct,
+	getProductById,
+	isCustomProduct,
+	productIsCustom,
+} from "../../services/productService";
 
 interface DishCardProps {
 	name: string;
@@ -38,6 +43,30 @@ function DishCard({
 }: DishCardProps) {
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [isLoadingEdit, setIsLoadingEdit] = useState(false);
+	const navigate = useNavigate();
+
+	const handleEdit = async () => {
+		if (!productId) return;
+
+		try {
+			setIsLoadingEdit(true);
+			const product = await getProductById(productId);
+			const isCustom = product.isCustom !== undefined
+				? product.isCustom === true || product.isCustom === 1
+				: productIsCustom(product) || await isCustomProduct(productId);
+
+			navigate({
+				to: isCustom ? "/customDishForm" : "/simpleDishForm",
+				search: { mode: "edit", productId },
+			});
+		} catch (error) {
+			console.error("Error loading product to edit:", error);
+			alert("No se pudo cargar la información del platillo");
+		} finally {
+			setIsLoadingEdit(false);
+		}
+	};
 
 	const handleDelete = async () => {
 		if (!productId) return;
@@ -102,14 +131,15 @@ function DishCard({
 							{isAdmin ? (
 								<>
 								{productId ? (
-									<Link
-										to="/simpleDishForm"
-										search={{ mode: "edit", productId }}
+									<button
+										type="button"
+										onClick={handleEdit}
+										disabled={isLoadingEdit}
 										className="cursor-pointer text-mint-dark"
 										aria-label={`Editar ${name}`}
 									>
 										<MdOutlineEdit className="h-6 w-6" />
-									</Link>
+									</button>
 								) : (
 									<button
 										type="button"

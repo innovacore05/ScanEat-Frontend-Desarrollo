@@ -141,7 +141,11 @@ function MenuClient() {
 
             <div className="mt-4 flex flex-col gap-5">
             <div className="flex justify-start">
-            <img src="/img/logoS.png" alt="Logo del negocio" />
+            <img
+              src="/img/LogoS.svg"
+              alt="Logo del negocio"
+              className="h-[62px] w-[40px] object-contain"
+            />
             
           </div>
             <SearchBar
@@ -248,9 +252,9 @@ function MenuClient() {
           <div className="fixed bottom-2 left-8 right-8 z-50 flex h-12 items-center justify-center rounded-2xl border border-border bg-white lg:bottom-8 lg:left-10 lg:right-auto lg:top-8 lg:h-[calc(100vh-4rem)] lg:w-20 lg:rounded-full lg:border-0">
             
               <img
-                  src="/img/logoS.png"
+                  src="/img/LogoS.svg"
                   alt="Logo del negocio"
-                  className="absolute top-6 hidden h-15 w-15 object-contain lg:block"
+                  className="absolute top-6 hidden h-[62px] w-[40px] object-contain lg:block"
               />
               <div className="absolute cursor-pointer flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2">
                   <LuShoppingBag className="h-7 w-7 text-white " />

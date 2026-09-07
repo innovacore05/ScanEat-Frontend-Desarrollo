@@ -114,11 +114,11 @@ function EditTable() {
 
 	return (
 		<DashboardLayout>
-			<main className="flex min-h-screen flex-col bg-white pt-8 pb-0">
+			<main className="flex min-h-screen flex-col bg-white ">
 				{/* Celular */}
 				<section className="flex flex-1 flex-col lg:hidden">
 					<div className="flex items-center gap-2">
-						<Link to="/dashboard" className="flex items-center gap-2 px-8 text-mint-dark">
+						<Link to="/tablesManagment" className="flex items-center gap-2 px-8 text-mint-dark">
 							<HiArrowLeft className="h-6 w-6" />
 							<span className="text-[32px] font-bold">
 								Editar mesa
@@ -143,14 +143,6 @@ function EditTable() {
 							/>
 						</div>
 
-						<div className="flex justify-end">
-							<button
-								type="button"
-								className="flex w-39.75 cursor-pointer justify-center rounded-lg bg-mint-dark px-3 py-2 text-base font-bold text-white hover:bg-mint-dark/90"
-							>
-								Generar QR
-							</button>
-						</div>
 
 						<div className="mt-auto flex flex-col">
 							<Link
@@ -173,9 +165,9 @@ function EditTable() {
 				</section>
 
 				{/* Computadora */}
-				<section className="hidden px-8 py-8 lg:block">
-					<div className="rounded-lg bg-mint-dark px-8 py-8">
-						<h1 className="text-2xl font-bold text-white">
+				<section className="hidden px-15 py-15 lg:block">
+					<div className="rounded-2xl bg-mint-dark px-8 py-6">
+						<h1 className="text-3xl font-bold text-white">
 							¡Hola, {firstName || "Usuario"}!
 						</h1>
 					</div>
@@ -183,7 +175,18 @@ function EditTable() {
 					<div className="mt-5 px-2 py-2">
 						<div>
 							<div className="flex items-center justify-between">
-								<h2 className="text-2xl font-bold text-mint-dark">Mesas</h2>
+								<div className="flex items-center gap-2">
+									<Link
+										to="/tablesManagment"
+										className="flex items-center text-mint-dark"
+									>
+										<HiArrowLeft className="h-6 w-6" />
+									</Link>
+
+									<h2 className="text-2xl font-bold text-mint-dark">
+										Mesas
+									</h2>
+								</div>
 
 								<div className="flex items-start gap-8">
 									<Link
@@ -227,12 +230,7 @@ function EditTable() {
 									</div>
 
 									<div className="mt-7 mb-4 flex justify-end gap-10 align-center">
-										<button
-											type="button"
-											className="flex w-39.75 cursor-pointer justify-center rounded-lg bg-mint-dark px-3 py-2 text-base font-bold text-white hover:bg-mint-dark/90"
-										>
-											Generar QR
-										</button>
+										
 
 										<button
 											type="button"

@@ -18,7 +18,6 @@ const getImageUrl = (image: string | null) => {
 };
 
 export type Product={
-
 productId:number;
 productName:string;
 description:string|null;
@@ -26,6 +25,16 @@ price:number;
 image:string|null;
 rating:number;
 categoryId:number;
+discount?: number | string;
+discountPercentage?: number | string;
+discount_percent?: number | string;
+isCustom?: boolean | number;
+productType?: string;
+optionGroups?: { id: string; name: string; options: string[] }[];
+options?: unknown[];
+customizations?: unknown[];
+customizationGroups?: unknown[];
+isCustomProduct?: boolean | number;
 };
 
 export type ProductsPage = {
@@ -100,6 +109,49 @@ export const getProductById= async (id: number | string)=>{
     }
     return normalizeProduct(data as Product);
 }
+
+export const isCustomProduct = async (id: number): Promise<boolean> => {
+    const response = await fetch(`${MENU_BASE_URL}/products/custom/${id}`, {
+        method: "GET",
+    });
+
+    if (response.ok) {
+        return true;
+    }
+
+    if (response.status === 404 || response.status === 405) {
+        return false;
+    }
+
+    const data = await response.json().catch(() => ({}));
+    throw data as ApiError;
+};
+
+export const productIsCustom = (product: Product): boolean => {
+    const productData = product as Product & Record<string, unknown>;
+    const type = String(
+        productData.productType ?? productData.type ?? productData.kind ?? "",
+    ).toLowerCase();
+    const searchableText = `${product.productName} ${product.description ?? ""}`
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+    return Boolean(
+        productData.isCustom === true ||
+        productData.isCustomProduct === true ||
+        productData.optionGroups ||
+        productData.options ||
+        productData.customizations ||
+        productData.customizationGroups ||
+        type.includes("custom") ||
+        type.includes("personal") ||
+        searchableText.includes("personalizado") ||
+        searchableText.includes("a escoger") ||
+        searchableText.includes("escoger") ||
+        searchableText.includes("opciones"),
+    );
+};
 
 
 //crear producto simple
