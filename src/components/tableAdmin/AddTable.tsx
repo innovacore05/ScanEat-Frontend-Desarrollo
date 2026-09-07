@@ -73,9 +73,9 @@ function AddTable() {
 		}
 	};
 
-	const handleGenerateQr = () => {
-		if (createdTableId) openQrForTable(createdTableId, qrTableNumber);
-	};
+	// const handleGenerateQr = () => {
+	// 	if (createdTableId) openQrForTable(createdTableId, qrTableNumber);
+	// };
 
 	return (
 		<DashboardLayout>
