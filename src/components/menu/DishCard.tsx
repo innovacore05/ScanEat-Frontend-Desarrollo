@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaRegStar, FaStar } from "react-icons/fa6";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
@@ -10,6 +10,8 @@ import {
 	productIsCustom,
 } from "../../services/productService";
 
+const EMPTY_OPTION_GROUPS: { id: string; name: string; options: string[] }[] = [];
+
 interface DishCardProps {
 	name: string;
 	description: string;
@@ -19,6 +21,7 @@ interface DishCardProps {
 	isAdmin: boolean;
 	showActions?: boolean;
 	productId?: number;
+	optionGroups?: { id: string; name: string; options: string[] }[];
 	onDelete?: (productId: number) => void;
 	isDetailView?: boolean;
 	showReviews?: boolean;
@@ -35,6 +38,7 @@ function DishCard({
 	isAdmin,
 	showActions = true,
 	productId,
+	optionGroups = EMPTY_OPTION_GROUPS,
 	onDelete,
 	isDetailView = false,
 	showReviews = false,
@@ -44,7 +48,43 @@ function DishCard({
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isLoadingEdit, setIsLoadingEdit] = useState(false);
+	const [detailOptionGroups, setDetailOptionGroups] = useState(optionGroups);
+	const [isLoadingDetails, setIsLoadingDetails] = useState(false);
 	const navigate = useNavigate();
+
+	useEffect(() => {
+		setDetailOptionGroups(optionGroups);
+	}, [optionGroups]);
+
+	useEffect(() => {
+		if (!isDetailView || !productId) {
+			return;
+		}
+
+		let isCurrent = true;
+		setIsLoadingDetails(true);
+
+		const loadProductDetails = async () => {
+			try {
+				const product = await getProductById(productId);
+				if (isCurrent) {
+					setDetailOptionGroups(product.optionGroups ?? optionGroups);
+				}
+			} catch (error) {
+				console.error("Error loading product details:", error);
+			} finally {
+				if (isCurrent) {
+					setIsLoadingDetails(false);
+				}
+			}
+		};
+
+		loadProductDetails();
+
+		return () => {
+			isCurrent = false;
+		};
+	}, [isDetailView, productId, optionGroups]);
 
 	const handleEdit = async () => {
 		if (!productId) return;
@@ -112,6 +152,28 @@ function DishCard({
 				<span className="mt-2 text-base font-bold text-mint-darker">
 					₡{price.toLocaleString("es-CR")}
 				</span>
+
+				{isDetailView && (isLoadingDetails || detailOptionGroups.length > 0) && (
+					<div className="mt-4">
+						<h3 className="text-sm font-bold text-mint-darker">
+							Opciones de personalización
+						</h3>
+						{isLoadingDetails && detailOptionGroups.length === 0 ? (
+							<p className="mt-1 text-sm text-text-primary">Cargando opciones...</p>
+						) : (
+							<div className="mt-2 space-y-2">
+								{detailOptionGroups.map((group) => (
+									<div key={group.id}>
+										<p className="text-sm font-semibold text-text-primary">{group.name}</p>
+										<p className="text-sm text-text-primary">
+											{group.options.join(", ")}
+										</p>
+									</div>
+								))}
+							</div>
+						)}
+					</div>
+				)}
 
 				<div className="mt-1 flex items-center justify-between">
 					<div className="flex items-center gap-1 text-yellow">

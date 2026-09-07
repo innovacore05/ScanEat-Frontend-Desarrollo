@@ -58,6 +58,7 @@ function ProductList({
             isAdmin={false}
             showActions={false}
             productId={product.productId}
+            optionGroups={product.optionGroups}
             onDelete={onDeleteProduct}
 			isDetailView={selectedProductId === product.productId}
 			onViewMore={() => onViewMore(product.productId)}
