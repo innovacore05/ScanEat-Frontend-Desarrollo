@@ -55,6 +55,7 @@ function ProductList({
             rating={product.rating}
             isAdmin={false}
             productId={product.productId}
+            optionGroups={product.optionGroups}
             onDelete={onDeleteProduct}
 			isDetailView={selectedProductId === product.productId}
 			showReviews
@@ -144,7 +145,7 @@ function MenuClient() {
             <img
               src="/img/LogoS.svg"
               alt="Logo del negocio"
-              className="h-[62px] w-[40px] object-contain"
+              className="h-15.5 w-10 object-contain"
             />
             
           </div>
@@ -254,7 +255,7 @@ function MenuClient() {
               <img
                   src="/img/LogoS.svg"
                   alt="Logo del negocio"
-                  className="absolute top-6 hidden h-[62px] w-[40px] object-contain lg:block"
+                  className="absolute top-6 hidden h-15.5 w-10 object-contain lg:block"
               />
               <div className="absolute cursor-pointer flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2">
                   <LuShoppingBag className="h-7 w-7 text-white " />
