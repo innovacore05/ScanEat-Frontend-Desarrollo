@@ -48,7 +48,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
           <img
             src="/img/LogoS.svg"
             alt="Logo del negocio"
-            className="h-[62px] w-[40px] object-contain"
+            className="h-15.5 w-10 object-contain"
           />
         </div>
 
@@ -185,7 +185,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
             <img
               src="/img/LogoS.svg"
               alt="Logo del negocio"
-              className="h-[62px] w-[40px] object-contain"
+              className="h-15.5 w-10 object-contain"
             />
           </div>
 
