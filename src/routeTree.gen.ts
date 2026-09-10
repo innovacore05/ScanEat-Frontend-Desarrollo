@@ -37,6 +37,7 @@ import { Route as profileProfileSettingsRouteImport } from './routes/(profile)/p
 import { Route as tableAdminAddtableRouteImport } from './routes/(tableAdmin)/Addtable'
 import { Route as tableAdminTablesManagmentRouteImport } from './routes/(tableAdmin)/TablesManagment'
 import { Route as tableAdminEditTableRouteImport } from './routes/(tableAdmin)/editTable'
+import { Route as userAdminUsersManagmentRouteImport } from './routes/(userAdmin)/usersManagment'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -190,6 +191,11 @@ const tableAdminEditTableRoute = tableAdminEditTableRouteImport.update({
   path: '/editTable',
   getParentRoute: () => rootRouteImport,
 } as any)
+const userAdminUsersManagmentRoute = userAdminUsersManagmentRouteImport.update({
+  id: '/(userAdmin)/usersManagment',
+  path: '/usersManagment',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -220,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/Addtable': typeof tableAdminAddtableRoute
   '/TablesManagment': typeof tableAdminTablesManagmentRoute
   '/editTable': typeof tableAdminEditTableRoute
+  '/usersManagment': typeof userAdminUsersManagmentRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -250,6 +257,7 @@ export interface FileRoutesByTo {
   '/Addtable': typeof tableAdminAddtableRoute
   '/TablesManagment': typeof tableAdminTablesManagmentRoute
   '/editTable': typeof tableAdminEditTableRoute
+  '/usersManagment': typeof userAdminUsersManagmentRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -281,6 +289,7 @@ export interface FileRoutesById {
   '/(tableAdmin)/Addtable': typeof tableAdminAddtableRoute
   '/(tableAdmin)/TablesManagment': typeof tableAdminTablesManagmentRoute
   '/(tableAdmin)/editTable': typeof tableAdminEditTableRoute
+  '/(userAdmin)/usersManagment': typeof userAdminUsersManagmentRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -313,6 +322,7 @@ export interface FileRouteTypes {
     | '/Addtable'
     | '/TablesManagment'
     | '/editTable'
+    | '/usersManagment'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -343,6 +353,7 @@ export interface FileRouteTypes {
     | '/Addtable'
     | '/TablesManagment'
     | '/editTable'
+    | '/usersManagment'
   id:
     | '__root__'
     | '/'
@@ -373,6 +384,7 @@ export interface FileRouteTypes {
     | '/(tableAdmin)/Addtable'
     | '/(tableAdmin)/TablesManagment'
     | '/(tableAdmin)/editTable'
+    | '/(userAdmin)/usersManagment'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -404,6 +416,7 @@ export interface RootRouteChildren {
   tableAdminAddtableRoute: typeof tableAdminAddtableRoute
   tableAdminTablesManagmentRoute: typeof tableAdminTablesManagmentRoute
   tableAdminEditTableRoute: typeof tableAdminEditTableRoute
+  userAdminUsersManagmentRoute: typeof userAdminUsersManagmentRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -604,6 +617,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof tableAdminEditTableRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(userAdmin)/usersManagment': {
+      id: '/(userAdmin)/usersManagment'
+      path: '/usersManagment'
+      fullPath: '/usersManagment'
+      preLoaderRoute: typeof userAdminUsersManagmentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -637,6 +657,7 @@ const rootRouteChildren: RootRouteChildren = {
   tableAdminAddtableRoute: tableAdminAddtableRoute,
   tableAdminTablesManagmentRoute: tableAdminTablesManagmentRoute,
   tableAdminEditTableRoute: tableAdminEditTableRoute,
+  userAdminUsersManagmentRoute: userAdminUsersManagmentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
