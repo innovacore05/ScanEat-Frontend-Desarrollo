@@ -30,6 +30,7 @@ import { Route as menuAdminMenuManagmentRouteImport } from './routes/(menuAdmin)
 import { Route as menuAdminSimpleDishFormRouteImport } from './routes/(menuAdmin)/simpleDishForm'
 import { Route as menuClientCheckOrderRouteImport } from './routes/(menuClient)/checkOrder'
 import { Route as menuClientMenuClientRouteImport } from './routes/(menuClient)/menuClient'
+import { Route as menuClientReviewsRouteImport } from './routes/(menuClient)/reviews'
 import { Route as menuWaiterMenuWaiterRouteImport } from './routes/(menuWaiter)/menuWaiter'
 import { Route as profileChangePasswordRouteImport } from './routes/(profile)/changePassword'
 import { Route as profileChangePasswordErrorRouteImport } from './routes/(profile)/changePasswordError'
@@ -154,6 +155,11 @@ const menuClientMenuClientRoute = menuClientMenuClientRouteImport.update({
   path: '/menuClient',
   getParentRoute: () => rootRouteImport,
 } as any)
+const menuClientReviewsRoute = menuClientReviewsRouteImport.update({
+  id: '/(menuClient)/reviews',
+  path: '/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const menuWaiterMenuWaiterRoute = menuWaiterMenuWaiterRouteImport.update({
   id: '/(menuWaiter)/menuWaiter',
   path: '/menuWaiter',
@@ -225,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/simpleDishForm': typeof menuAdminSimpleDishFormRoute
   '/checkOrder': typeof menuClientCheckOrderRoute
   '/menuClient': typeof menuClientMenuClientRoute
+  '/reviews': typeof menuClientReviewsRoute
   '/menuWaiter': typeof menuWaiterMenuWaiterRoute
   '/changePassword': typeof profileChangePasswordRoute
   '/changePasswordError': typeof profileChangePasswordErrorRoute
@@ -257,6 +264,7 @@ export interface FileRoutesByTo {
   '/simpleDishForm': typeof menuAdminSimpleDishFormRoute
   '/checkOrder': typeof menuClientCheckOrderRoute
   '/menuClient': typeof menuClientMenuClientRoute
+  '/reviews': typeof menuClientReviewsRoute
   '/menuWaiter': typeof menuWaiterMenuWaiterRoute
   '/changePassword': typeof profileChangePasswordRoute
   '/changePasswordError': typeof profileChangePasswordErrorRoute
@@ -290,6 +298,7 @@ export interface FileRoutesById {
   '/(menuAdmin)/simpleDishForm': typeof menuAdminSimpleDishFormRoute
   '/(menuClient)/checkOrder': typeof menuClientCheckOrderRoute
   '/(menuClient)/menuClient': typeof menuClientMenuClientRoute
+  '/(menuClient)/reviews': typeof menuClientReviewsRoute
   '/(menuWaiter)/menuWaiter': typeof menuWaiterMenuWaiterRoute
   '/(profile)/changePassword': typeof profileChangePasswordRoute
   '/(profile)/changePasswordError': typeof profileChangePasswordErrorRoute
@@ -324,6 +333,7 @@ export interface FileRouteTypes {
     | '/simpleDishForm'
     | '/checkOrder'
     | '/menuClient'
+    | '/reviews'
     | '/menuWaiter'
     | '/changePassword'
     | '/changePasswordError'
@@ -356,6 +366,7 @@ export interface FileRouteTypes {
     | '/simpleDishForm'
     | '/checkOrder'
     | '/menuClient'
+    | '/reviews'
     | '/menuWaiter'
     | '/changePassword'
     | '/changePasswordError'
@@ -388,6 +399,7 @@ export interface FileRouteTypes {
     | '/(menuAdmin)/simpleDishForm'
     | '/(menuClient)/checkOrder'
     | '/(menuClient)/menuClient'
+    | '/(menuClient)/reviews'
     | '/(menuWaiter)/menuWaiter'
     | '/(profile)/changePassword'
     | '/(profile)/changePasswordError'
@@ -421,6 +433,7 @@ export interface RootRouteChildren {
   menuAdminSimpleDishFormRoute: typeof menuAdminSimpleDishFormRoute
   menuClientCheckOrderRoute: typeof menuClientCheckOrderRoute
   menuClientMenuClientRoute: typeof menuClientMenuClientRoute
+  menuClientReviewsRoute: typeof menuClientReviewsRoute
   menuWaiterMenuWaiterRoute: typeof menuWaiterMenuWaiterRoute
   profileChangePasswordRoute: typeof profileChangePasswordRoute
   profileChangePasswordErrorRoute: typeof profileChangePasswordErrorRoute
@@ -581,6 +594,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof menuClientMenuClientRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(menuClient)/reviews': {
+      id: '/(menuClient)/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof menuClientReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(menuWaiter)/menuWaiter': {
       id: '/(menuWaiter)/menuWaiter'
       path: '/menuWaiter'
@@ -670,6 +690,7 @@ const rootRouteChildren: RootRouteChildren = {
   menuAdminSimpleDishFormRoute: menuAdminSimpleDishFormRoute,
   menuClientCheckOrderRoute: menuClientCheckOrderRoute,
   menuClientMenuClientRoute: menuClientMenuClientRoute,
+  menuClientReviewsRoute: menuClientReviewsRoute,
   menuWaiterMenuWaiterRoute: menuWaiterMenuWaiterRoute,
   profileChangePasswordRoute: profileChangePasswordRoute,
   profileChangePasswordErrorRoute: profileChangePasswordErrorRoute,

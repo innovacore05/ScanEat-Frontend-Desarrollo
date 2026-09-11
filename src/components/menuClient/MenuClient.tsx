@@ -19,27 +19,26 @@ function ProductList({
   isFiltering,
   products,
   onDeleteProduct,
-	selectedProductId,
-	onViewMore,
+  selectedProductId,
+  onViewMore,
   onCloseDetails,
 }: {
   initialLoading: boolean;
   isFiltering: boolean;
   products: Product[];
   onDeleteProduct: (productId: number) => void;
-	selectedProductId: number | null;
-	onViewMore: (productId: number) => void;
+  selectedProductId: number | null;
+  onViewMore: (productId: number) => void;
   onCloseDetails: () => void;
 }) {
-	const visibleProducts = selectedProductId === null
-		? products
-		: products.filter((product) => product.productId === selectedProductId);
+  const visibleProducts = selectedProductId === null
+    ? products
+    : products.filter((product) => product.productId === selectedProductId);
 
   return (
     <div
-      className={`contents transition-opacity duration-200 ${
-        isFiltering ? "opacity-50" : "opacity-100"
-      }`}
+      className={`contents transition-opacity duration-200 ${isFiltering ? "opacity-50" : "opacity-100"
+        }`}
     >
       {initialLoading && (
         <p className="text-text-primary">Cargando platillos...</p>
@@ -48,8 +47,8 @@ function ProductList({
         <p className="text-text-primary">No hay platillos...</p>
       )}
 
-		{visibleProducts.map((product) => (
-		<div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
+      {visibleProducts.map((product) => (
+        <div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
           <DishCard
             name={product.productName ?? ""}
             description={product.description ?? ""}
@@ -60,10 +59,10 @@ function ProductList({
             productId={product.productId}
             optionGroups={product.optionGroups}
             onDelete={onDeleteProduct}
-			isDetailView={selectedProductId === product.productId}
-			showReviews
-			onViewMore={() => onViewMore(product.productId)}
-			onCloseDetails={onCloseDetails}
+            isDetailView={selectedProductId === product.productId}
+            showReviews
+            onViewMore={() => onViewMore(product.productId)}
+            onCloseDetails={onCloseDetails}
           />
         </div>
       ))}
@@ -79,32 +78,32 @@ function MenuClient() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [isFiltering, setIsFiltering] = useState(false);
-  const [hasMore , setHasMore]=useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-	const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
   const { cartCount, setMesaId } = useCart();
   const { mesaId } = useSearch({
-  from: "/(menuClient)/menuClient",
-});
+    from: "/(menuClient)/menuClient",
+  });
 
-useEffect(() => {
-  setMesaId(mesaId);
-}, [mesaId, setMesaId]);
+  useEffect(() => {
+    setMesaId(mesaId);
+  }, [mesaId, setMesaId]);
 
 
 
   //cargar los productos
   useEffect(() => {
     const loadProducts = async () => {
-		setSelectedProductId(null);
+      setSelectedProductId(null);
       setIsFiltering(true);
       try {
         const data = await getProducts({
           search: searchTerm,
           //si hay texto en elbuscador se ignora categoria
           category: searchTerm ? undefined : selectedCategory ?? undefined,
-          limit:PAGE_SIZE,
-          offset:0
+          limit: PAGE_SIZE,
+          offset: 0
         });
         setProducts(data.products);
         setHasMore(data.hasMore);
@@ -121,78 +120,78 @@ useEffect(() => {
     return () => clearTimeout(timeoutId);
   }, [searchTerm, selectedCategory]);
 
-  const handleLoadMore=async()=>{
+  const handleLoadMore = async () => {
     setIsLoadingMore(true);
-    try{
+    try {
       const data = await getProducts({
         search: searchTerm,
         category: searchTerm ? undefined : selectedCategory ?? undefined,
         limit: PAGE_SIZE,
         offset: products.length,
       });
-        setProducts((prev)=>[...prev, ...data.products]);
-        setHasMore(data.hasMore)
-    }catch(error){
+      setProducts((prev) => [...prev, ...data.products]);
+      setHasMore(data.hasMore)
+    } catch (error) {
       console.error("Error loading more products:", error);
-  } finally {
+    } finally {
       setIsLoadingMore(false);
     }
-};
+  };
 
   const handleDeleteProduct = (productId: number) => {
     setProducts((prev) => prev.filter((product) => product.productId !== productId));
-		setSelectedProductId((current) => current === productId ? null : current);
+    setSelectedProductId((current) => current === productId ? null : current);
   };
 
- 
+
 
 
   return (
-     
-      <main className="min-h-screen bg-white px-8 pt-8 lg:bg-neutral-50">
-        {/* Celular */}
-        <section className="lg:hidden">
 
-            <div className="mt-4 flex flex-col gap-5">
-            <div className="flex justify-start">
+    <main className="min-h-screen bg-white px-8 pt-8 lg:bg-neutral-50">
+      {/* Celular */}
+      <section className="lg:hidden">
+
+        <div className="mt-4 flex flex-col gap-5">
+          <div className="flex justify-start">
             <img
               src="/img/LogoS.svg"
               alt="Logo del negocio"
               className="h-15.5 w-10 object-contain"
             />
-            
+
           </div>
-            <SearchBar
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              className="mt-6 w-full"
+          <SearchBar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            className="mt-6 w-full"
+          />
+
+          <div className="mt-2">
+            <CategoryFilter
+              selected={selectedCategory}
+              onSelect={(id) => {
+                setSelectedCategory(id);
+                setSearchTerm("");
+              }}
+              disabled={!!searchTerm}
             />
+          </div>
 
-            <div className="mt-2">
-              <CategoryFilter
-                selected={selectedCategory}
-                onSelect={(id) => {
-                  setSelectedCategory(id);
-                  setSearchTerm("");
-                }}
-                disabled={!!searchTerm}
-              />
-            </div>
-
-            <div className="-mx-8  bg-neutral-50 px-8 pb-20 rounded-t-4xl ">
+          <div className="-mx-8  bg-neutral-50 px-8 pb-20 rounded-t-4xl ">
             <div className="mt-8 flex flex-col gap-4">
               <ProductList
                 initialLoading={initialLoading}
                 isFiltering={isFiltering}
                 products={products}
                 onDeleteProduct={handleDeleteProduct}
-				        selectedProductId={selectedProductId}
-				        onViewMore={setSelectedProductId}
-				        onCloseDetails={() => setSelectedProductId(null)}
+                selectedProductId={selectedProductId}
+                onViewMore={setSelectedProductId}
+                onCloseDetails={() => setSelectedProductId(null)}
               />
             </div>
 
-			{hasMore && selectedProductId === null && (
+            {hasMore && selectedProductId === null && (
               <button
                 type="button"
                 onClick={handleLoadMore}
@@ -200,77 +199,77 @@ useEffect(() => {
                 className="w-full mt-6  rounded-2xl bg-white border border-border py-3 text-base font-bold text-mint-dark disabled:opacity-50"
               >
                 {isLoadingMore ? "Cargando..." : "Cargar más"}
-              </button> 
+              </button>
             )}
 
-                  </div>
-                  </div>
-        </section>
-
-        {/* Computadora */}
-
-        <section className="hidden lg:block ml-44 pb-20">
-        
-
-          <h2 className="mt-8 text-2xl font-bold text-black">Menú</h2>
-
-          
-
-          <SearchBar
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            className="mt-8 w-153"
-          />
-
-          <div className="mt-6">
-            <CategoryFilter
-              selected={selectedCategory}
-              onSelect={(id) => {
-                setSelectedCategory(id);
-                setSearchTerm(""); 
-              }}
-              disabled={!!searchTerm}
-            />
           </div>
-  
-          <h2 className="mt-8 text-2xl font-bold text-black">Menú popular</h2>
+        </div>
+      </section>
 
-          {/* Platillos */}
-          <div className="mt-6 flex flex-wrap gap-4">
-            <ProductList
-              initialLoading={initialLoading}
-              isFiltering={isFiltering}
-              products={products}
-              onDeleteProduct={handleDeleteProduct}
-				selectedProductId={selectedProductId}
-			onViewMore={setSelectedProductId}
-            onCloseDetails={() => setSelectedProductId(null)}
-            />
-          </div>
+      {/* Computadora */}
 
-		  {hasMore && selectedProductId === null && (
-            <div className="mt-6 flex justify-center ">
-              <button
-                type="button"
-                onClick={handleLoadMore}
-                disabled={isLoadingMore}
-                className="rounded-lg cursor-pointer bg-white border border-border px-8 py-3 text-base font-bold text-mint-dark disabled:opacity-50"
-              >
-                {isLoadingMore ? "Cargando..." : "Cargar más"}
-              </button>
-                  </div>
-                  
-          )}
-          </section>
-          
-          <div className="fixed bottom-2 left-8 right-8 z-50 flex h-12 items-center justify-center rounded-2xl border border-border bg-white lg:bottom-8 lg:left-10 lg:right-auto lg:top-8 lg:h-[calc(100vh-4rem)] lg:w-20 lg:rounded-full lg:border-0">
-            
-              <img
-                  src="/img/LogoS.svg"
-                  alt="Logo del negocio"
-                  className="absolute top-6 hidden h-15.5 w-10 object-contain lg:block"
+      <section className="hidden lg:block ml-44 pb-20">
+
+
+        <h2 className="mt-8 text-2xl font-bold text-black">Menú</h2>
+
+
+
+        <SearchBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          className="mt-8 w-153"
         />
-        
+
+        <div className="mt-6">
+          <CategoryFilter
+            selected={selectedCategory}
+            onSelect={(id) => {
+              setSelectedCategory(id);
+              setSearchTerm("");
+            }}
+            disabled={!!searchTerm}
+          />
+        </div>
+
+        <h2 className="mt-8 text-2xl font-bold text-black">Menú popular</h2>
+
+        {/* Platillos */}
+        <div className="mt-6 flex flex-wrap gap-4">
+          <ProductList
+            initialLoading={initialLoading}
+            isFiltering={isFiltering}
+            products={products}
+            onDeleteProduct={handleDeleteProduct}
+            selectedProductId={selectedProductId}
+            onViewMore={setSelectedProductId}
+            onCloseDetails={() => setSelectedProductId(null)}
+          />
+        </div>
+
+        {hasMore && selectedProductId === null && (
+          <div className="mt-6 flex justify-center ">
+            <button
+              type="button"
+              onClick={handleLoadMore}
+              disabled={isLoadingMore}
+              className="rounded-lg cursor-pointer bg-white border border-border px-8 py-3 text-base font-bold text-mint-dark disabled:opacity-50"
+            >
+              {isLoadingMore ? "Cargando..." : "Cargar más"}
+            </button>
+          </div>
+
+        )}
+      </section>
+
+      <div className="fixed bottom-2 left-8 right-8 z-50 flex h-12 items-center justify-center rounded-2xl border border-border bg-white lg:bottom-8 lg:left-10 lg:right-auto lg:top-8 lg:h-[calc(100vh-4rem)] lg:w-20 lg:rounded-full lg:border-0">
+
+        <img
+          src="/img/LogoS.svg"
+          alt="Logo del negocio"
+          className="absolute top-6 hidden h-15.5 w-10 object-contain lg:block"
+        />
+
         <Link
           to="/checkOrder"
           className="absolute cursor-pointer flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
@@ -284,8 +283,8 @@ useEffect(() => {
         </Link>
       </div>
 
-      </main>
-    
+    </main>
+
   );
 }
 
