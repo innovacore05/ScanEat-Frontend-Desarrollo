@@ -21,6 +21,7 @@ import { Route as authenticationResetPasswordRouteImport } from './routes/(authe
 import { Route as authenticationUnexpectedIssueRouteImport } from './routes/(authentication)/unexpectedIssue'
 import { Route as authenticationUnexpectedIssueVRouteImport } from './routes/(authentication)/unexpectedIssueV'
 import { Route as authenticationVerificationCodeRouteImport } from './routes/(authentication)/verificationCode'
+import { Route as cookOrdersCookOrdersRouteImport } from './routes/(cookOrders)/cookOrders'
 import { Route as dashboardDashboardRouteImport } from './routes/(dashboard)/dashboard'
 import { Route as dashboardDashboardCookRouteImport } from './routes/(dashboard)/dashboardCook'
 import { Route as dashboardDashboardWaiterRouteImport } from './routes/(dashboard)/dashboardWaiter'
@@ -108,6 +109,11 @@ const authenticationVerificationCodeRoute =
     path: '/verificationCode',
     getParentRoute: () => rootRouteImport,
   } as any)
+const cookOrdersCookOrdersRoute = cookOrdersCookOrdersRouteImport.update({
+  id: '/(cookOrders)/cookOrders',
+  path: '/cookOrders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const dashboardDashboardRoute = dashboardDashboardRouteImport.update({
   id: '/(dashboard)/dashboard',
   path: '/dashboard',
@@ -216,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/unexpectedIssue': typeof authenticationUnexpectedIssueRoute
   '/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
+  '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboard': typeof dashboardDashboardRoute
   '/dashboardCook': typeof dashboardDashboardCookRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
@@ -248,6 +255,7 @@ export interface FileRoutesByTo {
   '/unexpectedIssue': typeof authenticationUnexpectedIssueRoute
   '/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
+  '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboard': typeof dashboardDashboardRoute
   '/dashboardCook': typeof dashboardDashboardCookRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
@@ -281,6 +289,7 @@ export interface FileRoutesById {
   '/(authentication)/unexpectedIssue': typeof authenticationUnexpectedIssueRoute
   '/(authentication)/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/(authentication)/verificationCode': typeof authenticationVerificationCodeRoute
+  '/(cookOrders)/cookOrders': typeof cookOrdersCookOrdersRoute
   '/(dashboard)/dashboard': typeof dashboardDashboardRoute
   '/(dashboard)/dashboardCook': typeof dashboardDashboardCookRoute
   '/(dashboard)/dashboardWaiter': typeof dashboardDashboardWaiterRoute
@@ -315,6 +324,7 @@ export interface FileRouteTypes {
     | '/unexpectedIssue'
     | '/unexpectedIssueV'
     | '/verificationCode'
+    | '/cookOrders'
     | '/dashboard'
     | '/dashboardCook'
     | '/dashboardWaiter'
@@ -347,6 +357,7 @@ export interface FileRouteTypes {
     | '/unexpectedIssue'
     | '/unexpectedIssueV'
     | '/verificationCode'
+    | '/cookOrders'
     | '/dashboard'
     | '/dashboardCook'
     | '/dashboardWaiter'
@@ -379,6 +390,7 @@ export interface FileRouteTypes {
     | '/(authentication)/unexpectedIssue'
     | '/(authentication)/unexpectedIssueV'
     | '/(authentication)/verificationCode'
+    | '/(cookOrders)/cookOrders'
     | '/(dashboard)/dashboard'
     | '/(dashboard)/dashboardCook'
     | '/(dashboard)/dashboardWaiter'
@@ -412,6 +424,7 @@ export interface RootRouteChildren {
   authenticationUnexpectedIssueRoute: typeof authenticationUnexpectedIssueRoute
   authenticationUnexpectedIssueVRoute: typeof authenticationUnexpectedIssueVRoute
   authenticationVerificationCodeRoute: typeof authenticationVerificationCodeRoute
+  cookOrdersCookOrdersRoute: typeof cookOrdersCookOrdersRoute
   dashboardDashboardRoute: typeof dashboardDashboardRoute
   dashboardDashboardCookRoute: typeof dashboardDashboardCookRoute
   dashboardDashboardWaiterRoute: typeof dashboardDashboardWaiterRoute
@@ -516,6 +529,13 @@ declare module '@tanstack/react-router' {
       path: '/verificationCode'
       fullPath: '/verificationCode'
       preLoaderRoute: typeof authenticationVerificationCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(cookOrders)/cookOrders': {
+      id: '/(cookOrders)/cookOrders'
+      path: '/cookOrders'
+      fullPath: '/cookOrders'
+      preLoaderRoute: typeof cookOrdersCookOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(dashboard)/dashboard': {
@@ -661,6 +681,7 @@ const rootRouteChildren: RootRouteChildren = {
   authenticationUnexpectedIssueRoute: authenticationUnexpectedIssueRoute,
   authenticationUnexpectedIssueVRoute: authenticationUnexpectedIssueVRoute,
   authenticationVerificationCodeRoute: authenticationVerificationCodeRoute,
+  cookOrdersCookOrdersRoute: cookOrdersCookOrdersRoute,
   dashboardDashboardRoute: dashboardDashboardRoute,
   dashboardDashboardCookRoute: dashboardDashboardCookRoute,
   dashboardDashboardWaiterRoute: dashboardDashboardWaiterRoute,
