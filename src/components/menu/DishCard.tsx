@@ -281,7 +281,7 @@ function DishCard({
 					)}
 				</div>
 				{isDetailView && showReviews && (
-					<a href="#reviews" className="mt-3 self-start text-sm font-medium text-text-primary hover:underline">
+					<a href="reviews" className="mt-3 self-start text-sm font-medium text-text-primary hover:underline">
 						Reviews
 					</a>
 				)}
