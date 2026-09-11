@@ -215,15 +215,15 @@ function TablesManagment() {
 
 					<div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-2">
 						<div>
-							<div className="flex items-center justify-between">
+							<div className="flex items-center justify-between flex-wrap gap-3">
 								<h2 className="text-2xl font-bold text-mint-dark">
 									Mesas
 								</h2>
 
-								{isOwner && <div className="flex gap-3">
+								{isOwner && <div className="flex flex-wrap gap-3">
 									<Link
 										to="/addTable"
-										className="flex items-center justify-between rounded border w-40 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
+										className="flex items-center justify-center gap-2 rounded border w-40 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
 									>
 										<span>Añadir mesa</span>
 										<IoIosAdd className="text-mint-darker w-8 h-8" />
