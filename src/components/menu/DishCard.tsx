@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { FaRegStar, FaStar } from "react-icons/fa6";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
+import { useCart } from "../menuClient/CartContext";
+
 import {
 	deleteProduct,
 	getProductById,
@@ -27,6 +29,7 @@ interface DishCardProps {
 	showReviews?: boolean;
 	onViewMore?: () => void;
 	onCloseDetails?: () => void;
+	onAddToCart?: () => void;
 }
 
 function DishCard({
@@ -44,13 +47,18 @@ function DishCard({
 	showReviews = false,
 	onViewMore,
 	onCloseDetails,
+	onAddToCart,
 }: DishCardProps) {
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isLoadingEdit, setIsLoadingEdit] = useState(false);
 	const [detailOptionGroups, setDetailOptionGroups] = useState(optionGroups);
 	const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+	const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
+    const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
+	const [validationMessage, setValidationMessage] = useState("");
 	const navigate = useNavigate();
+	const { addToCart } = useCart();
 
 	useEffect(() => {
 		setDetailOptionGroups(optionGroups);
@@ -124,6 +132,44 @@ function DishCard({
 			setIsDeleting(false);
 		}
 	};
+
+	const groupsOptions = async () => {
+		if (!productId) return;
+
+		try {
+			setIsLoadingEdit(true);
+			const product = await getProductById(productId);
+			const isCustom = product.isCustom !== undefined
+				? product.isCustom === true || product.isCustom === 1
+				: productIsCustom(product) || await isCustomProduct(productId);
+
+			if (isCustom) {
+				setDetailOptionGroups(product.optionGroups ?? []);
+				setSelectedOptions({});
+				setValidationMessage("");
+				setIsOptionsModalOpen(true);
+		} else {
+			addToCart({
+        productId,
+        name,
+        price,
+        image,
+        quantity: 1,
+        selectedOptions: {},
+      });
+
+      onAddToCart?.();
+    }
+			
+		} catch (error) {
+			console.error("Error loading product to edit:", error);
+			alert("No se pudo cargar la información del platillo");
+		} finally {
+			setIsLoadingEdit(false);
+		}
+	};
+
+
 	return (
 		<>
 			<article
@@ -224,6 +270,7 @@ function DishCard({
 							) : (
 								<button
 									type="button"
+									onClick={groupsOptions}
 									className="cursor-pointer text-mint-dark"
 									aria-label={`Agregar ${name}`}
 								>
@@ -247,6 +294,101 @@ function DishCard({
 				</button>
 			</div>
 			</article>
+
+			{isOptionsModalOpen && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+					<div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+						<h3 className="text-xl font-bold text-mint-darker">
+							Personaliza tu "{name}"
+						</h3>
+
+						<div className="mt-6 space-y-6">
+							{detailOptionGroups.map((group) => (
+								<div key={group.id}>
+									<h4 className="text-lg font-bold text-mint-darker">
+										{group.name}
+									</h4>
+									
+									<div className="mt-2 space-y-2">
+										{group.options.map((option) => (
+											<label
+												key={option}
+												className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 p-3 "
+								>
+									<input
+										type="radio"
+										name={group.id}
+										value={option}
+										checked={selectedOptions[group.id] === option}
+										onChange={() =>
+											setSelectedOptions((prev) => ({
+												...prev,
+												[group.id]: option,
+											}))
+										}
+									/>
+
+									<span className="text-base text-text-primary">
+										{option}
+									</span>
+								</label>
+							))}
+						</div>
+					</div>
+				))}
+						</div>
+						
+						{validationMessage && (
+							<p className="mt-4 text-sm text-red-600">
+								{validationMessage}
+							</p>
+						)}
+
+			<div className="mt-6 flex justify-end gap-3">
+				<button
+					type="button"
+					onClick={() => setIsOptionsModalOpen(false)}
+					className="cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold text-text-primary hover:bg-gray-100"
+				>
+					Cancelar
+				</button>
+
+							<button
+								type="button"
+								onClick={() => {
+									const missingGroups = detailOptionGroups.filter(
+										(group) => !selectedOptions[group.id]
+									);
+
+									if (missingGroups.length > 0) {
+										setValidationMessage(
+											"Tienes que seleccionar una opción por cada grupo."
+										);
+										return;
+									}
+									
+									addToCart({
+										productId: productId!,
+										name,
+										price,
+										image,
+										quantity: 1,
+										selectedOptions,
+									});
+									
+									onAddToCart?.();
+									
+									setIsOptionsModalOpen(false);
+								}}
+								className="cursor-pointer rounded-lg bg-mint-dark px-4 py-2 text-sm font-semibold text-white hover:bg-mint-darker"
+							>
+								Agregar a la orden
+							</button>
+						
+						</div>
+					</div>
+				</div>
+			)}
 
 			{isDeleteDialogOpen && (
 				<div

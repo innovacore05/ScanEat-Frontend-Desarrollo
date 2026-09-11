@@ -10,6 +10,7 @@ import { LuLogOut } from "react-icons/lu";
 import { GoHome } from "react-icons/go";
 import { IoRestaurantOutline } from "react-icons/io5";
 import { LuShoppingBag } from "react-icons/lu";
+import { FiUsers } from "react-icons/fi";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -83,6 +84,8 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
           </button>
 
           <div className="mt-10">
+            
+
             <button
               type="button"
               className="flex w-full items-center py-3 text-left text-text-primary"
@@ -122,6 +125,16 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <span className="text-[15px] font-bold cursor-pointer">Perfil</span>
           </Link>
+
+          <Link
+              to="/usersManagment"
+              className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
+            >
+              <FiUsers className="h-6 w-6 shrink-0" />
+              <span className="text-[15px] font-bold cursor-pointer">
+                Gestión de personal
+              </span>
+            </Link>
 
           <button
             type="button"
@@ -293,6 +306,8 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
                 >
                   <span className="text-xl font-bold">Mesas</span>
                 </Link>
+
+                
               </div>
             </div>
           </div>
@@ -330,6 +345,15 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
                 <span className="text-xl font-bold">Perfil</span>
               </Link>
+
+              <Link
+                  to="/usersManagment"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex w-full items-center gap-4 py-4 text-left text-white"
+                >
+                  <FiUsers className="h-6 w-6 shrink-0" />
+                  <span className="text-xl font-bold">Gestión de personal</span>
+                </Link>
 
               <button
                 type="button"

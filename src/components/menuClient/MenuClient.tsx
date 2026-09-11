@@ -4,6 +4,9 @@ import { LuShoppingBag } from "react-icons/lu";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
+import { Link, useSearch } from "@tanstack/react-router";
+import { useCart } from "./CartContext";
+
 
 
 //limite de muestras
@@ -18,7 +21,7 @@ function ProductList({
   onDeleteProduct,
 	selectedProductId,
 	onViewMore,
-	onCloseDetails,
+  onCloseDetails,
 }: {
   initialLoading: boolean;
   isFiltering: boolean;
@@ -26,7 +29,7 @@ function ProductList({
   onDeleteProduct: (productId: number) => void;
 	selectedProductId: number | null;
 	onViewMore: (productId: number) => void;
-	onCloseDetails: () => void;
+  onCloseDetails: () => void;
 }) {
 	const visibleProducts = selectedProductId === null
 		? products
@@ -79,6 +82,14 @@ function MenuClient() {
   const [hasMore , setHasMore]=useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 	const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+  const { cartCount, setMesaId } = useCart();
+  const { mesaId } = useSearch({
+  from: "/(menuClient)/menuClient",
+});
+
+useEffect(() => {
+  setMesaId(mesaId);
+}, [mesaId, setMesaId]);
 
 
 
@@ -133,6 +144,8 @@ function MenuClient() {
 		setSelectedProductId((current) => current === productId ? null : current);
   };
 
+ 
+
 
   return (
      
@@ -173,9 +186,9 @@ function MenuClient() {
                 isFiltering={isFiltering}
                 products={products}
                 onDeleteProduct={handleDeleteProduct}
-				selectedProductId={selectedProductId}
-				onViewMore={setSelectedProductId}
-				onCloseDetails={() => setSelectedProductId(null)}
+				        selectedProductId={selectedProductId}
+				        onViewMore={setSelectedProductId}
+				        onCloseDetails={() => setSelectedProductId(null)}
               />
             </div>
 
@@ -231,7 +244,7 @@ function MenuClient() {
               onDeleteProduct={handleDeleteProduct}
 				selectedProductId={selectedProductId}
 			onViewMore={setSelectedProductId}
-			onCloseDetails={() => setSelectedProductId(null)}
+            onCloseDetails={() => setSelectedProductId(null)}
             />
           </div>
 
@@ -256,11 +269,20 @@ function MenuClient() {
                   src="/img/LogoS.svg"
                   alt="Logo del negocio"
                   className="absolute top-6 hidden h-15.5 w-10 object-contain lg:block"
-              />
-              <div className="absolute cursor-pointer flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2">
-                  <LuShoppingBag className="h-7 w-7 text-white " />
-              </div>
-          </div>
+        />
+        
+        <Link
+          to="/checkOrder"
+          className="absolute cursor-pointer flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
+        >
+          <LuShoppingBag className="h-7 w-7 text-white" />
+          {cartCount > 0 && (
+            <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">
+              {cartCount}
+            </span>
+          )}
+        </Link>
+      </div>
 
       </main>
     
