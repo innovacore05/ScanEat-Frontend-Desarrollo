@@ -3,6 +3,7 @@ import { useCart } from "../menuClient/CartContext";
 import { HiArrowLeft } from "react-icons/hi";
 import { FiMinus, FiPlus, FiX } from "react-icons/fi";
 import { useState } from "react";
+import { createOrder } from "../../services/orderService";
 
 function CheckOrder() {
   const {
@@ -11,10 +12,12 @@ function CheckOrder() {
     increaseQuantity,
     decreaseQuantity,
     removeFromCart,
+    clearCart,
   } = useCart();
 
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -23,6 +26,50 @@ function CheckOrder() {
 
   const iva = subtotal * 0.13;
   const total = subtotal + iva;
+
+  const handleCreateOrder = async () => {
+    const tableId = mesaId?.trim();
+
+    if (!tableId) {
+      alert("No se encontró una mesa válida para este pedido.");
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      alert("Agrega al menos un producto al pedido.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await createOrder({
+        tableId,
+        observation: specialInstructions.trim() || undefined,
+        items: cartItems.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        })),
+      });
+
+      clearCart();
+      setSpecialInstructions("");
+      setIsConfirmDialogOpen(false);
+      alert("Pedido enviado correctamente.");
+    } catch (error) {
+      const message =
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error &&
+        typeof error.message === "string"
+          ? error.message
+          : "No se pudo enviar el pedido.";
+
+      alert(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-white">
@@ -369,21 +416,13 @@ function CheckOrder() {
 
               <button
                 type="button"
+                disabled={isSubmitting}
                 onClick={() => {
-                  setIsConfirmDialogOpen(false);
-
-                  console.log({
-                    mesaId,
-                    cartItems,
-                    specialInstructions,
-                    subtotal,
-                    iva,
-                    total,
-                  });
+                  void handleCreateOrder();
                 }}
-                className="cursor-pointer rounded-lg bg-mint-dark px-4 py-2 text-sm font-semibold text-white hover:bg-mint-darker"
+                className="cursor-pointer rounded-lg bg-mint-dark px-4 py-2 text-sm font-semibold text-white hover:bg-mint-darker disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Confirmar
+                {isSubmitting ? "Enviando..." : "Confirmar"}
               </button>
             </div>
           </div>

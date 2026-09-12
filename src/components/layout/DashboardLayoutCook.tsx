@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { getProfile, logout } from "../../services/authService";
+import { getProfile, getStoredFirstName, logout } from "../../services/authService";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { RiNotification2Line } from "react-icons/ri";
 import { LuLogOut } from "react-icons/lu";
@@ -14,7 +14,7 @@ interface DashboardLayoutCookProps {
 function DashboardLayoutCook({ children }: DashboardLayoutCookProps) {
       // const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-	const [firstName, setFirstName] = useState("");
+	const [firstName, setFirstName] = useState(getStoredFirstName);
 	const [lastName, setLastName] = useState("");
 	const [email, setEmail] = useState("");
 

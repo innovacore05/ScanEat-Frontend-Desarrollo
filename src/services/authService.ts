@@ -7,6 +7,34 @@ type ApiError = {
 //Es la url base de la API de autenticación
 const AUTH_BASE_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
 
+export function getStoredFirstName(): string {
+    const storedUser = localStorage.getItem("authUser");
+
+    if (!storedUser) {
+        return "";
+    }
+
+    try {
+        const user: unknown = JSON.parse(storedUser);
+
+        if (typeof user !== "object" || user === null) {
+            return "";
+        }
+
+        if ("firstName" in user && typeof user.firstName === "string") {
+            return user.firstName;
+        }
+
+        if ("first_name" in user && typeof user.first_name === "string") {
+            return user.first_name;
+        }
+    } catch (error) {
+        console.error("No se pudo leer el usuario guardado:", error);
+    }
+
+    return "";
+}
+
 export const logout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("authUser");
@@ -352,6 +380,8 @@ export const getProfile = async () => {
   if (!response.ok) {
     throw data as ApiError;
   }
+
+  localStorage.setItem("authUser", JSON.stringify(data.user));
 
   return data as {
     user: {
