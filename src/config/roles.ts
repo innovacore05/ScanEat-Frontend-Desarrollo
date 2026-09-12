@@ -6,10 +6,10 @@ export const ROLE_IDS = {
 
 export function getDashboardForRole(
 	roleId: number,
-): "/dashboard" | "/dashboardCook" | "/dashboardWaiter" {
+): "/dashboard" | "/cookOrders" | "/dashboardWaiter" {
 	switch (roleId) {
 		case ROLE_IDS.cook:
-			return "/dashboardCook";
+			return "/cookOrders";
 		case ROLE_IDS.waiter:
 			return "/dashboardWaiter";
 		case ROLE_IDS.owner:

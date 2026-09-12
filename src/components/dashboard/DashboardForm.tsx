@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../layout/DashboardLayout";
-import { getProfile } from "../../services/authService";
+import { getProfile, getStoredFirstName } from "../../services/authService";
 
 function DashboardForm() {
-	const [firstName, setFirstName] = useState("");
+	const [firstName, setFirstName] = useState(getStoredFirstName);
 
 	useEffect(() => {
 		const loadProfile = async () => {

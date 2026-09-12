@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { getProfile } from "../../services/authService";
+import { getProfile, getStoredFirstName } from "../../services/authService";
 import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus } from "react-icons/go";
 import { FiCamera } from "react-icons/fi";
@@ -23,7 +23,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
   const [discount, setDiscount] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [firstName, setFirstName] = useState("");
+  const [firstName, setFirstName] = useState(getStoredFirstName);
   const isEditMode = mode === "edit" && Boolean(productId);
   const [error, setError] = useState("");
 

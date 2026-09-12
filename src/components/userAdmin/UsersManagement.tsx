@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
 import { Link } from "@tanstack/react-router";
 import DashboardLayout from "../layout/DashboardLayout";
-import { getProfile } from "../../services/authService";
+import { getProfile, getStoredFirstName } from "../../services/authService";
 import { ROLE_IDS } from "../../config/roles";
 import {deleteUser,getUsers,type ManagedUser,updateUser,} from "../../services/userService";
 import UserCard from "./UserCard";
 
 function UsersManagement() {
-	const [firstName, setFirstName] = useState("");
+	const [firstName, setFirstName] = useState(getStoredFirstName);
 	const [users, setUsers] = useState<ManagedUser[]>([]);
 	const [selectedUser, setSelectedUser] = useState<ManagedUser | null>(null);
 	const [userToDelete, setUserToDelete] = useState<ManagedUser | null>(null);

@@ -1,6 +1,6 @@
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { HiArrowLeft } from "react-icons/hi";
-import { getProfile } from "../../services/authService";
+import { getProfile, getStoredFirstName } from "../../services/authService";
 import DashboardLayout from "../layout/DashboardLayout";
 import { useEffect, useState } from "react";
 import { IoIosAdd } from "react-icons/io";
@@ -22,7 +22,7 @@ function EditTable() {
 	const { tableId } = useSearch({ from: "/(tableAdmin)/editTable" });
 	const [tableNumber, setTableNumber] = useState("");
 	const [chairs, setChairs] = useState("");
-	const [firstName, setFirstName] = useState("");
+	const [firstName, setFirstName] = useState(getStoredFirstName);
 	const [tables, setTables] = useState<TableItem[]>([]);
 	const [selectedTable, setSelectedTable] = useState<TableItem | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);

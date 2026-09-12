@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import DashboardLayoutCook from "../layout/DashboardLayoutCook";
-import { getProfile } from "../../services/authService";
+import { getProfile, getStoredFirstName } from "../../services/authService";
 
 function DashboardCook() {
-	const [firstName, setFirstName] = useState("");
+	const [firstName, setFirstName] = useState(getStoredFirstName);
 
 	useEffect(() => {
 		const loadProfile = async () => {

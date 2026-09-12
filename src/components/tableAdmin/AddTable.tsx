@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { HiArrowLeft } from "react-icons/hi";
-import { getProfile } from "../../services/authService";
+import { getProfile, getStoredFirstName } from "../../services/authService";
 import DashboardLayout from "../layout/DashboardLayout";
 import { useEffect, useState } from "react";
 import { IoIosAdd } from "react-icons/io";
@@ -12,7 +12,7 @@ function AddTable() {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [tableNumber, setTableNumber] = useState("");
 	const [chairNumber, setChairNumber] = useState("");
-	const [firstName, setFirstName] = useState("");
+	const [firstName, setFirstName] = useState(getStoredFirstName);
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 	const [qrValue, setQrValue] = useState("");
 	const [qrTableNumber, setQrTableNumber] = useState<number | string>("");

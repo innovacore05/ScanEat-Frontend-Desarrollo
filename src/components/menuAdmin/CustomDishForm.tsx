@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { getProfile } from "../../services/authService";
+import { getProfile, getStoredFirstName } from "../../services/authService";
 import {
   createCustomDish,
   getProductById,
@@ -28,7 +28,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
   const [discount, setDiscount] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [firstName, setFirstName] = useState("");
+  const [firstName, setFirstName] = useState(getStoredFirstName);
   const [error, setError] = useState("");
 
 

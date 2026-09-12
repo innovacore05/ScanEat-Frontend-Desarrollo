@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { getProfile } from "../../services/authService";
+import { getProfile, getStoredFirstName } from "../../services/authService";
 import { getProducts, type Product } from "../../services/productService";
 import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus } from "react-icons/go";
@@ -73,7 +73,7 @@ function ProductList({
 
 
 function MenuManagment() {
-  const [firstName, setFirstName] = useState("");
+  const [firstName, setFirstName] = useState(getStoredFirstName);
   const [products, setProducts] = useState<Product[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
