@@ -49,6 +49,7 @@ function CheckOrder() {
         items: cartItems.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
+          selectedOptions: item.selectedOptions ?? {},
         })),
       });
 
