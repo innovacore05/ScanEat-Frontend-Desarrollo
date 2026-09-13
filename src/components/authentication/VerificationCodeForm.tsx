@@ -124,7 +124,7 @@ function VerificationCodeForm() {
         // }
 
 // Verificar código de recuperación
-      await verifyResetCode(email, verificationCode);
+      await verifyLoginCode(email, verificationCode);
 
 
         const profile = await getProfile();
@@ -136,6 +136,8 @@ function VerificationCodeForm() {
         return;
       }
 
+          // Verificar código de recuperación
+      await verifyResetCode(email, verificationCode);
       
       // Solo se guarda si el backend confirmó que es válido
       localStorage.setItem("pendingResetCode", verificationCode);
