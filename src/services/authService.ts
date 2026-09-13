@@ -35,6 +35,86 @@ export function getStoredFirstName(): string {
     return "";
 }
 
+export function getStoredEmail(): string {
+    const storedUser = localStorage.getItem("authUser");
+
+    if (!storedUser) {
+        return "";
+    }
+
+    try {
+        const user: unknown = JSON.parse(storedUser);
+
+        if (typeof user !== "object" || user === null) {
+            return "";
+        }
+
+        if ("email" in user && typeof user.email === "string") {
+            return user.email;
+        }
+    } catch (error) {
+        console.error("No se pudo leer el correo guardado:", error);
+    }
+
+    return "";
+}
+
+export function getStoredLastName(): string {
+    const storedUser = localStorage.getItem("authUser");
+
+    if (!storedUser) {
+        return "";
+    }
+
+    try {
+        const user: unknown = JSON.parse(storedUser);
+
+        if (typeof user !== "object" || user === null) {
+            return "";
+        }
+
+        if ("lastName" in user && typeof user.lastName === "string") {
+            return user.lastName;
+        }
+
+        if ("last_name" in user && typeof user.last_name === "string") {
+            return user.last_name;
+        }
+    } catch (error) {
+        console.error("No se pudo leer el apellido guardado:", error);
+    }
+
+    return "";
+}
+
+export function getStoredRoleId(): number | null {
+    const storedUser = localStorage.getItem("authUser");
+
+    if (!storedUser) {
+        return null;
+    }
+
+    try {
+        const user: unknown = JSON.parse(storedUser);
+
+        if (typeof user !== "object" || user === null) {
+            return null;
+        }
+
+        if ("roleId" in user && typeof user.roleId === "number") {
+            return user.roleId;
+        }
+
+        if ("role_id" in user && typeof user.role_id === "number") {
+            return user.role_id;
+        }
+    } catch (error) {
+        console.error("No se pudo leer el rol guardado:", error);
+    }
+
+    return null;
+}
+
 export const logout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("authUser");

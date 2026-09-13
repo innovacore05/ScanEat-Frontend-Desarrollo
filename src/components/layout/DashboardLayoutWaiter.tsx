@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { getProfile, getStoredFirstName, logout } from "../../services/authService";
+import {
+  getProfile,
+  getStoredEmail,
+  getStoredFirstName,
+  getStoredLastName,
+  logout,
+} from "../../services/authService";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { RiNotification2Line } from "react-icons/ri";
@@ -18,8 +24,8 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [firstName, setFirstName] = useState(getStoredFirstName);
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
+  const [lastName, setLastName] = useState(getStoredLastName);
+  const [email, setEmail] = useState(getStoredEmail);
 
   useEffect(() => {
     const loadProfile = async () => {
