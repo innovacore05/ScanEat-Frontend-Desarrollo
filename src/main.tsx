@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
-import { CartProvider } from "./components/menuClient/CartContext";
+import { CartProvider } from "./components/clientOrders/CartContext";
 
 const router = createRouter({
   routeTree,

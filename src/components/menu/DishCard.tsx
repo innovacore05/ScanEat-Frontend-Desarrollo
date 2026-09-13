@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { FaRegStar, FaStar } from "react-icons/fa6";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
-import { useCart } from "../menuClient/CartContext";
+import { useCart } from "../clientOrders/CartContext";
 
 import {
 	deleteProduct,
