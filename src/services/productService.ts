@@ -1,13 +1,5 @@
+import { cookieSessionClient, type ApiError } from "./cookieSessionClient";
 
-{/* Cambio:ninguno no se toco*/}
-
-
-type ApiError={
-
-
-message?:string;
-[key:string]:unknown;
-};
 
 const MENU_BASE_URL=`${import.meta.env.VITE_API_URL}/api/menu`;
 
@@ -170,10 +162,41 @@ export const createProduct = async ({
     categoryId: number;
     image: File | null;
 }) => {
-     const token = localStorage.getItem("authToken");
-    const formData = new FormData();
+    //  const token = localStorage.getItem("authToken");
+    // const formData = new FormData();
 
-    formData.append("name", name);
+    // formData.append("name", name);
+    // formData.append("description", description);
+    // formData.append("price", price);
+    // formData.append("categoryId", String(categoryId));
+
+    // if (discount !== "") {
+    //     formData.append("discount", String(discount));
+    // }
+
+    // if (image) {
+    //     formData.append("image", image);
+    // }
+
+    // const response = await fetch(`${MENU_BASE_URL}/products`, {
+    //     method: "POST",
+    //     headers: {
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← ahora sí dentro de headers
+    //     },
+    //     body: formData,
+       
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data;
+
+const formData=new FormData();
+formData.append("name", name);
     formData.append("description", description);
     formData.append("price", price);
     formData.append("categoryId", String(categoryId));
@@ -186,22 +209,10 @@ export const createProduct = async ({
         formData.append("image", image);
     }
 
-    const response = await fetch(`${MENU_BASE_URL}/products`, {
-        method: "POST",
-        headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← ahora sí dentro de headers
-        },
-        body: formData,
-       
-    });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data;
+return cookieSessionClient.request(`${MENU_BASE_URL}/products`, {
+     method:"POST",
+     body:formData,
+});
 };
 
 export const updateProduct = async (
@@ -223,7 +234,7 @@ export const updateProduct = async (
     },
 ) => {
 
-const token = localStorage.getItem("authToken"); 
+// const token = localStorage.getItem("authToken"); 
 
     const formData = new FormData();
 
@@ -240,21 +251,25 @@ const token = localStorage.getItem("authToken");
         formData.append("image", image);
     }
 
-    const response = await fetch(`${MENU_BASE_URL}/products/${id}`, {
-        method: "PUT",
-         headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← agregar
-        },
-        body: formData,
+    // const response = await fetch(`${MENU_BASE_URL}/products/${id}`, {
+    //     method: "PUT",
+    //      headers: {
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← agregar
+    //     },
+    //     body: formData,
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data;
+    return cookieSessionClient.request(`${MENU_BASE_URL}/products/${id}`, {
+     method:"PUT",
+     body:formData,
     });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data;
 };
 
 //crear producto personalizado 
@@ -275,7 +290,7 @@ export const createCustomDish = async ({
     image: File | null;
     optionGroups: { id: string; name: string; options: string[] }[];
 }) => {
-    const token = localStorage.getItem("authToken");
+    // const token = localStorage.getItem("authToken");
 
     const formData = new FormData();
 
@@ -294,26 +309,30 @@ export const createCustomDish = async ({
 
     formData.append("optionGroups", JSON.stringify(optionGroups));
 
-    const response = await fetch(`${MENU_BASE_URL}/products/custom`, {
-        method: "POST",
-        headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: formData,
+    // const response = await fetch(`${MENU_BASE_URL}/products/custom`, {
+    //     method: "POST",
+    //     headers: {
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    //     },
+    //     body: formData,
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data;
+     return cookieSessionClient.request(`${MENU_BASE_URL}/products/custom`, {
+     method:"POST",
+     body:formData,
     });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data;
 };
 
 
 export const deleteProduct = async (id: number) => {
-    const token = localStorage.getItem("authToken");
+    // const token = localStorage.getItem("authToken");
     const endpoints = [
         `${MENU_BASE_URL}/products/${id}`,
         `${MENU_BASE_URL}/products/custom/${id}`,
@@ -325,10 +344,9 @@ export const deleteProduct = async (id: number) => {
         try {
             const response = await fetch(url, {
                 method: "DELETE",
-                headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← agregar
-    },
+                 credentials: "include",
             });
+            
 
             if (response.ok) {
                 return true;
@@ -370,7 +388,7 @@ export const updateCustomDish = async (
         optionGroups: { id: string; name: string; options: string[] }[];
     },
 ) => {
-    const token = localStorage.getItem("authToken");
+    // const token = localStorage.getItem("authToken");
 
     const formData = new FormData();
 
@@ -389,19 +407,23 @@ export const updateCustomDish = async (
 
     formData.append("optionGroups", JSON.stringify(optionGroups));
 
-    const response = await fetch(`${MENU_BASE_URL}/products/custom/${id}`, {
+    // const response = await fetch(`${MENU_BASE_URL}/products/custom/${id}`, {
+    //     method: "PUT",
+    //     headers: {
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    //     },
+    //     body: formData,
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data;
+     return cookieSessionClient.request(`${MENU_BASE_URL}/products/custom/${id}`, {
         method: "PUT",
-        headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
         body: formData,
     });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data;
 };

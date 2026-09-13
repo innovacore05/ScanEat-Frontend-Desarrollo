@@ -31,14 +31,14 @@ function LoginForm() {
 				navigate({ to: "/verificationCode" });
 				return;
 			}
+//Revisar para pronta eliminacion
+            // if (response.token) {
+            //     localStorage.setItem("authToken", response.token);
+            // }
 
-            if (response.token) {
-                localStorage.setItem("authToken", response.token);
-            }
-
-            if (response.user) {
-                localStorage.setItem("authUser", JSON.stringify(response.user));
-            }
+            // if (response.user) {
+            //     localStorage.setItem("authUser", JSON.stringify(response.user));
+            // }
 
             navigate({ to: "/verificationCode" });
         } catch (err) {

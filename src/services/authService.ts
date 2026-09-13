@@ -1,8 +1,9 @@
+
+import { cookieSessionClient, type ApiError } from "./cookieSessionClient";
+
+
+
 //Este archivo contiene funciones para interactuar con la API de autenticación
-type ApiError = {
-    message?: string;
-    [key: string]: unknown;
-};
 
 //Es la url base de la API de autenticación
 const AUTH_BASE_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
@@ -35,7 +36,16 @@ export function getStoredFirstName(): string {
     return "";
 }
 
-export const logout = () => {
+export const logout = async () => {
+
+try {
+    await cookieSessionClient.request(`${AUTH_BASE_URL}/logout`, {
+        method:"POST",
+});
+}catch (error){
+    console.error("No se pudo cerrar la sesión en el servidor:", error);
+    }
+    
     localStorage.removeItem("authToken");
     localStorage.removeItem("authUser");
     localStorage.removeItem("auth_token");
@@ -150,25 +160,32 @@ export const login = async (email: string, password: string) => {
 
 //Función para verificar el código de inicio de sesión
 export const verifyLoginCode = async (email: string, code: string) => {
-    const response = await fetch(`${AUTH_BASE_URL}/verify-login-code`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, code }),
+    // const response = await fetch(`${AUTH_BASE_URL}/verify-login-code`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ email, code }),
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data as {
+    //     message: string;
+    //     token?: string;
+    //     user?: Record<string, unknown>;
+    // };
+    return cookieSessionClient.request<{
+        message:string;
+        user?:Record<string,unknown>;
+         }>(`${AUTH_BASE_URL}/verify-login-code`, {
+            method:"POST",
+            body:JSON.stringify({email, code}),
     });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data as {
-        message: string;
-        token?: string;
-        user?: Record<string, unknown>;
-    };
 };
 
 //Función para reenviar el código el login code al correo electrónico del usuario
@@ -285,22 +302,22 @@ export const editProfile = async (changes: {
     email?: string,
 })  => {
 
-    const token = localStorage.getItem("authToken");
-    const response = await fetch(`${AUTH_BASE_URL}/edit-profile`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(changes),
-    });
-    const data = await response.json().catch(() => ({}));
+    // const token = localStorage.getItem("authToken");
+    // const response = await fetch(`${AUTH_BASE_URL}/edit-profile`, {
+    //     method: "PATCH",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    //     },
+    //     body: JSON.stringify(changes),
+    // });
+    // const data = await response.json().catch(() => ({}));
 
-    if (!response.ok) {
-        throw data as ApiError;
-    }
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
 
-   return data as {
+   return cookieSessionClient.request<{
         message: string;
         user?: {
             userId: number;
@@ -310,86 +327,117 @@ export const editProfile = async (changes: {
             roleId: number;
         };
         requiresEmailVerification?: boolean;
+    }>(`${AUTH_BASE_URL}/edit-profile`, {
+        method: "PATCH",
+        body: JSON.stringify(changes),
+    });
     };
-};
+
 
 export const changePassword = async (
   currentPassword: string,
   newPassword: string,
   confirmPassword: string,
 ) => {
-  const token = localStorage.getItem("authToken");
+//   const token = localStorage.getItem("authToken");
 
- const response = await fetch(`${AUTH_BASE_URL}/change-password`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({
-      currentPassword,
-      newPassword,
+//  const response = await fetch(`${AUTH_BASE_URL}/change-password`, {
+//     method: "PATCH",
+//     headers: {
+//       "Content-Type": "application/json",
+//       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+//     },
+//     body: JSON.stringify({
+//       currentPassword,
+//       newPassword,
+//       confirmPassword,
+//     }),
+//   });
+
+//   const data = await response.json().catch(() => ({}));
+
+//   if (!response.ok) {
+//     throw data as { message?: string };
+//   }
+
+  return cookieSessionClient.request<{message:string}>(`${AUTH_BASE_URL}/change-password`, {
+ method:"PATCH",
+ body:JSON.stringify({
+    currentPassword,
+       newPassword,
       confirmPassword,
-    }),
-  });
-
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw data as { message?: string };
-  }
-
-  return data as { message: string };
+ }),
+});
 };
 
 
 //Función para verificar el nuevo correo tras un cambio de perfil
 export const verifyProfileEmail = async (code: string) => {
-    const token = localStorage.getItem("authToken");
-    const response = await fetch(`${AUTH_BASE_URL}/verify-profile-email`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ code }),
+    // const token = localStorage.getItem("authToken");
+    // const response = await fetch(`${AUTH_BASE_URL}/verify-profile-email`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    //     },
+    //     body: JSON.stringify({ code }),
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data as { message: string };
+    return cookieSessionClient.request<{message: string}>(`${AUTH_BASE_URL}/verify-profile-email`, {
+      method:"POST",
+      body: JSON.stringify({code})
     });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data as { message: string };
 };
+
+
 
 //funcion para obtener la informacion del usuario y mostrarla en fornt
 export const getProfile = async () => {
-  const token = localStorage.getItem("authToken");
+//   const token = localStorage.getItem("authToken");
 
-  const response = await fetch(`${AUTH_BASE_URL}/profile`, {
-    method: "GET",
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
+//   const response = await fetch(`${AUTH_BASE_URL}/profile`, {
+//     method: "GET",
+//     headers: {
+//       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+//     },
+//   });
 
-  const data = await response.json().catch(() => ({}));
+//   const data = await response.json().catch(() => ({}));
 
-  if (!response.ok) {
-    throw data as ApiError;
-  }
+//   if (!response.ok) {
+//     throw data as ApiError;
+//   }
 
-  localStorage.setItem("authUser", JSON.stringify(data.user));
+//   localStorage.setItem("authUser", JSON.stringify(data.user));
 
-  return data as {
-    user: {
+//   return data as {
+//     user: {
+//       userId: number;
+//       firstName: string;
+//       lastName: string;
+//       email: string;
+//       roleId: number;
+//     };
+//   };
+
+const data=await cookieSessionClient.request<{
+ user: {
       userId: number;
       firstName: string;
       lastName: string;
       email: string;
       roleId: number;
     };
-  };
+}>(`${AUTH_BASE_URL}/profile`, {
+    method:"GET"
+});
+localStorage.setItem("authUser", JSON.stringify(data.user));
+return data;
 };

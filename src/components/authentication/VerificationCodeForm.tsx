@@ -111,15 +111,21 @@ function VerificationCodeForm() {
 
     try {
       if (verificationFlow === "login") {
-        const response = await verifyLoginCode(email, verificationCode);
+        
+        //Revisar para pronta eliminacion
+        // const response = await verifyLoginCode(email, verificationCode);
 
-        if (response.token) {
-          localStorage.setItem("authToken", response.token);
-        }
+        // if (response.token) {
+        //   localStorage.setItem("authToken", response.token);
+        // }
 
-        if (response.user) {
-          localStorage.setItem("authUser", JSON.stringify(response.user));
-        }
+        // if (response.user) {
+        //   localStorage.setItem("authUser", JSON.stringify(response.user));
+        // }
+
+// Verificar código de recuperación
+      await verifyResetCode(email, verificationCode);
+
 
         const profile = await getProfile();
         localStorage.removeItem("pendingLoginEmail");
@@ -130,9 +136,7 @@ function VerificationCodeForm() {
         return;
       }
 
-      // Verificar código de recuperación
-      await verifyResetCode(email, verificationCode);
-
+      
       // Solo se guarda si el backend confirmó que es válido
       localStorage.setItem("pendingResetCode", verificationCode);
 
