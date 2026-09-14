@@ -105,7 +105,7 @@ function WaiterOrders() {
             />
           </div>
 
-          <div className="mt-8 grid grid-cols-[612px_500px] gap-6">
+          <div className="mt-8 grid grid-cols-[minmax(0,612px)_minmax(280px,1fr)] gap-6">
             {/* Pedidos */}
             <div className="flex flex-col gap-12">
               {orders.map((order) => (

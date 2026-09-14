@@ -149,7 +149,7 @@ function OrderDetailsContent({ order }: { order: Order }) {
               
         
 
-        <div className="w-245 rounded-4xl bg-neutral-100 px-8 py-8">
+        <div className="w-full min-w-0 rounded-4xl bg-neutral-100 px-8 py-8">
           <div className="flex flex-col gap-4">
             <p className="text-2xl font-bold text-mint-dark">
             Orden #{order.orderId}

@@ -26,7 +26,7 @@ type WaiterOrderCardProps = {
 function WaiterOrderCard({ order, onDetails}: WaiterOrderCardProps) {
   return (
     <div>
-      <div className="w-full lg:w-153 h-full bg-neutral-100 py-6 px-6 lg:px-8 rounded-2xl flex items-center justify-between gap-6">
+      <div className="w-full min-w-0 h-full bg-neutral-100 py-6 px-6 lg:px-8 rounded-2xl flex items-center justify-between gap-6">
         <div className="flex flex-col gap-4 min-w-0">
           <h2 className="text-xl font-bold text-mint-dark">
             Mesa #{order.tableId}
