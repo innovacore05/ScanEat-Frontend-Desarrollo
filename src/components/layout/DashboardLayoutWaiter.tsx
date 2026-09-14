@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { getProfile, getStoredFirstName, logout } from "../../services/authService";
+import {
+  getProfile,
+  getStoredEmail,
+  getStoredFirstName,
+  getStoredLastName,
+  logout,
+} from "../../services/authService";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { RiNotification2Line } from "react-icons/ri";
@@ -18,8 +24,8 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [firstName, setFirstName] = useState(getStoredFirstName);
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
+  const [lastName, setLastName] = useState(getStoredLastName);
+  const [email, setEmail] = useState(getStoredEmail);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -63,8 +69,9 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
             <span className="text-[15px] font-bold cursor-pointer">Menú</span>
           </Link>
 
-          <button
-            type="button"
+          <Link
+            to="/waiterOrders"
+            onClick={() => setIsMenuOpen(false)}
             className="flex items-center gap-4 py-3 text-left text-text-primary"
           >
             <LuShoppingBag className="h-6 w-6 shrink-0" />
@@ -72,7 +79,7 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
             <span className="text-[15px] font-bold cursor-pointer">
               Pedidos
             </span>
-          </button>
+          </Link>
 
           <div className="mt-10">
             <button
@@ -215,13 +222,14 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
             <span className="text-xl font-bold">Menú</span>
           </Link>
 
-          <button
-            type="button"
+          <Link
+            to="/waiterOrders"
+            onClick={() => setIsMenuOpen(false)}
             className="flex w-full items-center gap-4 py-4 text-left text-white"
           >
             <LuShoppingBag className="h-6 w-6 shrink-0" />
             <span className="text-xl font-bold">Pedidos</span>
-          </button>
+          </Link>
         </div>
 
         <div className="mt-10 flex flex-col gap-2">

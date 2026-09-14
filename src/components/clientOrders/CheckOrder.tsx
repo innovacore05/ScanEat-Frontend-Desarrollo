@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useCart } from "../menuClient/CartContext";
+import { useCart } from "./CartContext";
 import { HiArrowLeft } from "react-icons/hi";
 import { FiMinus, FiPlus, FiX } from "react-icons/fi";
 import { useState } from "react";
@@ -49,6 +49,7 @@ function CheckOrder() {
         items: cartItems.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
+          selectedOptions: item.selectedOptions ?? {},
         })),
       });
 

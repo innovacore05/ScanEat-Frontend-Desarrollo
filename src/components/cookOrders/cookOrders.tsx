@@ -1,4 +1,4 @@
-import OrderCard from "../Orders/OrderCard";
+import OrderCard from "./OrderCard";
 
 function CookOrders() {
   const orders = [

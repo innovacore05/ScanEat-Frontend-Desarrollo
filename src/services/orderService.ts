@@ -6,6 +6,7 @@ export type CreateOrderPayload = {
   items: Array<{
     productId: number;
     quantity: number;
+    selectedOptions: Record<string, string>;
   }>;
 };
 

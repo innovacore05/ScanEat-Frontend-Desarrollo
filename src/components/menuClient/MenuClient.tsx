@@ -5,7 +5,7 @@ import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
 import { Link, useSearch } from "@tanstack/react-router";
-import { useCart } from "./CartContext";
+import { useCart } from "../clientOrders/CartContext";
 
 
 

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
-import CheckOrder from '../../components/menuClient/CheckOrder'
+import CheckOrder from '../../components/clientOrders/CheckOrder'
 
-export const Route = createFileRoute('/(menuClient)/checkOrder')({
+export const Route = createFileRoute('/(clientOrders)/checkOrder')({
   component: RouteComponent,
 })
 

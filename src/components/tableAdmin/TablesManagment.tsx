@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { getProfile, getStoredFirstName } from "../../services/authService";
+import { getProfile, getStoredFirstName, getStoredRoleId } from "../../services/authService";
 import { HiArrowLeft } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import DashboardLayout from "../layout/DashboardLayout";
@@ -22,7 +22,7 @@ export type TableItem = {
 
 function TablesManagment() {
 	const [firstName, setFirstName] = useState(getStoredFirstName);
-	const [roleId, setRoleId] = useState<number | null>(null);
+	const [roleId, setRoleId] = useState<number | null>(getStoredRoleId);
 	const [tables, setTables] = useState<TableItem[]>([]);
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 	const [qrValue, setQrValue] = useState("");
