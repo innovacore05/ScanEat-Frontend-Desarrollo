@@ -21,13 +21,16 @@ ESTA CLASE DEBE USARSE EN LOS DEMAS SERVICIOS, ESTA CLASE NO MANEJA LAS GALLETAS
 EN CADA REQUEST 
 
 PERMITE L AENTRADA DEL TOKEN, ES UNA ATORIZACION
-
-
+Esta clase NO crea ni administra directamente las cookies
+El navegador recibe la cookie HttpOnly desde el backend
+y posteriormente la envía automáticamente gracias a
+credentials: "include"
 */
 
 
 type ApiError={
     message?:string;
+    status?:string
     [key:string]:unknown;
 };
 
@@ -45,7 +48,10 @@ class CookieSessionClient{
         });
         const data = await response.json().catch(()=>({}));
 if(!response.ok){
-    throw data as ApiError;
+    throw {
+        ...data,
+        status:response.status,
+    } as ApiError;
 }
 
 return data as T;

@@ -68,23 +68,29 @@ const url=queryString
 ? `${MENU_BASE_URL}/products?${queryString}`
 :`${MENU_BASE_URL}/products`;
 
-const response =await fetch(url,{
-    method:"GET",
-});
+// const response =await fetch(url,{
+//     method:"GET",
+// });
 
-const data=await response.json().catch(()=>({}));
+// const data=await response.json().catch(()=>({}));
 
-if(!response.ok){
-    throw data as ApiError;
-}
+// if(!response.ok){
+//     throw data as ApiError;
+// }
 
-    const page = data as ProductsPage;
+//     const page = data as ProductsPage;
 
-    return {
-        ...page,
-        products: page.products.map(normalizeProduct),
-    };
+//     return {
+//         ...page,
+//         products: page.products.map(normalizeProduct),
+//     };
 
+const data = await cookieSessionClient.request<ProductsPage>(
+    url,{method:"GET"});
+return {
+    ...data,
+    products:data.products.map(normalizeProduct),
+};
 };
 
 
@@ -92,31 +98,58 @@ if(!response.ok){
 //obtener producto de menu por id
 
 export const getProductById= async (id: number | string)=>{
-    const response =await fetch (`${MENU_BASE_URL}/products/${id}`, {
-        method:"GET",
-    });
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok){
-        throw data as ApiError;
-    }
-    return normalizeProduct(data as Product);
+    // const response =await fetch (`${MENU_BASE_URL}/products/${id}`, {
+    //     method:"GET",
+    // });
+    // const data=await response.json().catch(()=>({}));
+    // if(!response.ok){
+    //     throw data as ApiError;
+    // }
+    // return normalizeProduct(data as Product);
+    const data =await cookieSessionClient.request<Product>(
+        `${MENU_BASE_URL}/products/${id}`,
+        {method:"GET",
+            },
+    );
+    return normalizeProduct(data);
 }
 
 export const isCustomProduct = async (id: number): Promise<boolean> => {
-    const response = await fetch(`${MENU_BASE_URL}/products/custom/${id}`, {
-        method: "GET",
-    });
+    // const response = await fetch(`${MENU_BASE_URL}/products/custom/${id}`, {
+    //     method: "GET",
+    // });
 
-    if (response.ok) {
-        return true;
+    // if (response.ok) {
+    //     return true;
+    // }
+
+    // if (response.status === 404 || response.status === 405) {
+    //     return false;
+    // }
+
+    // const data = await response.json().catch(() => ({}));
+    // throw data as ApiError;
+    try{
+        await cookieSessionClient.request(
+            `${MENU_BASE_URL}/products/custom/${id}`, {
+                method:"GET",
+            },
+        );
+    return true;
+    }catch (error){
+        const ApiError=error as{
+            message?:string;
+            status?:number;
+            [key:string]:unknown;
+        };
+        if(
+            ApiError.status===404 ||
+            ApiError.status===405
+        ){
+            return false;
+        }
+    throw error;
     }
-
-    if (response.status === 404 || response.status === 405) {
-        return false;
-    }
-
-    const data = await response.json().catch(() => ({}));
-    throw data as ApiError;
 };
 
 export const productIsCustom = (product: Product): boolean => {
@@ -342,29 +375,39 @@ export const deleteProduct = async (id: number) => {
 
     for (const url of endpoints) {
         try {
-            const response = await fetch(url, {
+            // const response = await fetch(url, {
+            //     method: "DELETE",
+            //      credentials: "include",
+             await cookieSessionClient.request 
+              (url, {
                 method: "DELETE",
-                 credentials: "include",
+               
             });
             
 
-            if (response.ok) {
-                return true;
-            }
+    //         if (response.ok) {
+    //             return true;
+    //         }
 
-            const data = await response.json().catch(() => ({}));
+    //         const data = await response.json().catch(() => ({}));
 
-            if (response.status === 404 || response.status === 405) {
-                lastError = data as ApiError;
-                continue;
-            }
+    //         if (response.status === 404 || response.status === 405) {
+    //             lastError = data as ApiError;
+    //             continue;
+    //         }
 
-            throw data as ApiError;
-        } catch (error) {
-            lastError = error as ApiError;
+    //         throw data as ApiError;
+    //     } catch (error) {
+    //         lastError = error as ApiError;
+    //     }
+    // }
+
+    // throw lastError as ApiError;
+    return true;
+        }catch (error){
+            lastError=error as ApiError;
         }
     }
-
     throw lastError as ApiError;
 };
 

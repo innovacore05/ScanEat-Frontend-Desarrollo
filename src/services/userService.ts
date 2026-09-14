@@ -89,6 +89,6 @@ export const deleteUser = async (userId: number) => {
 	// 	throw data as ApiError;
 	// }
 
-	return cookieSessionClient.request(`${USERS_BASE_URL}/${userId}`,{
+	return cookieSessionClient.request(`${USERS_BASE_URL}/${userId}`,{method:"DELETE",
 	});
 };

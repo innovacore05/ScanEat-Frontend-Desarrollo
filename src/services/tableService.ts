@@ -3,6 +3,11 @@
 import { cookieSessionClient } from "./cookieSessionClient";
 const TABLES_BASE_URL = `${import.meta.env.VITE_API_URL}/api/table`;
 
+//tipos de table solo una vez:
+export type Table={
+  
+}
+
 
 export const createTable = async (tableNumber: number, chairNumber?: number) => {
     // const token = localStorage.getItem("authToken");
