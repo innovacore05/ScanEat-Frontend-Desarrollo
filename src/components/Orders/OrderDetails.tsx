@@ -3,11 +3,14 @@ import { HiArrowLeft } from "react-icons/hi";
 import type { Order } from "../waiterOrders/WaiterOrderCard";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import type { ReactNode, ComponentType } from "react";
+import { useState } from "react";
+import { confirmOrder, deliverOrder } from "../../services/orderService";
 
 type OrderDetailsProps = {
   order: Order;
   embedded?: boolean;
   showConfirmButton?: boolean;
+  onStatusChanged?: () => void | Promise<void>;
   mobileBackRoute?: string;
   showMobileBack?: boolean;
   Layout?: ComponentType<{ children: ReactNode }>;
@@ -18,15 +21,44 @@ function OrderDetailsContent({
   showConfirmButton,
   mobileBackRoute,
   showMobileBack,
+  onStatusChanged,
 }: {
   order: Order;
   showConfirmButton: boolean;
   mobileBackRoute: string;
   showMobileBack: boolean;
+  onStatusChanged?: () => void | Promise<void>;
 }) {
-  const subtotal = Number(order.price.replace("₡", "").replace(",", ""));
-  const iva = subtotal * 0.13;
-  const total = subtotal + iva;
+  const [isUpdating, setIsUpdating] = useState(false);
+  const subtotal = order.subtotal ?? 0;
+  const iva = order.tax ?? 0;
+  const total = order.total ?? subtotal + iva;
+  const canChangeStatus =
+    showConfirmButton &&
+    (order.status === "Pendiente" || order.status === "Listo");
+
+  const handleStatusChange = async () => {
+    if (!order.status) return;
+
+    try {
+      setIsUpdating(true);
+      if (order.status === "Pendiente") {
+        await confirmOrder(order.orderId);
+      } else if (order.status === "Listo") {
+        await deliverOrder(order.orderId);
+      }
+      await onStatusChanged?.();
+    } catch (error) {
+      console.error("No se pudo cambiar el estado de la orden:", error);
+      const message =
+        error && typeof error === "object" && "message" in error
+          ? String((error as { message?: string }).message)
+          : "No se pudo cambiar el estado de la orden.";
+      alert(message);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -151,13 +183,19 @@ function OrderDetailsContent({
             </div>
           </div>
 
-          {showConfirmButton && (
+          {canChangeStatus && (
             <div className="mt-8 flex justify-end">
               <button
                 type="button"
+                onClick={() => void handleStatusChange()}
+                disabled={isUpdating}
                 className="cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-lg font-bold text-white"
               >
-                Confirmar
+                {isUpdating
+                  ? "Actualizando..."
+                  : order.status === "Listo"
+                    ? "Entregar"
+                    : "Confirmar"}
               </button>
             </div>
           )}
@@ -270,13 +308,19 @@ function OrderDetailsContent({
             </div>
           </div>
 
-          {showConfirmButton && (
+          {canChangeStatus && (
             <div className="mt-8 flex justify-end">
               <button
                 type="button"
+                onClick={() => void handleStatusChange()}
+                disabled={isUpdating}
                 className="cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-lg font-bold text-white"
               >
-                Confirmar
+                {isUpdating
+                  ? "Actualizando..."
+                  : order.status === "Listo"
+                    ? "Entregar"
+                    : "Confirmar"}
               </button>
             </div>
           )}
@@ -293,6 +337,7 @@ function OrderDetails({
   mobileBackRoute = "/waiterOrders",
   showMobileBack = true,
   Layout = DashboardLayoutWaiter,
+  onStatusChanged,
 }: OrderDetailsProps) {
   if (embedded) {
     return (
@@ -301,6 +346,7 @@ function OrderDetails({
         showConfirmButton={showConfirmButton}
         mobileBackRoute={mobileBackRoute}
         showMobileBack={showMobileBack}
+        onStatusChanged={onStatusChanged}
       />
     );
   }
@@ -313,6 +359,7 @@ function OrderDetails({
           showConfirmButton={showConfirmButton}
           mobileBackRoute={mobileBackRoute}
           showMobileBack={showMobileBack}
+          onStatusChanged={onStatusChanged}
         />
       </main>
     </Layout>

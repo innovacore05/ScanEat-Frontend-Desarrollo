@@ -10,7 +10,8 @@ import { getTables, deleteTable } from "../../services/tableService";
 import QrCodeModal from "./QRCodeModal";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import { ROLE_IDS } from "../../config/roles";
-import { orders } from "../waiterOrders/mockOrders";
+import { getOrders } from "../../services/orderService";
+import type { Order } from "../waiterOrders/WaiterOrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 
 
@@ -32,6 +33,7 @@ function TablesManagment() {
 	const [selectedTable, setSelectedTable] = useState<TableItem | null>(null);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [orders, setOrders] = useState<Order[]>([]);
 
 	const handleShowQr = (tableId: string, tableNumber: number) => {
 		setQrValue(`https://scaneat-frontend-produccion-production.up.railway.app/menuClient?mesaId=${tableId}`);
@@ -64,6 +66,19 @@ function TablesManagment() {
 		};
 
 		loadTables();
+	}, []);
+
+	useEffect(() => {
+		const loadOrders = async () => {
+			try {
+				const data = await getOrders();
+				setOrders(data);
+			} catch (error) {
+				console.error("Error trayendo órdenes:", error);
+			}
+		};
+
+		void loadOrders();
 	}, []);
 
 	const handleDeleteTable = async () => {

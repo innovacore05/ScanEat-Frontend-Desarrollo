@@ -9,7 +9,6 @@ import { RiNotification2Line } from "react-icons/ri";
 import { LuLogOut } from "react-icons/lu";
 import { GoHome } from "react-icons/go";
 import { IoRestaurantOutline } from "react-icons/io5";
-import { LuShoppingBag } from "react-icons/lu";
 import { FiUsers } from "react-icons/fi";
 
 interface DashboardLayoutProps {
