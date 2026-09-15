@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import WaiterOrderDetails from "../../components/waiterOrders/WaiterOrderDetails";
+import WaiterOrderDetails from "../../components/Orders/OrderDetails";
 import { orders } from "../../components/waiterOrders/mockOrders";
 
 export const Route = createFileRoute("/(waiterOrders)/waiterOrderDetails",)({

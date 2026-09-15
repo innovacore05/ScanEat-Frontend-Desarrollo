@@ -10,6 +10,8 @@ import { getTables, deleteTable } from "../../services/tableService";
 import QrCodeModal from "./QRCodeModal";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import { ROLE_IDS } from "../../config/roles";
+import { orders } from "../waiterOrders/mockOrders";
+import OrderDetails from "../Orders/OrderDetails";
 
 
 export type TableItem = {
@@ -88,6 +90,10 @@ function TablesManagment() {
 	const Layout = roleId === ROLE_IDS.waiter ? DashboardLayoutWaiter : DashboardLayout;
 	const dashboardRoute = roleId === ROLE_IDS.waiter ? "/dashboardWaiter" : "/dashboard";
 
+	const tableOrders = orders.filter(
+	(order) => order.tableId === selectedTable?.tableNumber,
+	);
+	
 	return (
 		<Layout>
 			<main className="flex min-h-screen flex-col bg-white ">
@@ -156,12 +162,25 @@ function TablesManagment() {
 							)}
 
 							<div className="mt-5 rounded-lg bg-neutral-100 px-4 py-4">
-								<p className="text-lg font-bold text-text-primary">
-									Orden actual
-								</p>
-								<p className="mt-3 text-xs text-text-primary">
-									Esta mesa no tiene una orden activa.
-								</p>
+								{tableOrders.length === 0 ? (
+									<div className=" rounded-lg bg-neutral-100 px-4 py-4">
+										<p className="text-lg font-bold text-text-primary">
+											Orden actual
+										</p>
+										<p className="text-sm text-text-primary">
+											Esta mesa no tiene una orden activa.
+										</p>
+									</div>
+								) : (
+										<div>
+											<OrderDetails
+											order={tableOrders[0]}
+											embedded
+											showConfirmButton={false}
+												showMobileBack={false}
+											/>
+										</div>
+	)}
 							</div>
 						</div>
 
@@ -301,13 +320,25 @@ function TablesManagment() {
 							)}
 
 							<div className="mt-5 rounded-lg bg-neutral-100 px-4 py-4">
-								<p className="text-lg font-bold text-text-primary">
-									Orden actual
-								</p>
-
-								<p className="mt-3 text-xs text-text-primary">
-									Esta mesa no tiene una orden activa.
-								</p>
+								{tableOrders.length === 0 ? (
+									<div className="rounded-lg bg-neutral-100 px-4 py-4">
+										<p className="text-lg font-bold text-text-primary">
+											Orden actual
+										</p>
+										<p className="text-xs text-text-primary">
+											Esta mesa no tiene una orden activa.
+										</p>
+									</div>
+								) : (
+										<div>
+											<OrderDetails
+												order={tableOrders[0]}
+												embedded
+												showConfirmButton={false}
+												showMobileBack={false}
+											/>
+									</div>
+								)}
 							</div>
 						</div>
 					</div>

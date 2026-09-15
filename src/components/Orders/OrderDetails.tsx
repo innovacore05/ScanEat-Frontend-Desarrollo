@@ -1,37 +1,57 @@
 import { Link } from "@tanstack/react-router";
 import { HiArrowLeft } from "react-icons/hi";
-import type { Order } from "./WaiterOrderCard";
+import type { Order } from "../waiterOrders/WaiterOrderCard";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
+import type { ReactNode, ComponentType } from "react";
 
-type WaiterOrderDetailsProps = {
+type OrderDetailsProps = {
   order: Order;
   embedded?: boolean;
+  showConfirmButton?: boolean;
+  mobileBackRoute?: string;
+  showMobileBack?: boolean;
+  Layout?: ComponentType<{ children: ReactNode }>;
 };
 
-function OrderDetailsContent({ order }: { order: Order }) {
+function OrderDetailsContent({
+  order,
+  showConfirmButton,
+  mobileBackRoute,
+  showMobileBack,
+}: {
+  order: Order;
+  showConfirmButton: boolean;
+  mobileBackRoute: string;
+  showMobileBack: boolean;
+}) {
   const subtotal = Number(order.price.replace("₡", "").replace(",", ""));
   const iva = subtotal * 0.13;
   const total = subtotal + iva;
 
   return (
-      <div className="w-full">
-          
+    <div className="w-full">
       {/* Celular */}
       <section className="lg:hidden">
-        <div className="flex items-center gap-2">
-          <Link
-            to="/waiterOrders"
-            className="flex items-center gap-2 text-mint-dark"
-          >
-            <HiArrowLeft className="h-6 w-6" />
+       <div className="flex items-center gap-2">
+  {showMobileBack ? (
+    <Link
+      to={mobileBackRoute}
+      className="flex items-center gap-2 text-mint-dark"
+    >
+      <HiArrowLeft className="h-6 w-6" />
 
-            <span className="text-[32px] font-bold">
-              Orden #{order.orderId}
-            </span>
-          </Link>
-        </div>
+      <span className="text-[32px] font-bold">
+        Orden #{order.orderId}
+      </span>
+    </Link>
+  ) : (
+    <span className="text-2xl font-bold text-mint-dark">
+      Orden #{order.orderId}
+    </span>
+  )}
+</div>
 
-        <div className="mt-8 rounded-4xl bg-neutral-100 px-6 py-6">
+        <div className="mt-2 rounded-4xl bg-neutral-100 px-6 py-6">
           <div className="flex flex-col gap-4">
             <h2 className="text-2xl font-bold text-mint-dark">
               Mesa #{order.tableId}
@@ -131,30 +151,28 @@ function OrderDetailsContent({ order }: { order: Order }) {
             </div>
           </div>
 
-          <div className="mt-8 flex justify-end">
-            <button
-              type="button"
-              className="cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-lg font-bold text-white"
-            >
-              Confirmar
-            </button>
-          </div>
+          {showConfirmButton && (
+            <div className="mt-8 flex justify-end">
+              <button
+                type="button"
+                className="cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-lg font-bold text-white"
+              >
+                Confirmar
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
-          
-          
       {/* Computadora */}
-          <section className="hidden lg:block">
-              
-        
-
+      <section className="hidden lg:block">
         <div className="w-full min-w-0 rounded-4xl bg-neutral-100 px-8 py-8">
           <div className="flex flex-col gap-4">
             <p className="text-2xl font-bold text-mint-dark">
-            Orden #{order.orderId}
-          </p>
-                      <h2 className="text-2xl font-bold text-text-primary">
+              Orden #{order.orderId}
+            </p>
+
+            <h2 className="text-2xl font-bold text-text-primary">
               Mesa #{order.tableId}
             </h2>
 
@@ -252,35 +270,53 @@ function OrderDetailsContent({ order }: { order: Order }) {
             </div>
           </div>
 
-          <div className="mt-8 flex justify-end">
-            <button
-              type="button"
-              className="cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-lg font-bold text-white"
-            >
-              Confirmar
-            </button>
-          </div>
+          {showConfirmButton && (
+            <div className="mt-8 flex justify-end">
+              <button
+                type="button"
+                className="cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-lg font-bold text-white"
+              >
+                Confirmar
+              </button>
+            </div>
+          )}
         </div>
       </section>
     </div>
   );
 }
 
-function WaiterOrderDetails({
+function OrderDetails({
   order,
   embedded = false,
-}: WaiterOrderDetailsProps) {
+  showConfirmButton = true,
+  mobileBackRoute = "/waiterOrders",
+  showMobileBack = true,
+  Layout = DashboardLayoutWaiter,
+}: OrderDetailsProps) {
   if (embedded) {
-    return <OrderDetailsContent order={order} />;
+    return (
+      <OrderDetailsContent
+        order={order}
+        showConfirmButton={showConfirmButton}
+        mobileBackRoute={mobileBackRoute}
+        showMobileBack={showMobileBack}
+      />
+    );
   }
 
   return (
-    <DashboardLayoutWaiter>
+    <Layout>
       <main className="min-h-screen bg-white px-6 py-8 lg:px-10 lg:py-10">
-        <OrderDetailsContent order={order} />
+        <OrderDetailsContent
+          order={order}
+          showConfirmButton={showConfirmButton}
+          mobileBackRoute={mobileBackRoute}
+          showMobileBack={showMobileBack}
+        />
       </main>
-    </DashboardLayoutWaiter>
+    </Layout>
   );
 }
 
-export default WaiterOrderDetails;
+export default OrderDetails;

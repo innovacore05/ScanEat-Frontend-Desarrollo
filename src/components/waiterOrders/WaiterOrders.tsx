@@ -8,7 +8,7 @@ import { getStoredFirstName } from "../../services/authService";
 import WaiterOrderCard from "../waiterOrders/WaiterOrderCard";
 import type { Order } from "../waiterOrders/WaiterOrderCard";
 import { orders } from "../waiterOrders/mockOrders";
-import WaiterOrderDetails from "../waiterOrders/WaiterOrderDetails";
+import OrderDetails from "../Orders/OrderDetails";
 
 function WaiterOrders() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -121,7 +121,7 @@ function WaiterOrders() {
                       <div>
                           <p className="pb-4 text-xl text-text-primary font-bold ">Orden actual</p>
               {selectedOrder ? (
-                <WaiterOrderDetails
+                <OrderDetails
                   order={selectedOrder}
                   embedded
                 />
