@@ -32,7 +32,18 @@ function CookOrders() {
   };
 
   useEffect(() => {
-    void loadOrders();
+    const initialLoadId = window.setTimeout(() => {
+      void loadOrders();
+    }, 0);
+
+    const intervalId = window.setInterval(() => {
+      void loadOrders();
+    }, 2000);
+
+    return () => {
+      window.clearTimeout(initialLoadId);
+      window.clearInterval(intervalId);
+    };
   }, []);
 
   const handleReadyOrder = async (orderId: number) => {

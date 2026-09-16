@@ -79,6 +79,14 @@ function TablesManagment() {
 		};
 
 		void loadOrders();
+
+		const intervalId = window.setInterval(() => {
+			void loadOrders();
+		}, 5000);
+
+		return () => {
+			window.clearInterval(intervalId);
+		};
 	}, []);
 
 	const handleDeleteTable = async () => {

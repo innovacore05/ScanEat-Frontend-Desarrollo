@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
 import FilterOrders from "../waiterOrders/FilterOrders";
 import SearchOrders from "../waiterOrders/SearchOrders";
@@ -19,7 +19,7 @@ function WaiterOrders() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
 
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     try {
       const backendOrders = await getOrders(selectedCategory ? statusIdToState[selectedCategory] : undefined);
       setOrders(backendOrders);
@@ -34,11 +34,22 @@ function WaiterOrders() {
       console.error("No se pudieron cargar los pedidos:", error);
       setOrders([]);
     }
-  };
+  }, [selectedCategory]);
 
   useEffect(() => {
-    void loadOrders();
-  }, [selectedCategory]);
+    const initialLoadId = window.setTimeout(() => {
+      void loadOrders();
+    }, 0);
+
+    const intervalId = window.setInterval(() => {
+      void loadOrders();
+    }, 2000);
+
+    return () => {
+      window.clearTimeout(initialLoadId);
+      window.clearInterval(intervalId);
+    };
+  }, [loadOrders]);
 
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =

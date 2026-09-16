@@ -58,6 +58,22 @@ type BackendOrder = {
   details: BackendOrderDetail[];
 };
 
+const formatSelectedOptions = (
+  selectedOptions: Record<string, string>,
+  optionGroups: BackendOrderDetail["optionGroups"],
+) => {
+  const optionGroupNames = new Map(
+    optionGroups.map((group) => [String(group.id), group.name]),
+  );
+
+  return Object.fromEntries(
+    Object.entries(selectedOptions).map(([groupId, value]) => [
+      optionGroupNames.get(groupId) ?? groupId,
+      value,
+    ]),
+  );
+};
+
 const getAuthHeaders = () => {
   const token = localStorage.getItem("authToken");
 
@@ -67,7 +83,7 @@ const getAuthHeaders = () => {
   };
 };
 
-type FrontendOrderStatus =
+export type FrontendOrderStatus =
   | "Pendiente"
   | "En preparación"
   | "Listo"
@@ -94,7 +110,7 @@ const mapBackendOrderToFrontend = (backendOrder: BackendOrder) => {
     quantity: detail.quantity,
     price: Number(detail.unitPrice || 0),
     options: Object.keys(detail.selectedOptions ?? {}).length
-      ? detail.selectedOptions
+      ? formatSelectedOptions(detail.selectedOptions, detail.optionGroups ?? [])
       : undefined,
   }));
 

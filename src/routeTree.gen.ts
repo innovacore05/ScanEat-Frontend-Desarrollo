@@ -22,6 +22,7 @@ import { Route as authenticationUnexpectedIssueRouteImport } from './routes/(aut
 import { Route as authenticationUnexpectedIssueVRouteImport } from './routes/(authentication)/unexpectedIssueV'
 import { Route as authenticationVerificationCodeRouteImport } from './routes/(authentication)/verificationCode'
 import { Route as clientOrdersCheckOrderRouteImport } from './routes/(clientOrders)/checkOrder'
+import { Route as clientOrdersOrderStatusRouteImport } from './routes/(clientOrders)/orderStatus'
 import { Route as clientOrdersReviewsRouteImport } from './routes/(clientOrders)/reviews'
 import { Route as cookOrdersCookOrdersRouteImport } from './routes/(cookOrders)/cookOrders'
 import { Route as dashboardDashboardRouteImport } from './routes/(dashboard)/dashboard'
@@ -115,6 +116,11 @@ const authenticationVerificationCodeRoute =
 const clientOrdersCheckOrderRoute = clientOrdersCheckOrderRouteImport.update({
   id: '/(clientOrders)/checkOrder',
   path: '/checkOrder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const clientOrdersOrderStatusRoute = clientOrdersOrderStatusRouteImport.update({
+  id: '/(clientOrders)/orderStatus',
+  path: '/orderStatus',
   getParentRoute: () => rootRouteImport,
 } as any)
 const clientOrdersReviewsRoute = clientOrdersReviewsRouteImport.update({
@@ -243,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
+  '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviews': typeof clientOrdersReviewsRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboard': typeof dashboardDashboardRoute
@@ -279,6 +286,7 @@ export interface FileRoutesByTo {
   '/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
+  '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviews': typeof clientOrdersReviewsRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboard': typeof dashboardDashboardRoute
@@ -316,6 +324,7 @@ export interface FileRoutesById {
   '/(authentication)/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/(authentication)/verificationCode': typeof authenticationVerificationCodeRoute
   '/(clientOrders)/checkOrder': typeof clientOrdersCheckOrderRoute
+  '/(clientOrders)/orderStatus': typeof clientOrdersOrderStatusRoute
   '/(clientOrders)/reviews': typeof clientOrdersReviewsRoute
   '/(cookOrders)/cookOrders': typeof cookOrdersCookOrdersRoute
   '/(dashboard)/dashboard': typeof dashboardDashboardRoute
@@ -354,6 +363,7 @@ export interface FileRouteTypes {
     | '/unexpectedIssueV'
     | '/verificationCode'
     | '/checkOrder'
+    | '/orderStatus'
     | '/reviews'
     | '/cookOrders'
     | '/dashboard'
@@ -390,6 +400,7 @@ export interface FileRouteTypes {
     | '/unexpectedIssueV'
     | '/verificationCode'
     | '/checkOrder'
+    | '/orderStatus'
     | '/reviews'
     | '/cookOrders'
     | '/dashboard'
@@ -426,6 +437,7 @@ export interface FileRouteTypes {
     | '/(authentication)/unexpectedIssueV'
     | '/(authentication)/verificationCode'
     | '/(clientOrders)/checkOrder'
+    | '/(clientOrders)/orderStatus'
     | '/(clientOrders)/reviews'
     | '/(cookOrders)/cookOrders'
     | '/(dashboard)/dashboard'
@@ -463,6 +475,7 @@ export interface RootRouteChildren {
   authenticationUnexpectedIssueVRoute: typeof authenticationUnexpectedIssueVRoute
   authenticationVerificationCodeRoute: typeof authenticationVerificationCodeRoute
   clientOrdersCheckOrderRoute: typeof clientOrdersCheckOrderRoute
+  clientOrdersOrderStatusRoute: typeof clientOrdersOrderStatusRoute
   clientOrdersReviewsRoute: typeof clientOrdersReviewsRoute
   cookOrdersCookOrdersRoute: typeof cookOrdersCookOrdersRoute
   dashboardDashboardRoute: typeof dashboardDashboardRoute
@@ -577,6 +590,13 @@ declare module '@tanstack/react-router' {
       path: '/checkOrder'
       fullPath: '/checkOrder'
       preLoaderRoute: typeof clientOrdersCheckOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(clientOrders)/orderStatus': {
+      id: '/(clientOrders)/orderStatus'
+      path: '/orderStatus'
+      fullPath: '/orderStatus'
+      preLoaderRoute: typeof clientOrdersOrderStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(clientOrders)/reviews': {
@@ -744,6 +764,7 @@ const rootRouteChildren: RootRouteChildren = {
   authenticationUnexpectedIssueVRoute: authenticationUnexpectedIssueVRoute,
   authenticationVerificationCodeRoute: authenticationVerificationCodeRoute,
   clientOrdersCheckOrderRoute: clientOrdersCheckOrderRoute,
+  clientOrdersOrderStatusRoute: clientOrdersOrderStatusRoute,
   clientOrdersReviewsRoute: clientOrdersReviewsRoute,
   cookOrdersCookOrdersRoute: cookOrdersCookOrdersRoute,
   dashboardDashboardRoute: dashboardDashboardRoute,

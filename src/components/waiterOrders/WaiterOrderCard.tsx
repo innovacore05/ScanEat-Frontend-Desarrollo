@@ -22,7 +22,8 @@ export type Order = {
 };
 
 type WaiterOrderCardProps = {
-    order: Order;
+
+  order: Order;
     onDetails?: () => void;
 };
 
