@@ -15,6 +15,8 @@ function CheckOrder() {
     clearCart,
   } = useCart();
 
+  const tableId = mesaId?.trim();
+
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +33,6 @@ function CheckOrder() {
   const total = subtotal + iva;
 
   const handleCreateOrder = async () => {
-    const tableId = mesaId?.trim();
 
     if (!tableId) {
       alert("No se encontró una mesa válida para este pedido.");
@@ -64,9 +65,9 @@ function CheckOrder() {
     } catch (error) {
       const message =
         typeof error === "object" &&
-        error !== null &&
-        "message" in error &&
-        typeof error.message === "string"
+          error !== null &&
+          "message" in error &&
+          typeof error.message === "string"
           ? error.message
           : "No se pudo enviar el pedido.";
 
@@ -81,12 +82,13 @@ function CheckOrder() {
       <div className="h-20 bg-mint" />
 
       <section className="-mt-10 min-h-[calc(100vh-5rem)] w-full rounded-t-[40px] bg-white px-6 py-10 lg:px-10">
-        
+
         {/* Celular */}
         <div className="lg:hidden">
           <div className="flex items-center gap-2">
             <Link
               to="/menuClient"
+              search={{ mesaId: tableId }}
               className="flex items-center gap-2 text-mint-dark"
             >
               <HiArrowLeft className="h-6 w-6" />
@@ -230,6 +232,7 @@ function CheckOrder() {
           <div className="flex items-center gap-2">
             <Link
               to="/menuClient"
+              search={{ mesaId: tableId }}
               className="flex items-center gap-2 text-mint-dark"
             >
               <HiArrowLeft className="h-6 w-6" />
@@ -320,7 +323,7 @@ function CheckOrder() {
               </div>
             </div>
 
-            
+
             <div className="min-w-0">
               <h2 className="text-2xl font-bold text-text-primary">
                 Resumen del pedido
@@ -411,7 +414,10 @@ function CheckOrder() {
                 setIsSuccessDialogOpen(false);
                 void navigate({
                   to: "/orderStatus",
-                  search: { orderId: createdOrderId },
+                  search: {
+                    orderId: createdOrderId,
+                    tableId,
+                  },
                 });
               }}
               className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
@@ -422,7 +428,7 @@ function CheckOrder() {
         </div>
       )}
 
-          
+
       {/* Modal de confirmación */}
       {isConfirmDialogOpen && (
         <div

@@ -1,7 +1,7 @@
 import { createFileRoute, useSearch } from "@tanstack/react-router";
-import OrderStatus from "../../components/clientOrders/OrderStatus";
+import ReviewPlate from "../../components/reviewClient/ReviewPlate";
 
-export const Route = createFileRoute("/(clientOrders)/orderStatus")({
+export const Route = createFileRoute("/(clientOrders)/reviewPlate")({
   validateSearch: (search: Record<string, unknown>) => ({
     orderId: Number(search.orderId),
     tableId: typeof search.tableId === "string"
@@ -13,8 +13,12 @@ export const Route = createFileRoute("/(clientOrders)/orderStatus")({
 
 function RouteComponent() {
   const { orderId, tableId } = useSearch({
-    from: "/(clientOrders)/orderStatus",
+    from: "/(clientOrders)/reviewPlate",
   });
 
-  return <OrderStatus orderId={orderId} tableId={tableId} />;
+  if (!tableId) {
+    return <p className="p-8">No se encontró la mesa del pedido.</p>;
+  }
+
+  return <ReviewPlate orderId={orderId} tableId={tableId} />;
 }

@@ -15,6 +15,7 @@ import {
 
 type OrderStatusProps = {
   orderId: number;
+  tableId?: string;
 };
 
 const statusContent: Record<
@@ -61,7 +62,7 @@ const statusIcons = {
   Entregado: IoBagCheck,
 } satisfies Record<FrontendOrderStatus, typeof HiClock>;
 
-function OrderStatus({ orderId }: OrderStatusProps) {
+function OrderStatus({ orderId, tableId }: OrderStatusProps) {
   const [status, setStatus] = useState<FrontendOrderStatus>("Pendiente");
   const [error, setError] = useState("");
 
@@ -111,6 +112,7 @@ function OrderStatus({ orderId }: OrderStatusProps) {
       <section className="-mt-10 min-h-[calc(100vh-5rem)] rounded-t-[40px] bg-white px-6 py-10 lg:px-10">
         <Link
           to="/menuClient"
+          search={{ mesaId: tableId }}
           className="flex w-fit items-center gap-2 text-mint-dark"
         >
           <HiArrowLeft className="h-6 w-6" />
@@ -143,21 +145,19 @@ function OrderStatus({ orderId }: OrderStatusProps) {
 
                   return (
                     <StatusIcon
-                      className={`h-6 w-6 ${
-                        index <= currentStatusIndex
+                      className={`h-6 w-6 ${index <= currentStatusIndex
                           ? "text-mint-dark"
                           : "text-gray-300"
-                      }`}
+                        }`}
                       aria-hidden="true"
                     />
                   );
                 })()}
                 <span
-                  className={`text-xs ${
-                    index <= currentStatusIndex
+                  className={`text-xs ${index <= currentStatusIndex
                       ? "font-semibold text-mint-darker"
                       : "text-gray-400"
-                  }`}
+                    }`}
                 >
                   {orderStatus}
                 </span>
@@ -165,10 +165,10 @@ function OrderStatus({ orderId }: OrderStatusProps) {
             ))}
           </div>
 
-          {/* Aquí es donde va el link que manda a reviews */}
-          {status === "Entregado" && (
+          {status === "Entregado" && tableId && (
             <Link
-              to=""
+              to="/reviewPlate"
+              search={{ orderId, tableId }}
               className="mt-8 inline-flex items-center gap-2 rounded-lg bg-mint-dark px-5 py-3 font-semibold text-white transition hover:bg-mint-darker"
             >
               <HiStar className="h-5 w-5" aria-hidden="true" />
