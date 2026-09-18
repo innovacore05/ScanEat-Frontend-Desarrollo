@@ -4,12 +4,17 @@ import { cookieSessionClient } from "./cookieSessionClient";
 const TABLES_BASE_URL = `${import.meta.env.VITE_API_URL}/api/table`;
 
 //tipos de table solo una vez:
-export type Table={
-  
-}
+export type Table = {
+    id: string;
+    tableNumber: number;
+    chairNumber: number;
+    active?: boolean;
+    createdAt?: string;
+};
 
 
-export const createTable = async (tableNumber: number, chairNumber?: number) => {
+export const createTable = async (tableNumber: number, chairNumber?: number) =>
+   {
     // const token = localStorage.getItem("authToken");
 
     // const response = await fetch(`${TABLES_BASE_URL}`, {
@@ -29,24 +34,20 @@ export const createTable = async (tableNumber: number, chairNumber?: number) => 
     // if (!response.ok) {
     //     throw data as ApiError;
     // }
-const data=await cookieSessionClient.request<any>(`${TABLES_BASE_URL}`, {
+const data=await cookieSessionClient.request<Record<string,unknown>>(`${TABLES_BASE_URL}`, {
   method:"POST",
   body:JSON.stringify({
     tableNumber:Number(tableNumber),
     chairNumber:Number(chairNumber),
   }),
+  fallBackMessage: "No se pudo crear la mesa",
 });
     // El backend puede devolver la mesa directamente o dentro de `table`/`data`.
-    const table = data.table ?? data.data ?? data;
+   const table = (data.table ?? data.data ?? data) as Table;
 
-    return table as {
-        id: string;
-        tableNumber: number;
-        chairNumber: number;
-        active: boolean;
-        createdAt: string;
+    return table;
     };
-};
+
 
 
 export const getTables = async () => {
@@ -64,17 +65,17 @@ export const getTables = async () => {
   // if (!response.ok) {
   //   throw data;
   // }
-const data = await cookieSessionClient.request<any>(`${TABLES_BASE_URL}`, {
+const data = await cookieSessionClient.request
+<
+Table[] | {tables?:Table[];data?:Table[]}
+>(`${TABLES_BASE_URL}`, {
 method:"GET",
+fallBackMessage: "No se pudieron cargar las mesas",
 });
-  return (Array.isArray(data) ? data : data.tables ?? data.data ?? []) as Array<{
-    id: string;
-    tableNumber: number;
-    chairNumber: number;
-    active?: boolean;
-    createdAt?: string;
-  }>;
+  if (Array.isArray(data)) return data;
+    return data.tables ?? data.data ?? [];
 };
+
 
 
 export const getTableById = async (tableId: string) => {
@@ -93,15 +94,20 @@ export const getTableById = async (tableId: string) => {
   //   throw data;
   // }
 
-  return cookieSessionClient.request<{
-    id: string;
-    tableNumber: number;
-    chairNumber: number;
-    active?: boolean;
-    createdAt?: string;
-  }>(`${TABLES_BASE_URL}/${tableId}`, {
-    method: "GET",
-  });
+  return cookieSessionClient.request<
+  Table>(`${TABLES_BASE_URL}/${tableId}`, {
+method: "GET",
+fallBackMessage: "No se pudo cargar la mesa",
+});
+  // {
+  //   id: string;
+  //   tableNumber: number;
+  //   chairNumber: number;
+  //   active?: boolean;
+  //   createdAt?: string;
+  // }>(`${TABLES_BASE_URL}/${tableId}`, {
+  //   method: "GET",
+  // });
 };
 
 //update chairs number of a table 
@@ -139,6 +145,7 @@ export const updateTableChairs = async (
       tableNumber:Number(tableNumber),
       chairNumber:Number(chairNumber),
     }),
+   fallBackMessage: "No se pudo actualizar el número de sillas",
 });
 };
 
@@ -162,6 +169,7 @@ export const deleteTable = async (tableId: string) => {
   // };
   return cookieSessionClient.request<{ message:string}
   >(`${TABLES_BASE_URL}/${tableId}`, {
-    method:"DELETE"
+    method:"DELETE",
+    fallBackMessage: "No se pudo eliminar la mesa",
 });
 }

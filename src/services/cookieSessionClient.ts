@@ -30,13 +30,22 @@ credentials: "include"
 
 type ApiError={
     message?:string;
-    status?:string
+    status?:number
     [key:string]:unknown;
 };
 
+type RequestOptions=RequestInit & {
+    fallBackMessage? :string;
+};
+
+
 class CookieSessionClient{
 
-    async request <T> (url:string,options:RequestInit={}): Promise<T> {
+    async request <T> (
+        url:string,
+        {fallBackMessage, ...options}:RequestOptions={},
+   
+    ): Promise<T> {
         const isFormData=options.body instanceof FormData;
         const response =await fetch (url,{
             ...options,
@@ -50,6 +59,7 @@ class CookieSessionClient{
 if(!response.ok){
     throw {
         ...data,
+        message:data.message ?? fallBackMessage,
         status:response.status,
     } as ApiError;
 }

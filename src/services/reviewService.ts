@@ -1,9 +1,9 @@
+
+import { cookieSessionClient } from "./cookieSessionClient";
+
 const REVIEWS_BASE_URL = `${import.meta.env.VITE_API_URL}/api/reviews`;
 
-type ApiError = {
-  message?: string;
-  error?: string;
-};
+
 
 export type ReviewableProduct = {
   productId: number;
@@ -42,58 +42,64 @@ export type ProductReviewsResponse = {
   reviews: ProductReview[];
 };
 
-const parseError = async (response: Response) => {
-  const data = (await response.json().catch(() => ({}))) as ApiError;
-
-  return new Error(
-    data.message ?? data.error ?? "Ocurrió un error con las reseñas.",
-  );
-};
 
 export const getReviewableOrder = async (
   orderId: number,
   tableId: string,
 ): Promise<ReviewableOrderResponse> => {
   const url = new URL(`${REVIEWS_BASE_URL}/orders/${orderId}`);
-
   url.searchParams.set("tableId", tableId);
 
-  const response = await fetch(url.toString());
+  // const response = await fetch(url.toString());
 
-  if (!response.ok) {
-    throw await parseError(response);
-  }
+  // if (!response.ok) {
+  //   throw await parseError(response);
+  // }
 
-  return response.json() as Promise<ReviewableOrderResponse>;
+  // return response.json() as Promise<ReviewableOrderResponse>;
+  return cookieSessionClient.request<ReviewableOrderResponse>(
+    url.toString(),{
+    fallBackMessage:"No se pudo cargar la orden",
+  });
 };
 
 export const createOrderReviews = async (
   orderId: number,
   payload: CreateReviewsPayload,
 ) => {
-  const response = await fetch(`${REVIEWS_BASE_URL}/orders/${orderId}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
+  // const response = await fetch(`${REVIEWS_BASE_URL}/orders/${orderId}`, {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify(payload),
+  // });
+
+  // if (!response.ok) {
+  //   throw await parseError(response);
+  // }
+
+  // return response.json().catch(() => ({}));
+  return cookieSessionClient.request(`${REVIEWS_BASE_URL}/orders/${orderId}`,{
+    method:"POST",
+    body:JSON.stringify(payload),
+   fallBackMessage:"No se pudo enviar la reseña",
   });
-
-  if (!response.ok) {
-    throw await parseError(response);
-  }
-
-  return response.json().catch(() => ({}));
 };
 
 export const getProductReviews = async (
   productId: number,
 ): Promise<ProductReviewsResponse> => {
-  const response = await fetch(`${REVIEWS_BASE_URL}/products/${productId}`);
+  // const response = await fetch(`${REVIEWS_BASE_URL}/products/${productId}`);
 
-  if (!response.ok) {
-    throw await parseError(response);
-  }
+  // if (!response.ok) {
+  //   throw await parseError(response);
+  // }
 
-  return response.json() as Promise<ProductReviewsResponse>;
+  // return response.json() as Promise<ProductReviewsResponse>;
+  return cookieSessionClient.request<ProductReviewsResponse>(
+    `${REVIEWS_BASE_URL}/products/${productId}`,
+   {fallBackMessage:
+    "No se pudieron cargar las reseñas"
+});
 };

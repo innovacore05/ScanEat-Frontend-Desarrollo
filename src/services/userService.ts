@@ -35,12 +35,17 @@ export const getUsers = async (): Promise<ManagedUser[]> => {
 	// if (!response.ok) {
 	// 	throw data as ApiError;
 	// }
-const data=await cookieSessionClient.request<any>(USERS_BASE_URL,{
-	method:"GET"
+const data=await cookieSessionClient.request<
+ManagedUser[] | {users? : ManagedUser[]; data? : ManagedUser[]}
+>(USERS_BASE_URL,{
+	method:"GET",
+	fallBackMessage: "No se pudieron cargar los usuarios",
 });
 
-	return (Array.isArray(data) ? data : data.users ?? data.data ?? []) as ManagedUser[];
-};
+if (Array.isArray(data)) return data;
+	return data.users ?? data.data ?? [];
+	};
+
 
 export const updateUser = async (
 	userId: number,
@@ -55,6 +60,7 @@ body:JSON.stringify({
 	email:changes.email,
 	role_id:changes.roleId,
 }),
+fallBackMessage: "No se pudo actualizar el usuario",
 });
 	// const response = await fetch(`${USERS_BASE_URL}/${userId}`, {
 	// 	method: "PATCH",
@@ -90,5 +96,6 @@ export const deleteUser = async (userId: number) => {
 	// }
 
 	return cookieSessionClient.request(`${USERS_BASE_URL}/${userId}`,{method:"DELETE",
+		fallBackMessage: "No se pudo eliminar el usuario",
 	});
 };

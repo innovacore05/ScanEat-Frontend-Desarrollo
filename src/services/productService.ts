@@ -1,4 +1,4 @@
-import { cookieSessionClient, type ApiError } from "./cookieSessionClient";
+import { cookieSessionClient, type ApiError} from "./cookieSessionClient";
 
 
 const MENU_BASE_URL=`${import.meta.env.VITE_API_URL}/api/menu`;
@@ -86,7 +86,8 @@ const url=queryString
 //     };
 
 const data = await cookieSessionClient.request<ProductsPage>(
-    url,{method:"GET"});
+    url,{method:"GET",
+     fallBackMessage: "No se pudieron cargar los productos",});
 return {
     ...data,
     products:data.products.map(normalizeProduct),
@@ -109,6 +110,7 @@ export const getProductById= async (id: number | string)=>{
     const data =await cookieSessionClient.request<Product>(
         `${MENU_BASE_URL}/products/${id}`,
         {method:"GET",
+            fallBackMessage: "No se pudo cargar el producto",
             },
     );
     return normalizeProduct(data);
@@ -133,6 +135,7 @@ export const isCustomProduct = async (id: number): Promise<boolean> => {
         await cookieSessionClient.request(
             `${MENU_BASE_URL}/products/custom/${id}`, {
                 method:"GET",
+                fallBackMessage: "No se pudo verificar el producto",
             },
         );
     return true;
@@ -245,6 +248,7 @@ formData.append("name", name);
 return cookieSessionClient.request(`${MENU_BASE_URL}/products`, {
      method:"POST",
      body:formData,
+     fallBackMessage: "No se pudo crear el producto",
 });
 };
 
@@ -302,6 +306,7 @@ export const updateProduct = async (
     return cookieSessionClient.request(`${MENU_BASE_URL}/products/${id}`, {
      method:"PUT",
      body:formData,
+     fallBackMessage: "No se pudo actualizar el producto",
     });
 };
 
@@ -360,6 +365,7 @@ export const createCustomDish = async ({
      return cookieSessionClient.request(`${MENU_BASE_URL}/products/custom`, {
      method:"POST",
      body:formData,
+     fallBackMessage: "No se pudo crear el platillo personalizado",
     });
 };
 
@@ -381,7 +387,7 @@ export const deleteProduct = async (id: number) => {
              await cookieSessionClient.request 
               (url, {
                 method: "DELETE",
-               
+               fallBackMessage: "No se pudo eliminar el platillo",
             });
             
 
@@ -405,7 +411,11 @@ export const deleteProduct = async (id: number) => {
     // throw lastError as ApiError;
     return true;
         }catch (error){
-            lastError=error as ApiError;
+            const apiError=error as ApiError;
+            lastError = apiError;
+            if(apiError.status !==404 && apiError.status !==405){
+                throw apiError;
+            }
         }
     }
     throw lastError as ApiError;
@@ -468,5 +478,6 @@ export const updateCustomDish = async (
      return cookieSessionClient.request(`${MENU_BASE_URL}/products/custom/${id}`, {
         method: "PUT",
         body: formData,
+        fallBackMessage: "No se pudo actualizar el platillo personalizado",
     });
 };

@@ -1,6 +1,6 @@
 
 
-import { cookieSessionClient, type ApiError } from "./cookieSessionClient";
+import { cookieSessionClient} from "./cookieSessionClient";
 
 
 
@@ -131,6 +131,7 @@ export const logout = async () => {
 try {
     await cookieSessionClient.request(`${AUTH_BASE_URL}/logout`, {
         method:"POST",
+        fallBackMessage: "No se pudo cerrar la sesión",
 });
 }catch (error){
     console.error("No se pudo cerrar la sesión en el servidor:", error);
@@ -197,6 +198,7 @@ export const register = async (
             code,
             role_id,
     }),
+     fallBackMessage: "No se pudo completar el registro.",
     });
 };
 
@@ -223,6 +225,7 @@ export const verifyEmail = async (email: string, code: string) => {
     }>(`${AUTH_BASE_URL}/resend-verification-code`, {
     method:"POST",
     body:JSON.stringify({email,code}),
+    fallBackMessage: "No se pudo verificar el correo",
     })
 };
 
@@ -249,6 +252,7 @@ export const resendVerificationCode = async (email: string) => {
     }>(`${AUTH_BASE_URL}/resend-verification-code`, {
     method:"POST",
     body: JSON.stringify({email}),
+    fallBackMessage: "No se pudo reenviar el código de verificación",
     });
 };
 
@@ -282,6 +286,7 @@ export const login = async (email: string, password: string) => {
     }>(`${AUTH_BASE_URL}/login`, {
         method:"POST",
         body:JSON.stringify({email,password}),
+        fallBackMessage: "No se pudo iniciar sesión",
 });
 };
 
@@ -313,6 +318,7 @@ export const verifyLoginCode = async (email: string, code: string) => {
          }>(`${AUTH_BASE_URL}/verify-login-code`, {
             method:"POST",
             body:JSON.stringify({email, code}),
+            fallBackMessage: "No se pudo verificar el código de inicio de sesión",
     });
 };
 
@@ -340,6 +346,7 @@ export const resendLoginCode = async (email: string) => {
     }>(`${AUTH_BASE_URL}/resend-login-code`, {
     method:"POST",
             body:JSON.stringify({email}),
+            fallBackMessage: "No se pudo reenviar el código de inicio de sesión",
     });
 };
 
@@ -365,6 +372,7 @@ export const forgotPassword = async (email: string) => {
         }>( `${AUTH_BASE_URL}/forgot-password`,{
         method:"POST",
             body:JSON.stringify({email}),
+            fallBackMessage: "No se pudo iniciar la recuperación de contraseña",
         });
 };
 
@@ -397,7 +405,8 @@ export const verifyResetCode = async (
     }>(`${AUTH_BASE_URL}/verify-reset-code`, {
         method:"POST",
             body:JSON.stringify({email,code}),
-    })
+            fallBackMessage: "No se pudo verificar el código de recuperación",
+    });
 };
 
 //Función para resetear la contraseña del usuario
@@ -413,7 +422,8 @@ export const resetPassword = async (
         {
             method:"POST",
             body:JSON.stringify({email,code,newPassword}), 
-        })
+            fallBackMessage: "No se pudo restablecer la contraseña",
+        });
 };
 
 //Función para reenviar el reset code al correo electrónico del usuario
@@ -438,7 +448,8 @@ return cookieSessionClient.request<{
     verificationCode:string;
 }>(`${AUTH_BASE_URL}/resend-reset-code`, {
 method:"POST",
-body:JSON.stringify({email})
+body:JSON.stringify({email}),
+fallBackMessage: "No se pudo reenviar el código de recuperación",
 });
 
 };
@@ -479,6 +490,7 @@ export const editProfile = async (changes: {
     }>(`${AUTH_BASE_URL}/edit-profile`, {
         method: "PATCH",
         body: JSON.stringify(changes),
+        fallBackMessage: "No se pudo actualizar el perfil",
     });
     };
 
@@ -516,6 +528,7 @@ export const changePassword = async (
        newPassword,
       confirmPassword,
  }),
+ fallBackMessage: "No se pudo cambiar la contraseña",
 });
 };
 
@@ -541,7 +554,8 @@ export const verifyProfileEmail = async (code: string) => {
     // return data as { message: string };
     return cookieSessionClient.request<{message: string}>(`${AUTH_BASE_URL}/verify-profile-email`, {
       method:"POST",
-      body: JSON.stringify({code})
+      body: JSON.stringify({code}),
+      fallBackMessage: "No se pudo verificar el nuevo correo",
     });
 };
 
@@ -585,7 +599,8 @@ const data=await cookieSessionClient.request<{
       roleId: number;
     };
 }>(`${AUTH_BASE_URL}/profile`, {
-    method:"GET"
+    method:"GET",
+    fallBackMessage: "No se pudo obtener el perfil",
 });
 localStorage.setItem("authUser", JSON.stringify(data.user));
 return data;
