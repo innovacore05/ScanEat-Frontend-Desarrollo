@@ -9,6 +9,7 @@ app.use(
   createProxyMiddleware({
     target: process.env.BACKEND_URL,
     changeOrigin: true,
+    pathRewrite: (path) => "/api" + path,
   }),
 );
 app.use(express.static(path.join(__dirname, "dist")));
