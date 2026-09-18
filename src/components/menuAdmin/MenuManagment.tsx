@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getProfile, getStoredFirstName } from "../../services/authService";
 import { getProducts, type Product } from "../../services/productService";
+import { getProductReviews } from "../../services/reviewService";
 import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus } from "react-icons/go";
 import DashboardLayout from "../../components/layout/DashboardLayout";
@@ -12,6 +13,27 @@ import SearchBar from "../menu/SearchBar";
 
 //limite de muestras
 const PAGE_SIZE = 10;
+
+async function loadProductsWithRatings(products: Product[]) {
+  return Promise.all(
+    products.map(async (product) => {
+      try {
+        const reviewData = await getProductReviews(product.productId);
+
+        return {
+          ...product,
+          rating: reviewData.averageRating,
+        };
+      } catch (error) {
+        console.error(`Error loading reviews for product ${product.productId}:`, error);
+        return {
+          ...product,
+          rating: 0,
+        };
+      }
+    }),
+  );
+}
 
 
 //funcion de carga de datos de platillos/productos desde la bd:
@@ -57,6 +79,7 @@ function ProductList({
             image={product.image ?? ""}
             rating={product.rating}
             isAdmin={true}
+            showReviews
             productId={product.productId}
             optionGroups={product.optionGroups}
             onDelete={onDeleteProduct}
@@ -110,7 +133,8 @@ function MenuManagment() {
           limit:PAGE_SIZE,
           offset:0
         });
-        setProducts(data.products);
+        const productsWithRatings = await loadProductsWithRatings(data.products);
+        setProducts(productsWithRatings);
         setHasMore(data.hasMore);
       } catch (error) {
         console.error("Error loading products:", error);
@@ -134,7 +158,8 @@ function MenuManagment() {
         limit: PAGE_SIZE,
         offset: products.length,
       });
-		setProducts((prev)=>[...prev, ...data.products]);
+		const productsWithRatings = await loadProductsWithRatings(data.products);
+		setProducts((prev)=>[...prev, ...productsWithRatings]);
 		setHasMore(data.hasMore)
 	}catch(error){
       console.error("Error loading more products:", error);
