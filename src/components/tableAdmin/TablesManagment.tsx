@@ -36,7 +36,7 @@ function TablesManagment() {
 	const [orders, setOrders] = useState<Order[]>([]);
 
 	const handleShowQr = (tableId: string, tableNumber: number) => {
-		setQrValue(`https://scaneat-frontend-produccion-production.up.railway.app/menuClient?mesaId=${tableId}`);
+		setQrValue(`https://scanneatf.up.railway.app/menuClient?mesaId=${tableId}`);
 		setQrTableNumber(tableNumber);
 		setIsQrModalOpen(true);
 	};
