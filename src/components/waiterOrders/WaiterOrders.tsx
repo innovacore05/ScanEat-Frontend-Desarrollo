@@ -8,7 +8,7 @@ import { getStoredFirstName } from "../../services/authService";
 import WaiterOrderCard from "../waiterOrders/WaiterOrderCard";
 import type { Order } from "../waiterOrders/WaiterOrderCard";
 import OrderDetails from "../Orders/OrderDetails";
-import { getOrders, statusIdToState } from "../../services/orderService";
+import { getOrders } from "../../services/orderService";
 
 function WaiterOrders() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,7 +21,7 @@ function WaiterOrders() {
 
   const loadOrders = useCallback(async () => {
     try {
-      const backendOrders = await getOrders(selectedCategory ? statusIdToState[selectedCategory] : undefined);
+      const backendOrders = await getOrders();
       setOrders(backendOrders);
       setSelectedOrder((current) => {
         if (current && backendOrders.some((order) => order.orderId === current.orderId)) {
@@ -34,29 +34,32 @@ function WaiterOrders() {
       console.error("No se pudieron cargar los pedidos:", error);
       setOrders([]);
     }
-  }, [selectedCategory]);
+  }, []);
 
   useEffect(() => {
-    const initialLoadId = window.setTimeout(() => {
-      void loadOrders();
-    }, 0);
+    void loadOrders();
 
     const intervalId = window.setInterval(() => {
       void loadOrders();
     }, 2000);
 
     return () => {
-      window.clearTimeout(initialLoadId);
       window.clearInterval(intervalId);
     };
   }, [loadOrders]);
 
   const filteredOrders = orders.filter((order) => {
+    const matchesCategory =
+      selectedCategory === null ||
+      (selectedCategory === 1 && order.status === "Pendiente") ||
+      (selectedCategory === 2 && order.status === "En preparación") ||
+      (selectedCategory === 3 && order.status === "Listo") ||
+      (selectedCategory === 4 && order.status === "Entregado");
     const matchesSearch =
       order.tableId.toString().includes(searchTerm.trim()) ||
       order.orderId.toString().includes(searchTerm.trim());
 
-    return matchesSearch;
+    return matchesCategory && matchesSearch;
   });
 
   return (

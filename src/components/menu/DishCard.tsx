@@ -26,6 +26,7 @@ interface DishCardProps {
 	mesaId?: string;
 	showActions?: boolean;
 	showReviews?: boolean;
+	showRating?: boolean;
 	optionGroups?: { id: string; name: string; options: string[] }[];
 	onDelete?: (productId: number) => void;
 	isDetailView?: boolean;
@@ -64,6 +65,7 @@ function DishCard({
 	mesaId,
 	showActions = true,
 	showReviews = false,
+	showRating = true,
 	optionGroups = EMPTY_OPTION_GROUPS,
 	onDelete,
 	isDetailView = false,
@@ -243,13 +245,15 @@ function DishCard({
 					)}
 
 					<div className="mt-1 flex items-center justify-between">
-						<div className="flex items-center gap-2">
-							<Stars rating={rating} />
+						{showRating ? (
+							<div className="flex items-center gap-2">
+								<Stars rating={rating} />
 
-							<span className="text-sm font-semibold text-text-primary">
-								{rating.toFixed(1)}
-							</span>
-						</div>
+								<span className="text-sm font-semibold text-text-primary">
+									{rating.toFixed(1)}
+								</span>
+							</div>
+						) : <span />}
 
 
 						{showActions && (
@@ -298,13 +302,13 @@ function DishCard({
 							</div>
 						)}
 					</div>
-					{isDetailView && showReviews && productId && (
+					{showReviews && productId && (
 						<Link
 							to="/reviews"
-							search={{ productId, mesaId }}
+							search={{ productId, mesaId, isAdmin }}
 							className="mt-3 self-start text-sm font-medium text-text-primary hover:underline"
 						>
-							Reviews
+							Reseñas
 						</Link>
 					)}
 					<button

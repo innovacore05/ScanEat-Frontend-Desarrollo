@@ -56,6 +56,7 @@ function ProductList({
             image={product.image ?? ""}
             rating={product.rating}
             isAdmin={false}
+            showRating={false}
             showActions={false}
             productId={product.productId}
             optionGroups={product.optionGroups}

@@ -32,6 +32,37 @@ function AccountVerificationForm() {
 		}
 	}
 
+	function handlePaste(
+		index: number,
+		event: React.ClipboardEvent<HTMLInputElement>,
+	) {
+		const pastedCode = event.clipboardData
+			.getData("text")
+			.replace(/\D/g, "")
+			.slice(0, 6);
+
+		if (!pastedCode) {
+			return;
+		}
+
+		event.preventDefault();
+		const startIndex = pastedCode.length === 6 ? 0 : index;
+		const newCode = [...code];
+
+		pastedCode.split("").forEach((digit, offset) => {
+			if (startIndex + offset < newCode.length) {
+				newCode[startIndex + offset] = digit;
+			}
+		});
+
+		setCode(newCode);
+		setError("");
+		setSuccessMessage("");
+		document
+			.getElementById(`code-${Math.min(startIndex + pastedCode.length, 5)}`)
+			?.focus();
+	}
+
 	function handleKeyDown(
 		index: number,
 		event: React.KeyboardEvent<HTMLInputElement>,
@@ -141,6 +172,7 @@ function AccountVerificationForm() {
 								onChange={(event) =>
 									handleChange(index, event.target.value)
 								}
+								onPaste={(event) => handlePaste(index, event)}
 								onKeyDown={(event) =>
 									handleKeyDown(index, event)
 								}
