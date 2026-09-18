@@ -9,7 +9,8 @@ import {
 import { GiCampCookingPot } from "react-icons/gi";
 import { IoBagCheck } from "react-icons/io5";
 import {
-  getOrders,
+  getOrderStatus,
+  stateToLabel,
   type FrontendOrderStatus,
 } from "../../services/orderService";
 
@@ -69,30 +70,24 @@ function OrderStatus({ orderId, tableId }: OrderStatusProps) {
   useEffect(() => {
     let isMounted = true;
 
-    const loadOrderStatus = async () => {
-      try {
-        const orders = await getOrders();
+ const loadOrderStatus = async () => {
+  try {
+    const order = await getOrderStatus(orderId);
 
-console.log("ORDENES RECIBIDAS:", orders);
-        const order = orders.find(
-         (currentOrder) => currentOrder.orderId === orderId);
-console.log("ORDEN BUSCADA:", order);
-        if (!order) {
-          throw new Error("No se encontró el pedido.");
-        }
+    console.log("ESTADO DE LA ORDEN:", order);
 
-        if (isMounted) {
-          setStatus(order.status);
-          setError("");
-        }
-      } catch (loadError) {
-        console.error("No se pudo consultar el estado del pedido:", loadError);
+    if (isMounted) {
+      setStatus(stateToLabel[order.state]);
+      setError("");
+    }
+  } catch (loadError) {
+    console.error("No se pudo consultar el estado del pedido:", loadError);
 
-        if (isMounted) {
-          setError("No se pudo actualizar el estado del pedido.");
-        }
-      }
-    };
+    if (isMounted) {
+      setError("No se pudo actualizar el estado del pedido.");
+    }
+  }
+};
 
     void loadOrderStatus();
     const intervalId = window.setInterval(() => {
