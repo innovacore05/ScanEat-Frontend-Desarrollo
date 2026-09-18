@@ -7,6 +7,7 @@ export const Route = createFileRoute("/(menuClient)/reviews")({
     mesaId: typeof search.mesaId === "string"
       ? search.mesaId
       : undefined,
+    isAdmin: search.isAdmin === true || search.isAdmin === "true",
   }),
   component: RouteComponent,
 });

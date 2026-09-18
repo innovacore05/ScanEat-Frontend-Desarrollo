@@ -23,7 +23,7 @@ function Stars({ rating }: { rating: number }) {
 }
 
 function Review() {
-    const { productId, mesaId } = useSearch({
+    const { productId, mesaId, isAdmin } = useSearch({
         from: "/(menuClient)/reviews",
     });
 
@@ -64,12 +64,12 @@ function Review() {
         <main className="min-h-screen bg-white px-4 py-6 text-text-primary sm:px-8 sm:py-8 md:px-12 lg:px-16">
             <div className="mx-auto flex w-full max-w-3xl flex-col">
                 <Link
-                    to="/menuClient"
-                    search={{ mesaId }}
+                    to={isAdmin ? "/menuManagment" : "/menuClient"}
+                    search={isAdmin ? undefined : { mesaId }}
                     className="flex w-fit items-center gap-2 text-lg font-bold text-mint-dark sm:text-xl"
                 >
                     <HiArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
-                    <span>Reviews</span>
+                    <span>Reseñas</span>
                 </Link>
 
                 {loading && <p className="mt-8">Cargando reseñas...</p>}

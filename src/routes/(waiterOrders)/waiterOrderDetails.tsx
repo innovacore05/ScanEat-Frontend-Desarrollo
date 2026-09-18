@@ -14,8 +14,11 @@ export const Route = createFileRoute("/(waiterOrders)/waiterOrderDetails",)({
 function RouteComponent() {
   const { orderId } = Route.useSearch();
   const [order, setOrder] = useState<Order | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const loadOrder = async () => {
+    setIsLoading(true);
+
     try {
       const orders = await getOrders();
       const selected = orders.find((item) => item.orderId === orderId) ?? null;
@@ -23,12 +26,18 @@ function RouteComponent() {
     } catch (error) {
       console.error("No se pudo cargar la orden:", error);
       setOrder(null);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     void loadOrder();
   }, [orderId]);
+
+  if (isLoading) {
+    return <p>Cargando orden...</p>;
+  }
 
   if (!order) {
     return <p>Orden no encontrada</p>;
