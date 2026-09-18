@@ -72,8 +72,11 @@ function OrderStatus({ orderId, tableId }: OrderStatusProps) {
     const loadOrderStatus = async () => {
       try {
         const orders = await getOrders();
-        const order = orders.find((currentOrder) => currentOrder.orderId === orderId);
 
+console.log("ORDENES RECIBIDAS:", orders);
+        const order = orders.find(
+         (currentOrder) => currentOrder.orderId === orderId);
+console.log("ORDEN BUSCADA:", order);
         if (!order) {
           throw new Error("No se encontró el pedido.");
         }
