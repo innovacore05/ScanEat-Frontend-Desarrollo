@@ -1,7 +1,9 @@
 
 
 import { cookieSessionClient } from "./cookieSessionClient";
-const TABLES_BASE_URL = `${import.meta.env.VITE_API_URL}/api/table`;
+// const TABLES_BASE_URL = `${import.meta.env.VITE_API_URL}/api/table`;
+//cambiamos lo de arriba por esto apra que exista una relacion directra hacia el bakcned y no tenagmos problemas con el movimeinto de la scookies 
+const TABLES_BASE_URL = "/api/table";
 
 //tipos de table solo una vez:
 export type Table = {

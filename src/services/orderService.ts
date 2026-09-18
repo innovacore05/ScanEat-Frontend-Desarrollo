@@ -1,6 +1,9 @@
 
 import { cookieSessionClient } from "./cookieSessionClient";
-const ORDERS_BASE_URL = `${import.meta.env.VITE_API_URL}/api/orders`;
+
+// const ORDERS_BASE_URL = `${import.meta.env.VITE_API_URL}/api/orders`;
+//cambiamos lo de arriba por esto apra que exista una relacion directra hacia el bakcned y no tenagmos problemas con el movimeinto de la scookies 
+const ORDERS_BASE_URL = "/api/orders";
 
 export type CreateOrderPayload = {
   tableId: string;

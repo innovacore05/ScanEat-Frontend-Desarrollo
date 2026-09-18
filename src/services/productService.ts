@@ -1,7 +1,10 @@
 import { cookieSessionClient, type ApiError} from "./cookieSessionClient";
 
 
-const MENU_BASE_URL=`${import.meta.env.VITE_API_URL}/api/menu`;
+// const MENU_BASE_URL=`${import.meta.env.VITE_API_URL}/api/menu`;
+//cambiamos lo de arriba por esto apra que exista una relacion directra hacia el bakcned y no tenagmos problemas con el movimeinto de la scookies 
+const MENU_BASE_URL = "/api/menu";
+
 
 const getImageUrl = (image: string | null) => {
     if (!image) return image;

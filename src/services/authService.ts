@@ -7,7 +7,10 @@ import { cookieSessionClient} from "./cookieSessionClient";
 //Este archivo contiene funciones para interactuar con la API de autenticación
 
 //Es la url base de la API de autenticación
-const AUTH_BASE_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
+// const AUTH_BASE_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
+
+//cambiamos lo de arriba por esto apra que exista una relacion directra hacia el bakcned y no tenagmos problemas con el movimeinto de la scookies 
+const AUTH_BASE_URL = "/api/auth";
 
 export function getStoredFirstName(): string {
     const storedUser = localStorage.getItem("authUser");

@@ -4,7 +4,9 @@
 import { cookieSessionClient } from "./cookieSessionClient";
 
 
-const USERS_BASE_URL = `${import.meta.env.VITE_API_URL}/api/users`;
+//const USERS_BASE_URL = `${import.meta.env.VITE_API_URL}/api/users`;
+//cambiamos lo de arriba por esto apra que exista una relacion directra hacia el bakcned y no tenagmos problemas con el movimeinto de la scookies 
+const USERS_BASE_URL = "/api/users";
 
 export type ManagedUser = {
 	userId: number;

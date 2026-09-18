@@ -1,8 +1,9 @@
 
 import { cookieSessionClient } from "./cookieSessionClient";
 
-const REVIEWS_BASE_URL = `${import.meta.env.VITE_API_URL}/api/reviews`;
-
+// const REVIEWS_BASE_URL = `${import.meta.env.VITE_API_URL}/api/reviews`;
+//cambiamos lo de arriba por esto apra que exista una relacion directra hacia el bakcned y no tenagmos problemas con el movimeinto de la scookies 
+const REVIEWS_BASE_URL = "/api/reviews";
 
 
 export type ReviewableProduct = {
