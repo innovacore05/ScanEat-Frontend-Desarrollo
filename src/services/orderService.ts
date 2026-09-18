@@ -203,7 +203,7 @@ const data = await cookieSessionClient.request<BackendOrder[]>(url.toString(),{
 
 
 
-export const consfirmOrder=async (orderId:number)=>{
+export const confirmOrder = async (orderId: number) => {
   return cookieSessionClient.request(`${ORDERS_BASE_URL}/${orderId}/confirm`,  {
     method:"PATCH",
     fallBackMessage: "No se pudo confirmar el pedido",
