@@ -1,76 +1,63 @@
+import { useEffect, useState } from "react";
+import { getOrders, markOrderReady } from "../../services/orderService";
 import OrderCard from "./OrderCard";
 
 function CookOrders() {
-  const orders = [
-    {
-      orderId: 1,
-      tableId: 4,
-      status: "Pendiente",
-      items: [
-        { name: "Hamburguesa clásica", quantity: 2 },
-        { name: "Papas fritas", quantity: 1 },
-      ],
-      specialInstructions: "Hamburguesa sin tomate",
-    },
-    {
-      orderId: 2,
-      tableId: 2,
-      status: "Pendiente",
-      items: [
-        { name: "Pizza de pepperoni", quantity: 1 },
-        { name: "Batido de mora", quantity: 2 },
-      ],
-    },
-    {
-      orderId: 3,
-      tableId: 3,
-      status: "Pendiente",
-      items: [
-        {
-          name: "Casado",
-          quantity: 1,
-          options: {
-            Proteína: "Pescado",
-          },
-        },
-        { name: "Agua mineral", quantity: 1 },
-      ],
-      },
-     {
-      orderId: 1,
-      tableId: 4,
-      status: "Pendiente",
-      items: [
-        { name: "Hamburguesa clásica", quantity: 2 },
-        { name: "Papas fritas", quantity: 1 },
-      ],
-      specialInstructions: "Hamburguesa sin tomate",
-    },
-    {
-      orderId: 2,
-      tableId: 2,
-      status: "Pendiente",
-      items: [
-        { name: "Pizza de pepperoni", quantity: 1 },
-        { name: "Batido de mora", quantity: 2 },
-      ],
-    },
-    {
-      orderId: 3,
-      tableId: 3,
-      status: "Pendiente",
-      items: [
-        {
-          name: "Casado",
-          quantity: 1,
-          options: {
-            Proteína: "Pescado",
-          },
-        },
-        { name: "Agua mineral", quantity: 1 },
-      ],
-    },
-  ];
+  const [orders, setOrders] = useState<Array<{
+    orderId: number;
+    tableId: number;
+    status: string;
+    items: Array<{ name: string; quantity: number; options?: Record<string, string> }>;
+    specialInstructions?: string;
+  }>>([]);
+  const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
+
+  const loadOrders = async () => {
+    try {
+      const backendOrders = await getOrders("in_preparation");
+
+      setOrders(
+        backendOrders.map((order) => ({
+          orderId: order.orderId,
+          tableId: order.tableId,
+          status: order.status,
+          items: order.items,
+          specialInstructions: order.specialInstructions,
+        })),
+      );
+    } catch (error) {
+      console.error("No se pudieron cargar los pedidos del cocinero:", error);
+      setOrders([]);
+    }
+  };
+
+  useEffect(() => {
+    const initialLoadId = window.setTimeout(() => {
+      void loadOrders();
+    }, 0);
+
+    const intervalId = window.setInterval(() => {
+      void loadOrders();
+    }, 2000);
+
+    return () => {
+      window.clearTimeout(initialLoadId);
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
+  const handleReadyOrder = async (orderId: number) => {
+    try {
+      setUpdatingOrderId(orderId);
+      await markOrderReady(orderId);
+      await loadOrders();
+    } catch (error) {
+      console.error("No se pudo marcar la orden como lista:", error);
+      alert("No se pudo cambiar el estado de la orden.");
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-white">
@@ -93,6 +80,8 @@ function CookOrders() {
               <OrderCard
                 key={order.orderId}
                 order={order}
+                onReady={() => void handleReadyOrder(order.orderId)}
+                isUpdating={updatingOrderId === order.orderId}
               />
             ))}
           </div>

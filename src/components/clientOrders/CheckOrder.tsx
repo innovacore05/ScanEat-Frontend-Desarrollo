@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useCart } from "./CartContext";
 import { HiArrowLeft } from "react-icons/hi";
 import { FiMinus, FiPlus, FiX } from "react-icons/fi";
@@ -15,9 +15,14 @@ function CheckOrder() {
     clearCart,
   } = useCart();
 
+  const tableId = mesaId?.trim();
+
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
+  const [createdOrderId, setCreatedOrderId] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -28,7 +33,6 @@ function CheckOrder() {
   const total = subtotal + iva;
 
   const handleCreateOrder = async () => {
-    const tableId = mesaId?.trim();
 
     if (!tableId) {
       alert("No se encontró una mesa válida para este pedido.");
@@ -43,7 +47,7 @@ function CheckOrder() {
     setIsSubmitting(true);
 
     try {
-      await createOrder({
+      const createdOrder = await createOrder({
         tableId,
         observation: specialInstructions.trim() || undefined,
         items: cartItems.map((item) => ({
@@ -56,13 +60,14 @@ function CheckOrder() {
       clearCart();
       setSpecialInstructions("");
       setIsConfirmDialogOpen(false);
-      alert("Pedido enviado correctamente.");
+      setCreatedOrderId(createdOrder.order.orderId);
+      setIsSuccessDialogOpen(true);
     } catch (error) {
       const message =
         typeof error === "object" &&
-        error !== null &&
-        "message" in error &&
-        typeof error.message === "string"
+          error !== null &&
+          "message" in error &&
+          typeof error.message === "string"
           ? error.message
           : "No se pudo enviar el pedido.";
 
@@ -77,12 +82,13 @@ function CheckOrder() {
       <div className="h-20 bg-mint" />
 
       <section className="-mt-10 min-h-[calc(100vh-5rem)] w-full rounded-t-[40px] bg-white px-6 py-10 lg:px-10">
-        
+
         {/* Celular */}
         <div className="lg:hidden">
           <div className="flex items-center gap-2">
             <Link
               to="/menuClient"
+              search={{ mesaId: tableId }}
               className="flex items-center gap-2 text-mint-dark"
             >
               <HiArrowLeft className="h-6 w-6" />
@@ -226,6 +232,7 @@ function CheckOrder() {
           <div className="flex items-center gap-2">
             <Link
               to="/menuClient"
+              search={{ mesaId: tableId }}
               className="flex items-center gap-2 text-mint-dark"
             >
               <HiArrowLeft className="h-6 w-6" />
@@ -316,7 +323,7 @@ function CheckOrder() {
               </div>
             </div>
 
-            
+
             <div className="min-w-0">
               <h2 className="text-2xl font-bold text-text-primary">
                 Resumen del pedido
@@ -380,7 +387,48 @@ function CheckOrder() {
         </div>
       </section>
 
-          
+      {isSuccessDialogOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="success-dialog-title"
+        >
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl">
+            <h2
+              id="success-dialog-title"
+              className="text-lg font-bold text-mint-darker"
+            >
+              ¡Listo!
+            </h2>
+            <p className="mt-2 text-sm text-text-primary">
+              Tu pedido fue enviado correctamente.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                if (createdOrderId === null) {
+                  return;
+                }
+
+                setIsSuccessDialogOpen(false);
+                void navigate({
+                  to: "/orderStatus",
+                  search: {
+                    orderId: createdOrderId,
+                    tableId,
+                  },
+                });
+              }}
+              className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
+      )}
+
+
       {/* Modal de confirmación */}
       {isConfirmDialogOpen && (
         <div

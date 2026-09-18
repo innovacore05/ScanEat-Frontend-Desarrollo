@@ -6,6 +6,7 @@ import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
 import { Link, useSearch } from "@tanstack/react-router";
 import { useCart } from "../clientOrders/CartContext";
+import { getProductReviews } from "../../services/reviewService";
 
 
 
@@ -18,7 +19,7 @@ function ProductList({
   initialLoading,
   isFiltering,
   products,
-  onDeleteProduct,
+  mesaId,
   selectedProductId,
   onViewMore,
   onCloseDetails,
@@ -26,6 +27,7 @@ function ProductList({
   initialLoading: boolean;
   isFiltering: boolean;
   products: Product[];
+  mesaId?: string;
   onDeleteProduct: (productId: number) => void;
   selectedProductId: number | null;
   onViewMore: (productId: number) => void;
@@ -57,8 +59,8 @@ function ProductList({
             rating={product.rating}
             isAdmin={false}
             productId={product.productId}
+            mesaId={mesaId}
             optionGroups={product.optionGroups}
-            onDelete={onDeleteProduct}
             isDetailView={selectedProductId === product.productId}
             showReviews
             onViewMore={() => onViewMore(product.productId)}
@@ -90,6 +92,25 @@ function MenuClient() {
     setMesaId(mesaId);
   }, [mesaId, setMesaId]);
 
+  const loadProductsWithRatings = async (products: Product[]) => {
+  return Promise.all(
+    products.map(async (product) => {
+      try {
+        const reviewData = await getProductReviews(product.productId);
+
+        return {
+          ...product,
+          rating: reviewData.averageRating,
+        };
+      } catch {
+        return {
+          ...product,
+          rating: 0,
+        };
+      }
+    }),
+  );
+};
 
 
   //cargar los productos
@@ -105,7 +126,9 @@ function MenuClient() {
           limit: PAGE_SIZE,
           offset: 0
         });
-        setProducts(data.products);
+        const productsWithRatings = await loadProductsWithRatings(data.products);
+
+setProducts(productsWithRatings);
         setHasMore(data.hasMore);
       } catch (error) {
         console.error("Error loading products:", error);
@@ -129,7 +152,9 @@ function MenuClient() {
         limit: PAGE_SIZE,
         offset: products.length,
       });
-      setProducts((prev) => [...prev, ...data.products]);
+      const productsWithRatings = await loadProductsWithRatings(data.products);
+
+setProducts((prev) => [...prev, ...productsWithRatings]);
       setHasMore(data.hasMore)
     } catch (error) {
       console.error("Error loading more products:", error);
@@ -184,6 +209,7 @@ function MenuClient() {
                 initialLoading={initialLoading}
                 isFiltering={isFiltering}
                 products={products}
+                mesaId={mesaId}
                 onDeleteProduct={handleDeleteProduct}
                 selectedProductId={selectedProductId}
                 onViewMore={setSelectedProductId}
@@ -240,6 +266,7 @@ function MenuClient() {
             initialLoading={initialLoading}
             isFiltering={isFiltering}
             products={products}
+            mesaId={mesaId}
             onDeleteProduct={handleDeleteProduct}
             selectedProductId={selectedProductId}
             onViewMore={setSelectedProductId}
@@ -272,6 +299,7 @@ function MenuClient() {
 
         <Link
           to="/checkOrder"
+          search={{ mesaId }}
           className="absolute cursor-pointer flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
         >
           <LuShoppingBag className="h-7 w-7 text-white" />

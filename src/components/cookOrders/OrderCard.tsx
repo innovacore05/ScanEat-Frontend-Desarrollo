@@ -13,9 +13,11 @@ type Order = {
 
 type OrderCardProps = {
   order: Order;
+  onReady?: () => void;
+  isUpdating?: boolean;
 };
 
-function OrderCard({ order }: OrderCardProps) {
+function OrderCard({ order, onReady, isUpdating = false }: OrderCardProps) {
   return (
     <div className="w-full h-full bg-white border border-border py-8 px-8 rounded-2xl flex flex-col gap-4">
       <h2 className="text-4xl font-bold text-mint-dark">
@@ -62,9 +64,11 @@ function OrderCard({ order }: OrderCardProps) {
 
       <button
         type="button"
-        className="mt-auto w-full rounded-2xl bg-mint-dark py-4 text-2xl font-bold text-white"
+        disabled={isUpdating}
+        onClick={onReady}
+        className="mt-auto w-full rounded-2xl bg-mint-dark py-4 text-2xl font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Listo
+        {isUpdating ? "Cambiando..." : "Listo"}
       </button>
     </div>
   );

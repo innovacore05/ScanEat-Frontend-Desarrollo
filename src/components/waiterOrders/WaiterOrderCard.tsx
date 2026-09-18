@@ -14,12 +14,16 @@ export type Order = {
   time: string;
   specialInstructions?: string;
   price: string;
+  subtotal?: number;
+  tax?: number;
+  total?: number;
   items: OrderItem[];
   status?: "Pendiente" | "En preparación" | "Listo" | "Entregado";
 };
 
 type WaiterOrderCardProps = {
-    order: Order;
+
+  order: Order;
     onDetails?: () => void;
 };
 

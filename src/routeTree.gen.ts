@@ -22,7 +22,8 @@ import { Route as authenticationUnexpectedIssueRouteImport } from './routes/(aut
 import { Route as authenticationUnexpectedIssueVRouteImport } from './routes/(authentication)/unexpectedIssueV'
 import { Route as authenticationVerificationCodeRouteImport } from './routes/(authentication)/verificationCode'
 import { Route as clientOrdersCheckOrderRouteImport } from './routes/(clientOrders)/checkOrder'
-import { Route as clientOrdersReviewsRouteImport } from './routes/(clientOrders)/reviews'
+import { Route as clientOrdersOrderStatusRouteImport } from './routes/(clientOrders)/orderStatus'
+import { Route as clientOrdersReviewPlateRouteImport } from './routes/(clientOrders)/reviewPlate'
 import { Route as cookOrdersCookOrdersRouteImport } from './routes/(cookOrders)/cookOrders'
 import { Route as dashboardDashboardRouteImport } from './routes/(dashboard)/dashboard'
 import { Route as dashboardDashboardCookRouteImport } from './routes/(dashboard)/dashboardCook'
@@ -32,6 +33,7 @@ import { Route as menuAdminEditMenuRouteImport } from './routes/(menuAdmin)/edit
 import { Route as menuAdminMenuManagmentRouteImport } from './routes/(menuAdmin)/menuManagment'
 import { Route as menuAdminSimpleDishFormRouteImport } from './routes/(menuAdmin)/simpleDishForm'
 import { Route as menuClientMenuClientRouteImport } from './routes/(menuClient)/menuClient'
+import { Route as menuClientReviewsRouteImport } from './routes/(menuClient)/reviews'
 import { Route as menuWaiterMenuWaiterRouteImport } from './routes/(menuWaiter)/menuWaiter'
 import { Route as profileChangePasswordRouteImport } from './routes/(profile)/changePassword'
 import { Route as profileChangePasswordErrorRouteImport } from './routes/(profile)/changePasswordError'
@@ -117,9 +119,14 @@ const clientOrdersCheckOrderRoute = clientOrdersCheckOrderRouteImport.update({
   path: '/checkOrder',
   getParentRoute: () => rootRouteImport,
 } as any)
-const clientOrdersReviewsRoute = clientOrdersReviewsRouteImport.update({
-  id: '/(clientOrders)/reviews',
-  path: '/reviews',
+const clientOrdersOrderStatusRoute = clientOrdersOrderStatusRouteImport.update({
+  id: '/(clientOrders)/orderStatus',
+  path: '/orderStatus',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const clientOrdersReviewPlateRoute = clientOrdersReviewPlateRouteImport.update({
+  id: '/(clientOrders)/reviewPlate',
+  path: '/reviewPlate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const cookOrdersCookOrdersRoute = cookOrdersCookOrdersRouteImport.update({
@@ -166,6 +173,11 @@ const menuAdminSimpleDishFormRoute = menuAdminSimpleDishFormRouteImport.update({
 const menuClientMenuClientRoute = menuClientMenuClientRouteImport.update({
   id: '/(menuClient)/menuClient',
   path: '/menuClient',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const menuClientReviewsRoute = menuClientReviewsRouteImport.update({
+  id: '/(menuClient)/reviews',
+  path: '/reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
 const menuWaiterMenuWaiterRoute = menuWaiterMenuWaiterRouteImport.update({
@@ -243,7 +255,8 @@ export interface FileRoutesByFullPath {
   '/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
-  '/reviews': typeof clientOrdersReviewsRoute
+  '/orderStatus': typeof clientOrdersOrderStatusRoute
+  '/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboard': typeof dashboardDashboardRoute
   '/dashboardCook': typeof dashboardDashboardCookRoute
@@ -253,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/menuManagment': typeof menuAdminMenuManagmentRoute
   '/simpleDishForm': typeof menuAdminSimpleDishFormRoute
   '/menuClient': typeof menuClientMenuClientRoute
+  '/reviews': typeof menuClientReviewsRoute
   '/menuWaiter': typeof menuWaiterMenuWaiterRoute
   '/changePassword': typeof profileChangePasswordRoute
   '/changePasswordError': typeof profileChangePasswordErrorRoute
@@ -279,7 +293,8 @@ export interface FileRoutesByTo {
   '/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
-  '/reviews': typeof clientOrdersReviewsRoute
+  '/orderStatus': typeof clientOrdersOrderStatusRoute
+  '/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboard': typeof dashboardDashboardRoute
   '/dashboardCook': typeof dashboardDashboardCookRoute
@@ -289,6 +304,7 @@ export interface FileRoutesByTo {
   '/menuManagment': typeof menuAdminMenuManagmentRoute
   '/simpleDishForm': typeof menuAdminSimpleDishFormRoute
   '/menuClient': typeof menuClientMenuClientRoute
+  '/reviews': typeof menuClientReviewsRoute
   '/menuWaiter': typeof menuWaiterMenuWaiterRoute
   '/changePassword': typeof profileChangePasswordRoute
   '/changePasswordError': typeof profileChangePasswordErrorRoute
@@ -316,7 +332,8 @@ export interface FileRoutesById {
   '/(authentication)/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/(authentication)/verificationCode': typeof authenticationVerificationCodeRoute
   '/(clientOrders)/checkOrder': typeof clientOrdersCheckOrderRoute
-  '/(clientOrders)/reviews': typeof clientOrdersReviewsRoute
+  '/(clientOrders)/orderStatus': typeof clientOrdersOrderStatusRoute
+  '/(clientOrders)/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/(cookOrders)/cookOrders': typeof cookOrdersCookOrdersRoute
   '/(dashboard)/dashboard': typeof dashboardDashboardRoute
   '/(dashboard)/dashboardCook': typeof dashboardDashboardCookRoute
@@ -326,6 +343,7 @@ export interface FileRoutesById {
   '/(menuAdmin)/menuManagment': typeof menuAdminMenuManagmentRoute
   '/(menuAdmin)/simpleDishForm': typeof menuAdminSimpleDishFormRoute
   '/(menuClient)/menuClient': typeof menuClientMenuClientRoute
+  '/(menuClient)/reviews': typeof menuClientReviewsRoute
   '/(menuWaiter)/menuWaiter': typeof menuWaiterMenuWaiterRoute
   '/(profile)/changePassword': typeof profileChangePasswordRoute
   '/(profile)/changePasswordError': typeof profileChangePasswordErrorRoute
@@ -354,7 +372,8 @@ export interface FileRouteTypes {
     | '/unexpectedIssueV'
     | '/verificationCode'
     | '/checkOrder'
-    | '/reviews'
+    | '/orderStatus'
+    | '/reviewPlate'
     | '/cookOrders'
     | '/dashboard'
     | '/dashboardCook'
@@ -364,6 +383,7 @@ export interface FileRouteTypes {
     | '/menuManagment'
     | '/simpleDishForm'
     | '/menuClient'
+    | '/reviews'
     | '/menuWaiter'
     | '/changePassword'
     | '/changePasswordError'
@@ -390,7 +410,8 @@ export interface FileRouteTypes {
     | '/unexpectedIssueV'
     | '/verificationCode'
     | '/checkOrder'
-    | '/reviews'
+    | '/orderStatus'
+    | '/reviewPlate'
     | '/cookOrders'
     | '/dashboard'
     | '/dashboardCook'
@@ -400,6 +421,7 @@ export interface FileRouteTypes {
     | '/menuManagment'
     | '/simpleDishForm'
     | '/menuClient'
+    | '/reviews'
     | '/menuWaiter'
     | '/changePassword'
     | '/changePasswordError'
@@ -426,7 +448,8 @@ export interface FileRouteTypes {
     | '/(authentication)/unexpectedIssueV'
     | '/(authentication)/verificationCode'
     | '/(clientOrders)/checkOrder'
-    | '/(clientOrders)/reviews'
+    | '/(clientOrders)/orderStatus'
+    | '/(clientOrders)/reviewPlate'
     | '/(cookOrders)/cookOrders'
     | '/(dashboard)/dashboard'
     | '/(dashboard)/dashboardCook'
@@ -436,6 +459,7 @@ export interface FileRouteTypes {
     | '/(menuAdmin)/menuManagment'
     | '/(menuAdmin)/simpleDishForm'
     | '/(menuClient)/menuClient'
+    | '/(menuClient)/reviews'
     | '/(menuWaiter)/menuWaiter'
     | '/(profile)/changePassword'
     | '/(profile)/changePasswordError'
@@ -463,7 +487,8 @@ export interface RootRouteChildren {
   authenticationUnexpectedIssueVRoute: typeof authenticationUnexpectedIssueVRoute
   authenticationVerificationCodeRoute: typeof authenticationVerificationCodeRoute
   clientOrdersCheckOrderRoute: typeof clientOrdersCheckOrderRoute
-  clientOrdersReviewsRoute: typeof clientOrdersReviewsRoute
+  clientOrdersOrderStatusRoute: typeof clientOrdersOrderStatusRoute
+  clientOrdersReviewPlateRoute: typeof clientOrdersReviewPlateRoute
   cookOrdersCookOrdersRoute: typeof cookOrdersCookOrdersRoute
   dashboardDashboardRoute: typeof dashboardDashboardRoute
   dashboardDashboardCookRoute: typeof dashboardDashboardCookRoute
@@ -473,6 +498,7 @@ export interface RootRouteChildren {
   menuAdminMenuManagmentRoute: typeof menuAdminMenuManagmentRoute
   menuAdminSimpleDishFormRoute: typeof menuAdminSimpleDishFormRoute
   menuClientMenuClientRoute: typeof menuClientMenuClientRoute
+  menuClientReviewsRoute: typeof menuClientReviewsRoute
   menuWaiterMenuWaiterRoute: typeof menuWaiterMenuWaiterRoute
   profileChangePasswordRoute: typeof profileChangePasswordRoute
   profileChangePasswordErrorRoute: typeof profileChangePasswordErrorRoute
@@ -579,11 +605,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof clientOrdersCheckOrderRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(clientOrders)/reviews': {
-      id: '/(clientOrders)/reviews'
-      path: '/reviews'
-      fullPath: '/reviews'
-      preLoaderRoute: typeof clientOrdersReviewsRouteImport
+    '/(clientOrders)/orderStatus': {
+      id: '/(clientOrders)/orderStatus'
+      path: '/orderStatus'
+      fullPath: '/orderStatus'
+      preLoaderRoute: typeof clientOrdersOrderStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(clientOrders)/reviewPlate': {
+      id: '/(clientOrders)/reviewPlate'
+      path: '/reviewPlate'
+      fullPath: '/reviewPlate'
+      preLoaderRoute: typeof clientOrdersReviewPlateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(cookOrders)/cookOrders': {
@@ -647,6 +680,13 @@ declare module '@tanstack/react-router' {
       path: '/menuClient'
       fullPath: '/menuClient'
       preLoaderRoute: typeof menuClientMenuClientRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menuClient)/reviews': {
+      id: '/(menuClient)/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof menuClientReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(menuWaiter)/menuWaiter': {
@@ -744,7 +784,8 @@ const rootRouteChildren: RootRouteChildren = {
   authenticationUnexpectedIssueVRoute: authenticationUnexpectedIssueVRoute,
   authenticationVerificationCodeRoute: authenticationVerificationCodeRoute,
   clientOrdersCheckOrderRoute: clientOrdersCheckOrderRoute,
-  clientOrdersReviewsRoute: clientOrdersReviewsRoute,
+  clientOrdersOrderStatusRoute: clientOrdersOrderStatusRoute,
+  clientOrdersReviewPlateRoute: clientOrdersReviewPlateRoute,
   cookOrdersCookOrdersRoute: cookOrdersCookOrdersRoute,
   dashboardDashboardRoute: dashboardDashboardRoute,
   dashboardDashboardCookRoute: dashboardDashboardCookRoute,
@@ -754,6 +795,7 @@ const rootRouteChildren: RootRouteChildren = {
   menuAdminMenuManagmentRoute: menuAdminMenuManagmentRoute,
   menuAdminSimpleDishFormRoute: menuAdminSimpleDishFormRoute,
   menuClientMenuClientRoute: menuClientMenuClientRoute,
+  menuClientReviewsRoute: menuClientReviewsRoute,
   menuWaiterMenuWaiterRoute: menuWaiterMenuWaiterRoute,
   profileChangePasswordRoute: profileChangePasswordRoute,
   profileChangePasswordErrorRoute: profileChangePasswordErrorRoute,

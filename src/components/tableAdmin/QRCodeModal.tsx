@@ -6,7 +6,7 @@ import { LuSend } from "react-icons/lu";
 type QrCodeModalProps = {
     isOpen: boolean;
     value: string;
-    numeroMesa?: number | string; 
+    numeroMesa?: number | string;
     onClose: () => void;
 };
 
@@ -16,56 +16,100 @@ function QrCodeModal({ isOpen, value, numeroMesa, onClose }: QrCodeModalProps) {
     if (!isOpen) return null;
 
     // Función para descargar el QR en JPG incluyendo el texto "Mesa X"
-    const descargarJPG = () => {
+    const descargarJPG = async () => {
         const svgElement = qrRef.current?.querySelector("svg");
-        if (!svgElement) return;
+
+        if (!svgElement) {
+            return;
+        }
 
         const svgData = new XMLSerializer().serializeToString(svgElement);
-        const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
-        const URLObj = window.URL || window.webkitURL || window;
-        const blobURL = URLObj.createObjectURL(svgBlob);
-
+        const svgBlob = new Blob([svgData], {
+            type: "image/svg+xml;charset=utf-8",
+        });
+        const blobUrl = URL.createObjectURL(svgBlob);
         const image = new Image();
-        image.onload = () => {
+
+        image.onload = async () => {
             const canvas = document.createElement("canvas");
-            
-         
-            const margen = 30;
-            const espacioTexto = 50; 
-            canvas.width = image.width + margen * 2;
-            canvas.height = image.height + margen * 2 + espacioTexto;
+            const margin = 30;
+            const textSpace = 60;
+
+            canvas.width = image.width + margin * 2;
+            canvas.height = image.height + margin * 2 + textSpace;
 
             const context = canvas.getContext("2d");
 
-            if (context) {
-            
-                context.fillStyle = "#FFFFFF";
-                context.fillRect(0, 0, canvas.width, canvas.height);
-
-
-                context.font = "bold 22px sans-serif";
-                context.fillStyle = "#1F2937"; 
-                context.textAlign = "center";
-                
-                const textoMesa = numeroMesa ? `Mesa# ${numeroMesa}` : "Mesa";
-                context.fillText(textoMesa, canvas.width / 2, margen + 25);
-                context.drawImage(image, margen, margen + espacioTexto);
-
-                // Descargar el archivo JPG
-                const jpgUrl = canvas.toDataURL("image/jpeg", 1.0);
-                const downloadLink = document.createElement("a");
-                downloadLink.href = jpgUrl;
-                downloadLink.download = `QR-Mesa-${numeroMesa || "ScanEat"}.jpg`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-                URLObj.revokeObjectURL(blobURL);
+            if (!context) {
+                URL.revokeObjectURL(blobUrl);
+                return;
             }
+
+            context.fillStyle = "#FFFFFF";
+            context.fillRect(0, 0, canvas.width, canvas.height);
+
+            context.font = "bold 22px sans-serif";
+            context.fillStyle = "#1F2937";
+            context.textAlign = "center";
+
+            const tableText = numeroMesa
+                ? `Mesa #${numeroMesa}`
+                : "Mesa";
+
+            context.fillText(
+                tableText,
+                canvas.width / 2,
+                margin + 28,
+            );
+
+            context.drawImage(
+                image,
+                margin,
+                margin + textSpace,
+            );
+
+            canvas.toBlob(async (blob) => {
+                URL.revokeObjectURL(blobUrl);
+
+                if (!blob) {
+                    return;
+                }
+
+                const fileName = `QR-Mesa-${numeroMesa ?? "ScanEat"}.jpg`;
+                const file = new File([blob], fileName, {
+                    type: "image/jpeg",
+                });
+
+                if (
+                    navigator.share &&
+                    navigator.canShare?.({ files: [file] })
+                ) {
+                    await navigator.share({
+                        title: "Código QR de ScanEat",
+                        text: tableText,
+                        files: [file],
+                    });
+
+                    return;
+                }
+
+                const downloadUrl = URL.createObjectURL(blob);
+                const downloadLink = document.createElement("a");
+
+                downloadLink.href = downloadUrl;
+                downloadLink.download = fileName;
+                downloadLink.click();
+
+                URL.revokeObjectURL(downloadUrl);
+            }, "image/jpeg", 1);
         };
 
-        image.src = blobURL;
-    };
+        image.onerror = () => {
+            URL.revokeObjectURL(blobUrl);
+        };
 
+        image.src = blobUrl;
+    };
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
             <div className="relative w-80 rounded-2xl bg-white p-6 shadow-2xl">
@@ -93,13 +137,13 @@ function QrCodeModal({ isOpen, value, numeroMesa, onClose }: QrCodeModalProps) {
                     </button>
 
                     {/* Botón Descargar JPG */}
-                    <button 
+                    <button
                         type="button"
                         onClick={descargarJPG}
                         title="Guardar como JPG"
                         className="cursor-pointer w-12 h-12 items-center justify-center flex rounded-full bg-mint-dark text-base font-bold text-white hover:opacity-90 transition-opacity"
                     >
-                        <LuSend className="w-6 h-6"/>
+                        <LuSend className="w-6 h-6" />
                     </button>
                 </div>
             </div>

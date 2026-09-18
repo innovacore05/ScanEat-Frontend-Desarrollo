@@ -10,6 +10,9 @@ import { getTables, deleteTable } from "../../services/tableService";
 import QrCodeModal from "./QRCodeModal";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import { ROLE_IDS } from "../../config/roles";
+import { getOrders } from "../../services/orderService";
+import type { Order } from "../waiterOrders/WaiterOrderCard";
+import OrderDetails from "../Orders/OrderDetails";
 
 
 export type TableItem = {
@@ -30,6 +33,7 @@ function TablesManagment() {
 	const [selectedTable, setSelectedTable] = useState<TableItem | null>(null);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [orders, setOrders] = useState<Order[]>([]);
 
 	const handleShowQr = (tableId: string, tableNumber: number) => {
 		setQrValue(`https://scaneat-frontend-produccion-production.up.railway.app/menuClient?mesaId=${tableId}`);
@@ -64,6 +68,27 @@ function TablesManagment() {
 		loadTables();
 	}, []);
 
+	useEffect(() => {
+		const loadOrders = async () => {
+			try {
+				const data = await getOrders();
+				setOrders(data);
+			} catch (error) {
+				console.error("Error trayendo órdenes:", error);
+			}
+		};
+
+		void loadOrders();
+
+		const intervalId = window.setInterval(() => {
+			void loadOrders();
+		}, 5000);
+
+		return () => {
+			window.clearInterval(intervalId);
+		};
+	}, []);
+
 	const handleDeleteTable = async () => {
 		if (!selectedTable) return;
 
@@ -88,6 +113,10 @@ function TablesManagment() {
 	const Layout = roleId === ROLE_IDS.waiter ? DashboardLayoutWaiter : DashboardLayout;
 	const dashboardRoute = roleId === ROLE_IDS.waiter ? "/dashboardWaiter" : "/dashboard";
 
+	const tableOrders = orders.filter(
+	(order) => order.tableId === selectedTable?.tableNumber,
+	);
+	
 	return (
 		<Layout>
 			<main className="flex min-h-screen flex-col bg-white ">
@@ -156,12 +185,25 @@ function TablesManagment() {
 							)}
 
 							<div className="mt-5 rounded-lg bg-neutral-100 px-4 py-4">
-								<p className="text-lg font-bold text-text-primary">
-									Orden actual
-								</p>
-								<p className="mt-3 text-xs text-text-primary">
-									Esta mesa no tiene una orden activa.
-								</p>
+								{tableOrders.length === 0 ? (
+									<div className=" rounded-lg bg-neutral-100 px-4 py-4">
+										<p className="text-lg font-bold text-text-primary">
+											Orden actual
+										</p>
+										<p className="text-sm text-text-primary">
+											Esta mesa no tiene una orden activa.
+										</p>
+									</div>
+								) : (
+										<div>
+											<OrderDetails
+											order={tableOrders[0]}
+											embedded
+											showConfirmButton={false}
+												showMobileBack={false}
+											/>
+										</div>
+	)}
 							</div>
 						</div>
 
@@ -301,13 +343,25 @@ function TablesManagment() {
 							)}
 
 							<div className="mt-5 rounded-lg bg-neutral-100 px-4 py-4">
-								<p className="text-lg font-bold text-text-primary">
-									Orden actual
-								</p>
-
-								<p className="mt-3 text-xs text-text-primary">
-									Esta mesa no tiene una orden activa.
-								</p>
+								{tableOrders.length === 0 ? (
+									<div className="rounded-lg bg-neutral-100 px-4 py-4">
+										<p className="text-lg font-bold text-text-primary">
+											Orden actual
+										</p>
+										<p className="text-xs text-text-primary">
+											Esta mesa no tiene una orden activa.
+										</p>
+									</div>
+								) : (
+										<div>
+											<OrderDetails
+												order={tableOrders[0]}
+												embedded
+												showConfirmButton={false}
+												showMobileBack={false}
+											/>
+									</div>
+								)}
 							</div>
 						</div>
 					</div>

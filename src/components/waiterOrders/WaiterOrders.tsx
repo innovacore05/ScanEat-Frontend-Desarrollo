@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
 import FilterOrders from "../waiterOrders/FilterOrders";
 import SearchOrders from "../waiterOrders/SearchOrders";
@@ -7,8 +7,8 @@ import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import { getStoredFirstName } from "../../services/authService";
 import WaiterOrderCard from "../waiterOrders/WaiterOrderCard";
 import type { Order } from "../waiterOrders/WaiterOrderCard";
-import { orders } from "../waiterOrders/mockOrders";
-import WaiterOrderDetails from "../waiterOrders/WaiterOrderDetails";
+import OrderDetails from "../Orders/OrderDetails";
+import { getOrders, statusIdToState } from "../../services/orderService";
 
 function WaiterOrders() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,8 +17,47 @@ function WaiterOrders() {
     null,
   );
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
 
-  
+  const loadOrders = useCallback(async () => {
+    try {
+      const backendOrders = await getOrders(selectedCategory ? statusIdToState[selectedCategory] : undefined);
+      setOrders(backendOrders);
+      setSelectedOrder((current) => {
+        if (current && backendOrders.some((order) => order.orderId === current.orderId)) {
+          return backendOrders.find((order) => order.orderId === current.orderId) ?? current;
+        }
+
+        return backendOrders[0] ?? null;
+      });
+    } catch (error) {
+      console.error("No se pudieron cargar los pedidos:", error);
+      setOrders([]);
+    }
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    const initialLoadId = window.setTimeout(() => {
+      void loadOrders();
+    }, 0);
+
+    const intervalId = window.setInterval(() => {
+      void loadOrders();
+    }, 2000);
+
+    return () => {
+      window.clearTimeout(initialLoadId);
+      window.clearInterval(intervalId);
+    };
+  }, [loadOrders]);
+
+  const filteredOrders = orders.filter((order) => {
+    const matchesSearch =
+      order.tableId.toString().includes(searchTerm.trim()) ||
+      order.orderId.toString().includes(searchTerm.trim());
+
+    return matchesSearch;
+  });
 
   return (
     <DashboardLayoutWaiter>
@@ -63,7 +102,7 @@ function WaiterOrders() {
             </p>
 
             <div className="flex flex-col gap-8 pb-20">
-              {orders.map((order) => (
+              {filteredOrders.map((order) => (
                 <WaiterOrderCard
                   key={order.orderId}
                   order={order}
@@ -108,7 +147,7 @@ function WaiterOrders() {
           <div className="mt-8 grid grid-cols-[minmax(0,612px)_minmax(280px,1fr)] gap-6">
             {/* Pedidos */}
             <div className="flex flex-col gap-12">
-              {orders.map((order) => (
+              {filteredOrders.map((order) => (
                 <WaiterOrderCard
                   key={order.orderId}
                   order={order}
@@ -121,9 +160,10 @@ function WaiterOrders() {
                       <div>
                           <p className="pb-4 text-xl text-text-primary font-bold ">Orden actual</p>
               {selectedOrder ? (
-                <WaiterOrderDetails
+                <OrderDetails
                   order={selectedOrder}
                   embedded
+                  onStatusChanged={loadOrders}
                 />
               ) : (
                 <div className="flex min-h-80 items-center justify-center rounded-4xl bg-neutral-100 px-8">

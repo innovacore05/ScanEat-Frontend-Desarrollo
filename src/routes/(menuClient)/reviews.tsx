@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import CheckOrder from "../../components/clientOrders/CheckOrder";
+import Review from "../../components/reviewClient/Review";
 
-export const Route = createFileRoute("/(clientOrders)/checkOrder")({
+export const Route = createFileRoute("/(menuClient)/reviews")({
   validateSearch: (search: Record<string, unknown>) => ({
+    productId: Number(search.productId),
     mesaId: typeof search.mesaId === "string"
       ? search.mesaId
       : undefined,
@@ -11,5 +12,5 @@ export const Route = createFileRoute("/(clientOrders)/checkOrder")({
 });
 
 function RouteComponent() {
-  return <CheckOrder />;
+  return <Review />;
 }
