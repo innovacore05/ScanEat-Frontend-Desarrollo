@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 
 export type CartItem = {
+  cartItemId:string;
   productId: number;
   name: string;
   price: number;
@@ -14,38 +15,91 @@ type CartContextType = {
   setMesaId: (mesaId: string | undefined) => void;
   cartItems: CartItem[];
   addToCart: (item: CartItem) => void;
-  increaseQuantity: (productId: number) => void;
-  decreaseQuantity: (productId: number) => void;
-  removeFromCart: (productId: number) => void;
+  increaseQuantity: (cartItemId: string) => void;
+decreaseQuantity: (cartItemId: string) => void;
+removeFromCart: (cartItemId: string) => void;
   clearCart: () => void;
   cartCount: number;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+//nuevo
+function areOptionsEqual(
+first:Record<string,string>,
+second:Record<string,string>,
+){
+
+  const firstKeys=Object.keys(first);
+  const secondKeys=Object.keys(second);
+
+  if(firstKeys.length!==secondKeys.length){
+    return false;
+  }
+
+  return firstKeys.every((key)=>first[key]===second[key]);
+}
+
+
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [mesaId, setMesaId] = useState<string | undefined>(undefined);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
-  const addToCart = (item: CartItem) => {
-    setCartItems((currentItems) => [...currentItems, item]);
-  };
+//cambios
 
-  const increaseQuantity = (productId: number) => {
+  const addToCart = (item: CartItem) => {
+    setCartItems((currentItems) => {
+    const existingItem = currentItems.find(
+
+      (currentItem)=>
+        currentItem.productId === item.productId &&
+      areOptionsEqual(
+        currentItem.selectedOptions,
+        item.selectedOptions,
+      ),
+    );
+
+if(existingItem){
+  return currentItems.map((currentItem)=>
+  currentItem.cartItemId === existingItem.cartItemId
+  ?{
+    ...currentItem,
+    quantity: currentItem.quantity + item.quantity,
+  }
+  :currentItem,
+  );
+}
+
+return [
+  ...currentItems,
+  {
+    ...item,
+    cartItemId:crypto.randomUUID(),
+  },
+];
+
+    });
+  };
+    
+
+
+
+  const increaseQuantity = (cartItemId: string) => {
     setCartItems((currentItems) =>
       currentItems.map((item) =>
-        item.productId === productId
+        item.cartItemId === cartItemId
           ? { ...item, quantity: item.quantity + 1 }
           : item,
       ),
     );
   };
 
-  const decreaseQuantity = (productId: number) => {
+  const decreaseQuantity = (cartItemId: string) => {
     setCartItems((currentItems) =>
       currentItems
         .map((item) =>
-          item.productId === productId
+          item.cartItemId === cartItemId
             ? { ...item, quantity: item.quantity - 1 }
             : item,
         )
@@ -53,9 +107,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const removeFromCart = (productId: number) => {
+  const removeFromCart = (cartItemId: string) => {
     setCartItems((currentItems) =>
-      currentItems.filter((item) => item.productId !== productId),
+      currentItems.filter((item) => item.cartItemId!== cartItemId),
     );
   };
 
