@@ -14,7 +14,9 @@ type CartContextType = {
   mesaId: string | undefined;
   setMesaId: (mesaId: string | undefined) => void;
   cartItems: CartItem[];
-  addToCart: (item: CartItem) => void;
+  addToCart: (
+    item: Omit<CartItem,"cartItemId">
+  ) => void;
   increaseQuantity: (cartItemId: string) => void;
 decreaseQuantity: (cartItemId: string) => void;
 removeFromCart: (cartItemId: string) => void;
@@ -48,7 +50,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 //cambios
 
-  const addToCart = (item: CartItem) => {
+  const addToCart = (item: Omit<CartItem, "cartItemId">)=> {
     setCartItems((currentItems) => {
     const existingItem = currentItems.find(
 
