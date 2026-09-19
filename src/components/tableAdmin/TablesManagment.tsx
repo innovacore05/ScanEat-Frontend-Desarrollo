@@ -35,6 +35,9 @@ function TablesManagment() {
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [orders, setOrders] = useState<Order[]>([]);
 
+const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+
 	const handleShowQr = (tableId: string, tableNumber: number) => {
 		setQrValue(`https://scanneatf.up.railway.app/menuClient?mesaId=${tableId}`);
 		setQrTableNumber(tableNumber);
@@ -117,6 +120,22 @@ function TablesManagment() {
 	(order) => order.tableId === selectedTable?.tableNumber,
 	);
 	
+
+
+
+const handleRequestDelete = () => {
+	if (!selectedTable) return;
+	if (tableOrders.length > 0) {
+		setErrorMessage("No puedes eliminar esta mesa.");
+		return;
+	}
+	setIsDeleteDialogOpen(true);
+};
+
+
+
+
+
 	return (
 		<Layout>
 			<main className="flex min-h-screen flex-col bg-white ">
@@ -236,7 +255,7 @@ function TablesManagment() {
 							</Link>
 
 							<button className="w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-mint-dark/90"
-								onClick={() => selectedTable && setIsDeleteDialogOpen(true)}>
+								onClick={handleRequestDelete}>
 								<span className="font-bold text-white justify-center flex">
 									Eliminar mesa
 								</span>
@@ -282,7 +301,7 @@ function TablesManagment() {
 									</Link>
 
 									<button className="cursor-pointer flex items-center justify-between rounded border w-40 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
-										onClick={() => selectedTable && setIsDeleteDialogOpen(true)}>
+										onClick={handleRequestDelete}>
 										<span>Eliminar mesa</span>
 										<AiOutlineDelete className="text-mint-darker w-5 h-5" />
 
@@ -406,6 +425,41 @@ function TablesManagment() {
 					</div>
 				</div>
 			)}
+
+
+
+
+
+
+{errorMessage && (
+    <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+        role="dialog"
+        aria-modal="true"
+    >
+        <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl text-center">
+            <h3 className="text-lg font-bold text-mint-darker align-middle">
+               Orden activa!
+            </h3>
+            <p className="mt-2 text-sm text-text-primary">{errorMessage}</p>
+            <div className="mt-6 flex justify-center">
+                <button
+                    type="button"
+                    onClick={() => setErrorMessage(null)}
+                    className="cursor-pointer rounded-lg bg-mint-dark px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+                >
+                    Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
+)}
+
+
+
+
+
+
 		</Layout>
 	);
 }
