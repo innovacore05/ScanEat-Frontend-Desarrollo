@@ -49,7 +49,17 @@ console.log("CHECK ORDER TABLE:", mesaId);
     setIsSubmitting(true);
 
     try {
+console.log("ENVIANDO ORDEN:", {
+  tableId,
+  items: cartItems.map((item) => ({
+    productId: item.productId,
+    quantity: item.quantity,
+    selectedOptions: item.selectedOptions ?? {},
+  })),
+});
+
       const createdOrder = await createOrder({
+        
         tableId,
         observation: specialInstructions.trim() || undefined,
         items: cartItems.map((item) => ({
