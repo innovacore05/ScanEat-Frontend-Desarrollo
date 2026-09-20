@@ -1,5 +1,17 @@
 const TABLES_BASE_URL = `${import.meta.env.VITE_API_URL}/api/table`;
 
+//Validación para que el id de la mesa tenga, entre 1 y 100 caracteres, solo tenga
+//letras, numeros, guiones(medios y bajos). 
+const getTablePath = (tableId: string) => {
+  const normalizedTableId = tableId.trim();
+
+  if (!/^[A-Za-z0-9_-]{1,100}$/.test(normalizedTableId)) {
+    throw new Error("Identificador de mesa inválido");
+  }
+
+  return `${TABLES_BASE_URL}/${encodeURIComponent(normalizedTableId)}`;
+};
+
 type ApiError = {
     message?: string;
     [key: string]: unknown;
@@ -68,7 +80,7 @@ export const getTables = async () => {
 export const getTableById = async (tableId: string) => {
   const token = localStorage.getItem("authToken");
 
-  const response = await fetch(`${TABLES_BASE_URL}/${tableId}`, {
+  const response = await fetch(getTablePath(tableId), {
     method: "GET",
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -100,7 +112,7 @@ export const updateTableChairs = async (
 ) => {
   const token = localStorage.getItem("authToken");
 
-  const response = await fetch(`${TABLES_BASE_URL}/${tableId}`, {
+  const response = await fetch(getTablePath(tableId), {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -125,7 +137,7 @@ export const updateTableChairs = async (
 export const deleteTable = async (tableId: string) => {
   const token = localStorage.getItem("authToken");
 
-  const response = await fetch(`${TABLES_BASE_URL}/${tableId}`, {
+  const response = await fetch(getTablePath(tableId), {
     method: "DELETE",
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
