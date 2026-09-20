@@ -24,7 +24,8 @@ function CheckOrder() {
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState<number | null>(null);
   const navigate = useNavigate();
-
+console.log("CHECK ORDER CART:", cartItems);
+console.log("CHECK ORDER TABLE:", mesaId);
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
