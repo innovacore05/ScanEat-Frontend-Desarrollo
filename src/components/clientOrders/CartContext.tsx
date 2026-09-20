@@ -51,7 +51,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
 //cambios
 
   const addToCart = (item: Omit<CartItem, "cartItemId">)=> {
+    console.log("ADD TO CART RECIBIDO:", item);
     setCartItems((currentItems) => {
+       console.log("CARRITO ANTES:", currentItems);
+
     const existingItem = currentItems.find(
 
       (currentItem)=>
