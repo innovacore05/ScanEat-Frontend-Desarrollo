@@ -174,6 +174,11 @@ console.log("CLICK AGREGAR:", productId);
 				setValidationMessage("");
 				setIsOptionsModalOpen(true);
 			} else {
+				console.log("AGREGANDO AL CARRITO:", {
+    productId,
+    name,
+    price,
+});
 				addToCart({
 					productId,
 					name,
