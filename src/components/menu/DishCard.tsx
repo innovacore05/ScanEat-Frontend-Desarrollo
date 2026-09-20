@@ -159,10 +159,11 @@ function DishCard({
 
 	const groupsOptions = async () => {
 		if (!productId) return;
-
+console.log("CLICK AGREGAR:", productId);
 		try {
 			setIsLoadingEdit(true);
 			const product = await getProductById(productId);
+			 console.log("PRODUCTO CARGADO:", product);
 			const isCustom = product.isCustom !== undefined
 				? product.isCustom === true || product.isCustom === 1
 				: productIsCustom(product) || await isCustomProduct(productId);
