@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { ImEye, ImEyeBlocked } from "react-icons/im";
 import { BsFillArrowLeftCircleFill } from "react-icons/bs";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { resetPassword } from "../../services/authService";
 
@@ -13,6 +14,8 @@ function ResetPasswordForm() {
 	const [code, setCode] = useState("");
 	const [error, setError] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [showSuccess, setShowSuccess] = useState(false);
+	const [showError, setShowError] = useState(false);
 
 	useEffect(() => {
 		const storedEmail = localStorage.getItem("pendingResetEmail");
@@ -60,7 +63,7 @@ function ResetPasswordForm() {
 			localStorage.removeItem("pendingResetCode");
 			localStorage.removeItem("verificationFlow");
 
-			navigate({ to: "/passwordSuccess" });
+			setShowSuccess(true);
 		} catch (err) {
 			const message =
 				err &&
@@ -70,6 +73,7 @@ function ResetPasswordForm() {
 					: "No se pudo cambiar la contraseña.";
 
 			setError(message);
+			setShowError(true);
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -154,7 +158,9 @@ function ResetPasswordForm() {
 						disabled={isSubmitting}
 						className="mt-14 w-full cursor-pointer whitespace-nowrap rounded-lg bg-mint-dark px-4 py-3 text-center text-white disabled:cursor-not-allowed disabled:opacity-70"
 					>
-						{isSubmitting ? "Cambiando..." : "Cambiar contraseña"}
+						{isSubmitting
+							? "Cambiando..."
+							: "Cambiar contraseña"}
 					</button>
 
 					<Link
@@ -166,6 +172,58 @@ function ResetPasswordForm() {
 					</Link>
 				</form>
 			</section>
+
+			{showSuccess ? (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
+					<div className="w-full max-w-sm rounded-[40px] bg-white px-8 py-16 text-center">
+						<FaRegCheckCircle className="mx-auto h-20 w-20 text-mint" />
+
+						<h1 className="mt-8 text-2xl font-bold text-mint-dark">
+							¡Éxito!
+						</h1>
+
+						<p className="mt-4 text-text-primary">
+							Tu contraseña ha sido cambiada correctamente.
+						</p>
+
+						<button
+							type="button"
+							onClick={() => navigate({ to: "/login" })}
+							className="mt-8 cursor-pointer font-bold text-mint-dark hover:underline"
+						>
+							Siguiente
+						</button>
+					</div>
+				</div>
+			) : null}
+
+			{showError ? (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
+					<div className="w-full max-w-sm rounded-[40px] bg-white px-8 py-16 text-center">
+						<AiOutlineExclamationCircle className="mx-auto h-20 w-20 text-pink" />
+
+						<h1 className="mt-8 text-2xl font-bold text-pink">
+							Problema inesperado
+						</h1>
+
+						<p className="mt-4 text-text-primary">
+							{error}
+						</p>
+
+						<button
+							type="button"
+							onClick={() => {
+								setShowError(false);
+								setError("");
+							}}
+							className="mt-8 cursor-pointer text-mint"
+							aria-label="Volver a cambiar contraseña"
+						>
+							<BsFillArrowLeftCircleFill className="mx-auto h-10 w-10" />
+						</button>
+					</div>
+				</div>
+			) : null}
 		</main>
 	);
 }

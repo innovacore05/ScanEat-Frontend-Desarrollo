@@ -57,7 +57,7 @@ function LoginForm() {
 
 	return (
 		<main className="min-h-screen bg-white">
-			<div className="h-48 bg-brand-mint" />
+			<div className="h-38 bg-mint" />
 
 			<section className="-mt-10 min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-10">
 				<form
