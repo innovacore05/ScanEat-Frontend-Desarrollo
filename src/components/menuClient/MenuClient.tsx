@@ -83,7 +83,32 @@ function MenuClient() {
   const [hasMore, setHasMore] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
-  const { cartCount, setMesaId } = useCart();
+ 
+
+//nuevo
+const [currentOrderId]=useState<number | null >(()=>{
+  const savedOrderId=localStorage.getItem("currentOrderId");
+
+  if(!savedOrderId)return null;
+  const parsedOrderId=Number(savedOrderId);
+
+  return Number.isInteger(parsedOrderId)&& parsedOrderId>0
+  ? parsedOrderId
+  :null;
+});
+
+const [currentOrderTableId] = useState<string | undefined>(() => {
+  return localStorage.getItem("currentOrderTableId") ?? undefined;
+});
+
+
+ const { cartCount, setMesaId } = useCart();
+
+
+
+
+
+
   const { mesaId } = useSearch({
     from: "/(menuClient)/menuClient",
   });
@@ -111,6 +136,7 @@ function MenuClient() {
     }),
   );
 };
+
 
 
   //cargar los productos
@@ -297,6 +323,21 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
           className="absolute top-6 hidden h-15.5 w-10 object-contain lg:block"
         />
 
+{/* nuevo */}
+{currentOrderId !== null ? (
+
+<Link
+    to="/orderStatus"
+    search={{
+      orderId: currentOrderId,
+      tableId: currentOrderTableId ?? mesaId,
+    }}
+    className="absolute cursor-pointer flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
+  >
+    <LuShoppingBag className="h-7 w-7 text-white" />
+  </Link>
+
+):(
         <Link
           to="/checkOrder"
           search={{ mesaId }}
@@ -309,6 +350,7 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
             </span>
           )}
         </Link>
+)}
       </div>
 
     </main>

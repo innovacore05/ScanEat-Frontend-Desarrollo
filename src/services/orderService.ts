@@ -234,3 +234,29 @@ export const deliverOrder = async (orderId: number) => {
 
   return data;
 };
+
+
+export const getOrderStatus = async (orderId: number) => {
+  const response = await fetch(
+    `${ORDERS_BASE_URL}/${orderId}/status`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw (data as ApiError) ?? {
+      message: "No se pudo consultar el estado del pedido",
+    };
+  }
+
+  return data as {
+    orderId: number;
+    state: OrderStatus;
+  };
+};

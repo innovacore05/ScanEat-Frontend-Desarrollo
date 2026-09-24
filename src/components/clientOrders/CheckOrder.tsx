@@ -5,6 +5,7 @@ import { FiMinus, FiPlus, FiX } from "react-icons/fi";
 import { useState } from "react";
 import { createOrder } from "../../services/orderService";
 
+
 function CheckOrder() {
   const {
     cartItems,
@@ -23,7 +24,8 @@ function CheckOrder() {
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState<number | null>(null);
   const navigate = useNavigate();
-
+console.log("CHECK ORDER CART:", cartItems);
+console.log("CHECK ORDER TABLE:", mesaId);
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
@@ -47,7 +49,17 @@ function CheckOrder() {
     setIsSubmitting(true);
 
     try {
+console.log("ENVIANDO ORDEN:", {
+  tableId,
+  items: cartItems.map((item) => ({
+    productId: item.productId,
+    quantity: item.quantity,
+    selectedOptions: item.selectedOptions ?? {},
+  })),
+});
+
       const createdOrder = await createOrder({
+        
         tableId,
         observation: specialInstructions.trim() || undefined,
         items: cartItems.map((item) => ({
@@ -60,8 +72,17 @@ function CheckOrder() {
       clearCart();
       setSpecialInstructions("");
       setIsConfirmDialogOpen(false);
+      
+      localStorage.setItem(
+        "currentOrderId",
+        String(createdOrder.order.orderId),
+      );
+
+      localStorage.setItem("currentOrderTableId",tableId);
+
       setCreatedOrderId(createdOrder.order.orderId);
       setIsSuccessDialogOpen(true);
+
     } catch (error) {
       const message =
         typeof error === "object" &&
@@ -111,7 +132,7 @@ function CheckOrder() {
               ) : (
                 cartItems.map((item) => (
                   <div
-                    key={item.productId}
+                    key={item.cartItemId}
                     className="flex min-h-32 overflow-hidden rounded-2xl bg-white shadow-sm"
                   >
                     <div className="w-32 shrink-0">
@@ -135,7 +156,7 @@ function CheckOrder() {
                         <button
                           type="button"
                           onClick={() =>
-                            decreaseQuantity(item.productId)
+                            decreaseQuantity(item.cartItemId)
                           }
                           className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border bg-white"
                         >
@@ -149,7 +170,7 @@ function CheckOrder() {
                         <button
                           type="button"
                           onClick={() =>
-                            increaseQuantity(item.productId)
+                            increaseQuantity(item.cartItemId)
                           }
                           className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-mint-dark text-white"
                         >
@@ -161,7 +182,7 @@ function CheckOrder() {
                     <button
                       type="button"
                       onClick={() =>
-                        removeFromCart(item.productId)
+                        removeFromCart(item.cartItemId)
                       }
                       className="mr-4 flex h-8 w-8 shrink-0 self-center cursor-pointer items-center justify-center rounded-full text-gray-500 hover:text-red-600"
                       aria-label={`Eliminar ${item.name}`}
@@ -259,7 +280,7 @@ function CheckOrder() {
                   <div className="flex flex-col gap-4">
                     {cartItems.map((item) => (
                       <div
-                        key={item.productId}
+                        key={item.cartItemId}
                         className="flex min-h-36 overflow-hidden rounded-2xl bg-white shadow-sm"
                       >
                         <div className="w-40 shrink-0">
@@ -283,7 +304,7 @@ function CheckOrder() {
                             <button
                               type="button"
                               onClick={() =>
-                                decreaseQuantity(item.productId)
+                                decreaseQuantity(item.cartItemId)
                               }
                               className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border bg-white"
                             >
@@ -297,7 +318,7 @@ function CheckOrder() {
                             <button
                               type="button"
                               onClick={() =>
-                                increaseQuantity(item.productId)
+                                increaseQuantity(item.cartItemId)
                               }
                               className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-mint-dark text-white"
                             >
@@ -309,7 +330,7 @@ function CheckOrder() {
                         <button
                           type="button"
                           onClick={() =>
-                            removeFromCart(item.productId)
+                           removeFromCart(item.cartItemId)
                           }
                           className="mr-6 flex h-9 w-9 shrink-0 self-center cursor-pointer items-center justify-center rounded-full text-gray-500 hover:text-red-600"
                           aria-label={`Eliminar ${item.name}`}
