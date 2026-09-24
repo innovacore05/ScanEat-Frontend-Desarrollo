@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { BsFillArrowLeftCircleFill } from "react-icons/bs";
+import { FaRegCheckCircle } from "react-icons/fa";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { resendVerificationCode, verifyEmail } from "../../services/authService";
+import {
+	resendVerificationCode,
+	verifyEmail,
+} from "../../services/authService";
 
 function AccountVerificationForm() {
 	const navigate = useNavigate();
@@ -11,6 +16,8 @@ function AccountVerificationForm() {
 	const [successMessage, setSuccessMessage] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isResending, setIsResending] = useState(false);
+	const [showSuccess, setShowSuccess] = useState(false);
+	const [showError, setShowError] = useState(false);
 
 	useEffect(() => {
 		const storedEmail = localStorage.getItem("pendingVerificationEmail");
@@ -94,7 +101,7 @@ function AccountVerificationForm() {
 		try {
 			await verifyEmail(email, verificationCode);
 			localStorage.removeItem("pendingVerificationEmail");
-			navigate({ to: "/accountSuccess" });
+			setShowSuccess(true);
 		} catch (err) {
 			const message =
 				err &&
@@ -104,13 +111,11 @@ function AccountVerificationForm() {
 					: "No se pudo verificar el código.";
 
 			setError(message);
-			navigate({ to: "/unexpectedIssueV" });
+			setShowError(true);
 		} finally {
 			setIsSubmitting(false);
 		}
 	}
-
-	
 
 	async function handleResendCode() {
 		if (!email) {
@@ -142,7 +147,9 @@ function AccountVerificationForm() {
 
 	return (
 		<main className="min-h-screen bg-white">
-			<section className="mt-38 min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-10">
+			<div className="h-38 bg-mint" />
+
+			<section className="-mt-10 min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-10">
 				<form
 					onSubmit={handleSubmit}
 					className="mx-auto flex w-full max-w-sm flex-col"
@@ -183,7 +190,9 @@ function AccountVerificationForm() {
 					</div>
 
 					{error ? (
-						<p className="mt-4 text-center text-sm text-red-600">{error}</p>
+						<p className="mt-4 text-center text-sm text-red-600">
+							{error}
+						</p>
 					) : null}
 
 					{successMessage ? (
@@ -206,7 +215,9 @@ function AccountVerificationForm() {
 						disabled={isResending}
 						className="mt-4 text-sm text-brand-mint-dark disabled:cursor-not-allowed disabled:opacity-70"
 					>
-						{isResending ? "Reenviando..." : "Reenviar código"} 
+						{isResending
+							? "Reenviando..."
+							: "Reenviar código"}
 					</button>
 
 					<Link
@@ -218,6 +229,60 @@ function AccountVerificationForm() {
 					</Link>
 				</form>
 			</section>
+
+			{showSuccess ? (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
+					<div className="w-full max-w-sm rounded-[40px] bg-white px-8 py-16 text-center">
+						<FaRegCheckCircle className="mx-auto h-20 w-20 text-mint" />
+
+						<h1 className="mt-8 text-2xl font-bold text-mint-dark">
+							¡Éxito!
+						</h1>
+
+						<p className="mt-4 text-text-primary">
+							Tu cuenta ha sido verificada correctamente.
+						</p>
+
+						<button
+							type="button"
+							onClick={() => navigate({ to: "/login" })}
+							className="mt-8 cursor-pointer font-bold text-mint-dark hover:underline"
+						>
+							Siguiente
+						</button>
+					</div>
+				</div>
+			) : null}
+
+			{showError ? (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
+        <div className="w-full max-w-sm rounded-[40px] bg-white px-8 py-16 text-center">
+            <AiOutlineExclamationCircle className="mx-auto h-20 w-20 text-pink" />
+
+            <h1 className="mt-8 text-2xl font-bold text-pink">
+                Error
+            </h1>
+
+            <p className="mt-4 text-text-primary">
+                {error}
+            </p>
+
+            <button
+                type="button"
+                onClick={() => {
+                    setShowError(false);
+                    setError("");
+                    setCode(["", "", "", "", "", ""]);
+                }}
+                className="mt-8 cursor-pointer text-mint"
+                aria-label="Volver a verificar cuenta"
+            >
+                <BsFillArrowLeftCircleFill className="mx-auto h-10 w-10" />
+            </button>
+        </div>
+    </div>
+	) : null}
+			
 		</main>
 	);
 }

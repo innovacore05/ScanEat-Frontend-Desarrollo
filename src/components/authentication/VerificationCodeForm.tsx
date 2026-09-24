@@ -184,7 +184,9 @@ function VerificationCodeForm() {
 
   return (
     <main className="min-h-screen bg-white">
-      <section className="mt-38 min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-10">
+      <div className="h-38 bg-mint" />
+
+      <section className="-mt-10 min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-10">
         <form
           onSubmit={handleSubmit}
           className="mx-auto flex w-full max-w-sm flex-col"

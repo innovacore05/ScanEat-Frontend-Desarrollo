@@ -15,6 +15,7 @@ function RegisterForm() {
 	const [roleId, setRoleId] = useState<number | "">("");
 	const [authorizationCode, setAuthorizationCode] = useState("");
 	const [error, setError] = useState("");
+	const [businessCode, setBusinessCode] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
@@ -26,8 +27,9 @@ function RegisterForm() {
 			!lastName.trim() ||
 			!email.trim() ||
 			!password ||
-			!roleId ||
-			!authorizationCode.trim()
+			!roleId /*||
+			!authorizationCode.trim() ||
+			((roleId === 2 || roleId === 3) && !businessCode.trim())*/
 		) {
 			setError(
 				"Completa todos los campos requeridos, incluido el tipo de empleado.",
@@ -64,6 +66,7 @@ if (password !== confirmPassword) {
 				password,
 				authorizationCode.trim(),
 				roleId,
+				//businessCode.trim(),
             );
 
             localStorage.setItem("pendingVerificationEmail", email.trim().toLowerCase());
@@ -84,7 +87,8 @@ if (password !== confirmPassword) {
 
 	return (
 		<main className="min-h-screen bg-white">
-			<section className=" min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-10">
+			<div className="h-38 bg-mint" />
+			<section className="-mt-10 min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-10">
 				<form
 	onSubmit={handleSubmit}
 	className="mx-auto flex w-full max-w-sm flex-col gap-5"
@@ -224,6 +228,19 @@ if (password !== confirmPassword) {
 		}
 		className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
 	/>
+
+					{(roleId === 2 || roleId === 3) && (
+						<input
+							id="businessCode"
+							type="text"
+							placeholder="Código del negocio"
+							value={businessCode}
+							onChange={(event) =>
+								setBusinessCode(event.target.value)
+							}
+							className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
+						/>
+					)}
 
 	{error ? (
 		<p className="text-sm text-red-600">

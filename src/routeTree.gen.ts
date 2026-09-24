@@ -11,15 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MenuRouteImport } from './routes/menu'
-import { Route as authenticationAccountSuccessRouteImport } from './routes/(authentication)/accountSuccess'
 import { Route as authenticationAccountVerificationRouteImport } from './routes/(authentication)/accountVerification'
 import { Route as authenticationForgotPasswordRouteImport } from './routes/(authentication)/forgotPassword'
 import { Route as authenticationLoginRouteImport } from './routes/(authentication)/login'
-import { Route as authenticationPasswordSuccessRouteImport } from './routes/(authentication)/passwordSuccess'
 import { Route as authenticationRegisterRouteImport } from './routes/(authentication)/register'
+import { Route as authenticationRegisterBusinessRouteImport } from './routes/(authentication)/registerBusiness'
 import { Route as authenticationResetPasswordRouteImport } from './routes/(authentication)/resetPassword'
-import { Route as authenticationUnexpectedIssueRouteImport } from './routes/(authentication)/unexpectedIssue'
-import { Route as authenticationUnexpectedIssueVRouteImport } from './routes/(authentication)/unexpectedIssueV'
 import { Route as authenticationVerificationCodeRouteImport } from './routes/(authentication)/verificationCode'
 import { Route as clientOrdersCheckOrderRouteImport } from './routes/(clientOrders)/checkOrder'
 import { Route as clientOrdersOrderStatusRouteImport } from './routes/(clientOrders)/orderStatus'
@@ -56,12 +53,6 @@ const MenuRoute = MenuRouteImport.update({
   path: '/menu',
   getParentRoute: () => rootRouteImport,
 } as any)
-const authenticationAccountSuccessRoute =
-  authenticationAccountSuccessRouteImport.update({
-    id: '/(authentication)/accountSuccess',
-    path: '/accountSuccess',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const authenticationAccountVerificationRoute =
   authenticationAccountVerificationRouteImport.update({
     id: '/(authentication)/accountVerification',
@@ -79,33 +70,21 @@ const authenticationLoginRoute = authenticationLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const authenticationPasswordSuccessRoute =
-  authenticationPasswordSuccessRouteImport.update({
-    id: '/(authentication)/passwordSuccess',
-    path: '/passwordSuccess',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const authenticationRegisterRoute = authenticationRegisterRouteImport.update({
   id: '/(authentication)/register',
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authenticationRegisterBusinessRoute =
+  authenticationRegisterBusinessRouteImport.update({
+    id: '/(authentication)/registerBusiness',
+    path: '/registerBusiness',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const authenticationResetPasswordRoute =
   authenticationResetPasswordRouteImport.update({
     id: '/(authentication)/resetPassword',
     path: '/resetPassword',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const authenticationUnexpectedIssueRoute =
-  authenticationUnexpectedIssueRouteImport.update({
-    id: '/(authentication)/unexpectedIssue',
-    path: '/unexpectedIssue',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const authenticationUnexpectedIssueVRoute =
-  authenticationUnexpectedIssueVRouteImport.update({
-    id: '/(authentication)/unexpectedIssueV',
-    path: '/unexpectedIssueV',
     getParentRoute: () => rootRouteImport,
   } as any)
 const authenticationVerificationCodeRoute =
@@ -244,15 +223,12 @@ const waiterOrdersWaiterOrdersRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/menu': typeof MenuRoute
-  '/accountSuccess': typeof authenticationAccountSuccessRoute
   '/accountVerification': typeof authenticationAccountVerificationRoute
   '/forgotPassword': typeof authenticationForgotPasswordRoute
   '/login': typeof authenticationLoginRoute
-  '/passwordSuccess': typeof authenticationPasswordSuccessRoute
   '/register': typeof authenticationRegisterRoute
+  '/registerBusiness': typeof authenticationRegisterBusinessRoute
   '/resetPassword': typeof authenticationResetPasswordRoute
-  '/unexpectedIssue': typeof authenticationUnexpectedIssueRoute
-  '/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
   '/orderStatus': typeof clientOrdersOrderStatusRoute
@@ -282,15 +258,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/menu': typeof MenuRoute
-  '/accountSuccess': typeof authenticationAccountSuccessRoute
   '/accountVerification': typeof authenticationAccountVerificationRoute
   '/forgotPassword': typeof authenticationForgotPasswordRoute
   '/login': typeof authenticationLoginRoute
-  '/passwordSuccess': typeof authenticationPasswordSuccessRoute
   '/register': typeof authenticationRegisterRoute
+  '/registerBusiness': typeof authenticationRegisterBusinessRoute
   '/resetPassword': typeof authenticationResetPasswordRoute
-  '/unexpectedIssue': typeof authenticationUnexpectedIssueRoute
-  '/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
   '/orderStatus': typeof clientOrdersOrderStatusRoute
@@ -321,15 +294,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/menu': typeof MenuRoute
-  '/(authentication)/accountSuccess': typeof authenticationAccountSuccessRoute
   '/(authentication)/accountVerification': typeof authenticationAccountVerificationRoute
   '/(authentication)/forgotPassword': typeof authenticationForgotPasswordRoute
   '/(authentication)/login': typeof authenticationLoginRoute
-  '/(authentication)/passwordSuccess': typeof authenticationPasswordSuccessRoute
   '/(authentication)/register': typeof authenticationRegisterRoute
+  '/(authentication)/registerBusiness': typeof authenticationRegisterBusinessRoute
   '/(authentication)/resetPassword': typeof authenticationResetPasswordRoute
-  '/(authentication)/unexpectedIssue': typeof authenticationUnexpectedIssueRoute
-  '/(authentication)/unexpectedIssueV': typeof authenticationUnexpectedIssueVRoute
   '/(authentication)/verificationCode': typeof authenticationVerificationCodeRoute
   '/(clientOrders)/checkOrder': typeof clientOrdersCheckOrderRoute
   '/(clientOrders)/orderStatus': typeof clientOrdersOrderStatusRoute
@@ -361,15 +331,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/menu'
-    | '/accountSuccess'
     | '/accountVerification'
     | '/forgotPassword'
     | '/login'
-    | '/passwordSuccess'
     | '/register'
+    | '/registerBusiness'
     | '/resetPassword'
-    | '/unexpectedIssue'
-    | '/unexpectedIssueV'
     | '/verificationCode'
     | '/checkOrder'
     | '/orderStatus'
@@ -399,15 +366,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/menu'
-    | '/accountSuccess'
     | '/accountVerification'
     | '/forgotPassword'
     | '/login'
-    | '/passwordSuccess'
     | '/register'
+    | '/registerBusiness'
     | '/resetPassword'
-    | '/unexpectedIssue'
-    | '/unexpectedIssueV'
     | '/verificationCode'
     | '/checkOrder'
     | '/orderStatus'
@@ -437,15 +401,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/menu'
-    | '/(authentication)/accountSuccess'
     | '/(authentication)/accountVerification'
     | '/(authentication)/forgotPassword'
     | '/(authentication)/login'
-    | '/(authentication)/passwordSuccess'
     | '/(authentication)/register'
+    | '/(authentication)/registerBusiness'
     | '/(authentication)/resetPassword'
-    | '/(authentication)/unexpectedIssue'
-    | '/(authentication)/unexpectedIssueV'
     | '/(authentication)/verificationCode'
     | '/(clientOrders)/checkOrder'
     | '/(clientOrders)/orderStatus'
@@ -476,15 +437,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MenuRoute: typeof MenuRoute
-  authenticationAccountSuccessRoute: typeof authenticationAccountSuccessRoute
   authenticationAccountVerificationRoute: typeof authenticationAccountVerificationRoute
   authenticationForgotPasswordRoute: typeof authenticationForgotPasswordRoute
   authenticationLoginRoute: typeof authenticationLoginRoute
-  authenticationPasswordSuccessRoute: typeof authenticationPasswordSuccessRoute
   authenticationRegisterRoute: typeof authenticationRegisterRoute
+  authenticationRegisterBusinessRoute: typeof authenticationRegisterBusinessRoute
   authenticationResetPasswordRoute: typeof authenticationResetPasswordRoute
-  authenticationUnexpectedIssueRoute: typeof authenticationUnexpectedIssueRoute
-  authenticationUnexpectedIssueVRoute: typeof authenticationUnexpectedIssueVRoute
   authenticationVerificationCodeRoute: typeof authenticationVerificationCodeRoute
   clientOrdersCheckOrderRoute: typeof clientOrdersCheckOrderRoute
   clientOrdersOrderStatusRoute: typeof clientOrdersOrderStatusRoute
@@ -528,13 +486,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MenuRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(authentication)/accountSuccess': {
-      id: '/(authentication)/accountSuccess'
-      path: '/accountSuccess'
-      fullPath: '/accountSuccess'
-      preLoaderRoute: typeof authenticationAccountSuccessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/(authentication)/accountVerification': {
       id: '/(authentication)/accountVerification'
       path: '/accountVerification'
@@ -556,13 +507,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticationLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(authentication)/passwordSuccess': {
-      id: '/(authentication)/passwordSuccess'
-      path: '/passwordSuccess'
-      fullPath: '/passwordSuccess'
-      preLoaderRoute: typeof authenticationPasswordSuccessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/(authentication)/register': {
       id: '/(authentication)/register'
       path: '/register'
@@ -570,25 +514,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticationRegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(authentication)/registerBusiness': {
+      id: '/(authentication)/registerBusiness'
+      path: '/registerBusiness'
+      fullPath: '/registerBusiness'
+      preLoaderRoute: typeof authenticationRegisterBusinessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(authentication)/resetPassword': {
       id: '/(authentication)/resetPassword'
       path: '/resetPassword'
       fullPath: '/resetPassword'
       preLoaderRoute: typeof authenticationResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(authentication)/unexpectedIssue': {
-      id: '/(authentication)/unexpectedIssue'
-      path: '/unexpectedIssue'
-      fullPath: '/unexpectedIssue'
-      preLoaderRoute: typeof authenticationUnexpectedIssueRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(authentication)/unexpectedIssueV': {
-      id: '/(authentication)/unexpectedIssueV'
-      path: '/unexpectedIssueV'
-      fullPath: '/unexpectedIssueV'
-      preLoaderRoute: typeof authenticationUnexpectedIssueVRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(authentication)/verificationCode': {
@@ -772,16 +709,13 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MenuRoute: MenuRoute,
-  authenticationAccountSuccessRoute: authenticationAccountSuccessRoute,
   authenticationAccountVerificationRoute:
     authenticationAccountVerificationRoute,
   authenticationForgotPasswordRoute: authenticationForgotPasswordRoute,
   authenticationLoginRoute: authenticationLoginRoute,
-  authenticationPasswordSuccessRoute: authenticationPasswordSuccessRoute,
   authenticationRegisterRoute: authenticationRegisterRoute,
+  authenticationRegisterBusinessRoute: authenticationRegisterBusinessRoute,
   authenticationResetPasswordRoute: authenticationResetPasswordRoute,
-  authenticationUnexpectedIssueRoute: authenticationUnexpectedIssueRoute,
-  authenticationUnexpectedIssueVRoute: authenticationUnexpectedIssueVRoute,
   authenticationVerificationCodeRoute: authenticationVerificationCodeRoute,
   clientOrdersCheckOrderRoute: clientOrdersCheckOrderRoute,
   clientOrdersOrderStatusRoute: clientOrdersOrderStatusRoute,
