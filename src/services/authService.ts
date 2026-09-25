@@ -1,11 +1,12 @@
 //Este archivo contiene funciones para interactuar con la API de autenticación
-type ApiError = {
-    message?: string;
-    [key: string]: unknown;
-};
+
+import { cookieSessionClient } from "./cookieSessionClient";
+
 
 //Es la url base de la API de autenticación
-const AUTH_BASE_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
+// const AUTH_BASE_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
+//ruta relativa:
+const AUTH_BASE_URL="/api/auth";
 
 export function getStoredFirstName(): string {
     const storedUser = localStorage.getItem("authUser");
@@ -115,7 +116,17 @@ export function getStoredRoleId(): number | null {
     return null;
 }
 
-export const logout = () => {
+export const logout = async () => {
+
+try {
+    await cookieSessionClient.request(`${AUTH_BASE_URL}/logout`, {
+        method:"POST",
+        fallBackMessage: "No se pudo cerrar la sesión",
+});
+}catch (error){
+    console.error("No se pudo cerrar la sesión en el servidor:", error);
+    }
+    
     localStorage.removeItem("authToken");
     localStorage.removeItem("authUser");
     localStorage.removeItem("auth_token");
@@ -141,189 +152,283 @@ export const register = async (
     business_code: string,
 ) => {
 
-    const response = await fetch(`${AUTH_BASE_URL}/register`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            first_name,
+    // const response = await fetch(`${AUTH_BASE_URL}/register`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //         first_name,
+    //         last_name,
+    //         email,
+    //         password,
+    //         code,
+    //         role_id,
+    //         business_code,
+    //     }),
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data as {
+    //     message: string;
+    //     email?: string;
+    // };
+
+return cookieSessionClient.request<{
+        message:string;
+        email?:string;
+    }>(`${AUTH_BASE_URL}/register`, {
+    method:"POST",
+    body:JSON.stringify({
+        first_name,
             last_name,
             email,
             password,
             code,
             role_id,
-            business_code,
-        }),
+        business_code,
+    }),
+     fallBackMessage: "No se pudo completar el registro.",
     });
 
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data as {
-        message: string;
-        email?: string;
-    };
 };
 
 //Función para verificar el correo electrónico del usuario
 export const verifyEmail = async (email: string, code: string) => {
-    const response = await fetch(`${AUTH_BASE_URL}/verify-email`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, code }),
+    // const response = await fetch(`${AUTH_BASE_URL}/verify-email`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ email, code }),
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data as {
+    //     message: string;
+    //     token: string;
+    //     user: {
+    //         userId: number;
+    //         email: string;
+    //         roleId: number;
+    //     };
+    // };
+return cookieSessionClient.request<{
+         message:string;
+        user:{
+            userId:number;
+            email:string;
+            roleId:number;
+        };
+    }>(`${AUTH_BASE_URL}/verify-email`, {
+    method:"POST",
+    body:JSON.stringify({email,code}),
+    fallBackMessage: "No se pudo verificar el correo",
     });
 
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data as {
-        message: string;
-        token: string;
-        user: {
-            userId: number;
-            email: string;
-            roleId: number;
-        };
-    };
 };
 
 //Función para reenviar el código de verificación al correo electrónico del usuario
 export const resendVerificationCode = async (email: string) => {
-    const response = await fetch(`${AUTH_BASE_URL}/resend-verification-code`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
+    // const response = await fetch(`${AUTH_BASE_URL}/resend-verification-code`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ email }),
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data as { message: string; verificationCode?: string };
+
+return cookieSessionClient.request<{
+         message:string;
+        verificationCode?:string;
+    }>(`${AUTH_BASE_URL}/resend-verification-code`, {
+    method:"POST",
+    body: JSON.stringify({email}),
+    fallBackMessage: "No se pudo reenviar el código de verificación",
     });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data as { message: string; verificationCode?: string };
 };
+
+
 
 // función para iniciar sesión
 export const login = async (email: string, password: string) => {
-    const response = await fetch(`${AUTH_BASE_URL}/login`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-    });
+    // const response = await fetch(`${AUTH_BASE_URL}/login`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ email, password }),
+    // });
 
-    const data = await response.json().catch(() => ({}));
+    // const data = await response.json().catch(() => ({}));
 
-    if (!response.ok) {
-        throw data as ApiError;
-    }
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
 
-    return data as {
-        message: string;
+    // return data as {
+    //     message: string;
+    //     requiresTwoFactor?: boolean;
+    //     token?: string;
+    //     user?: Record<string, unknown>;
+    // };
+
+     return cookieSessionClient.request<{
+            message: string;
         requiresTwoFactor?: boolean;
         token?: string;
         user?: Record<string, unknown>;
-    };
+    }>(`${AUTH_BASE_URL}/login`, {
+        method:"POST",
+        body:JSON.stringify({email,password}),
+        fallBackMessage: "No se pudo iniciar sesión",
+});
 };
+
+
 
 //Función para verificar el código de inicio de sesión
 export const verifyLoginCode = async (email: string, code: string) => {
-    const response = await fetch(`${AUTH_BASE_URL}/verify-login-code`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, code }),
+    // const response = await fetch(`${AUTH_BASE_URL}/verify-login-code`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ email, code }),
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data as {
+    //     message: string;
+    //     token?: string;
+    //     user?: Record<string, unknown>;
+    // };
+
+ return cookieSessionClient.request<{
+        message:string;
+        token?:string;
+        user?:Record<string,unknown>;
+         }>(`${AUTH_BASE_URL}/verify-login-code`, {
+            method:"POST",
+            body:JSON.stringify({email, code}),
+            fallBackMessage: "No se pudo verificar el código de inicio de sesión",
     });
 
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data as {
-        message: string;
-        token?: string;
-        user?: Record<string, unknown>;
-    };
 };
 
 //Función para reenviar el código el login code al correo electrónico del usuario
 export const resendLoginCode = async (email: string) => {
-    const response = await fetch(`${AUTH_BASE_URL}/resend-login-code`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
+    // const response = await fetch(`${AUTH_BASE_URL}/resend-login-code`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ email }),
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data as { message: string; verificationCode?: string };
+
+      return cookieSessionClient.request<{
+        message:string;
+        verificationCode?:string;
+
+    }>(`${AUTH_BASE_URL}/resend-login-code`, {
+    method:"POST",
+            body:JSON.stringify({email}),
+            fallBackMessage: "No se pudo reenviar el código de inicio de sesión",
     });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data as { message: string; verificationCode?: string };
 };
 
 //Función para iniciar recuperación de contraseña
 export const forgotPassword = async (email: string) => {
-    const response = await fetch(`${AUTH_BASE_URL}/forgot-password`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-    });
+    // const response = await fetch(`${AUTH_BASE_URL}/forgot-password`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ email }),
+    // });
 
-    const data = await response.json().catch(() => ({}));
+    // const data = await response.json().catch(() => ({}));
 
-    if (!response.ok) {
-        throw data as ApiError;
-    }
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
 
-    return data as { message: string };
+    // return data as { message: string };
+
+ return cookieSessionClient.request<{
+        message:string
+        }>( `${AUTH_BASE_URL}/forgot-password`,{
+        method:"POST",
+            body:JSON.stringify({email}),
+            fallBackMessage: "No se pudo iniciar la recuperación de contraseña",
+        });
+
 };
 
 export const verifyResetCode = async (
     email: string,
     code: string
 ) => {
-    const response = await fetch(`${AUTH_BASE_URL}/verify-reset-code`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            email,
-            code,
-        }),
+    // const response = await fetch(`${AUTH_BASE_URL}/verify-reset-code`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //         email,
+    //         code,
+    //     }),
+    // });
+
+    // const data = await response.json();
+
+    // if (!response.ok) {
+    //     throw new Error(
+    //         data.message || "No se pudo verificar el código"
+    //     );
+    // }
+
+    // return data;
+
+ return cookieSessionClient.request<{
+        message:string
+    }>(`${AUTH_BASE_URL}/verify-reset-code`, {
+        method:"POST",
+            body:JSON.stringify({email,code}),
+            fallBackMessage: "No se pudo verificar el código de recuperación",
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error(
-            data.message || "No se pudo verificar el código"
-        );
-    }
-
-    return data;
 };
 
 //Función para resetear la contraseña del usuario
@@ -332,40 +437,61 @@ export const resetPassword = async (
     code: string,
     newPassword: string,
 ) => {
-    const response = await fetch(`${AUTH_BASE_URL}/reset-password`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, code, newPassword }),
-    });
+    // const response = await fetch(`${AUTH_BASE_URL}/reset-password`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ email, code, newPassword }),
+    // });
 
-    const data = await response.json().catch(() => ({}));
+    // const data = await response.json().catch(() => ({}));
 
-    if (!response.ok) {
-        throw data as ApiError;
-    }
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
 
-    return data as { message: string };
+    // return data as { message: string };
+
+return cookieSessionClient.request<{
+        message:string
+    }>( `${AUTH_BASE_URL}/reset-password`,
+        {
+            method:"POST",
+            body:JSON.stringify({email,code,newPassword}), 
+            fallBackMessage: "No se pudo restablecer la contraseña",
+        });
+
 };
 
 //Función para reenviar el reset code al correo electrónico del usuario
 export const resendResetCode = async (email: string) => {
-    const response = await fetch(`${AUTH_BASE_URL}/resend-reset-code`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-    });
+    // const response = await fetch(`${AUTH_BASE_URL}/resend-reset-code`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ email }),
+    // });
 
-    const data = await response.json().catch(() => ({}));
+    // const data = await response.json().catch(() => ({}));
 
-    if (!response.ok) {
-        throw data as ApiError;
-    }
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
 
-    return data as { message: string; verificationCode?: string };
+    // return data as { message: string; verificationCode?: string };
+
+return cookieSessionClient.request<{
+    message:string;
+    verificationCode:string;
+}>(`${AUTH_BASE_URL}/resend-reset-code`, {
+method:"POST",
+body:JSON.stringify({email}),
+fallBackMessage: "No se pudo reenviar el código de recuperación",
+});
+
+
 };
 
 
@@ -376,22 +502,34 @@ export const editProfile = async (changes: {
     email?: string,
 }) => {
 
-    const token = localStorage.getItem("authToken");
-    const response = await fetch(`${AUTH_BASE_URL}/edit-profile`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(changes),
-    });
-    const data = await response.json().catch(() => ({}));
+    // const token = localStorage.getItem("authToken");
+    // const response = await fetch(`${AUTH_BASE_URL}/edit-profile`, {
+    //     method: "PATCH",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    //     },
+    //     body: JSON.stringify(changes),
+    // });
+    // const data = await response.json().catch(() => ({}));
 
-    if (!response.ok) {
-        throw data as ApiError;
-    }
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
 
-    return data as {
+    // return data as {
+    //     message: string;
+    //     user?: {
+    //         userId: number;
+    //         firstName: string;
+    //         lastName: string;
+    //         email: string;
+    //         roleId: number;
+    //     };
+    //     requiresEmailVerification?: boolean;
+    // };
+
+return cookieSessionClient.request<{
         message: string;
         user?: {
             userId: number;
@@ -401,93 +539,138 @@ export const editProfile = async (changes: {
             roleId: number;
         };
         requiresEmailVerification?: boolean;
+    }>(`${AUTH_BASE_URL}/edit-profile`, {
+        method: "PATCH",
+        body: JSON.stringify(changes),
+        fallBackMessage: "No se pudo actualizar el perfil",
+    });
     };
-};
+
+
 
 export const changePassword = async (
     currentPassword: string,
     newPassword: string,
     confirmPassword: string,
 ) => {
-    const token = localStorage.getItem("authToken");
+    // const token = localStorage.getItem("authToken");
 
-    const response = await fetch(`${AUTH_BASE_URL}/change-password`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-            currentPassword,
-            newPassword,
-            confirmPassword,
-        }),
-    });
+    // const response = await fetch(`${AUTH_BASE_URL}/change-password`, {
+    //     method: "PATCH",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    //     },
+    //     body: JSON.stringify({
+    //         currentPassword,
+    //         newPassword,
+    //         confirmPassword,
+    //     }),
+    // });
 
-    const data = await response.json().catch(() => ({}));
+    // const data = await response.json().catch(() => ({}));
 
-    if (!response.ok) {
-        throw data as { message?: string };
-    }
+    // if (!response.ok) {
+    //     throw data as { message?: string };
+    // }
 
-    return data as { message: string };
+    // return data as { message: string };
+    return cookieSessionClient.request<{message:string}>(
+        `${AUTH_BASE_URL}/change-password`, {
+ method:"PATCH",
+ body:JSON.stringify({
+    currentPassword,
+       newPassword,
+      confirmPassword,
+ }),
+ fallBackMessage: "No se pudo cambiar la contraseña",
+});
 };
 
 
 //Función para verificar el nuevo correo tras un cambio de perfil
 export const verifyProfileEmail = async (code: string) => {
-    const token = localStorage.getItem("authToken");
-    const response = await fetch(`${AUTH_BASE_URL}/verify-profile-email`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ code }),
+    // const token = localStorage.getItem("authToken");
+    // const response = await fetch(`${AUTH_BASE_URL}/verify-profile-email`, {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    //     },
+    //     body: JSON.stringify({ code }),
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data as { message: string };
+
+    return cookieSessionClient.request<{message: string}>(`${AUTH_BASE_URL}/verify-profile-email`, {
+      method:"POST",
+      body: JSON.stringify({code}),
+      fallBackMessage: "No se pudo verificar el nuevo correo",
     });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data as { message: string };
 };
 
 //funcion para obtener la informacion del usuario y mostrarla en fornt
 export const getProfile = async () => {
-    const token = localStorage.getItem("authToken");
+    // const token = localStorage.getItem("authToken");
 
-    const response = await fetch(`${AUTH_BASE_URL}/profile`, {
-        method: "GET",
-        headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-    });
+    // const response = await fetch(`${AUTH_BASE_URL}/profile`, {
+    //     method: "GET",
+    //     headers: {
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    //     },
+    // });
 
-    const data = await response.json().catch(() => ({}));
+    // const data = await response.json().catch(() => ({}));
 
-    if (!response.ok) {
-        throw data as ApiError;
-    }
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
 
-    localStorage.setItem("authUser", JSON.stringify(data.user));
+    // localStorage.setItem("authUser", JSON.stringify(data.user));
 
-    return data as {
-        user: {
-            userId: number;
-            firstName: string;
-            lastName: string;
-            email: string;
-            roleId: number;
-        };
-        business: {
+    // return data as {
+    //     user: {
+    //         userId: number;
+    //         firstName: string;
+    //         lastName: string;
+    //         email: string;
+    //         roleId: number;
+    //     };
+    //     business: {
+    //         businessId: number;
+    //         name: string;
+    //         email: string;
+    //         number: string;
+    //         code: string;
+    //     } | null;
+    // };
+
+const data=await cookieSessionClient.request<{
+ user: {
+      userId: number;
+      firstName: string;
+      lastName: string;
+      email: string;
+      roleId: number;
+    };
+    business: {
             businessId: number;
             name: string;
             email: string;
             number: string;
             code: string;
         } | null;
-    };
+}>(`${AUTH_BASE_URL}/profile`, {
+    method:"GET",
+    fallBackMessage: "No se pudo obtener el perfil",
+});
+localStorage.setItem("authUser", JSON.stringify(data.user));
+return data;
+
 };
