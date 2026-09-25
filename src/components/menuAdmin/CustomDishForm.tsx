@@ -5,6 +5,7 @@ import {
   createCustomDish,
   getProductById,
   updateCustomDish,
+  getCategories,
 } from "../../services/productService";
 import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus } from "react-icons/go";
@@ -17,7 +18,7 @@ interface CustomDishFormProps {
 }
 
 function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
-	const navigate = useNavigate();
+  const navigate = useNavigate();
   const isEditMode = mode === "edit" && Boolean(productId);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -25,6 +26,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState<{ categoryId: number; name: string }[]>([]);
   const [discount, setDiscount] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -47,6 +49,19 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
     };
 
     loadProfile();
+  }, []);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      }
+    };
+
+    loadCategories();
   }, []);
 
   useEffect(() => {
@@ -144,12 +159,12 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
       setError("La imagen debe ser JPG, JPEG, PNG o WEBP");
       return;
     }
-    
+
     // if (image && image.size > 1 * 1024 * 1024) {
     //   setError("La imagen no debe superar 1 MB");
     //   return;
     // }
-    
+
 
     try {
       setIsSubmitting(true);
@@ -205,28 +220,28 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
 
   return (
     <DashboardLayout>
-		{successMessage && (
-			<div
-				className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-				role="dialog"
-				aria-modal="true"
-				aria-labelledby="success-dialog-title"
-			>
-				<div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl">
-					<h2 id="success-dialog-title" className="text-lg font-bold text-mint-darker">
-						¡Listo!
-					</h2>
-					<p className="mt-2 text-sm text-text-primary">{successMessage}</p>
-					<button
-						type="button"
-						onClick={() => navigate({ to: "/menuManagment" })}
-						className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
-					>
-						Aceptar
-					</button>
-				</div>
-			</div>
-		)}
+      {successMessage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="success-dialog-title"
+        >
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl">
+            <h2 id="success-dialog-title" className="text-lg font-bold text-mint-darker">
+              ¡Listo!
+            </h2>
+            <p className="mt-2 text-sm text-text-primary">{successMessage}</p>
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/menuManagment" })}
+              className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
+      )}
       <main className="min-h-screen bg-brand-white px-8 py-8">
         {/* Celular */}
         <section className="lg:hidden">
@@ -312,11 +327,12 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                 className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-3 py-1.5"
               >
                 <option value="">Categoría</option>
-                <option value="1">Postres</option>
-                <option value="2">Bebidas</option>
-                <option value="3">Café</option>
-                <option value="4">Salados</option>
-                <option value="5">Almuerzos</option>
+
+                {categories.map((cat) => (
+                  <option key={cat.categoryId} value={cat.categoryId}>
+                    {cat.name}
+                  </option>
+                ))}
               </select>
 
               {/* Input Discount*/}
@@ -335,11 +351,11 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
 
               {/* grupos de opciones */}
               <div className="mt-5">
-                 <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between">
                   <h3 className="font-bold text-mint-darker text-lg">
                     Grupos de opciones
                   </h3>
-                 
+
                   <button
                     type="button"
                     onClick={() => {
@@ -388,7 +404,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                     {group.name.trim() !== "" && (
                       <div className="mt-2">
                         <div className="flex justify-end">
-                          
+
                         </div>
 
                         {group.options.map((option, index) => (
@@ -406,11 +422,11 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                                   prev.map((g) =>
                                     g.id === group.id
                                       ? {
-                                          ...g,
-                                          options: g.options.map((o, i) =>
-                                            i === index ? newValue : o,
-                                          ),
-                                        }
+                                        ...g,
+                                        options: g.options.map((o, i) =>
+                                          i === index ? newValue : o,
+                                        ),
+                                      }
                                       : g,
                                   ),
                                 );
@@ -424,11 +440,11 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                                   prev.map((g) =>
                                     g.id === group.id
                                       ? {
-                                          ...g,
-                                          options: g.options.filter(
-                                            (_, i) => i !== index,
-                                          ),
-                                        }
+                                        ...g,
+                                        options: g.options.filter(
+                                          (_, i) => i !== index,
+                                        ),
+                                      }
                                       : g,
                                   ),
                                 );
@@ -441,23 +457,23 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                           </div>
                         ))}
                         <button
-                            type="button"
-                            onClick={() => {
-                              setOptionGroups((prev) =>
-                                prev.map((g) =>
-                                  g.id === group.id
-                                    ? { ...g, options: [...g.options, ""] }
-                                    : g,
-                                ),
-                              );
-                            }}
-                            className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-4   text-mint-darker  hover:border-mint-dark my-5 mb-10"
-                          >
-                            Agregar opcion +
-                          </button>
+                          type="button"
+                          onClick={() => {
+                            setOptionGroups((prev) =>
+                              prev.map((g) =>
+                                g.id === group.id
+                                  ? { ...g, options: [...g.options, ""] }
+                                  : g,
+                              ),
+                            );
+                          }}
+                          className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-4   text-mint-darker  hover:border-mint-dark my-5 mb-10"
+                        >
+                          Agregar opcion +
+                        </button>
                       </div>
 
-                      
+
                     )}
                   </div>
                 ))}
@@ -589,11 +605,12 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                 className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               >
                 <option value="">Categoría</option>
-                <option value="1">Postres</option>
-                <option value="2">Bebidas</option>
-                <option value="3">Café</option>
-                <option value="4">Salados</option>
-                <option value="5">Almuerzos</option>
+
+                {categories.map((cat) => (
+                  <option key={cat.categoryId} value={cat.categoryId}>
+                    {cat.name}
+                  </option>
+                ))}
               </select>
 
               <input
@@ -616,8 +633,8 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                   <div className="flex items-center justify-between">
                     <h3 className="font-bold text-mint-darker text-lg">
                       Grupos de opciones
-                  </h3>
-                  
+                    </h3>
+
                     <button
                       type="button"
                       onClick={() => {
@@ -667,8 +684,8 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
 
                       {/* opciones del grupo */}
 
-                     
-                      
+
+
                       {group.name.trim() !== "" && (
                         <div className="mt-3">
                           {group.options.map((option, index) => (
@@ -686,18 +703,18 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                                     prev.map((g) =>
                                       g.id === group.id
                                         ? {
-                                            ...g,
-                                            options: g.options.map((o, i) =>
-                                              i === index ? newValue : o,
-                                            ),
-                                          }
+                                          ...g,
+                                          options: g.options.map((o, i) =>
+                                            i === index ? newValue : o,
+                                          ),
+                                        }
                                         : g,
                                     ),
                                   );
                                 }}
                                 className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
                               />
-                              
+
                               <button
                                 type="button"
                                 onClick={() => {
@@ -705,11 +722,11 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                                     prev.map((g) =>
                                       g.id === group.id
                                         ? {
-                                            ...g,
-                                            options: g.options.filter(
-                                              (_, i) => i !== index,
-                                            ),
-                                          }
+                                          ...g,
+                                          options: g.options.filter(
+                                            (_, i) => i !== index,
+                                          ),
+                                        }
                                         : g,
                                     ),
                                   );
@@ -719,7 +736,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                               >
                                 ✕
                               </button>
-                              
+
                             </div>
                           ))}
                           <button
@@ -736,7 +753,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                             className="flex items-center gap-3 text-base font-bold border border-border rounded-lg py-1.5 px-3   text-mint-darker  hover:border-mint-dark my-5"
                           >
                             Agregar opción <GoPlus className="h-4 w-4" />
-                      </button>
+                          </button>
                         </div>
                       )}
                     </div>

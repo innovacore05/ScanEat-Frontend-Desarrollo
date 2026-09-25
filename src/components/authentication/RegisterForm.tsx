@@ -27,9 +27,9 @@ function RegisterForm() {
 			!lastName.trim() ||
 			!email.trim() ||
 			!password ||
-			!roleId /*||
+			!roleId ||
 			!authorizationCode.trim() ||
-			((roleId === 2 || roleId === 3) && !businessCode.trim())*/
+			((roleId === 2 || roleId === 3 || roleId === 4) && !businessCode.trim())
 		) {
 			setError(
 				"Completa todos los campos requeridos, incluido el tipo de empleado.",
@@ -59,6 +59,14 @@ if (password !== confirmPassword) {
 		setIsSubmitting(true);
 
 		try {
+			console.log("Datos que se enviarán:", {
+    firstName,
+    lastName,
+    email,
+    roleId,
+    authorizationCode,
+    businessCode,
+});
 			await registerUser(
 				firstName.trim(),
 				lastName.trim(),
@@ -66,7 +74,7 @@ if (password !== confirmPassword) {
 				password,
 				authorizationCode.trim(),
 				roleId,
-				//businessCode.trim(),
+				businessCode.trim(),
             );
 
             localStorage.setItem("pendingVerificationEmail", email.trim().toLowerCase());
@@ -216,6 +224,7 @@ if (password !== confirmPassword) {
 		<option value={1}>Propietario</option>
 		<option value={2}>Cocinero</option>
 		<option value={3}>Mesero</option>
+		<option value={4}>Cajero</option>
 	</select>
 
 	<input
@@ -229,7 +238,7 @@ if (password !== confirmPassword) {
 		className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
 	/>
 
-					{(roleId === 2 || roleId === 3) && (
+					{(roleId === 2 || roleId === 3|| roleId === 4) && (
 						<input
 							id="businessCode"
 							type="text"

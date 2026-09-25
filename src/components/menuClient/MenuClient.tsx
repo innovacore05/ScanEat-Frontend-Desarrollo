@@ -86,20 +86,11 @@ function MenuClient() {
  
 
 //nuevo
-const [currentOrderId]=useState<number | null >(()=>{
-  const savedOrderId=localStorage.getItem("currentOrderId");
+const [currentOrderId, setCurrentOrderId] = useState<number | null>(null);
 
-  if(!savedOrderId)return null;
-  const parsedOrderId=Number(savedOrderId);
-
-  return Number.isInteger(parsedOrderId)&& parsedOrderId>0
-  ? parsedOrderId
-  :null;
-});
-
-const [currentOrderTableId] = useState<string | undefined>(() => {
-  return localStorage.getItem("currentOrderTableId") ?? undefined;
-});
+const [currentOrderTableId, setCurrentOrderTableId] = useState<
+  string | undefined
+>(undefined);
 
 
  const { cartCount, setMesaId } = useCart();
@@ -112,6 +103,39 @@ const [currentOrderTableId] = useState<string | undefined>(() => {
   const { mesaId } = useSearch({
     from: "/(menuClient)/menuClient",
   });
+
+  useEffect(() => {
+  const savedOrderId = localStorage.getItem("currentOrderId");
+  const savedOrderTableId = localStorage.getItem("currentOrderTableId");
+
+  if (!mesaId || !savedOrderId || !savedOrderTableId) {
+    setCurrentOrderId(null);
+    setCurrentOrderTableId(undefined);
+    return;
+  }
+
+  if (savedOrderTableId !== mesaId) {
+    localStorage.removeItem("currentOrderId");
+    localStorage.removeItem("currentOrderTableId");
+
+    setCurrentOrderId(null);
+    setCurrentOrderTableId(undefined);
+    return;
+  }
+
+  const parsedOrderId = Number(savedOrderId);
+
+  if (Number.isInteger(parsedOrderId) && parsedOrderId > 0) {
+    setCurrentOrderId(parsedOrderId);
+    setCurrentOrderTableId(savedOrderTableId);
+  } else {
+    localStorage.removeItem("currentOrderId");
+    localStorage.removeItem("currentOrderTableId");
+
+    setCurrentOrderId(null);
+    setCurrentOrderTableId(undefined);
+  }
+}, [mesaId]);
 
   useEffect(() => {
     setMesaId(mesaId);
@@ -146,6 +170,7 @@ const [currentOrderTableId] = useState<string | undefined>(() => {
       setIsFiltering(true);
       try {
         const data = await getProducts({
+          mesaId,
           search: searchTerm,
           //si hay texto en elbuscador se ignora categoria
           category: searchTerm ? undefined : selectedCategory ?? undefined,
@@ -167,12 +192,13 @@ setProducts(productsWithRatings);
     const delay = searchTerm ? 400 : 0;
     const timeoutId = setTimeout(loadProducts, delay);
     return () => clearTimeout(timeoutId);
-  }, [searchTerm, selectedCategory]);
+  },[searchTerm, selectedCategory, mesaId]);;
 
   const handleLoadMore = async () => {
     setIsLoadingMore(true);
     try {
       const data = await getProducts({
+        mesaId,
         search: searchTerm,
         category: searchTerm ? undefined : selectedCategory ?? undefined,
         limit: PAGE_SIZE,

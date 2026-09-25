@@ -18,6 +18,7 @@ function AccountVerificationForm() {
 	const [isResending, setIsResending] = useState(false);
 	const [showSuccess, setShowSuccess] = useState(false);
 	const [showError, setShowError] = useState(false);
+	const [verifiedRoleId, setVerifiedRoleId] = useState<number | null>(null);
 
 	useEffect(() => {
 		const storedEmail = localStorage.getItem("pendingVerificationEmail");
@@ -99,14 +100,20 @@ function AccountVerificationForm() {
 		setIsSubmitting(true);
 
 		try {
-			await verifyEmail(email, verificationCode);
+			const response = await verifyEmail(email, verificationCode);
+			setVerifiedRoleId(response.user.roleId);
+
+			localStorage.setItem("authToken", response.token);
+			localStorage.setItem("authUser", JSON.stringify(response.user));
+
 			localStorage.removeItem("pendingVerificationEmail");
+
 			setShowSuccess(true);
 		} catch (err) {
 			const message =
 				err &&
-				typeof err === "object" &&
-				"message" in err
+					typeof err === "object" &&
+					"message" in err
 					? String((err as { message?: string }).message)
 					: "No se pudo verificar el código.";
 
@@ -134,8 +141,8 @@ function AccountVerificationForm() {
 		} catch (err) {
 			const message =
 				err &&
-				typeof err === "object" &&
-				"message" in err
+					typeof err === "object" &&
+					"message" in err
 					? String((err as { message?: string }).message)
 					: "No se pudo reenviar el código.";
 
@@ -245,7 +252,11 @@ function AccountVerificationForm() {
 
 						<button
 							type="button"
-							onClick={() => navigate({ to: "/login" })}
+							onClick={() => navigate({
+								to: verifiedRoleId === 1
+									? "/registerBusiness"
+									: "/login",
+							})}
 							className="mt-8 cursor-pointer font-bold text-mint-dark hover:underline"
 						>
 							Siguiente
@@ -255,34 +266,34 @@ function AccountVerificationForm() {
 			) : null}
 
 			{showError ? (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
-        <div className="w-full max-w-sm rounded-[40px] bg-white px-8 py-16 text-center">
-            <AiOutlineExclamationCircle className="mx-auto h-20 w-20 text-pink" />
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
+					<div className="w-full max-w-sm rounded-[40px] bg-white px-8 py-16 text-center">
+						<AiOutlineExclamationCircle className="mx-auto h-20 w-20 text-pink" />
 
-            <h1 className="mt-8 text-2xl font-bold text-pink">
-                Error
-            </h1>
+						<h1 className="mt-8 text-2xl font-bold text-pink">
+							Error
+						</h1>
 
-            <p className="mt-4 text-text-primary">
-                {error}
-            </p>
+						<p className="mt-4 text-text-primary">
+							{error}
+						</p>
 
-            <button
-                type="button"
-                onClick={() => {
-                    setShowError(false);
-                    setError("");
-                    setCode(["", "", "", "", "", ""]);
-                }}
-                className="mt-8 cursor-pointer text-mint"
-                aria-label="Volver a verificar cuenta"
-            >
-                <BsFillArrowLeftCircleFill className="mx-auto h-10 w-10" />
-            </button>
-        </div>
-    </div>
-	) : null}
-			
+						<button
+							type="button"
+							onClick={() => {
+								setShowError(false);
+								setError("");
+								setCode(["", "", "", "", "", ""]);
+							}}
+							className="mt-8 cursor-pointer text-mint"
+							aria-label="Volver a verificar cuenta"
+						>
+							<BsFillArrowLeftCircleFill className="mx-auto h-10 w-10" />
+						</button>
+					</div>
+				</div>
+			) : null}
+
 		</main>
 	);
 }

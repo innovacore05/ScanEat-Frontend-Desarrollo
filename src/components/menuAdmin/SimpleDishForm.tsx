@@ -5,7 +5,7 @@ import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus } from "react-icons/go";
 import { FiCamera } from "react-icons/fi";
 import DashboardLayout from "../../components/layout/DashboardLayout";
-import {createProduct,getProductById,updateProduct,} from "../../services/productService";
+import { createProduct, getProductById, updateProduct, getCategories, } from "../../services/productService";
 
 interface SimpleDishFormProps {
   mode?: "create" | "edit";
@@ -13,13 +13,14 @@ interface SimpleDishFormProps {
 }
 
 function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
-	const navigate = useNavigate();
+  const navigate = useNavigate();
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState<{ categoryId: number; name: string }[]>([]);
   const [discount, setDiscount] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -41,6 +42,22 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
     };
 
     loadProfile();
+  }, []);
+
+  {
+    /* useEffect para cargar las categorías */
+  }
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      }
+    };
+
+    loadCategories();
   }, []);
 
   {
@@ -142,7 +159,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
     try {
       setIsSubmitting(true);
 
-      
+
       if (isEditMode && productId) {
         const data = await updateProduct(productId, {
           name: name.trim(),
@@ -194,28 +211,28 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
 
   return (
     <DashboardLayout>
-		{successMessage && (
-			<div
-				className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-				role="dialog"
-				aria-modal="true"
-				aria-labelledby="success-dialog-title"
-			>
-				<div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl">
-					<h2 id="success-dialog-title" className="text-lg font-bold text-mint-darker">
-						¡Listo!
-					</h2>
-					<p className="mt-2 text-sm text-text-primary">{successMessage}</p>
-					<button
-						type="button"
-						onClick={() => navigate({ to: "/menuManagment" })}
-						className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
-					>
-						Aceptar
-					</button>
-				</div>
-			</div>
-		)}
+      {successMessage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="success-dialog-title"
+        >
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl">
+            <h2 id="success-dialog-title" className="text-lg font-bold text-mint-darker">
+              ¡Listo!
+            </h2>
+            <p className="mt-2 text-sm text-text-primary">{successMessage}</p>
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/menuManagment" })}
+              className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
+      )}
       <main className="min-h-screen bg-brand-white px-8 py-8">
 
         {/* Celular */}
@@ -301,11 +318,11 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
               >
                 <option value="">Categoría</option>
 
-                <option value="1">Postres</option>
-                <option value="2">Bebidas</option>
-                <option value="3">Café</option>
-                <option value="4">Salados</option>
-                <option value="5">Almuerzos</option>
+                {categories.map((cat) => (
+                  <option key={cat.categoryId} value={cat.categoryId}>
+                    {cat.name}
+                  </option>
+                ))}
               </select>
 
               {/* Input Discount*/}
@@ -332,7 +349,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 Cancelar
               </Link>
 
-  {/* Cambio:boton solo permite una subida de daros por tasnto de la imagen un solo paso mientras llega  a la bd */}
+              {/* Cambio:boton solo permite una subida de daros por tasnto de la imagen un solo paso mientras llega  a la bd */}
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -452,11 +469,12 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
               >
 
                 <option value="">Categoría</option>
-                <option value="1">Postres</option>
-                <option value="2">Bebidas</option>
-                <option value="3">Café</option>
-                <option value="4">Salados</option>
-                <option value="5">Almuerzos</option>
+
+                {categories.map((cat) => (
+                  <option key={cat.categoryId} value={cat.categoryId}>
+                    {cat.name}
+                  </option>
+                ))}
               </select>
 
               <input
@@ -485,7 +503,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 </Link>
 
 
-{/* Cambio:boton solo permite una subida de daros por tasnto de la imagen un solo paso mientras llega  a la bd se agrego el [isSubmitting setIsSubmitting]*/}
+                {/* Cambio:boton solo permite una subida de daros por tasnto de la imagen un solo paso mientras llega  a la bd se agrego el [isSubmitting setIsSubmitting]*/}
                 <button
                   type="submit"
                   disabled={isSubmitting}
