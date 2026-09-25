@@ -8,7 +8,7 @@ type UserCardProps = {
 };
 
 function UserCard({ user, onEdit, onDelete }: UserCardProps) {
-	const roleName = user.roleId === 2 ? "Cocinero" : "Mesero";
+	const roleName =user.roleId === 2? "Cocinero": user.roleId === 3? "Mesero": "Cajero";
 
 	return ( 
 		<article className="flex w-full items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm sm:gap-4 sm:p-5">

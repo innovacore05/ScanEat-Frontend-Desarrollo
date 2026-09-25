@@ -35,7 +35,7 @@ function UsersManagement() {
 
 		const loadUsers = async () => {
 			try {
-				setUsers((await getUsers()).filter((user) => user.roleId === ROLE_IDS.cook || user.roleId === ROLE_IDS.waiter));
+				setUsers((await getUsers()).filter((user) => user.roleId === ROLE_IDS.cook || user.roleId === ROLE_IDS.waiter||user.roleId === ROLE_IDS.cashier));
 			} catch (loadError) {
 				console.error("Error cargando usuarios:", loadError);
 				setError("No se pudieron cargar los usuarios.");
@@ -146,6 +146,7 @@ function UsersManagement() {
 								<select className="rounded-lg border border-border px-4 py-3" value={form.roleId} onChange={(event) => setForm({ ...form, roleId: Number(event.target.value) })}>
 									<option value={ROLE_IDS.waiter}>Mesero</option>
 									<option value={ROLE_IDS.cook}>Cocinero</option>
+									<option value={ROLE_IDS.cashier}>Cajero</option>
 								</select>
 							</div>
 							<div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">

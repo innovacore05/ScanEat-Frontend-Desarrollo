@@ -77,15 +77,34 @@ function OrderStatus({ orderId, tableId }: OrderStatusProps) {
     console.log("ESTADO DE LA ORDEN:", order);
 
     if (isMounted) {
-      setStatus(stateToLabel[order.state]);
-      setError("");
-    }
+  const newStatus = stateToLabel[order.state];
+
+  setStatus(newStatus);
+  setError("");
+
+  if (newStatus === "Entregado") {
+    localStorage.removeItem("currentOrderId");
+    localStorage.removeItem("currentOrderTableId");
+  }
+}
   } catch (loadError) {
     console.error("No se pudo consultar el estado del pedido:", loadError);
 
     if (isMounted) {
-      setError("No se pudo actualizar el estado del pedido.");
-    }
+  const errorMessage =
+    loadError && typeof loadError === "object" && "message" in loadError
+      ? String(loadError.message)
+      : "";
+
+  if (errorMessage === "Orden no encontrada") {
+    localStorage.removeItem("currentOrderId");
+    localStorage.removeItem("currentOrderTableId");
+    setError("");
+    return;
+  }
+
+  setError("No se pudo actualizar el estado del pedido.");
+}
   }
 };
 

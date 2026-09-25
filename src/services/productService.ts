@@ -55,8 +55,12 @@ export const getProducts=async(params?:{
     search?:string;
     limit?:number;
     offset?:number;
+    mesaId?: string;
 })=>{
     const query=new URLSearchParams();
+    if (params?.mesaId) {
+    query.append("mesaId", params.mesaId);
+}
 
 if(params?.category){
     query.append("category",String(params.category));
@@ -76,8 +80,13 @@ const url=queryString
 ? `${MENU_BASE_URL}/products?${queryString}`
 :`${MENU_BASE_URL}/products`;
 
-const response =await fetch(url,{
-    method:"GET",
+const token = localStorage.getItem("authToken");
+
+const response = await fetch(url, {
+  method: "GET",
+  headers: {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  },
 });
 
 const data=await response.json().catch(()=>({}));
@@ -111,9 +120,14 @@ export const getProductById= async (id: number | string)=>{
 }
 
 export const isCustomProduct = async (id: number): Promise<boolean> => {
-    const response = await fetch(`${MENU_BASE_URL}/products/custom/${id}`, {
-        method: "GET",
-    });
+    const token = localStorage.getItem("authToken");
+
+const response = await fetch(`${MENU_BASE_URL}/products/${id}`, {
+    method: "GET",
+    headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+});
 
     if (response.ok) {
         return true;
@@ -127,6 +141,27 @@ export const isCustomProduct = async (id: number): Promise<boolean> => {
     throw data as ApiError;
 };
 
+//obtener categorias de menu
+export const getCategories = async () => {
+    const token = localStorage.getItem("authToken");
+
+    const response = await fetch(`${MENU_BASE_URL}/categories`, {
+        method: "GET",
+        headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
+
+    const data = await response.json().catch(() => []);
+
+    if (!response.ok) {
+        throw data as ApiError;
+    }
+
+    return data;
+};
+
+// Verificar si un producto es personalizado
 export const productIsCustom = (product: Product): boolean => {
     const productData = product as Product & Record<string, unknown>;
     const type = String(

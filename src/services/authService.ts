@@ -138,7 +138,9 @@ export const register = async (
     password: string,
     code: string,
     role_id: string | number,
+    business_code: string,
 ) => {
+
     const response = await fetch(`${AUTH_BASE_URL}/register`, {
         method: "POST",
         headers: {
@@ -151,6 +153,7 @@ export const register = async (
             password,
             code,
             role_id,
+            business_code,
         }),
     });
 
@@ -182,7 +185,15 @@ export const verifyEmail = async (email: string, code: string) => {
         throw data as ApiError;
     }
 
-    return data as { message: string };
+    return data as {
+        message: string;
+        token: string;
+        user: {
+            userId: number;
+            email: string;
+            roleId: number;
+        };
+    };
 };
 
 //Función para reenviar el código de verificación al correo electrónico del usuario
@@ -361,9 +372,9 @@ export const resendResetCode = async (email: string) => {
 //editar perfil 
 export const editProfile = async (changes: {
     first_name?: string,
-    last_name?: string, 
+    last_name?: string,
     email?: string,
-})  => {
+}) => {
 
     const token = localStorage.getItem("authToken");
     const response = await fetch(`${AUTH_BASE_URL}/edit-profile`, {
@@ -380,7 +391,7 @@ export const editProfile = async (changes: {
         throw data as ApiError;
     }
 
-   return data as {
+    return data as {
         message: string;
         user?: {
             userId: number;
@@ -394,32 +405,32 @@ export const editProfile = async (changes: {
 };
 
 export const changePassword = async (
-  currentPassword: string,
-  newPassword: string,
-  confirmPassword: string,
+    currentPassword: string,
+    newPassword: string,
+    confirmPassword: string,
 ) => {
-  const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("authToken");
 
- const response = await fetch(`${AUTH_BASE_URL}/change-password`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({
-      currentPassword,
-      newPassword,
-      confirmPassword,
-    }),
-  });
+    const response = await fetch(`${AUTH_BASE_URL}/change-password`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+            currentPassword,
+            newPassword,
+            confirmPassword,
+        }),
+    });
 
-  const data = await response.json().catch(() => ({}));
+    const data = await response.json().catch(() => ({}));
 
-  if (!response.ok) {
-    throw data as { message?: string };
-  }
+    if (!response.ok) {
+        throw data as { message?: string };
+    }
 
-  return data as { message: string };
+    return data as { message: string };
 };
 
 
@@ -446,30 +457,37 @@ export const verifyProfileEmail = async (code: string) => {
 
 //funcion para obtener la informacion del usuario y mostrarla en fornt
 export const getProfile = async () => {
-  const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("authToken");
 
-  const response = await fetch(`${AUTH_BASE_URL}/profile`, {
-    method: "GET",
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
+    const response = await fetch(`${AUTH_BASE_URL}/profile`, {
+        method: "GET",
+        headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+    });
 
-  const data = await response.json().catch(() => ({}));
+    const data = await response.json().catch(() => ({}));
 
-  if (!response.ok) {
-    throw data as ApiError;
-  }
+    if (!response.ok) {
+        throw data as ApiError;
+    }
 
-  localStorage.setItem("authUser", JSON.stringify(data.user));
+    localStorage.setItem("authUser", JSON.stringify(data.user));
 
-  return data as {
-    user: {
-      userId: number;
-      firstName: string;
-      lastName: string;
-      email: string;
-      roleId: number;
+    return data as {
+        user: {
+            userId: number;
+            firstName: string;
+            lastName: string;
+            email: string;
+            roleId: number;
+        };
+        business: {
+            businessId: number;
+            name: string;
+            email: string;
+            number: string;
+            code: string;
+        } | null;
     };
-  };
 };
