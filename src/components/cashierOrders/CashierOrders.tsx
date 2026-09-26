@@ -1,12 +1,10 @@
+import { RestaurantLogo } from "../theme/RestaurantLogo";
+
 function CashierOrders() {
     return (
         <main className="min-h-screen bg-white">
             <div className="h-22 bg-mint px-8 py-4">
-                <img
-                    src="/img/LogoSBlanco.svg"
-                    alt="Logo del negocio"
-                    className="h-15.5 w-10 object-contain"
-                />
+                <RestaurantLogo className="h-16 w-16" />
             </div>
 
             <section className="px-8 pt-8">

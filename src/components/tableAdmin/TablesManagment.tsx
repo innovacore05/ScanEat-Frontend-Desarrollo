@@ -287,7 +287,7 @@ const handleRequestDelete = () => {
 										className="flex items-center justify-center gap-2 rounded border w-40 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
 									>
 										<span>Añadir mesa</span>
-										<IoIosAdd className="text-mint-darker w-8 h-8" />
+										<IoIosAdd className="text-mint-dark w-8 h-8" />
 									</Link>
 
 									<Link
@@ -297,13 +297,13 @@ const handleRequestDelete = () => {
 										disabled={!selectedTable}
 									>
 										<span>Editar mesa</span>
-										<MdOutlineModeEditOutline className={`w-6 h-6 ${selectedTable ? 'text-mint-darker' : 'text-mint-darker/50'}`} />
+										<MdOutlineModeEditOutline className={`w-6 h-6 ${selectedTable ? 'text-mint-dark' : 'text-mint-dark/50'}`} />
 									</Link>
 
 									<button className="cursor-pointer flex items-center justify-between rounded border w-40 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
 										onClick={handleRequestDelete}>
 										<span>Eliminar mesa</span>
-										<AiOutlineDelete className="text-mint-darker w-5 h-5" />
+										<AiOutlineDelete className="text-mint-dark w-5 h-5" />
 
 									</button>
 								</div>}

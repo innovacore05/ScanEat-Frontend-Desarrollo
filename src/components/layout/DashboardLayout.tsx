@@ -4,12 +4,12 @@ import { getProfile, getStoredFirstName, logout } from "../../services/authServi
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { RiSettingsLine } from "react-icons/ri";
-import { IoMdInformationCircleOutline } from "react-icons/io";
 import { RiNotification2Line } from "react-icons/ri";
 import { LuLogOut } from "react-icons/lu";
 import { GoHome } from "react-icons/go";
 import { IoRestaurantOutline } from "react-icons/io5";
 import { FiUsers } from "react-icons/fi";
+import { RestaurantLogo } from "../theme/RestaurantLogo";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -48,14 +48,10 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <aside className="fixed left-0 top-0 hidden h-screen w-64 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
         <div className="flex justify-start">
-          <img
-            src="/img/LogoS.svg"
-            alt="Logo del negocio"
-            className="h-15.5 w-10 object-contain"
-          />
+          <RestaurantLogo className="h-16 w-16 object-contain" />
           <span className="font-bold text-mint-darker">
-        {businessName || "Mi negocio"}
-    </span>
+            {businessName || "Mi negocio"}
+          </span>
         </div>
 
         <nav className="mt-10 flex flex-col">
@@ -77,10 +73,10 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
             <span className="text-[15px] font-bold cursor-pointer">Menú</span>
           </Link>
 
-          
+
 
           <div className="mt-10">
-            
+
 
             <button
               type="button"
@@ -123,25 +119,25 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
           </Link>
 
           <Link
-              to="/usersManagment"
-              className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
-            >
-              <FiUsers className="h-6 w-6 shrink-0" />
-              <span className="text-[15px] font-bold cursor-pointer">
-                Gestión de personal
-              </span>
-            </Link>
+            to="/usersManagment"
+            className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
+          >
+            <FiUsers className="h-6 w-6 shrink-0" />
+            <span className="text-[15px] font-bold cursor-pointer">
+              Gestión de personal
+            </span>
+          </Link>
 
-          <button
-            type="button"
+          <Link
+            to="/customization"
             className="flex items-center gap-4 py-3 text-left text-text-primary"
           >
-            <IoMdInformationCircleOutline className="h-6 w-6 shrink-0" />
+            <RiSettingsLine className="h-6 w-6 shrink-0" />
 
-            <span className="text-[15px] font-bold cursor-pointer">
+            <span className="text-[15px] font-bold">
               Negocio
             </span>
-          </button>
+          </Link>
 
           <button
             type="button"
@@ -191,11 +187,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Barra superior - TELÉFONO Y TABLET */}
         <div className="px-6 pt-8 lg:hidden">
           <div className="flex justify-start">
-            <img
-              src="/img/LogoS.svg"
-              alt="Logo del negocio"
-              className="h-15.5 w-10 object-contain"
-            />
+            <RestaurantLogo className="h-15.5 w-10 object-contain" />
           </div>
 
           <div className="mt-8 flex items-center justify-between">
@@ -235,16 +227,14 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
             type="button"
             aria-label="Cerrar menú"
             onClick={() => setIsMenuOpen(false)}
-            className={`fixed inset-0 z-40 cursor-default bg-transparent transition-opacity duration-300 lg:hidden ${
-              isMenuOpen
+            className={`fixed inset-0 z-40 cursor-default bg-transparent transition-opacity duration-300 lg:hidden ${isMenuOpen
                 ? "pointer-events-auto opacity-100"
                 : "pointer-events-none opacity-0"
-            }`}
+              }`}
           />
           <div
-            className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col rounded-r-[30px] bg-mint-dark px-8 pt-10 transition-transform duration-300 ease-in-out lg:hidden ${
-              isMenuOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
+            className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col rounded-r-[30px] bg-mint-dark px-8 pt-10 transition-transform duration-300 ease-in-out lg:hidden ${isMenuOpen ? "translate-x-0" : "-translate-x-full"
+              }`}
           >
 
 
@@ -295,36 +285,34 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
                   <span className="text-xl font-bold">Mesas</span>
                 </Link>
 
-                
+
               </div>
             </div>
           </div>
         </>
       )}
 
-{/* ANIMACION */}
+      {/* ANIMACION */}
       {isProfileMenuOpen && (
         <>
           <button
-        type="button"
-        aria-label="Cerrar menú"
-        onClick={() => setIsProfileMenuOpen(false)}
-        className={`fixed inset-0 z-40 cursor-default bg-transparent transition-opacity duration-300 lg:hidden ${
-            isProfileMenuOpen
+            type="button"
+            aria-label="Cerrar menú"
+            onClick={() => setIsProfileMenuOpen(false)}
+            className={`fixed inset-0 z-40 cursor-default bg-transparent transition-opacity duration-300 lg:hidden ${isProfileMenuOpen
                 ? "pointer-events-auto opacity-100"
                 : "pointer-events-none opacity-0"
-        }`}
-    />
+              }`}
+          />
 
-    <div
-        className={`fixed right-0 top-0 z-50 flex h-screen w-72 flex-col items-center rounded-l-[30px] bg-mint-dark px-8 pt-10 transition-transform duration-300 ease-in-out lg:hidden ${
-            isProfileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-    >
-			
-			
-			
-			<div className="mt-14 w-48">
+          <div
+            className={`fixed right-0 top-0 z-50 flex h-screen w-72 flex-col items-center rounded-l-[30px] bg-mint-dark px-8 pt-10 transition-transform duration-300 ease-in-out lg:hidden ${isProfileMenuOpen ? "translate-x-0" : "translate-x-full"
+              }`}
+          >
+
+
+
+            <div className="mt-14 w-48">
               <Link
                 to="/profileSettings"
                 className="flex w-full items-center gap-4 py-4 text-left text-white"
@@ -335,22 +323,24 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
               </Link>
 
               <Link
-                  to="/usersManagment"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex w-full items-center gap-4 py-4 text-left text-white"
-                >
-                  <FiUsers className="h-6 w-6 shrink-0" />
-                  <span className="text-xl font-bold">Gestión de personal</span>
-                </Link>
-
-              <button
-                type="button"
+                to="/usersManagment"
+                onClick={() => setIsMenuOpen(false)}
                 className="flex w-full items-center gap-4 py-4 text-left text-white"
               >
-                <IoMdInformationCircleOutline className="h-6 w-6 shrink-0" />
+                <FiUsers className="h-6 w-6 shrink-0" />
+                <span className="text-xl font-bold">Gestión de personal</span>
+              </Link>
+
+              <Link
+            to="/customization"
+                className="flex w-full items-center gap-4 py-4 text-left text-white"
+              >
+                <RiSettingsLine className="h-6 w-6 shrink-0" />
 
                 <span className="text-xl font-bold">Negocio</span>
-              </button>
+              </Link>
+
+
 
               <button
                 type="button"

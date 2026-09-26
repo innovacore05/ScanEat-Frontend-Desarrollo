@@ -36,6 +36,7 @@ import { Route as menuWaiterMenuWaiterRouteImport } from './routes/(menuWaiter)/
 import { Route as profileChangePasswordRouteImport } from './routes/(profile)/changePassword'
 import { Route as profileChangePasswordErrorRouteImport } from './routes/(profile)/changePasswordError'
 import { Route as profileChangePasswordSuccessRouteImport } from './routes/(profile)/changePasswordSuccess'
+import { Route as profileCustomizationRouteImport } from './routes/(profile)/customization'
 import { Route as profileProfileSettingsRouteImport } from './routes/(profile)/profileSettings'
 import { Route as tableAdminAddtableRouteImport } from './routes/(tableAdmin)/Addtable'
 import { Route as tableAdminTablesManagmentRouteImport } from './routes/(tableAdmin)/TablesManagment'
@@ -188,6 +189,11 @@ const profileChangePasswordSuccessRoute =
     path: '/changePasswordSuccess',
     getParentRoute: () => rootRouteImport,
   } as any)
+const profileCustomizationRoute = profileCustomizationRouteImport.update({
+  id: '/(profile)/customization',
+  path: '/customization',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const profileProfileSettingsRoute = profileProfileSettingsRouteImport.update({
   id: '/(profile)/profileSettings',
   path: '/profileSettings',
@@ -255,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/changePassword': typeof profileChangePasswordRoute
   '/changePasswordError': typeof profileChangePasswordErrorRoute
   '/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
+  '/customization': typeof profileCustomizationRoute
   '/profileSettings': typeof profileProfileSettingsRoute
   '/Addtable': typeof tableAdminAddtableRoute
   '/TablesManagment': typeof tableAdminTablesManagmentRoute
@@ -291,6 +298,7 @@ export interface FileRoutesByTo {
   '/changePassword': typeof profileChangePasswordRoute
   '/changePasswordError': typeof profileChangePasswordErrorRoute
   '/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
+  '/customization': typeof profileCustomizationRoute
   '/profileSettings': typeof profileProfileSettingsRoute
   '/Addtable': typeof tableAdminAddtableRoute
   '/TablesManagment': typeof tableAdminTablesManagmentRoute
@@ -328,6 +336,7 @@ export interface FileRoutesById {
   '/(profile)/changePassword': typeof profileChangePasswordRoute
   '/(profile)/changePasswordError': typeof profileChangePasswordErrorRoute
   '/(profile)/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
+  '/(profile)/customization': typeof profileCustomizationRoute
   '/(profile)/profileSettings': typeof profileProfileSettingsRoute
   '/(tableAdmin)/Addtable': typeof tableAdminAddtableRoute
   '/(tableAdmin)/TablesManagment': typeof tableAdminTablesManagmentRoute
@@ -366,6 +375,7 @@ export interface FileRouteTypes {
     | '/changePassword'
     | '/changePasswordError'
     | '/changePasswordSuccess'
+    | '/customization'
     | '/profileSettings'
     | '/Addtable'
     | '/TablesManagment'
@@ -402,6 +412,7 @@ export interface FileRouteTypes {
     | '/changePassword'
     | '/changePasswordError'
     | '/changePasswordSuccess'
+    | '/customization'
     | '/profileSettings'
     | '/Addtable'
     | '/TablesManagment'
@@ -438,6 +449,7 @@ export interface FileRouteTypes {
     | '/(profile)/changePassword'
     | '/(profile)/changePasswordError'
     | '/(profile)/changePasswordSuccess'
+    | '/(profile)/customization'
     | '/(profile)/profileSettings'
     | '/(tableAdmin)/Addtable'
     | '/(tableAdmin)/TablesManagment'
@@ -475,6 +487,7 @@ export interface RootRouteChildren {
   profileChangePasswordRoute: typeof profileChangePasswordRoute
   profileChangePasswordErrorRoute: typeof profileChangePasswordErrorRoute
   profileChangePasswordSuccessRoute: typeof profileChangePasswordSuccessRoute
+  profileCustomizationRoute: typeof profileCustomizationRoute
   profileProfileSettingsRoute: typeof profileProfileSettingsRoute
   tableAdminAddtableRoute: typeof tableAdminAddtableRoute
   tableAdminTablesManagmentRoute: typeof tableAdminTablesManagmentRoute
@@ -675,6 +688,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof profileChangePasswordSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(profile)/customization': {
+      id: '/(profile)/customization'
+      path: '/customization'
+      fullPath: '/customization'
+      preLoaderRoute: typeof profileCustomizationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(profile)/profileSettings': {
       id: '/(profile)/profileSettings'
       path: '/profileSettings'
@@ -756,6 +776,7 @@ const rootRouteChildren: RootRouteChildren = {
   profileChangePasswordRoute: profileChangePasswordRoute,
   profileChangePasswordErrorRoute: profileChangePasswordErrorRoute,
   profileChangePasswordSuccessRoute: profileChangePasswordSuccessRoute,
+  profileCustomizationRoute: profileCustomizationRoute,
   profileProfileSettingsRoute: profileProfileSettingsRoute,
   tableAdminAddtableRoute: tableAdminAddtableRoute,
   tableAdminTablesManagmentRoute: tableAdminTablesManagmentRoute,

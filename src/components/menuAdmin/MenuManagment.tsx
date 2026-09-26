@@ -176,7 +176,7 @@ function MenuManagment() {
 
   return (
     <DashboardLayout>
-      <main className="min-h-screen bg-brand-white  ">
+      <main className="min-h-screen bg-white  ">
         {/* Celular */}
         <section className="lg:hidden px-8 ">
           <div className="flex items-center gap-2">

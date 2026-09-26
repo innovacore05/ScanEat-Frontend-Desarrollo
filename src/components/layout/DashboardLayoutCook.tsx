@@ -6,6 +6,7 @@ import { RiNotification2Line } from "react-icons/ri";
 import { LuLogOut } from "react-icons/lu";
 import { GoHome } from "react-icons/go";
 import { LuShoppingBag } from "react-icons/lu";
+import { RestaurantLogo } from "../theme/RestaurantLogo";
 
 interface DashboardLayoutCookProps {
 	children: React.ReactNode;
@@ -38,6 +39,9 @@ function DashboardLayoutCook({ children }: DashboardLayoutCookProps) {
 		<div className="min-h-screen bg-brand-white">
 			{/*  COMPUTADORA */}
       <aside className="fixed left-0 top-0 hidden h-screen w-64 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
+        <div className="flex justify-start">
+          <RestaurantLogo className="h-15.5 w-10 object-contain" />
+        </div>
     
 
         <nav className="mt-10 flex flex-col">
