@@ -195,7 +195,9 @@ export const getCategories = async () => {
 
     // return data;
 
-    return cookieSessionClient.request(`${MENU_BASE_URL}/categories`, {
+    return cookieSessionClient.request<{categoryId:number;name:string}[]>(
+        `${MENU_BASE_URL}/categories`,
+         {
         method : "GET",
     fallBackMessage:"No se pudieron cargar las categorías",
 });
