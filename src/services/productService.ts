@@ -1,15 +1,8 @@
-
-{/* Cambio:ninguno no se toco*/}
-
-
-type ApiError={
+import { cookieSessionClient, type ApiError} from "./cookieSessionClient";
 
 
-message?:string;
-[key:string]:unknown;
-};
-
-const MENU_BASE_URL=`${import.meta.env.VITE_API_URL}/api/menu`;
+// const MENU_BASE_URL=`${import.meta.env.VITE_API_URL}/api/menu`;
+const MENU_BASE_URL = "/api/menu";
 
 const getImageUrl = (image: string | null) => {
     if (!image) return image;
@@ -80,28 +73,33 @@ const url=queryString
 ? `${MENU_BASE_URL}/products?${queryString}`
 :`${MENU_BASE_URL}/products`;
 
-const token = localStorage.getItem("authToken");
+// const token = localStorage.getItem("authToken");
 
-const response = await fetch(url, {
-  method: "GET",
-  headers: {
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  },
-});
+// const response = await fetch(url, {
+//   method: "GET",
+//   headers: {
+//     ...(token ? { Authorization: `Bearer ${token}` } : {}),
+//   },
+// });
+// const data=await response.json().catch(()=>({}));
 
-const data=await response.json().catch(()=>({}));
+// if(!response.ok){
+//     throw data as ApiError;
+// }
 
-if(!response.ok){
-    throw data as ApiError;
-}
+//     const page = data as ProductsPage;
 
-    const page = data as ProductsPage;
-
-    return {
-        ...page,
-        products: page.products.map(normalizeProduct),
-    };
-
+//     return {
+//         ...page,
+//         products: page.products.map(normalizeProduct),
+//     };
+const data = await cookieSessionClient.request<ProductsPage>(
+    url,{method:"GET",
+     fallBackMessage: "No se pudieron cargar los productos",});
+return {
+    ...data,
+    products:data.products.map(normalizeProduct),
+};
 };
 
 
@@ -109,56 +107,98 @@ if(!response.ok){
 //obtener producto de menu por id
 
 export const getProductById= async (id: number | string)=>{
-    const response =await fetch (`${MENU_BASE_URL}/products/${id}`, {
-        method:"GET",
-    });
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok){
-        throw data as ApiError;
-    }
-    return normalizeProduct(data as Product);
-}
+//     const response =await fetch (`${MENU_BASE_URL}/products/${id}`, {
+//         method:"GET",
+//     });
+//     const data=await response.json().catch(()=>({}));
+//     if(!response.ok){
+//         throw data as ApiError;
+//     }
+//     return normalizeProduct(data as Product);
+// }
+const data =await cookieSessionClient.request<Product>(
+        `${MENU_BASE_URL}/products/${id}`,
+        {method:"GET",
+            fallBackMessage: "No se pudo cargar el producto",
+            },
+    );
+    return normalizeProduct(data);
+};
+
 
 export const isCustomProduct = async (id: number): Promise<boolean> => {
-    const token = localStorage.getItem("authToken");
+//     const token = localStorage.getItem("authToken");
 
-const response = await fetch(`${MENU_BASE_URL}/products/${id}`, {
-    method: "GET",
-    headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-});
+// const response = await fetch(`${MENU_BASE_URL}/products/${id}`, {
+//     method: "GET",
+//     headers: {
+//         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+//     },
+// });
 
-    if (response.ok) {
-        return true;
+//     if (response.ok) {
+//         return true;
+//     }
+
+//     if (response.status === 404 || response.status === 405) {
+//         return false;
+//     }
+
+//     const data = await response.json().catch(() => ({}));
+//     throw data as ApiError;
+// };
+
+// const data =await cookieSessionClient.request<Product>(
+//         `${MENU_BASE_URL}/products/${id}`,
+//         {method:"GET",
+//             fallBackMessage: "No se pudo cargar el producto",
+//             },
+//     );
+//     return normalizeProduct(data);
+try{
+        await cookieSessionClient.request(
+            `${MENU_BASE_URL}/products/custom/${id}`, {
+                method:"GET",
+                fallBackMessage: "No se pudo verificar el producto",
+            },
+        );
+    return true;
+    }catch (error){
+        const apiError = error as ApiError;
+       
+        if(
+            apiError.status===404 ||
+            apiError.status===405
+        ){
+            return false;
+        }
+    throw error;
     }
-
-    if (response.status === 404 || response.status === 405) {
-        return false;
-    }
-
-    const data = await response.json().catch(() => ({}));
-    throw data as ApiError;
 };
 
 //obtener categorias de menu
 export const getCategories = async () => {
-    const token = localStorage.getItem("authToken");
+    // const token = localStorage.getItem("authToken");
 
-    const response = await fetch(`${MENU_BASE_URL}/categories`, {
-        method: "GET",
-        headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-    });
+    // const response = await fetch(`${MENU_BASE_URL}/categories`, {
+    //     method: "GET",
+    //     headers: {
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    //     },
+    // });
 
-    const data = await response.json().catch(() => []);
+    // const data = await response.json().catch(() => []);
 
-    if (!response.ok) {
-        throw data as ApiError;
-    }
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
 
-    return data;
+    // return data;
+
+    return cookieSessionClient.request(`${MENU_BASE_URL}/categories`, {
+        method : "GET",
+    fallBackMessage:"No se pudieron cargar las categorías",
+});
 };
 
 // Verificar si un producto es personalizado
@@ -205,10 +245,41 @@ export const createProduct = async ({
     categoryId: number;
     image: File | null;
 }) => {
-     const token = localStorage.getItem("authToken");
-    const formData = new FormData();
+    //  const token = localStorage.getItem("authToken");
+    // const formData = new FormData();
 
-    formData.append("name", name);
+    // formData.append("name", name);
+    // formData.append("description", description);
+    // formData.append("price", price);
+    // formData.append("categoryId", String(categoryId));
+
+    // if (discount !== "") {
+    //     formData.append("discount", String(discount));
+    // }
+
+    // if (image) {
+    //     formData.append("image", image);
+    // }
+
+    // const response = await fetch(`${MENU_BASE_URL}/products`, {
+    //     method: "POST",
+    //     headers: {
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← ahora sí dentro de headers
+    //     },
+    //     body: formData,
+       
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data;
+    
+const formData=new FormData();
+formData.append("name", name);
     formData.append("description", description);
     formData.append("price", price);
     formData.append("categoryId", String(categoryId));
@@ -221,22 +292,11 @@ export const createProduct = async ({
         formData.append("image", image);
     }
 
-    const response = await fetch(`${MENU_BASE_URL}/products`, {
-        method: "POST",
-        headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← ahora sí dentro de headers
-        },
-        body: formData,
-       
-    });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data;
+return cookieSessionClient.request(`${MENU_BASE_URL}/products`, {
+     method:"POST",
+     body:formData,
+     fallBackMessage: "No se pudo crear el producto",
+});
 };
 
 export const updateProduct = async (
@@ -258,7 +318,7 @@ export const updateProduct = async (
     },
 ) => {
 
-const token = localStorage.getItem("authToken"); 
+// const token = localStorage.getItem("authToken"); 
 
     const formData = new FormData();
 
@@ -275,21 +335,26 @@ const token = localStorage.getItem("authToken");
         formData.append("image", image);
     }
 
-    const response = await fetch(`${MENU_BASE_URL}/products/${id}`, {
-        method: "PUT",
-         headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← agregar
-        },
-        body: formData,
+    // const response = await fetch(`${MENU_BASE_URL}/products/${id}`, {
+    //     method: "PUT",
+    //      headers: {
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← agregar
+    //     },
+    //     body: formData,
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data;
+     return cookieSessionClient.request(`${MENU_BASE_URL}/products/${id}`, {
+     method:"PUT",
+     body:formData,
+     fallBackMessage: "No se pudo actualizar el producto",
     });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data;
 };
 
 //crear producto personalizado 
@@ -310,7 +375,7 @@ export const createCustomDish = async ({
     image: File | null;
     optionGroups: { id: string; name: string; options: string[] }[];
 }) => {
-    const token = localStorage.getItem("authToken");
+    // const token = localStorage.getItem("authToken");
 
     const formData = new FormData();
 
@@ -329,61 +394,69 @@ export const createCustomDish = async ({
 
     formData.append("optionGroups", JSON.stringify(optionGroups));
 
-    const response = await fetch(`${MENU_BASE_URL}/products/custom`, {
-        method: "POST",
-        headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: formData,
+    // const response = await fetch(`${MENU_BASE_URL}/products/custom`, {
+    //     method: "POST",
+    //     headers: {
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    //     },
+    //     body: formData,
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data;
+
+     return cookieSessionClient.request(`${MENU_BASE_URL}/products/custom`, {
+     method:"POST",
+     body:formData,
+     fallBackMessage: "No se pudo crear el platillo personalizado",
     });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data;
 };
 
 
 export const deleteProduct = async (id: number) => {
-    const token = localStorage.getItem("authToken");
-    const endpoints = [
+    //const token = localStorage.getItem("authToken");
+    //         const response = await fetch(url, {
+    //             method: "DELETE",
+    //             headers: {
+    //   ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← agregar
+    // },
+    //         });
+
+    //         if (response.ok) {
+    //             return true;
+    //         }
+
+    //         const data = await response.json().catch(() => ({}));
+
+    //         if (response.status === 404 || response.status === 405) {
+    //             lastError = data as ApiError;
+    //             continue;
+    //         }
+
+    //         throw data as ApiError;
+    //     } catch (error) {
+    //         lastError = error as ApiError;
+    //     }
+    // }
+
+    // throw lastError as ApiError;
+             //return true;
+        
+    return cookieSessionClient.request(
         `${MENU_BASE_URL}/products/${id}`,
-        `${MENU_BASE_URL}/products/custom/${id}`,
-    ];
-
-    let lastError: ApiError | unknown = { message: "No se pudo eliminar el platillo" };
-
-    for (const url of endpoints) {
-        try {
-            const response = await fetch(url, {
-                method: "DELETE",
-                headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← agregar
-    },
-            });
-
-            if (response.ok) {
-                return true;
-            }
-
-            const data = await response.json().catch(() => ({}));
-
-            if (response.status === 404 || response.status === 405) {
-                lastError = data as ApiError;
-                continue;
-            }
-
-            throw data as ApiError;
-        } catch (error) {
-            lastError = error as ApiError;
-        }
-    }
-
-    throw lastError as ApiError;
+        {
+            method: "DELETE",
+            fallBackMessage: "No se pudo eliminar el platillo",
+        },
+    );
 };
+
+
 
 export const updateCustomDish = async (
     id: number,
@@ -405,7 +478,7 @@ export const updateCustomDish = async (
         optionGroups: { id: string; name: string; options: string[] }[];
     },
 ) => {
-    const token = localStorage.getItem("authToken");
+    // const token = localStorage.getItem("authToken");
 
     const formData = new FormData();
 
@@ -424,19 +497,24 @@ export const updateCustomDish = async (
 
     formData.append("optionGroups", JSON.stringify(optionGroups));
 
-    const response = await fetch(`${MENU_BASE_URL}/products/custom/${id}`, {
+    // const response = await fetch(`${MENU_BASE_URL}/products/custom/${id}`, {
+    //     method: "PUT",
+    //     headers: {
+    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    //     },
+    //     body: formData,
+    // });
+
+    // const data = await response.json().catch(() => ({}));
+
+    // if (!response.ok) {
+    //     throw data as ApiError;
+    // }
+
+    // return data;
+     return cookieSessionClient.request(`${MENU_BASE_URL}/products/custom/${id}`, {
         method: "PUT",
-        headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
         body: formData,
+        fallBackMessage: "No se pudo actualizar el platillo personalizado",
     });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw data as ApiError;
-    }
-
-    return data;
 };

@@ -144,13 +144,13 @@ function VerificationCodeForm() {
       if (verificationFlow === "login") {
         const response = await verifyLoginCode(email, verificationCode);
 
-        if (response.token) {
-          localStorage.setItem("authToken", response.token);
-        }
+        // if (response.token) {
+        //   localStorage.setItem("authToken", response.token);
+        // }
 
-        if (response.user) {
-          localStorage.setItem("authUser", JSON.stringify(response.user));
-        }
+         if (response.user) {
+           localStorage.setItem("authUser", JSON.stringify(response.user));
+         }
 
         const profile = await getProfile();
         localStorage.removeItem("pendingLoginEmail");

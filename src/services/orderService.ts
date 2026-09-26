@@ -1,4 +1,9 @@
-const ORDERS_BASE_URL = `${import.meta.env.VITE_API_URL}/api/orders`;
+import { buildUrl, cookieSessionClient} from "./cookieSessionClient";
+
+
+// const ORDERS_BASE_URL = `${import.meta.env.VITE_API_URL}/api/orders`;
+const ORDERS_BASE_URL = "/api/orders";
+
 
 export type CreateOrderPayload = {
   tableId: string;
@@ -16,10 +21,7 @@ export type OrderStatus =
   | "ready"
   | "delivered";
 
-type ApiError = {
-  message?: string;
-  [key: string]: unknown;
-};
+
 
 type BackendOrderDetail = {
   detailId: number;
@@ -74,14 +76,14 @@ const formatSelectedOptions = (
   );
 };
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("authToken");
+// const getAuthHeaders = () => {
+//   const token = localStorage.getItem("authToken");
 
-  return {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-};
+//   return {
+//     "Content-Type": "application/json",
+//     ...(token ? { Authorization: `Bearer ${token}` } : {}),
+//   };
+// };
 
 export type FrontendOrderStatus =
   | "Pendiente"
@@ -135,128 +137,188 @@ const mapBackendOrderToFrontend = (backendOrder: BackendOrder) => {
 };
 
 export const createOrder = async (payload: CreateOrderPayload) => {
-  const response = await fetch(ORDERS_BASE_URL, {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(payload),
-  });
+  // const response = await fetch(ORDERS_BASE_URL, {
+  //   method: "POST",
+  //   headers: getAuthHeaders(),
+  //   body: JSON.stringify(payload),
+  // });
 
-  const data = await response.json().catch(() => ({}));
+  // const data = await response.json().catch(() => ({}));
 
-  if (!response.ok) {
-    throw data as ApiError;
-  }
+  // if (!response.ok) {
+  //   throw data as ApiError;
+  // }
 
-  return data as {
-    order: {
+  // return data as {
+  //   order: {
+  //     orderId: number;
+  //     tableId: string;
+  //     observation: string | null;
+  //     subtotal: string;
+  //     tax: string;
+  //     total: string;
+  //     state: OrderStatus;
+  //   };
+  //   details: Array<{
+  //     productId: number;
+  //     quantity: number;
+  //     unitPrice: string;
+  //     subtotal: number;
+  //     selectedOptions?: Record<string, string>;
+  //   }>;
+  // };
+
+  return cookieSessionClient.request<{
+  order: {
       orderId: number;
       tableId: string;
       observation: string | null;
       subtotal: string;
       tax: string;
       total: string;
-      state: OrderStatus;
-    };
+state:OrderStatus;
+
+  };
+  
     details: Array<{
       productId: number;
       quantity: number;
       unitPrice: string;
       subtotal: number;
-      selectedOptions?: Record<string, string>;
+selectedOptions?:Record<string, string>;
     }>;
-  };
+  
+  
+}>(ORDERS_BASE_URL,{
+  method:"POST",
+  body:JSON.stringify(payload),
+  fallBackMessage: "No se pudo crear el pedido",
+});
 };
 
 export const getOrders = async (state?: string) => {
-  const url = new URL(ORDERS_BASE_URL);
 
-  if (state) {
-    url.searchParams.set("state", state);
-  }
+  // if (state) {
+  //   url.searchParams.set("state", state);
+  // }
 
-  const response = await fetch(url.toString(), {
-    method: "GET",
-    headers: getAuthHeaders(),
-  });
+  // const response = await fetch(url.toString(), {
+  //   method: "GET",
+  //   headers: getAuthHeaders(),
+  // });
 
-  const data = await response.json().catch(() => []);
+  // const data = await response.json().catch(() => []);
 
-  if (!response.ok) {
-    throw (data as ApiError) ?? { message: "No se pudieron cargar los pedidos" };
-  }
+  // if (!response.ok) {
+  //   throw (data as ApiError) ?? { message: "No se pudieron cargar los pedidos" };
+  // }
 
-  return (Array.isArray(data) ? data : []).map(mapBackendOrderToFrontend);
+  // return (Array.isArray(data) ? data : []).map(mapBackendOrderToFrontend);
+
+const data = await cookieSessionClient.request<BackendOrder[]>(
+  buildUrl(ORDERS_BASE_URL,{state}),
+  {
+    method:"GET",
+    fallBackMessage:"No se pudieron cargar los pedidos",
+  },
+);
+return (Array.isArray(data)?data:[]).map(mapBackendOrderToFrontend);
 };
+  
 
 export const confirmOrder = async (orderId: number) => {
-  const response = await fetch(`${ORDERS_BASE_URL}/${orderId}/confirm`, {
-    method: "PATCH",
-    headers: getAuthHeaders(),
+  // const response = await fetch(`${ORDERS_BASE_URL}/${orderId}/confirm`, {
+  //   method: "PATCH",
+  //   headers: getAuthHeaders(),
+  // });
+
+  // const data = await response.json().catch(() => ({}));
+
+  // if (!response.ok) {
+  //   throw (data as ApiError) ?? {
+  //     message: "No se pudo confirmar la orden",
+  //   };
+  // }
+
+  // return data;
+   return cookieSessionClient.request(`${ORDERS_BASE_URL}/${orderId}/confirm`,  {
+    method:"PATCH",
+    fallBackMessage: "No se pudo confirmar el pedido",
   });
-
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw (data as ApiError) ?? {
-      message: "No se pudo confirmar la orden",
-    };
-  }
-
-  return data;
 };
 
 export const markOrderReady = async (orderId: number) => {
-  const response = await fetch(`${ORDERS_BASE_URL}/${orderId}/ready`, {
-    method: "PATCH",
-    headers: getAuthHeaders(),
+  // const response = await fetch(`${ORDERS_BASE_URL}/${orderId}/ready`, {
+  //   method: "PATCH",
+  //   headers: getAuthHeaders(),
+  // });
+
+  // const data = await response.json().catch(() => ({}));
+
+  // if (!response.ok) {
+  //   throw data as ApiError;
+  // }
+
+  // return data;
+  return cookieSessionClient.request(`${ORDERS_BASE_URL}/${orderId}/ready`,{
+    method:"PATCH",
+    fallBackMessage: "No se pudo marcar el pedido como listo",
   });
+  };
 
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw data as ApiError;
-  }
-
-  return data;
-};
 
 export const deliverOrder = async (orderId: number) => {
-  const response = await fetch(`${ORDERS_BASE_URL}/${orderId}/deliver`, {
-    method: "PATCH",
-    headers: getAuthHeaders(),
+  // const response = await fetch(`${ORDERS_BASE_URL}/${orderId}/deliver`, {
+  //   method: "PATCH",
+  //   headers: getAuthHeaders(),
+  // });
+
+  // const data = await response.json().catch(() => ({}));
+
+  // if (!response.ok) {
+  //   throw data as ApiError;
+  // }
+
+  // return data;
+
+  return cookieSessionClient.request(`${ORDERS_BASE_URL}/${orderId}/deliver`,{
+    method:"PATCH",
+     fallBackMessage: "No se pudo marcar el pedido como entregado",
   });
-
-  const data = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    throw data as ApiError;
-  }
-
-  return data;
 };
 
 
 export const getOrderStatus = async (orderId: number) => {
-  const response = await fetch(
-    `${ORDERS_BASE_URL}/${orderId}/status`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
+  // const response = await fetch(
+  //   `${ORDERS_BASE_URL}/${orderId}/status`,
+  //   {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   },
+  // );
 
-  const data = await response.json().catch(() => ({}));
+  // const data = await response.json().catch(() => ({}));
 
-  if (!response.ok) {
-    throw (data as ApiError) ?? {
-      message: "No se pudo consultar el estado del pedido",
-    };
-  }
+  // if (!response.ok) {
+  //   throw (data as ApiError) ?? {
+  //     message: "No se pudo consultar el estado del pedido",
+  //   };
+  // }
 
-  return data as {
+  // return data as {
+  //   orderId: number;
+  //   state: OrderStatus;
+  // };
+
+return cookieSessionClient.request<{
     orderId: number;
     state: OrderStatus;
-  };
+  }>(`${ORDERS_BASE_URL}/${orderId}/status`, {
+    method: "GET",
+    fallBackMessage: "No se pudo consultar el estado del pedido",
+  });
+
+
 };
