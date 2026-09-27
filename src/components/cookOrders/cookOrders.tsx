@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getOrders, markOrderReady } from "../../services/orderService";
 import OrderCard from "./OrderCard";
+import { RestaurantLogo } from "../theme/RestaurantLogo";
 
 function CookOrders() {
   const [orders, setOrders] = useState<Array<{
@@ -61,12 +62,8 @@ function CookOrders() {
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="h-22 bg-mint px-8 py-4">
-        <img
-          src="/img/LogoSBlanco.svg"
-          alt="Logo del negocio"
-          className="h-15.5 w-10 object-contain"
-        />
+      <div className="h-22 bg-mint-dark px-8 py-4">
+        <RestaurantLogo className="h-16 w-16 object-contain" />
       </div>
 
       <section className="px-8 pt-8">

@@ -7,6 +7,7 @@ import SearchBar from "../menu/SearchBar";
 import { Link, useSearch } from "@tanstack/react-router";
 import { useCart } from "../clientOrders/CartContext";
 import { getProductReviews } from "../../services/reviewService";
+import { RestaurantLogo } from "../theme/RestaurantLogo";
 
 
 
@@ -231,11 +232,9 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
 
         <div className="mt-4 flex flex-col gap-5">
           <div className="flex justify-start">
-            <img
-              src="/img/LogoS.svg"
-              alt="Logo del negocio"
-              className="h-15.5 w-10 object-contain"
-            />
+            <RestaurantLogo
+  className="h-16 w-16 object-contain"
+/>
 
           </div>
           <SearchBar
@@ -343,10 +342,8 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
 
       <div className="fixed bottom-2 left-8 right-8 z-50 flex h-12 items-center justify-center rounded-2xl border border-border bg-white lg:bottom-8 lg:left-10 lg:right-auto lg:top-8 lg:h-[calc(100vh-4rem)] lg:w-20 lg:rounded-full lg:border-0">
 
-        <img
-          src="/img/LogoS.svg"
-          alt="Logo del negocio"
-          className="absolute top-6 hidden h-15.5 w-10 object-contain lg:block"
+        <RestaurantLogo
+          className="absolute top-6 hidden h-16 w-16 object-contain lg:block"
         />
 
 {/* nuevo */}
