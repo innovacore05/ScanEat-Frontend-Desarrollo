@@ -768,7 +768,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
               <div className="mt-6 flex flex-col items-end gap-4">
                 <Link
                   to="/menuManagment"
-                  className="flex w-90 items-center justify-center rounded-lg border border-mint-dark px-4 py-3 text-mint-dark transition hover:bg-brand-mint-dark/10"
+                  className="flex w-90 items-center justify-center rounded-lg border border-mint-dark px-4 py-3 text-mint-dark transition hover:bg-mint-dark/10"
                 >
                   Cancelar
                 </Link>
@@ -777,7 +777,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-90 cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white transition hover:bg-mint-dark/90 disabled:opacity-50" >
+                  className="w-90 cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white transition hover:bg-mint-darker disabled:opacity-50" >
                   {isSubmitting ? "Guardando..." : "Guardar cambios"}
                 </button>
 

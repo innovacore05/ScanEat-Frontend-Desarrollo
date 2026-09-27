@@ -1,7 +1,9 @@
 import { Link, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { HiArrowLeft, HiStar } from "react-icons/hi";
+import { MdDeleteOutline } from "react-icons/md";
 import {
+    deleteReview,
     getProductReviews,
     type ProductReviewsResponse,
 } from "../../services/reviewService";
@@ -30,6 +32,8 @@ function Review() {
     const [data, setData] = useState<ProductReviewsResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [selectedReviewId, setSelectedReviewId] = useState<number | null>(null);
+    const [isDeletingReview, setIsDeletingReview] = useState(false);
 
     useEffect(() => {
         const loadReviews = async () => {
@@ -59,6 +63,46 @@ function Review() {
         total:
             data?.reviews.filter((review) => review.rating === stars).length ?? 0,
     }));
+
+    const handleDeleteReview = async () => {
+        if (selectedReviewId === null) {
+            return;
+        }
+
+        try {
+            setIsDeletingReview(true);
+            setError("");
+            await deleteReview(selectedReviewId);
+
+            setData((current) => {
+                if (!current) {
+                    return current;
+                }
+
+                const remainingReviews = current.reviews.filter(
+                    (review) => review.reviewId !== selectedReviewId,
+                );
+
+                return {
+                    ...current,
+                    reviews: remainingReviews,
+                    totalReviews: remainingReviews.length,
+                    averageRating: remainingReviews.length
+                        ? remainingReviews.reduce(
+                            (total, review) => total + review.rating,
+                            0,
+                        ) / remainingReviews.length
+                        : 0,
+                };
+            });
+            setSelectedReviewId(null);
+        } catch (deleteError) {
+            console.error("No se pudo eliminar la reseña:", deleteError);
+            setError(deleteError instanceof Error ? deleteError.message: "No se pudo eliminar la reseña.");
+        } finally {
+            setIsDeletingReview(false);
+        }
+    };
 
     return (
         <main className="min-h-screen bg-white px-4 py-6 text-text-primary sm:px-8 sm:py-8 md:px-12 lg:px-16">
@@ -133,10 +177,29 @@ function Review() {
 
                             {data.reviews.map((review, index) => (
                                 <article
-                                    key={`${review.createdAt}-${index}`}
+                                    key={review.reviewId ?? `${review.createdAt}-${index}`}
                                     className="rounded-lg border border-border p-4"
                                 >
-                                    <Stars rating={review.rating} />
+                                    <div className="flex items-center justify-between gap-3">
+                                        <Stars rating={review.rating} />
+
+                                        {isAdmin && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedReviewId(review.reviewId)}
+                                                className="cursor-pointer text-red-600 hover:text-red-700"
+                                                aria-label="Eliminar reseña"
+                                            >
+                                                <MdDeleteOutline className="h-6 w-6" />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {review.name?.trim() && (
+                                        <p className="mt-3 text-sm font-semibold">
+                                            {review.name}
+                                        </p>
+                                    )}
 
                                     {review.comment?.trim() && (
                                         <p className="mt-3 text-sm leading-relaxed">
@@ -157,6 +220,45 @@ function Review() {
                     </>
                 )}
             </div>
+
+            {selectedReviewId !== null && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="delete-review-dialog-title"
+                >
+                    <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+                        <h2
+                            id="delete-review-dialog-title"
+                            className="text-lg font-bold text-mint-darker"
+                        >
+                            ¿Eliminar reseña?
+                        </h2>
+                        <p className="mt-2 text-sm text-text-primary">
+                            Esta acción no se puede deshacer.
+                        </p>
+                        <div className="mt-6 flex justify-end gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setSelectedReviewId(null)}
+                                disabled={isDeletingReview}
+                                className="cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold text-text-primary hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleDeleteReview}
+                                disabled={isDeletingReview}
+                                className="cursor-pointer rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                {isDeletingReview ? "Eliminando..." : "Eliminar"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }

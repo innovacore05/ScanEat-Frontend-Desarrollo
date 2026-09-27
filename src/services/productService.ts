@@ -176,31 +176,85 @@ try{
     }
 };
 
-//obtener categorias de menu
-export const getCategories = async () => {
-    // const token = localStorage.getItem("authToken");
+export type Category = {
+    categoryId: number;
+    name: string;
+    icon: string | null;
+};
 
-    // const response = await fetch(`${MENU_BASE_URL}/categories`, {
-    //     method: "GET",
-    //     headers: {
-    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    //     },
-    // });
+// obtener lista de categorias
+export const getCategories = async (
+    mesaId?: string
+): Promise<Category[]> => {
+    const url = mesaId
+        ? `${MENU_BASE_URL}/categories?mesaId=${encodeURIComponent(mesaId)}`
+        : `${MENU_BASE_URL}/categories`;
 
-    // const data = await response.json().catch(() => []);
+    return cookieSessionClient.request<Category[]>(
+        url,
+        {
+            method: "GET",
+            fallBackMessage: "No se pudieron cargar las categorías",
+        },
+    );
+};
 
-    // if (!response.ok) {
-    //     throw data as ApiError;
-    // }
+//Crear categoria de menu
+export const createCategory = async ({
+    name,
+    icon,
+}: {
+    name: string;
+    icon: string;
+}) => {
+    return cookieSessionClient.request(`${MENU_BASE_URL}/categories`, {
+        method: "POST",
+        body: JSON.stringify({
+            name,
+            icon,
+        }),
+        headers: {
+            "Content-Type": "application/json",
+        },
+        fallBackMessage: "No se pudo crear la categoría",
+    });
+};
 
-    // return data;
+//Eliminar categoria de menu
+export const deleteCategory = async (categoryId: number) => {
+    return cookieSessionClient.request(
+        `${MENU_BASE_URL}/categories/${categoryId}`,
+        {
+            method: "DELETE",
+            fallBackMessage: "No se pudo eliminar la categoría",
+        },
+    );
+};
 
-    return cookieSessionClient.request<{categoryId:number;name:string}[]>(
-        `${MENU_BASE_URL}/categories`,
-         {
-        method : "GET",
-    fallBackMessage:"No se pudieron cargar las categorías",
-});
+//Editar categoria de menu
+export const updateCategory = async ({
+    categoryId,
+    name,
+    icon,
+}: {
+    categoryId: number;
+    name: string;
+    icon: string;
+}) => {
+    return cookieSessionClient.request(
+        `${MENU_BASE_URL}/categories/${categoryId}`,
+        {
+            method: "PUT",
+            body: JSON.stringify({
+                name,
+                icon,
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+            fallBackMessage: "No se pudo actualizar la categoría",
+        },
+    );
 };
 
 // Verificar si un producto es personalizado

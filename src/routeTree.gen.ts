@@ -26,6 +26,8 @@ import { Route as cookOrdersCookOrdersRouteImport } from './routes/(cookOrders)/
 import { Route as dashboardDashboardRouteImport } from './routes/(dashboard)/dashboard'
 import { Route as dashboardDashboardCookRouteImport } from './routes/(dashboard)/dashboardCook'
 import { Route as dashboardDashboardWaiterRouteImport } from './routes/(dashboard)/dashboardWaiter'
+import { Route as menuAdminCategoryFormRouteImport } from './routes/(menuAdmin)/categoryForm'
+import { Route as menuAdminCategoryManagementRouteImport } from './routes/(menuAdmin)/categoryManagement'
 import { Route as menuAdminCustomDishFormRouteImport } from './routes/(menuAdmin)/customDishForm'
 import { Route as menuAdminEditMenuRouteImport } from './routes/(menuAdmin)/editMenu'
 import { Route as menuAdminMenuManagmentRouteImport } from './routes/(menuAdmin)/menuManagment'
@@ -36,6 +38,7 @@ import { Route as menuWaiterMenuWaiterRouteImport } from './routes/(menuWaiter)/
 import { Route as profileChangePasswordRouteImport } from './routes/(profile)/changePassword'
 import { Route as profileChangePasswordErrorRouteImport } from './routes/(profile)/changePasswordError'
 import { Route as profileChangePasswordSuccessRouteImport } from './routes/(profile)/changePasswordSuccess'
+import { Route as profileCustomizationRouteImport } from './routes/(profile)/customization'
 import { Route as profileProfileSettingsRouteImport } from './routes/(profile)/profileSettings'
 import { Route as tableAdminAddtableRouteImport } from './routes/(tableAdmin)/Addtable'
 import { Route as tableAdminTablesManagmentRouteImport } from './routes/(tableAdmin)/TablesManagment'
@@ -136,6 +139,17 @@ const dashboardDashboardWaiterRoute =
     path: '/dashboardWaiter',
     getParentRoute: () => rootRouteImport,
   } as any)
+const menuAdminCategoryFormRoute = menuAdminCategoryFormRouteImport.update({
+  id: '/(menuAdmin)/categoryForm',
+  path: '/categoryForm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const menuAdminCategoryManagementRoute =
+  menuAdminCategoryManagementRouteImport.update({
+    id: '/(menuAdmin)/categoryManagement',
+    path: '/categoryManagement',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const menuAdminCustomDishFormRoute = menuAdminCustomDishFormRouteImport.update({
   id: '/(menuAdmin)/customDishForm',
   path: '/customDishForm',
@@ -188,6 +202,11 @@ const profileChangePasswordSuccessRoute =
     path: '/changePasswordSuccess',
     getParentRoute: () => rootRouteImport,
   } as any)
+const profileCustomizationRoute = profileCustomizationRouteImport.update({
+  id: '/(profile)/customization',
+  path: '/customization',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const profileProfileSettingsRoute = profileProfileSettingsRouteImport.update({
   id: '/(profile)/profileSettings',
   path: '/profileSettings',
@@ -245,6 +264,8 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof dashboardDashboardRoute
   '/dashboardCook': typeof dashboardDashboardCookRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/categoryForm': typeof menuAdminCategoryFormRoute
+  '/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/customDishForm': typeof menuAdminCustomDishFormRoute
   '/editMenu': typeof menuAdminEditMenuRoute
   '/menuManagment': typeof menuAdminMenuManagmentRoute
@@ -255,6 +276,7 @@ export interface FileRoutesByFullPath {
   '/changePassword': typeof profileChangePasswordRoute
   '/changePasswordError': typeof profileChangePasswordErrorRoute
   '/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
+  '/customization': typeof profileCustomizationRoute
   '/profileSettings': typeof profileProfileSettingsRoute
   '/Addtable': typeof tableAdminAddtableRoute
   '/TablesManagment': typeof tableAdminTablesManagmentRoute
@@ -281,6 +303,8 @@ export interface FileRoutesByTo {
   '/dashboard': typeof dashboardDashboardRoute
   '/dashboardCook': typeof dashboardDashboardCookRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/categoryForm': typeof menuAdminCategoryFormRoute
+  '/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/customDishForm': typeof menuAdminCustomDishFormRoute
   '/editMenu': typeof menuAdminEditMenuRoute
   '/menuManagment': typeof menuAdminMenuManagmentRoute
@@ -291,6 +315,7 @@ export interface FileRoutesByTo {
   '/changePassword': typeof profileChangePasswordRoute
   '/changePasswordError': typeof profileChangePasswordErrorRoute
   '/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
+  '/customization': typeof profileCustomizationRoute
   '/profileSettings': typeof profileProfileSettingsRoute
   '/Addtable': typeof tableAdminAddtableRoute
   '/TablesManagment': typeof tableAdminTablesManagmentRoute
@@ -318,6 +343,8 @@ export interface FileRoutesById {
   '/(dashboard)/dashboard': typeof dashboardDashboardRoute
   '/(dashboard)/dashboardCook': typeof dashboardDashboardCookRoute
   '/(dashboard)/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/(menuAdmin)/categoryForm': typeof menuAdminCategoryFormRoute
+  '/(menuAdmin)/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/(menuAdmin)/customDishForm': typeof menuAdminCustomDishFormRoute
   '/(menuAdmin)/editMenu': typeof menuAdminEditMenuRoute
   '/(menuAdmin)/menuManagment': typeof menuAdminMenuManagmentRoute
@@ -328,6 +355,7 @@ export interface FileRoutesById {
   '/(profile)/changePassword': typeof profileChangePasswordRoute
   '/(profile)/changePasswordError': typeof profileChangePasswordErrorRoute
   '/(profile)/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
+  '/(profile)/customization': typeof profileCustomizationRoute
   '/(profile)/profileSettings': typeof profileProfileSettingsRoute
   '/(tableAdmin)/Addtable': typeof tableAdminAddtableRoute
   '/(tableAdmin)/TablesManagment': typeof tableAdminTablesManagmentRoute
@@ -356,6 +384,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboardCook'
     | '/dashboardWaiter'
+    | '/categoryForm'
+    | '/categoryManagement'
     | '/customDishForm'
     | '/editMenu'
     | '/menuManagment'
@@ -366,6 +396,7 @@ export interface FileRouteTypes {
     | '/changePassword'
     | '/changePasswordError'
     | '/changePasswordSuccess'
+    | '/customization'
     | '/profileSettings'
     | '/Addtable'
     | '/TablesManagment'
@@ -392,6 +423,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboardCook'
     | '/dashboardWaiter'
+    | '/categoryForm'
+    | '/categoryManagement'
     | '/customDishForm'
     | '/editMenu'
     | '/menuManagment'
@@ -402,6 +435,7 @@ export interface FileRouteTypes {
     | '/changePassword'
     | '/changePasswordError'
     | '/changePasswordSuccess'
+    | '/customization'
     | '/profileSettings'
     | '/Addtable'
     | '/TablesManagment'
@@ -428,6 +462,8 @@ export interface FileRouteTypes {
     | '/(dashboard)/dashboard'
     | '/(dashboard)/dashboardCook'
     | '/(dashboard)/dashboardWaiter'
+    | '/(menuAdmin)/categoryForm'
+    | '/(menuAdmin)/categoryManagement'
     | '/(menuAdmin)/customDishForm'
     | '/(menuAdmin)/editMenu'
     | '/(menuAdmin)/menuManagment'
@@ -438,6 +474,7 @@ export interface FileRouteTypes {
     | '/(profile)/changePassword'
     | '/(profile)/changePasswordError'
     | '/(profile)/changePasswordSuccess'
+    | '/(profile)/customization'
     | '/(profile)/profileSettings'
     | '/(tableAdmin)/Addtable'
     | '/(tableAdmin)/TablesManagment'
@@ -465,6 +502,8 @@ export interface RootRouteChildren {
   dashboardDashboardRoute: typeof dashboardDashboardRoute
   dashboardDashboardCookRoute: typeof dashboardDashboardCookRoute
   dashboardDashboardWaiterRoute: typeof dashboardDashboardWaiterRoute
+  menuAdminCategoryFormRoute: typeof menuAdminCategoryFormRoute
+  menuAdminCategoryManagementRoute: typeof menuAdminCategoryManagementRoute
   menuAdminCustomDishFormRoute: typeof menuAdminCustomDishFormRoute
   menuAdminEditMenuRoute: typeof menuAdminEditMenuRoute
   menuAdminMenuManagmentRoute: typeof menuAdminMenuManagmentRoute
@@ -475,6 +514,7 @@ export interface RootRouteChildren {
   profileChangePasswordRoute: typeof profileChangePasswordRoute
   profileChangePasswordErrorRoute: typeof profileChangePasswordErrorRoute
   profileChangePasswordSuccessRoute: typeof profileChangePasswordSuccessRoute
+  profileCustomizationRoute: typeof profileCustomizationRoute
   profileProfileSettingsRoute: typeof profileProfileSettingsRoute
   tableAdminAddtableRoute: typeof tableAdminAddtableRoute
   tableAdminTablesManagmentRoute: typeof tableAdminTablesManagmentRoute
@@ -605,6 +645,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardDashboardWaiterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(menuAdmin)/categoryForm': {
+      id: '/(menuAdmin)/categoryForm'
+      path: '/categoryForm'
+      fullPath: '/categoryForm'
+      preLoaderRoute: typeof menuAdminCategoryFormRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menuAdmin)/categoryManagement': {
+      id: '/(menuAdmin)/categoryManagement'
+      path: '/categoryManagement'
+      fullPath: '/categoryManagement'
+      preLoaderRoute: typeof menuAdminCategoryManagementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(menuAdmin)/customDishForm': {
       id: '/(menuAdmin)/customDishForm'
       path: '/customDishForm'
@@ -673,6 +727,13 @@ declare module '@tanstack/react-router' {
       path: '/changePasswordSuccess'
       fullPath: '/changePasswordSuccess'
       preLoaderRoute: typeof profileChangePasswordSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(profile)/customization': {
+      id: '/(profile)/customization'
+      path: '/customization'
+      fullPath: '/customization'
+      preLoaderRoute: typeof profileCustomizationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(profile)/profileSettings': {
@@ -746,6 +807,8 @@ const rootRouteChildren: RootRouteChildren = {
   dashboardDashboardRoute: dashboardDashboardRoute,
   dashboardDashboardCookRoute: dashboardDashboardCookRoute,
   dashboardDashboardWaiterRoute: dashboardDashboardWaiterRoute,
+  menuAdminCategoryFormRoute: menuAdminCategoryFormRoute,
+  menuAdminCategoryManagementRoute: menuAdminCategoryManagementRoute,
   menuAdminCustomDishFormRoute: menuAdminCustomDishFormRoute,
   menuAdminEditMenuRoute: menuAdminEditMenuRoute,
   menuAdminMenuManagmentRoute: menuAdminMenuManagmentRoute,
@@ -756,6 +819,7 @@ const rootRouteChildren: RootRouteChildren = {
   profileChangePasswordRoute: profileChangePasswordRoute,
   profileChangePasswordErrorRoute: profileChangePasswordErrorRoute,
   profileChangePasswordSuccessRoute: profileChangePasswordSuccessRoute,
+  profileCustomizationRoute: profileCustomizationRoute,
   profileProfileSettingsRoute: profileProfileSettingsRoute,
   tableAdminAddtableRoute: tableAdminAddtableRoute,
   tableAdminTablesManagmentRoute: tableAdminTablesManagmentRoute,

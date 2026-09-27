@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getProfile, getStoredFirstName } from "../../services/authService";
-import { getProducts, type Product } from "../../services/productService";
+import { getProducts, getCategories, type Product, type Category } from "../../services/productService";
 import { getProductReviews } from "../../services/reviewService";
 import { HiArrowLeft } from "react-icons/hi";
-import { GoPlus } from "react-icons/go";
+import { GoPlus, GoTag } from "react-icons/go";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
@@ -42,26 +42,25 @@ function ProductList({
   isFiltering,
   products,
   onDeleteProduct,
-	selectedProductId,
-	onViewMore,
-	onCloseDetails,
+  selectedProductId,
+  onViewMore,
+  onCloseDetails,
 }: {
   initialLoading: boolean;
   isFiltering: boolean;
   products: Product[];
   onDeleteProduct: (productId: number) => void;
-	selectedProductId: number | null;
-	onViewMore: (productId: number) => void;
-	onCloseDetails: () => void;
+  selectedProductId: number | null;
+  onViewMore: (productId: number) => void;
+  onCloseDetails: () => void;
 }) {
-	const visibleProducts = selectedProductId === null
-		? products
-		: products.filter((product) => product.productId === selectedProductId);
+  const visibleProducts = selectedProductId === null
+    ? products
+    : products.filter((product) => product.productId === selectedProductId);
   return (
     <div
-      className={`contents transition-opacity duration-200 ${
-        isFiltering ? "opacity-50" : "opacity-100"
-      }`}
+      className={`contents transition-opacity duration-200 ${isFiltering ? "opacity-50" : "opacity-100"
+        }`}
     >
       {initialLoading && (
         <p className="text-text-primary">Cargando platillos...</p>
@@ -70,8 +69,8 @@ function ProductList({
         <p className="text-text-primary">No hay platillos...</p>
       )}
 
-		{visibleProducts.map((product) => (
-		<div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
+      {visibleProducts.map((product) => (
+        <div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
           <DishCard
             name={product.productName ?? ""}
             description={product.description ?? ""}
@@ -83,9 +82,9 @@ function ProductList({
             productId={product.productId}
             optionGroups={product.optionGroups}
             onDelete={onDeleteProduct}
-			isDetailView={selectedProductId === product.productId}
-			onViewMore={() => onViewMore(product.productId)}
-			onCloseDetails={onCloseDetails}
+            isDetailView={selectedProductId === product.productId}
+            onViewMore={() => onViewMore(product.productId)}
+            onCloseDetails={onCloseDetails}
           />
         </div>
       ))}
@@ -98,13 +97,14 @@ function ProductList({
 function MenuManagment() {
   const [firstName, setFirstName] = useState(getStoredFirstName);
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [isFiltering, setIsFiltering] = useState(false);
-  const [hasMore , setHasMore]=useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-	const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
 
 
   // cargar el perfil
@@ -120,18 +120,32 @@ function MenuManagment() {
     loadProfile();
   }, []);
 
+  // cargar las categorias
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      }
+    };
+
+    loadCategories();
+  }, []);
+
   //cargar los productos
   useEffect(() => {
     const loadProducts = async () => {
-		setSelectedProductId(null);
+      setSelectedProductId(null);
       setIsFiltering(true);
       try {
         const data = await getProducts({
           search: searchTerm,
-		  //si hay texto en elbuscador se ignora categoria
+          //si hay texto en elbuscador se ignora categoria
           category: searchTerm ? undefined : selectedCategory ?? undefined,
-          limit:PAGE_SIZE,
-          offset:0
+          limit: PAGE_SIZE,
+          offset: 0
         });
         const productsWithRatings = await loadProductsWithRatings(data.products);
         setProducts(productsWithRatings);
@@ -149,39 +163,39 @@ function MenuManagment() {
     return () => clearTimeout(timeoutId);
   }, [searchTerm, selectedCategory]);
 
-  const handleLoadMore=async()=>{
+  const handleLoadMore = async () => {
     setIsLoadingMore(true);
-    try{
+    try {
       const data = await getProducts({
         search: searchTerm,
         category: searchTerm ? undefined : selectedCategory ?? undefined,
         limit: PAGE_SIZE,
         offset: products.length,
       });
-		const productsWithRatings = await loadProductsWithRatings(data.products);
-		setProducts((prev)=>[...prev, ...productsWithRatings]);
-		setHasMore(data.hasMore)
-	}catch(error){
+      const productsWithRatings = await loadProductsWithRatings(data.products);
+      setProducts((prev) => [...prev, ...productsWithRatings]);
+      setHasMore(data.hasMore)
+    } catch (error) {
       console.error("Error loading more products:", error);
-  } finally {
+    } finally {
       setIsLoadingMore(false);
     }
-};
+  };
 
   const handleDeleteProduct = (productId: number) => {
     setProducts((prev) => prev.filter((product) => product.productId !== productId));
-		setSelectedProductId((current) => current === productId ? null : current);
+    setSelectedProductId((current) => current === productId ? null : current);
   };
 
 
   return (
     <DashboardLayout>
-      <main className="min-h-screen bg-brand-white  ">
+      <main className="min-h-screen bg-white  ">
         {/* Celular */}
         <section className="lg:hidden px-8 ">
           <div className="flex items-center gap-2">
             <Link
-              to="/dashboard" 
+              to="/dashboard"
               className="flex items-center gap-2 text-mint-dark"
             >
               <HiArrowLeft className="h-6 w-6" />
@@ -189,7 +203,7 @@ function MenuManagment() {
               <span className="text-[32px] font-bold">Menú</span>
             </Link>
           </div>
-          
+
           <div className="mt-6 flex flex-col gap-4">
             <Link
               to="/simpleDishForm"
@@ -212,6 +226,17 @@ function MenuManagment() {
 
               <GoPlus className="h-6 w-6 shrink-0 text-mint-dark" />
             </Link>
+
+            <Link
+              to="/categoryManagement"
+              className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
+            >
+              <span className="text-base font-bold text-text-primary">
+                Gestionar categorías
+              </span>
+
+              <GoTag className="h-6 w-6 shrink-0 text-mint-dark" />
+            </Link>
           </div>
 
           <div className="mt-4 flex flex-col gap-5  bg-white  ">
@@ -223,6 +248,7 @@ function MenuManagment() {
 
             <div className="mt-2">
               <CategoryFilter
+                categories={categories}
                 selected={selectedCategory}
                 onSelect={(id) => {
                   setSelectedCategory(id);
@@ -232,31 +258,31 @@ function MenuManagment() {
               />
             </div>
 
-             <div className="-mx-8  bg-neutral-50 px-8 pb-20 rounded-t-4xl ">
-            <div className=" mt-8 flex flex-col gap-4">
-              <ProductList
-                initialLoading={initialLoading}
-                isFiltering={isFiltering}
-                products={products}
-                onDeleteProduct={handleDeleteProduct}
-				selectedProductId={selectedProductId}
-				onViewMore={setSelectedProductId}
-				onCloseDetails={() => setSelectedProductId(null)}
-              />
+            <div className="-mx-8  bg-neutral-50 px-8 pb-20 rounded-t-4xl ">
+              <div className=" mt-8 flex flex-col gap-4">
+                <ProductList
+                  initialLoading={initialLoading}
+                  isFiltering={isFiltering}
+                  products={products}
+                  onDeleteProduct={handleDeleteProduct}
+                  selectedProductId={selectedProductId}
+                  onViewMore={setSelectedProductId}
+                  onCloseDetails={() => setSelectedProductId(null)}
+                />
+              </div>
+
+              {hasMore && selectedProductId === null && (
+                <button
+                  type="button"
+                  onClick={handleLoadMore}
+                  disabled={isLoadingMore}
+                  className="w-full mt-6  rounded-2xl bg-white border border-border py-3 text-base font-bold text-mint-dark disabled:opacity-50"
+                >
+                  {isLoadingMore ? "Cargando..." : "Cargar más"}
+                </button>
+              )}
+
             </div>
-
-			{hasMore && selectedProductId === null && (
-              <button
-                type="button"
-                onClick={handleLoadMore}
-                disabled={isLoadingMore}
-                className="w-full mt-6  rounded-2xl bg-white border border-border py-3 text-base font-bold text-mint-dark disabled:opacity-50"
-              >
-                {isLoadingMore ? "Cargando..." : "Cargar más"}
-              </button>
-            )}
-
-          </div>
           </div>
         </section>
 
@@ -274,7 +300,7 @@ function MenuManagment() {
           <div className="mt-6 flex gap-4">
             <Link
               to="/simpleDishForm"
-              className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
+              className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3 hover:bg-mint-dark/10 "
             >
               <span className="text-base font-bold text-text-primary">
                 Añadir un platillo simple
@@ -285,13 +311,23 @@ function MenuManagment() {
 
             <Link
               to="/customDishForm"
-              className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3"
+              className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3 hover:bg-mint-dark/10"
             >
               <span className="text-base font-bold text-text-primary">
                 Añadir un platillo personalizado
               </span>
 
               <GoPlus className="h-6 w-6 shrink-0 text-mint-dark" />
+            </Link>
+            <Link
+              to="/categoryManagement"
+              className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3 hover:bg-mint-dark/10"
+            >
+              <span className="text-base font-bold text-text-primary">
+                Gestionar categorías
+              </span>
+
+              <GoTag className="h-6 w-6 shrink-0 text-mint-dark" />
             </Link>
           </div>
 
@@ -303,15 +339,16 @@ function MenuManagment() {
 
           <div className="mt-6">
             <CategoryFilter
+              categories={categories}
               selected={selectedCategory}
               onSelect={(id) => {
                 setSelectedCategory(id);
-                setSearchTerm(""); 
+                setSearchTerm("");
               }}
               disabled={!!searchTerm}
             />
           </div>
-  
+
           <h2 className="mt-8 text-2xl font-bold text-black">Menú popular</h2>
 
           {/* Platillos */}
@@ -321,13 +358,13 @@ function MenuManagment() {
               isFiltering={isFiltering}
               products={products}
               onDeleteProduct={handleDeleteProduct}
-				selectedProductId={selectedProductId}
-				onViewMore={setSelectedProductId}
-				onCloseDetails={() => setSelectedProductId(null)}
+              selectedProductId={selectedProductId}
+              onViewMore={setSelectedProductId}
+              onCloseDetails={() => setSelectedProductId(null)}
             />
           </div>
 
-		  {hasMore && selectedProductId === null && (
+          {hasMore && selectedProductId === null && (
             <div className="mt-6 flex justify-center ">
               <button
                 type="button"

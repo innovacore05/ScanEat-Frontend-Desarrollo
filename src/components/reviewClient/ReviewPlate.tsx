@@ -14,6 +14,7 @@ type ReviewPlateProps = {
 
 type ReviewValues = {
     rating: number;
+    name: string;
     comment: string;
 };
 
@@ -42,6 +43,7 @@ function ReviewPlate({ orderId, tableId }: ReviewPlateProps) {
                 data.products.forEach((product) => {
                     initialReviews[product.productId] = {
                         rating: 0,
+                        name: "",
                         comment: "",
                     };
                 });
@@ -108,6 +110,9 @@ function ReviewPlate({ orderId, tableId }: ReviewPlateProps) {
                     return {
                         productId: product.productId,
                         rating: review.rating,
+                        ...(review.name.trim()
+                            ? { name: review.name.trim() }
+                            : {}),
                         ...(review.comment.trim()
                             ? { comment: review.comment.trim() }
                             : {}),
@@ -236,8 +241,29 @@ function ReviewPlate({ orderId, tableId }: ReviewPlateProps) {
                                             </div>
 
                                             <p className="mt-2 text-[10px] text-gray-500 sm:text-xs">
-                                                El comentario es opcional.
+                                                El nombre y el comentario son opcionales.
                                             </p>
+
+                                            <div className="mt-5 rounded-md border border-gray-200 p-2 sm:p-4">
+                                                <label
+                                                    htmlFor={`name-${product.productId}`}
+                                                    className="text-xs font-semibold sm:text-sm"
+                                                >
+                                                    Nombre
+                                                </label>
+
+                                                <textarea
+                                                    id={`name-${product.productId}`}
+                                                    value={review.name}
+                                                    onChange={(event) =>
+                                                        updateReview(product.productId, {
+                                                            name: event.target.value,
+                                                        })
+                                                    }
+                                                    placeholder="Escribe tu nombre"
+                                                    className="mt-2 min-h-16 w-full resize-none text-xs leading-relaxed outline-none placeholder:text-gray-500 sm:text-sm"
+                                                />
+                                            </div>
 
                                             <div className="mt-5 rounded-md border border-gray-200 p-3 sm:p-4">
                                                 <label

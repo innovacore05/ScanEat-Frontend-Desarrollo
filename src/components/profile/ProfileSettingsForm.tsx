@@ -77,7 +77,7 @@ setOriginalEmail(data.user.email);
 
 	return (
 		<main className="min-h-screen bg-brand-white">
-			<div className="h-20 bg-mint" />
+			<div className="h-20 bg-mint-dark" />
 
 			<section className="-mt-10 min-h-[calc(100vh-5rem)] rounded-t-[40px] bg-white px-6 py-10">
 				<form
@@ -149,7 +149,7 @@ setOriginalEmail(data.user.email);
 						<button
 							type="submit"
 							disabled={isSubmitting}
-							className="mt-6 w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-mint-dark/90"
+							className="mt-6 w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-mint-darker"
 						>
 							{isSubmitting ? "Guardando..." : "Guardar cambios"}
 						</button>

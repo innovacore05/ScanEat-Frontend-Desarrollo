@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProducts, type Product } from "../../services/productService";
+import { getProducts, getCategories, type Product, type Category } from "../../services/productService";
 import { LuShoppingBag } from "react-icons/lu";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
@@ -7,6 +7,7 @@ import SearchBar from "../menu/SearchBar";
 import { Link, useSearch } from "@tanstack/react-router";
 import { useCart } from "../clientOrders/CartContext";
 import { getProductReviews } from "../../services/reviewService";
+import { RestaurantLogo } from "../theme/RestaurantLogo";
 
 
 
@@ -76,6 +77,7 @@ function ProductList({
 
 function MenuClient() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -160,7 +162,20 @@ const [currentOrderTableId, setCurrentOrderTableId] = useState<
     }),
   );
 };
+useEffect(() => {
+  if (!mesaId) return;
 
+  const loadCategories = async () => {
+    try {
+      const data = await getCategories(mesaId);
+      setCategories(data);
+    } catch (error) {
+      console.error("Error loading categories:", error);
+    }
+  };
+
+  loadCategories();
+}, [mesaId]);
 
 
   //cargar los productos
@@ -231,11 +246,9 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
 
         <div className="mt-4 flex flex-col gap-5">
           <div className="flex justify-start">
-            <img
-              src="/img/LogoS.svg"
-              alt="Logo del negocio"
-              className="h-15.5 w-10 object-contain"
-            />
+            <RestaurantLogo
+  className="h-16 w-16 object-contain"
+/>
 
           </div>
           <SearchBar
@@ -246,6 +259,7 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
 
           <div className="mt-2">
             <CategoryFilter
+            categories={categories}
               selected={selectedCategory}
               onSelect={(id) => {
                 setSelectedCategory(id);
@@ -301,6 +315,7 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
 
         <div className="mt-6">
           <CategoryFilter
+          categories={categories}
             selected={selectedCategory}
             onSelect={(id) => {
               setSelectedCategory(id);
@@ -343,10 +358,8 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
 
       <div className="fixed bottom-2 left-8 right-8 z-50 flex h-12 items-center justify-center rounded-2xl border border-border bg-white lg:bottom-8 lg:left-10 lg:right-auto lg:top-8 lg:h-[calc(100vh-4rem)] lg:w-20 lg:rounded-full lg:border-0">
 
-        <img
-          src="/img/LogoS.svg"
-          alt="Logo del negocio"
-          className="absolute top-6 hidden h-15.5 w-10 object-contain lg:block"
+        <RestaurantLogo
+          className="absolute top-6 hidden h-16 w-16 object-contain lg:block"
         />
 
 {/* nuevo */}
