@@ -100,7 +100,7 @@ console.log("ENVIANDO ORDEN:", {
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="h-20 bg-mint" />
+      <div className="h-20 bg-mint-dark" />
 
       <section className="-mt-10 min-h-[calc(100vh-5rem)] w-full rounded-t-[40px] bg-white px-6 py-10 lg:px-10">
 
