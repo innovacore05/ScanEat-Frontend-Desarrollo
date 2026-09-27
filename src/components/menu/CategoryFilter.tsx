@@ -1,45 +1,88 @@
-import { LuCakeSlice } from "react-icons/lu";
+import {
+  LuCakeSlice,
+  LuSandwich,
+  LuUtensils,
+  LuCroissant,
+  LuIceCreamBowl,
+  LuSalad,
+  LuBadgePercent,
+} from "react-icons/lu";
 import { RiDrinks2Line } from "react-icons/ri";
-import { GiCoffeeCup } from "react-icons/gi";
-import { LuSandwich } from "react-icons/lu";
-import { LuUtensils } from "react-icons/lu";
+import {
+  GiCoffeeCup,
+  GiKnifeFork,
+  GiPizzaSlice,
+  GiHamburger,
+  GiHotDog,
+  GiTacos,
+
+  GiChickenLeg,
+  GiSteak,
+  GiDonut,
+  GiChocolateBar,
+} from "react-icons/gi";
 
 
 //categorias asociadas a iconos
-const CATEGORIES = [
-  { id: 1, name: "Postres", icon: LuCakeSlice },
-  { id: 2, name: "Bebidas", icon: RiDrinks2Line },
-  { id: 3, name: "Café", icon: GiCoffeeCup },
-  { id: 4, name: "Salados", icon: LuSandwich },
-  { id: 5, name: "Almuerzos", icon: LuUtensils },
-];
+const CATEGORY_ICONS = {
+  dessert: LuCakeSlice,
+  drinks: RiDrinks2Line,
+  coffee: GiCoffeeCup,
+  sandwich: LuSandwich,
+  breakfast: LuCroissant,
+  lunch: LuUtensils,
+  dinner: GiKnifeFork,
+  ice_cream: LuIceCreamBowl,
+  pizza: GiPizzaSlice,
+  burger: GiHamburger,
+  hotdog: GiHotDog,
+  tacos: GiTacos,
+  chicken: GiChickenLeg,
+  steak: GiSteak,
+  salad: LuSalad,
+  donut: GiDonut,
+  chocolate: GiChocolateBar,
+  promotion: LuBadgePercent,
+};
 
 // filtro de categoria apagado visual
+type Category = {
+  categoryId: number;
+  name: string;
+  icon: string | null;
+};
+
 function CategoryFilter({
-
-selected,
-onSelect,
-disabled,
-
-}:{
-	 selected: number | null;
+  categories,
+  selected,
+  onSelect,
+  disabled,
+}: {
+  categories: Category[];
+  selected: number | null;
   onSelect: (id: number | null) => void;
   disabled: boolean;
-}){
-	return(
+}) {
 
-<div>
+  return (
+
+    <div>
       <p className="mb-3 text-base font-bold text-text-primary">Filtro</p>
       <div className="flex items-center gap-5">
-        {CATEGORIES.map(({ id, name, icon: Icon }) => {
-          const active = !disabled && selected === id;
+        {categories.map(({ categoryId, name, icon }) => {
+          const Icon =
+  CATEGORY_ICONS[icon as keyof typeof CATEGORY_ICONS] ??
+  LuUtensils;
+
+          const active = !disabled && selected === categoryId;
+
           return (
             <button
-              key={id}
+              key={categoryId}
               type="button"
-              onClick={() => onSelect(active ? null : id)}
+              onClick={() => onSelect(active ? null : categoryId)}
               className={`cursor-pointer flex h-14 w-14 items-center justify-center rounded-2xl text-white transition
-                ${active ? "bg-mint-darker" : "bg-mint-dark"}`}
+        ${active ? "bg-mint-darker" : "bg-mint-dark"}`}
               aria-label={name}
               aria-pressed={active}
             >
@@ -50,7 +93,7 @@ disabled,
       </div>
     </div>
 
-	);
+  );
 }
 
 export default CategoryFilter;

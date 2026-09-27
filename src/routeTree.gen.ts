@@ -26,6 +26,8 @@ import { Route as cookOrdersCookOrdersRouteImport } from './routes/(cookOrders)/
 import { Route as dashboardDashboardRouteImport } from './routes/(dashboard)/dashboard'
 import { Route as dashboardDashboardCookRouteImport } from './routes/(dashboard)/dashboardCook'
 import { Route as dashboardDashboardWaiterRouteImport } from './routes/(dashboard)/dashboardWaiter'
+import { Route as menuAdminCategoryFormRouteImport } from './routes/(menuAdmin)/categoryForm'
+import { Route as menuAdminCategoryManagementRouteImport } from './routes/(menuAdmin)/categoryManagement'
 import { Route as menuAdminCustomDishFormRouteImport } from './routes/(menuAdmin)/customDishForm'
 import { Route as menuAdminEditMenuRouteImport } from './routes/(menuAdmin)/editMenu'
 import { Route as menuAdminMenuManagmentRouteImport } from './routes/(menuAdmin)/menuManagment'
@@ -135,6 +137,17 @@ const dashboardDashboardWaiterRoute =
   dashboardDashboardWaiterRouteImport.update({
     id: '/(dashboard)/dashboardWaiter',
     path: '/dashboardWaiter',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const menuAdminCategoryFormRoute = menuAdminCategoryFormRouteImport.update({
+  id: '/(menuAdmin)/categoryForm',
+  path: '/categoryForm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const menuAdminCategoryManagementRoute =
+  menuAdminCategoryManagementRouteImport.update({
+    id: '/(menuAdmin)/categoryManagement',
+    path: '/categoryManagement',
     getParentRoute: () => rootRouteImport,
   } as any)
 const menuAdminCustomDishFormRoute = menuAdminCustomDishFormRouteImport.update({
@@ -251,6 +264,8 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof dashboardDashboardRoute
   '/dashboardCook': typeof dashboardDashboardCookRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/categoryForm': typeof menuAdminCategoryFormRoute
+  '/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/customDishForm': typeof menuAdminCustomDishFormRoute
   '/editMenu': typeof menuAdminEditMenuRoute
   '/menuManagment': typeof menuAdminMenuManagmentRoute
@@ -288,6 +303,8 @@ export interface FileRoutesByTo {
   '/dashboard': typeof dashboardDashboardRoute
   '/dashboardCook': typeof dashboardDashboardCookRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/categoryForm': typeof menuAdminCategoryFormRoute
+  '/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/customDishForm': typeof menuAdminCustomDishFormRoute
   '/editMenu': typeof menuAdminEditMenuRoute
   '/menuManagment': typeof menuAdminMenuManagmentRoute
@@ -326,6 +343,8 @@ export interface FileRoutesById {
   '/(dashboard)/dashboard': typeof dashboardDashboardRoute
   '/(dashboard)/dashboardCook': typeof dashboardDashboardCookRoute
   '/(dashboard)/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/(menuAdmin)/categoryForm': typeof menuAdminCategoryFormRoute
+  '/(menuAdmin)/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/(menuAdmin)/customDishForm': typeof menuAdminCustomDishFormRoute
   '/(menuAdmin)/editMenu': typeof menuAdminEditMenuRoute
   '/(menuAdmin)/menuManagment': typeof menuAdminMenuManagmentRoute
@@ -365,6 +384,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboardCook'
     | '/dashboardWaiter'
+    | '/categoryForm'
+    | '/categoryManagement'
     | '/customDishForm'
     | '/editMenu'
     | '/menuManagment'
@@ -402,6 +423,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboardCook'
     | '/dashboardWaiter'
+    | '/categoryForm'
+    | '/categoryManagement'
     | '/customDishForm'
     | '/editMenu'
     | '/menuManagment'
@@ -439,6 +462,8 @@ export interface FileRouteTypes {
     | '/(dashboard)/dashboard'
     | '/(dashboard)/dashboardCook'
     | '/(dashboard)/dashboardWaiter'
+    | '/(menuAdmin)/categoryForm'
+    | '/(menuAdmin)/categoryManagement'
     | '/(menuAdmin)/customDishForm'
     | '/(menuAdmin)/editMenu'
     | '/(menuAdmin)/menuManagment'
@@ -477,6 +502,8 @@ export interface RootRouteChildren {
   dashboardDashboardRoute: typeof dashboardDashboardRoute
   dashboardDashboardCookRoute: typeof dashboardDashboardCookRoute
   dashboardDashboardWaiterRoute: typeof dashboardDashboardWaiterRoute
+  menuAdminCategoryFormRoute: typeof menuAdminCategoryFormRoute
+  menuAdminCategoryManagementRoute: typeof menuAdminCategoryManagementRoute
   menuAdminCustomDishFormRoute: typeof menuAdminCustomDishFormRoute
   menuAdminEditMenuRoute: typeof menuAdminEditMenuRoute
   menuAdminMenuManagmentRoute: typeof menuAdminMenuManagmentRoute
@@ -616,6 +643,20 @@ declare module '@tanstack/react-router' {
       path: '/dashboardWaiter'
       fullPath: '/dashboardWaiter'
       preLoaderRoute: typeof dashboardDashboardWaiterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menuAdmin)/categoryForm': {
+      id: '/(menuAdmin)/categoryForm'
+      path: '/categoryForm'
+      fullPath: '/categoryForm'
+      preLoaderRoute: typeof menuAdminCategoryFormRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menuAdmin)/categoryManagement': {
+      id: '/(menuAdmin)/categoryManagement'
+      path: '/categoryManagement'
+      fullPath: '/categoryManagement'
+      preLoaderRoute: typeof menuAdminCategoryManagementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(menuAdmin)/customDishForm': {
@@ -766,6 +807,8 @@ const rootRouteChildren: RootRouteChildren = {
   dashboardDashboardRoute: dashboardDashboardRoute,
   dashboardDashboardCookRoute: dashboardDashboardCookRoute,
   dashboardDashboardWaiterRoute: dashboardDashboardWaiterRoute,
+  menuAdminCategoryFormRoute: menuAdminCategoryFormRoute,
+  menuAdminCategoryManagementRoute: menuAdminCategoryManagementRoute,
   menuAdminCustomDishFormRoute: menuAdminCustomDishFormRoute,
   menuAdminEditMenuRoute: menuAdminEditMenuRoute,
   menuAdminMenuManagmentRoute: menuAdminMenuManagmentRoute,

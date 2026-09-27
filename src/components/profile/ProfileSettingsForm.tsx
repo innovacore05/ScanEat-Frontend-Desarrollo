@@ -149,7 +149,7 @@ setOriginalEmail(data.user.email);
 						<button
 							type="submit"
 							disabled={isSubmitting}
-							className="mt-6 w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-mint-dark/90"
+							className="mt-6 w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-mint-darker"
 						>
 							{isSubmitting ? "Guardando..." : "Guardar cambios"}
 						</button>

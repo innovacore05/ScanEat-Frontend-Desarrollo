@@ -4,7 +4,6 @@ import {
   type ChangeEvent,
   type FormEvent,
 } from "react";
-import { FiCamera } from "react-icons/fi";
 import { Link } from "@tanstack/react-router";
 import { HiArrowLeft } from "react-icons/hi";
 import ColorPickerField from "./ColorPickerField";
@@ -20,51 +19,80 @@ import {
 } from "../../services/themeService";
 import { getProfile } from "../../services/authService";
 import DashboardLayout from "../layout/DashboardLayout";
+import { updateBusiness } from "../../services/businessService";
 
 function ThemeCustomizer() {
-      const [businessName, setBusinessName] = useState("");
-      const [phoneNumber, setPhoneNumber] = useState("");
-      const [businessEmail, setBusinessEmail] = useState("");
-      const [businessCode, setBusinessCode] = useState("");
-      const [error, setError] = useState("");
-      const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const [businessName, setBusinessName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [businessEmail, setBusinessEmail] = useState("");
+  const [businessCode, setBusinessCode] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [themeMessage, setThemeMessage] = useState("");
+  const [businessMessage, setBusinessMessage] = useState("");
   const { theme, saveTheme } = useTheme();
-
-  const [primaryColor, setPrimaryColor] = useState(
-    theme.primaryColor,
-  );
-
-  const [secondaryColor, setSecondaryColor] =
-    useState(theme.secondaryColor);
-
-  const [fontFamily, setFontFamily] =
-    useState<RestaurantFont>(theme.fontFamily);
-
-  const [logoPreview, setLogoPreview] = useState(
-    theme.logoUrl || "/img/LogoS.svg",
-  );
-
-  const [logoFile, setLogoFile] =
-    useState<File | null>(null);
-
-  
-  const [message, setMessage] = useState("");
+  const [primaryColor, setPrimaryColor] = useState(theme.primaryColor,);
+  const [secondaryColor, setSecondaryColor] = useState(theme.secondaryColor);
+  const [fontFamily, setFontFamily] = useState<RestaurantFont>(theme.fontFamily);
+  const [logoPreview, setLogoPreview] = useState(theme.logoUrl || "/img/LogoS.svg",);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (!message) {
+    if (!themeMessage) {
       return;
     }
 
     const timeoutId = window.setTimeout(() => {
-      setMessage("");
+      setThemeMessage("");
     }, 2000);
 
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [message]);
+  }, [themeMessage]);
+
+  useEffect(() => {
+    if (!businessMessage) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setBusinessMessage("");
+    }, 2000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [businessMessage]);
+
+  useEffect(() => {
+    const loadBusinessData = async () => {
+      try {
+        const profile = await getProfile();
+
+        if (!profile.business) {
+          setError("No se encontró la información del negocio.");
+          return;
+        }
+
+        setBusinessName(profile.business.name);
+        setBusinessEmail(profile.business.email);
+        setPhoneNumber(profile.business.number);
+        setBusinessCode(profile.business.code);
+      } catch (error) {
+        console.error("Error cargando los datos del negocio:", error);
+
+        setError(
+          error instanceof Error
+            ? error.message
+            : "No se pudieron cargar los datos del negocio."
+        );
+      }
+    };
+
+    loadBusinessData();
+  }, []);
 
   useEffect(() => {
     setPrimaryColor(theme.primaryColor);
@@ -84,7 +112,7 @@ function ThemeCustomizer() {
     event.preventDefault();
 
     setError("");
-    setMessage("");
+    setThemeMessage("");
     setIsSaving(true);
 
     try {
@@ -129,7 +157,7 @@ function ThemeCustomizer() {
       });
 
       setLogoFile(null);
-      setMessage(
+      setThemeMessage(
         "Personalización guardada correctamente.",
       );
     } catch (error) {
@@ -148,25 +176,33 @@ function ThemeCustomizer() {
     }
   }
 
-  async function handleBusinessSubmit(
-  event: FormEvent<HTMLFormElement>,
-) {
-  event.preventDefault();
+  async function handleBusinessSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setBusinessMessage(""); ("");
+    setIsSubmitting(true);
 
-  setError("");
-  setIsSubmitting(true);
+    try {
+      await updateBusiness(
+        businessName,
+        businessEmail,
+        phoneNumber,
+        businessCode,
+      );
 
-  try {
-    console.log({
-      businessName,
-      businessEmail,
-      phoneNumber,
-      businessCode,
-    });
-  } finally {
-    setIsSubmitting(false);
+      setBusinessMessage("Datos del negocio actualizados correctamente.");
+    } catch (error) {
+      console.error("Error actualizando el negocio:", error);
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "No se pudo actualizar el negocio.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
-}
 
   async function restoreDefaults() {
     setPrimaryColor(DEFAULT_THEME.primaryColor);
@@ -175,7 +211,7 @@ function ThemeCustomizer() {
     setLogoFile(null);
     setLogoPreview("/img/LogoS.svg");
     setError("");
-    setMessage("");
+    setThemeMessage(""); ("");
 
     try {
       setIsSaving(true);
@@ -187,7 +223,7 @@ function ThemeCustomizer() {
         logoUrl: null,
       });
 
-      setMessage("Valores originales restaurados.");
+      setThemeMessage("Valores originales restaurados.");
     } catch (error) {
       setError(
         error instanceof Error
@@ -216,216 +252,215 @@ function ThemeCustomizer() {
     }
   }
 
+
+
   return (
     <DashboardLayout>
       <div className="flex flex-col lg:flex-row">
-         
-      
-    <main className="w-full min-w-0 rounded-[30px] bg-white px-5 py-8 sm:px-8 sm:py-10 lg:w-1/2">
-      <form
-        onSubmit={handleSubmit}
-        className="mx-auto flex w-full flex-col items-center gap-6"
-      >
-        <div className="flex items-center gap-2">
-  <Link
-    to="/dashboard"
-    className="flex items-center gap-2 text-mint-dark"
-  >
-    <HiArrowLeft className="h-6 w-6 lg:hidden" />
 
-    <span className="text-2xl font-bold sm:text-[32px]">
-      Personalización
-    </span>
-  </Link>
-</div>
 
-        <section className="w-full">
-          <h2 className="mb-4 text-center font-bold text-text-primary">
-            Color del sistema
-          </h2>
-
-          <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
-            <ColorPickerField
-              label="Color primario"
-              color={primaryColor}
-              onChange={setPrimaryColor}
-            />
-
-            <ColorPickerField
-              label="Color secundario"
-              color={secondaryColor}
-              onChange={setSecondaryColor}
-            />
-          </div>
-        </section>
-
-        <label className="flex w-full max-w-2xl flex-col items-center gap-2">
-          <span className="font-bold text-text-primary">
-            Tipografía
-          </span>
-
-          <select
-            value={fontFamily}
-            onChange={(event) =>
-              setFontFamily(
-                event.target.value as RestaurantFont,
-              )
-            }
-            className="w-full rounded-lg border border-border px-4 py-3 outline-none focus:border-mint-dark"
+        <main className="w-full min-w-0 rounded-[30px] bg-white px-5 py-8 sm:px-8 sm:py-10 lg:w-1/2">
+          <form
+            onSubmit={handleSubmit}
+            className="mx-auto flex w-full flex-col items-center gap-6"
           >
-            {AVAILABLE_FONTS.map((font) => (
-              <option key={font} value={font}>
-                {font}
-              </option>
-            ))}
-          </select>
-        </label>
+            <div className="flex items-center gap-2">
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 text-mint-dark"
+              >
+                <HiArrowLeft className="h-6 w-6 lg:hidden" />
 
-        <section className="flex w-full flex-col items-center gap-3">
-          <h2 className="font-bold text-text-primary">
-            Logo del restaurante
-          </h2>
+                <span className="text-2xl font-bold sm:text-[32px]">
+                  Personalización
+                </span>
+              </Link>
+            </div>
 
-          <label
-            htmlFor="restaurant-logo"
-            className="flex h-40 w-40 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-neutral-300 bg-white transition hover:opacity-80 sm:h-48 sm:w-48"
-          >
-            <img
-              src={logoPreview}
-              alt="Vista previa del logo"
-              className="h-full w-80 object-contain p-2 sm:w-full"
-            />
+            <section className="w-full">
+              <h2 className="mb-4 text-center font-bold text-text-primary">
+                Color del sistema
+              </h2>
 
-            <input
-              id="restaurant-logo"
-              type="file"
-              accept="image/png,image/jpeg,image/webp,image/svg+xml"
-              className="hidden"
-              onChange={handleLogoChange}
-            />
-          </label>
+              <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+                <ColorPickerField
+                  label="Color primario"
+                  color={primaryColor}
+                  onChange={setPrimaryColor}
+                />
 
-          {!logoFile && !theme.logoUrl && (
-            <FiCamera
-              aria-hidden="true"
-              className="-mt-28 h-12 w-12 text-mint-dark"
-            />
-          )}
-        </section>
+                <ColorPickerField
+                  label="Color secundario"
+                  color={secondaryColor}
+                  onChange={setSecondaryColor}
+                />
+              </div>
+            </section>
 
-        {error && (
-          <p className="text-center text-sm text-red-600">
-            {error}
-          </p>
-        )}
+            <label className="flex w-full max-w-2xl flex-col items-center gap-2">
+              <span className="font-bold text-text-primary">
+                Tipografía
+              </span>
 
-        <div className="flex min-h-6 items-center justify-center">
-          {message && (
-            <p className="mt-2 text-center text-sm text-mint-darker">
-              {message}
-            </p>
-          )}
-        </div>
+              <select
+                value={fontFamily}
+                onChange={(event) =>
+                  setFontFamily(
+                    event.target.value as RestaurantFont,
+                  )
+                }
+                className="w-full rounded-lg border border-border px-4 py-3 outline-none focus:border-mint-dark"
+              >
+                {AVAILABLE_FONTS.map((font) => (
+                  <option key={font} value={font}>
+                    {font}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        <div className="mt-8 flex w-full flex-col justify-center gap-3 sm:flex-row sm:gap-4">
-          <button
-            type="button"
-            onClick={restoreDefaults}
-            className="w-full rounded-lg border border-mint-dark px-4 py-3 text-mint-dark sm:w-auto sm:min-w-48"
-          >
-            Restaurar valores originales
-          </button>
+            <section className="flex w-full flex-col items-center gap-3">
+              <h2 className="font-bold text-text-primary">
+                Logo del restaurante
+              </h2>
 
-          <button
-            type="submit"
-            disabled={isSaving}
-            className="w-full rounded-lg bg-mint-dark px-4 py-3 text-white disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-48"
-          >
-            {isSaving
-              ? "Guardando..."
-              : "Guardar cambios"}
-          </button>
-        </div>
-      </form>
+              <label
+                htmlFor="restaurant-logo"
+                className="flex h-40 w-40 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-neutral-300 bg-white transition hover:opacity-80 sm:h-48 sm:w-48"
+              >
+                <img
+                  src={logoPreview}
+                  alt="Vista previa del logo"
+                  className="h-full w-80 object-contain p-2 sm:w-full"
+                />
+
+                <input
+                  id="restaurant-logo"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  className="hidden"
+                  onChange={handleLogoChange}
+                />
+              </label>
+
+            </section>
+
+            {error && (
+              <p className="text-center text-sm text-red-600">
+                {error}
+              </p>
+            )}
+
+            
+            {themeMessage && (
+              <p className="mt-2 text-center font-medium text-sm text-mint-darker">
+               {themeMessage}
+              </p>
+            )}
+
+            <div className="mt-1 flex w-full flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+              <button
+                type="button"
+                onClick={restoreDefaults}
+                className="w-full rounded-lg border border-mint-dark px-4 py-3 text-mint-dark sm:w-auto sm:min-w-48 hover:bg-mint-dark/10"
+              >
+                Restaurar valores originales
+              </button>
+
+              <button
+                type="submit"
+                disabled={isSaving}
+                className="w-full rounded-lg bg-mint-dark px-4 py-3 text-white disabled:cursor-not-allowed disabled:opacity-60 hover:bg-mint-darker sm:w-auto sm:min-w-48"
+              >
+                {isSaving
+                  ? "Guardando..."
+                  : "Guardar cambios"}
+              </button>
+            </div>
+          </form>
         </main>
 
 
         <main className="w-full lg:w-1/2 lg:border-l lg:border-border ">
-            
-            <section className="min-h-full rounded-[30px] bg-white px-5 py-8 sm:px-28 sm:py-10">
-                
-                <form
-                    onSubmit={handleBusinessSubmit}
-                    className="mx-auto flex w-full flex-col gap-5"
-                >
-                    <h1 className="text-center font-bold text-mint-dark text-2xl sm:text-[32px]">
-                        Editar negocio
-                    </h1>
 
-                    <input
-                        id="businessName"
-                        type="text"
-                        placeholder="Nombre del negocio"
-                        value={businessName}
-                        onChange={(event) =>
-                            setBusinessName(event.target.value)
-                        }
-                        className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
-                    />
+          <section className="min-h-full rounded-[30px] bg-white px-5 py-8 sm:px-28 sm:py-10">
 
-                    <input
-                        id="email"
-                        type="email"
-                        placeholder="Correo electrónico"
-                        value={businessEmail}
-                        onChange={(event) =>
-                            setBusinessEmail(event.target.value)
-                        }
-                        className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
-                    />
+            <form
+              onSubmit={handleBusinessSubmit}
+              className="mx-auto flex w-full flex-col gap-5"
+            >
+              <h1 className="text-center font-bold text-mint-dark text-2xl sm:text-[32px]">
+                Editar negocio
+              </h1>
 
-                    <input
-                        id="phoneNumber"
-                        type="tel"
-                        placeholder="Número de teléfono"
-                        value={phoneNumber}
-                        onChange={(event) =>
-                            setPhoneNumber(event.target.value)
-                        }
-                        className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
-                    />
+              <input
+                id="businessName"
+                type="text"
+                placeholder="Nombre del negocio"
+                value={businessName}
+                onChange={(event) =>
+                  setBusinessName(event.target.value)
+                }
+                className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
+              />
 
-                    <input
-                        id="businessCode"
-                        type="text"
-                        placeholder="Código del negocio"
-                        value={businessCode}
-                        onChange={(event) =>
-                            setBusinessCode(event.target.value)
-                        }
-                        className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
-                    />
+              <input
+                id="email"
+                type="email"
+                placeholder="Correo electrónico"
+                value={businessEmail}
+                onChange={(event) =>
+                  setBusinessEmail(event.target.value)
+                }
+                className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
+              />
 
-                    {error ? (
-                        <p className="text-sm text-red-600">
-                            {error}
-                        </p>
-                    ) : null}
+              <input
+                id="phoneNumber"
+                type="tel"
+                placeholder="Número de teléfono"
+                value={phoneNumber}
+                onChange={(event) =>
+                  setPhoneNumber(event.target.value)
+                }
+                className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
+              />
 
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white hover:bg-mint-dark/90 disabled:cursor-not-allowed disabled:opacity-70"
-                    >
-                        {isSubmitting
-                            ? "Guardando..."
-                            : "Guardar"}
-                    </button>
+              <input
+                id="businessCode"
+                type="text"
+                placeholder="Código del negocio"
+                value={businessCode}
+                onChange={(event) =>
+                  setBusinessCode(event.target.value)
+                }
+                className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
+              />
 
-                </form>
-            </section>
+              {error ? (
+                <p className="text-sm text-red-600">
+                  {error}
+                </p>
+              ) : null}
+              {businessMessage && (
+                <p className="mt-3 text-center text-sm font-medium text-mint-darker">
+                   {businessMessage}
+                </p>
+              )}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white hover:bg-mint-darker disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isSubmitting
+                  ? "Guardando..."
+                  : "Guardar"}
+              </button>
+
+            </form>
+          </section>
         </main>
-        </div>
+      </div>
     </DashboardLayout>
   );
 }

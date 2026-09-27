@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getProducts, type Product } from "../../services/productService";
+import { getProducts, getCategories, type Product, type Category } from "../../services/productService";
 import { LuShoppingBag } from "react-icons/lu";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
@@ -77,6 +77,7 @@ function ProductList({
 
 function MenuClient() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -161,7 +162,20 @@ const [currentOrderTableId, setCurrentOrderTableId] = useState<
     }),
   );
 };
+useEffect(() => {
+  if (!mesaId) return;
 
+  const loadCategories = async () => {
+    try {
+      const data = await getCategories(mesaId);
+      setCategories(data);
+    } catch (error) {
+      console.error("Error loading categories:", error);
+    }
+  };
+
+  loadCategories();
+}, [mesaId]);
 
 
   //cargar los productos
@@ -245,6 +259,7 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
 
           <div className="mt-2">
             <CategoryFilter
+            categories={categories}
               selected={selectedCategory}
               onSelect={(id) => {
                 setSelectedCategory(id);
@@ -300,6 +315,7 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
 
         <div className="mt-6">
           <CategoryFilter
+          categories={categories}
             selected={selectedCategory}
             onSelect={(id) => {
               setSelectedCategory(id);
