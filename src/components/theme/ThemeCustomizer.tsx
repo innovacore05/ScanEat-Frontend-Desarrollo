@@ -22,6 +22,13 @@ import { getProfile } from "../../services/authService";
 import DashboardLayout from "../layout/DashboardLayout";
 
 function ThemeCustomizer() {
+      const [businessName, setBusinessName] = useState("");
+      const [phoneNumber, setPhoneNumber] = useState("");
+      const [businessEmail, setBusinessEmail] = useState("");
+      const [businessCode, setBusinessCode] = useState("");
+      const [error, setError] = useState("");
+      const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const { theme, saveTheme } = useTheme();
 
   const [primaryColor, setPrimaryColor] = useState(
@@ -41,7 +48,7 @@ function ThemeCustomizer() {
   const [logoFile, setLogoFile] =
     useState<File | null>(null);
 
-  const [error, setError] = useState("");
+  
   const [message, setMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -141,6 +148,26 @@ function ThemeCustomizer() {
     }
   }
 
+  async function handleBusinessSubmit(
+  event: FormEvent<HTMLFormElement>,
+) {
+  event.preventDefault();
+
+  setError("");
+  setIsSubmitting(true);
+
+  try {
+    console.log({
+      businessName,
+      businessEmail,
+      phoneNumber,
+      businessCode,
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+}
+
   async function restoreDefaults() {
     setPrimaryColor(DEFAULT_THEME.primaryColor);
     setSecondaryColor(DEFAULT_THEME.secondaryColor);
@@ -191,10 +218,13 @@ function ThemeCustomizer() {
 
   return (
     <DashboardLayout>
-    <main className="min-h-screen bg-white px-4 py-8 sm:px-6 sm:py-10">
+      <div className="flex flex-col lg:flex-row">
+         
+      
+    <main className="w-full min-w-0 rounded-[30px] bg-white px-5 py-8 sm:px-8 sm:py-10 lg:w-1/2">
       <form
         onSubmit={handleSubmit}
-        className="mx-auto flex w-full max-w-4xl flex-col items-center gap-6"
+        className="mx-auto flex w-full flex-col items-center gap-6"
       >
         <div className="flex items-center gap-2">
   <Link
@@ -203,7 +233,7 @@ function ThemeCustomizer() {
   >
     <HiArrowLeft className="h-6 w-6 lg:hidden" />
 
-    <span className="text-[32px] font-bold">
+    <span className="text-2xl font-bold sm:text-[32px]">
       Personalización
     </span>
   </Link>
@@ -258,7 +288,7 @@ function ThemeCustomizer() {
 
           <label
             htmlFor="restaurant-logo"
-            className="flex h-40 w-40 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-neutral-300 bg-white transition hover:opacity-80 sm:h-50 sm:w-50"
+            className="flex h-40 w-40 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-neutral-300 bg-white transition hover:opacity-80 sm:h-48 sm:w-48"
           >
             <img
               src={logoPreview}
@@ -317,7 +347,85 @@ function ThemeCustomizer() {
           </button>
         </div>
       </form>
-    </main>
+        </main>
+
+
+        <main className="w-full lg:w-1/2 lg:border-l lg:border-border ">
+            
+            <section className="min-h-full rounded-[30px] bg-white px-5 py-8 sm:px-28 sm:py-10">
+                
+                <form
+                    onSubmit={handleBusinessSubmit}
+                    className="mx-auto flex w-full flex-col gap-5"
+                >
+                    <h1 className="text-center font-bold text-mint-dark text-2xl sm:text-[32px]">
+                        Editar negocio
+                    </h1>
+
+                    <input
+                        id="businessName"
+                        type="text"
+                        placeholder="Nombre del negocio"
+                        value={businessName}
+                        onChange={(event) =>
+                            setBusinessName(event.target.value)
+                        }
+                        className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
+                    />
+
+                    <input
+                        id="email"
+                        type="email"
+                        placeholder="Correo electrónico"
+                        value={businessEmail}
+                        onChange={(event) =>
+                            setBusinessEmail(event.target.value)
+                        }
+                        className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
+                    />
+
+                    <input
+                        id="phoneNumber"
+                        type="tel"
+                        placeholder="Número de teléfono"
+                        value={phoneNumber}
+                        onChange={(event) =>
+                            setPhoneNumber(event.target.value)
+                        }
+                        className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
+                    />
+
+                    <input
+                        id="businessCode"
+                        type="text"
+                        placeholder="Código del negocio"
+                        value={businessCode}
+                        onChange={(event) =>
+                            setBusinessCode(event.target.value)
+                        }
+                        className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
+                    />
+
+                    {error ? (
+                        <p className="text-sm text-red-600">
+                            {error}
+                        </p>
+                    ) : null}
+
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white hover:bg-mint-dark/90 disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                        {isSubmitting
+                            ? "Guardando..."
+                            : "Guardar"}
+                    </button>
+
+                </form>
+            </section>
+        </main>
+        </div>
     </DashboardLayout>
   );
 }
