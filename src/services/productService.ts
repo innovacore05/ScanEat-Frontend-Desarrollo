@@ -7,7 +7,13 @@ const MENU_BASE_URL = "/api/menu";
 const getImageUrl = (image: string | null) => {
     if (!image) return image;
 
-    return new URL(image, `${import.meta.env.VITE_API_URL}/`).toString();
+    // Si ya es una URL absoluta 
+    if (image.startsWith("http://") || image.startsWith("https://")) {
+        return image;
+    }
+
+    // Fallback rutas relativas
+    return image;
 };
 
 export type Product={
