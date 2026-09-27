@@ -161,6 +161,9 @@ function CategoryForm() {
                             ? "Edita los detalles de la categoría"
                             : "Nueva categoría para tu menú"}
                     </p>
+                    {loadingCategory ? (
+                    <p className="mt-6 text-sm text-gray-500">Cargando categoría...</p>
+                    ):(
                     <div className="mt-6 max-w-md">
                         <input
                             id="category-name"
@@ -171,6 +174,8 @@ function CategoryForm() {
                             className="w-full rounded-lg border border-border px-4 py-3 outline-none focus:border-mint-dark"
                         />
                     </div>
+                    )}
+
                     <div className="mt-8 max-w-md">
                         <p className="mb-3 text-base font-bold text-text-primary">
                             Ícono de la categoría
