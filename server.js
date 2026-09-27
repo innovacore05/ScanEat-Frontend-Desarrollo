@@ -12,6 +12,7 @@ app.use(
   createProxyMiddleware({
     target: process.env.BACKEND_INTERNAL_URL,
     changeOrigin: true,
+    pathRewrite: { "^/": "/api/" },
   })
 );
 
