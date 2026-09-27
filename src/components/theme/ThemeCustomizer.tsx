@@ -46,6 +46,20 @@ function ThemeCustomizer() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
+    if (!message) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setMessage("");
+    }, 2000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [message]);
+
+  useEffect(() => {
     setPrimaryColor(theme.primaryColor);
     setSecondaryColor(theme.secondaryColor);
     setFontFamily(theme.fontFamily);
@@ -249,7 +263,7 @@ function ThemeCustomizer() {
             <img
               src={logoPreview}
               alt="Vista previa del logo"
-              className="h-full w-full object-contain p-3"
+              className="h-full w-80 object-contain p-2 sm:w-full"
             />
 
             <input
@@ -275,13 +289,15 @@ function ThemeCustomizer() {
           </p>
         )}
 
-        {message && (
-          <p className="text-center text-sm text-mint-darker">
-            {message}
-          </p>
-        )}
+        <div className="flex min-h-6 items-center justify-center">
+          {message && (
+            <p className="mt-2 text-center text-sm text-mint-darker">
+              {message}
+            </p>
+          )}
+        </div>
 
-        <div className="flex w-full flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+        <div className="mt-8 flex w-full flex-col justify-center gap-3 sm:flex-row sm:gap-4">
           <button
             type="button"
             onClick={restoreDefaults}

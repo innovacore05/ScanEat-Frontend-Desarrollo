@@ -22,7 +22,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
   const [firstName, setFirstName] = useState(getStoredFirstName);
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [businessName, setBusinessName] = useState("");
+  {/*const [businessName, setBusinessName] = useState("");*/}
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -32,7 +32,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
         setFirstName(data.user.firstName);
         setLastName(data.user.lastName);
         setEmail(data.user.email);
-        setBusinessName(data.business?.name || "");
+        {/*setBusinessName(data.business?.name || "");*/}
         console.log("Negocio:", data.business);
       } catch (error) {
         console.error("Error loading profile:", error);
@@ -50,7 +50,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex justify-start">
           <RestaurantLogo className="h-16 w-16 object-contain" />
           <span className="font-bold text-mint-darker">
-            {businessName || "Mi negocio"}
+           {/*{businessName || "Mi negocio"}*/}
           </span>
         </div>
 

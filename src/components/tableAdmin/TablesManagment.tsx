@@ -284,7 +284,7 @@ const handleRequestDelete = () => {
 								{isOwner && <div className="flex flex-wrap gap-3">
 									<Link
 										to="/addTable"
-										className="flex items-center justify-center gap-2 rounded border w-40 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
+										className="flex items-center justify-between rounded border w-40 h-8.5 px-3 py-2 text-s font-bold border-border text-text-primary"
 									>
 										<span>Añadir mesa</span>
 										<IoIosAdd className="text-mint-dark w-8 h-8" />
