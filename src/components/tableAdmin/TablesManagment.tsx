@@ -284,7 +284,7 @@ const handleRequestDelete = () => {
 								{isOwner && <div className="flex flex-wrap gap-3">
 									<Link
 										to="/addTable"
-										className="flex items-center justify-between rounded border w-40 h-8.5 px-3 py-2 text-s font-bold border-border text-text-primary hover:bg-mint-dark/10"
+										className="flex items-center justify-between rounded border min-h-8.5 whitespace-nowrap gap-2 shrink-0 px-3 py-2 text-s font-bold border-border text-text-primary hover:bg-mint-dark/10"
 									>
 										<span>Añadir mesa</span>
 										<IoIosAdd className="text-mint-dark w-8 h-8" />
@@ -293,14 +293,14 @@ const handleRequestDelete = () => {
 									<Link
 										to="/editTable"
 										search={{ tableId: selectedTable?.id }}
-										className={`flex items-center justify-between rounded border w-40 h-8.5 px-3 py-2 text-s font-bold ${selectedTable ? 'border-border text-text-primary hover:border-mint-dark hover:bg-mint-dark/10' : 'border-border/50 text-text-primary/50 cursor-not-allowed'}`}
+										className={`flex items-center justify-between rounded border min-h-8.5 whitespace-nowrap gap-2 shrink-0 px-3 py-2 text-s font-bold ${selectedTable ? 'border-border text-text-primary hover:border-mint-dark hover:bg-mint-dark/10' : 'border-border/50 text-text-primary/50 cursor-not-allowed'}`}
 										disabled={!selectedTable}
 									>
 										<span>Editar mesa</span>
 										<MdOutlineModeEditOutline className={`w-6 h-6  ${selectedTable ? 'text-mint-dark ' : 'text-mint-dark/50'}`} />
 									</Link>
 
-									<button className="cursor-pointer flex items-center justify-between rounded border w-40 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary hover:bg-mint-dark/10"
+									<button className="cursor-pointer flex items-center justify-between rounded border min-h-8.5 whitespace-nowrap gap-2 shrink-0 border-border px-3 py-2 text-s font-bold text-text-primary hover:bg-mint-dark/10"
 										onClick={handleRequestDelete}>
 										<span>Eliminar mesa</span>
 										<AiOutlineDelete className="text-mint-dark w-5 h-5" />
