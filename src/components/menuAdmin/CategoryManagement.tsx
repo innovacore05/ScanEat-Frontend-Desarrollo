@@ -31,6 +31,8 @@ import {
     GiChocolateBar,
 } from "react-icons/gi";
 
+import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
+
 const CATEGORY_ICONS = {
     "dessert": LuCakeSlice,
     "drinks": RiDrinks2Line,
@@ -79,7 +81,7 @@ function CategoryManagement() {
     return (
         <DashboardLayout>
 
-            {categoryToDelete && (
+            {/* {categoryToDelete && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
                     role="dialog"
@@ -149,7 +151,50 @@ function CategoryManagement() {
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
+
+
+
+<ConfirmDeleteModal
+    isOpen={!!categoryToDelete}
+    title="¿Eliminar categoría?"
+    message={`¿Deseas eliminar "${categoryToDelete?.name}"? Esta acción no se puede deshacer.`}
+    isLoading={deletingId !== null}
+    onCancel={() => setCategoryToDelete(null)}
+    onConfirm={async () => {
+        if (!categoryToDelete) return;
+
+        try {
+            setDeletingId(categoryToDelete.categoryId);
+
+            await deleteCategory(categoryToDelete.categoryId);
+
+            setCategories((currentCategories) =>
+                currentCategories.filter(
+                    (category) =>
+                        category.categoryId !== categoryToDelete.categoryId
+                )
+            );
+
+            setCategoryToDelete(null);
+        } catch (error) {
+            console.error("Error deleting category:", error);
+
+            const apiError = error as { message?: string };
+
+            setDeleteError(
+                apiError.message ??
+                "No se pudo eliminar la categoría."
+            );
+
+            setCategoryToDelete(null);
+        } finally {
+            setDeletingId(null);
+        }
+    }}
+/>
+
+
             {deleteError && (
     <div
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
