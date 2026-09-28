@@ -271,7 +271,7 @@ console.log("CLICK AGREGAR:", productId);
 												type="button"
 												onClick={handleEdit}
 												disabled={isLoadingEdit}
-												className="cursor-pointer text-mint-dark"
+												className="cursor-pointer text-mint-dark  hover:text-mint-darker"
 												aria-label={`Editar ${name}`}
 											>
 												<MdOutlineEdit className="h-6 w-6" />
@@ -279,7 +279,7 @@ console.log("CLICK AGREGAR:", productId);
 										) : (
 											<button
 												type="button"
-												className="cursor-pointer text-mint-dark"
+												className="cursor-pointer text-mint-dark hover:text-mint-darker"
 												aria-label={`Editar ${name}`}
 											>
 												<MdOutlineEdit className="h-6 w-6" />
@@ -289,7 +289,7 @@ console.log("CLICK AGREGAR:", productId);
 										<button
 											type="button"
 											onClick={() => setIsDeleteDialogOpen(true)}
-											className="cursor-pointer text-red-600"
+											className="cursor-pointer text-red-600 hover:text-red-700"
 											aria-label={`Eliminar ${name}`}
 										>
 											<MdDeleteOutline className="h-6 w-6" />

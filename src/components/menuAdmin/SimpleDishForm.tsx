@@ -507,7 +507,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-90 cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white font-bold disabled:opacity-50"
+                  className="w-90 cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white font-bold hover:bg-mint-darker disabled:opacity-50"
                 >
                   {isSubmitting ? "Guardando..." : "Guardar cambios"}
                 </button>

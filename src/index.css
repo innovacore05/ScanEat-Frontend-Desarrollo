@@ -1,25 +1,28 @@
-@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@400;600;700&family=Poppins:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap");
 
 @import "tailwindcss";
 
 @theme {
 
 	/*  colors */
+	
 	--color-mint-light: #C4F5EB;
 	--color-mint: #90D8CA;
-    --color-mint-dark: #61AD9E;
-    --color-mint-darker: #2C7667;
+	/*  primary and secondary colors */
+	--color-mint-dark: #61AD9E; /*  primary */
+	--color-mint-darker: #2C7667; /*secondary */
+	/*  primary and secondary colors */
 	--color-brown: #7F563B;
 	--color-pink: #EE495A;
 	--color-yellow: #FEC810;
 
 	/* Neutral colors */
-    --color-white: #ffffff; 
-    --color-black: #000000; 
-    --color-neutral-50: #f0f0f0; 
+	--color-white: #ffffff;
+	--color-black: #000000;
+	--color-neutral-50: #f0f0f0;
 	--color-neutral-300: #d9d9d9;
 
-	
+
 	--color-text-primary: #575757;
 	--color-border: #CDCDCD;
 	--color-background: #EDEDED;
@@ -32,12 +35,16 @@
 }
 
 @layer base {
+	:root {
+		--restaurant-font: "Lato";
+	}
+
 	html {
 		font-size: 15px;
 	}
 
 	body {
-		font-family: "Lato", sans-serif;
+		font-family: var(--restaurant-font), sans-serif;
 		font-optical-sizing: auto;
 		font-style: normal;
 	}
@@ -46,7 +53,7 @@
 		font-size: 28px;
 	}
 
-    h3,
+	h3,
 	p {
 		font-size: 16px;
 	}
@@ -61,46 +68,46 @@
 
 
 .profile-menu {
-    position: fixed;
-    right: 0;
-    top: 0;
-    z-index: 50;
+	position: fixed;
+	right: 0;
+	top: 0;
+	z-index: 50;
 
-    display: flex;
-    height: 100vh;
-    width: 18rem;
+	display: flex;
+	height: 100vh;
+	width: 18rem;
 
-    flex-direction: column;
-    align-items: center;
+	flex-direction: column;
+	align-items: center;
 
-    border-radius: 30px 0 0 30px;
+	border-radius: 30px 0 0 30px;
 
-    background-color: var(--color-brand-mint-dark);
+	background-color: var(--color-mint-dark);
 
-    padding: 7rem 2rem 0;
+	padding: 7rem 2rem 0;
 
-    transform: translateX(100%);
-    transition: transform 300ms ease-out;
+	transform: translateX(100%);
+	transition: transform 300ms ease-out;
 }
 
 
 .profile-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 40;
+	position: fixed;
+	inset: 0;
+	z-index: 40;
 
-    border: none;
-    background: transparent;
+	border: none;
+	background: transparent;
 
-    opacity: 0;
-    pointer-events: none;
+	opacity: 0;
+	pointer-events: none;
 }
 
 .profile-overlay--open {
-    opacity: 1;
-    pointer-events: auto;
+	opacity: 1;
+	pointer-events: auto;
 }
 
 .profile-menu--open {
-    transform: translateX(0);
+	transform: translateX(0);
 }

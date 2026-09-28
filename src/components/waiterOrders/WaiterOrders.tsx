@@ -64,7 +64,7 @@ function WaiterOrders() {
 
   return (
     <DashboardLayoutWaiter>
-      <main className="min-h-screen bg-brand-white">
+      <main className="min-h-screen bg-white">
 
               
         {/* Celular */}
@@ -126,7 +126,7 @@ function WaiterOrders() {
             </h1>
           </div>
 
-          <h2 className="mt-8 text-2xl font-bold text-black">
+          <h2 className="mt-8 text-2xl font-bold text-mint-dark">
             Pedidos
           </h2>
 

@@ -199,7 +199,7 @@ function EditTable() {
 
 									<Link
 										to="/editTable"
-										className="flex h-8.5 w-41.75 items-center justify-between rounded border-4 border-mint px-3 py-2 text-s font-bold text-text-primary"
+										className="flex h-8.5 w-41.75 items-center justify-between rounded border-4 border-mint-darker/50 px-3 py-2 text-s font-bold text-text-primary"
 									>
 										<span>Editar mesa</span>
 										<MdOutlineModeEditOutline className="h-6 w-6 text-mint-darker" />

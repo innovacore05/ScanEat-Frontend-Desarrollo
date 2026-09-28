@@ -18,7 +18,7 @@ function AddTable() {
 	const [qrTableNumber, setQrTableNumber] = useState<number | string>("");
 	const [tables, setTables] = useState<any[]>([]);
 	//const [createdTableId, setCreatedTableId] = useState<string | null>(null);
-
+	
 
 	useEffect(() => {
 		const loadProfile = async () => {
@@ -180,7 +180,7 @@ function AddTable() {
 								<div className="flex gap-8 items-start">
 									<Link
 										to="/addTable"
-										className="flex items-center justify-between rounded border-4 w-41.75 h-8.5 border-mint px-3 py-2 text-s font-bold text-text-primary"
+										className="flex items-center justify-between rounded border-4 w-41.75 h-8.5 border-mint-darker/50 px-3 py-2 text-s font-bold text-text-primary"
 									>
 										<span>Añadir mesa</span>
 										<IoIosAdd className="text-mint-darker w-8 h-8" />

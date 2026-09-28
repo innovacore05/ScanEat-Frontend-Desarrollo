@@ -18,6 +18,7 @@ export type ReviewableOrderResponse = {
 export type CreateReviewItem = {
   productId: number;
   rating: number;
+  name?: string;
   comment?: string;
 };
 
@@ -27,7 +28,9 @@ export type CreateReviewsPayload = {
 };
 
 export type ProductReview = {
+  reviewId: number;
   rating: number;
+  name: string | null;
   comment: string | null;
   createdAt: string;
 };
@@ -112,7 +115,13 @@ export const getProductReviews = async (
     `${REVIEWS_BASE_URL}/products/${productId}`,
    {
     method:"GET",
-    fallBackMessage:
-    "No se pudieron cargar las reseñas"
+    fallBackMessage:"No se pudieron cargar las reseñas"
 });
+};
+
+export const deleteReview = async (reviewId: number) => {
+  return cookieSessionClient.request(`${REVIEWS_BASE_URL}/${reviewId}`, {
+    method: "DELETE",
+    fallBackMessage: "No se pudo eliminar la reseña",
+  });
 };

@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getProfile, getStoredFirstName } from "../../services/authService";
-import { getProducts, type Product } from "../../services/productService";
+import { getProducts,getCategories, type Product, type Category } from "../../services/productService";
 import { HiArrowLeft } from "react-icons/hi";
 import DashboardLayoutWaiter from "../../components/layout/DashboardLayoutWaiter";
 import DishCard from "../menu/DishCard";
@@ -76,6 +76,7 @@ function ProductList({
 function MenuWaiter() {
   const [firstName, setFirstName] = useState(getStoredFirstName);
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -97,6 +98,20 @@ function MenuWaiter() {
     };
     loadProfile();
   }, []);
+
+  // Cargar las categorías del negocio
+useEffect(() => {
+  const loadCategories = async () => {
+    try {
+      const data = await getCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error("Error loading categories:", error);
+    }
+  };
+
+  loadCategories();
+}, []);
 
   //cargar los productos
   useEffect(() => {
@@ -176,6 +191,7 @@ function MenuWaiter() {
 
             <div className="mt-2">
               <CategoryFilter
+              categories={categories}
                 selected={selectedCategory}
                 onSelect={(id) => {
                   setSelectedCategory(id);
@@ -233,6 +249,7 @@ function MenuWaiter() {
 
           <div className="mt-6">
             <CategoryFilter
+            categories={categories}
               selected={selectedCategory}
               onSelect={(id) => {
                 setSelectedCategory(id);

@@ -68,3 +68,31 @@ return cookieSessionClient.request<{
 
 
 };
+
+export const updateBusiness = async (
+    name: string,
+    email: string,
+    number: string,
+    code: string,
+) => {
+    return cookieSessionClient.request<{
+        message: string;
+        business: {
+            business_id: number;
+            name: string;
+            email: string;
+            number: string;
+            code: string;
+            admin_id: number;
+        };
+    }>(BUSINESS_BASE_URL, {
+        method: "PATCH",
+        body: JSON.stringify({
+            name,
+            email,
+            number,
+            code,
+        }),
+        fallBackMessage: "No se pudo actualizar el negocio",
+    });
+};
