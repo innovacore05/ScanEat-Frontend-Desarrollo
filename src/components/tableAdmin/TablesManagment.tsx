@@ -13,7 +13,7 @@ import { ROLE_IDS } from "../../config/roles";
 import { getOrders } from "../../services/orderService";
 import type { Order } from "../waiterOrders/WaiterOrderCard";
 import OrderDetails from "../Orders/OrderDetails";
-
+import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
 
 export type TableItem = {
 	id: string;
@@ -387,47 +387,14 @@ const handleRequestDelete = () => {
 				</section>
 			</main>
 
-			{isDeleteDialogOpen && selectedTable && (
-				<div
-					className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-					role="dialog"
-					aria-modal="true"
-					aria-labelledby="delete-table-dialog-title"
-				>
-					<div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-						<h3
-							id="delete-table-dialog-title"
-							className="text-lg font-bold text-mint-darker"
-						>
-							¿Eliminar mesa?
-						</h3>
-						<p className="mt-2 text-sm text-text-primary">
-							¿Deseas eliminar la mesa #{selectedTable.tableNumber}? Esta acción no se puede deshacer.
-						</p>
-						<div className="mt-6 flex justify-end gap-3">
-							<button
-								type="button"
-								onClick={() => setIsDeleteDialogOpen(false)}
-								disabled={isDeleting}
-								className="cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold text-text-primary hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
-							>
-								Cancelar
-							</button>
-							<button
-								type="button"
-								onClick={handleDeleteTable}
-								disabled={isDeleting}
-								className="cursor-pointer rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-							>
-								{isDeleting ? "Eliminando..." : "Eliminar"}
-							</button>
-						</div>
-					</div>
-				</div>
-			)}
-
-
-
+			<ConfirmDeleteModal
+	isOpen={isDeleteDialogOpen && !!selectedTable}
+	title="¿Eliminar mesa?"
+	message={`¿Deseas eliminar la mesa #${selectedTable?.tableNumber}? Esta acción no se puede deshacer.`}
+	isLoading={isDeleting}
+	onConfirm={handleDeleteTable}
+	onCancel={() => setIsDeleteDialogOpen(false)}
+/>
 
 
 
