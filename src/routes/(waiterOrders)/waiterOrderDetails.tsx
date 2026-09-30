@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import WaiterOrderDetails from "../../components/Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
-import type { Order } from "../../components/waiterOrders/WaiterOrderCard";
+import type { Order } from "../../components/Orders/OrderCard";
 
 export const Route = createFileRoute("/(waiterOrders)/waiterOrderDetails",)({
   validateSearch: (search) => ({

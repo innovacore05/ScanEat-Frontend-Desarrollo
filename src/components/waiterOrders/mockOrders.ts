@@ -1,4 +1,4 @@
-import type { Order } from "./WaiterOrderCard";
+import type { Order } from "../Orders/OrderCard";
 
 export const orders: Order[] = [
   {
