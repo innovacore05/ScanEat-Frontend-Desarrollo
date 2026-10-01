@@ -5,6 +5,7 @@ import { RestaurantLogo } from "../theme/RestaurantLogo";
 
 import { HiArrowLeft } from "react-icons/hi";
 import { BsFillPlusCircleFill } from "react-icons/bs";
+import InvoiceModal from "./InvoiceModal";
 
 import PaymentModal, {
     type PaymentType,
@@ -13,6 +14,7 @@ import PaymentModal, {
 function PaymentMethod() {
     const [paymentMethod, setPaymentMethod] = useState<PaymentType | "">("");
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
 
     const openPaymentModal = (method: PaymentType) => {
         setPaymentMethod(method);
@@ -156,6 +158,7 @@ function PaymentMethod() {
 
                                 <button
                                     type="button"
+                                    onClick={() => setIsInvoiceModalOpen(true)}
                                     className="mt-3 w-full max-w-72 cursor-pointer rounded-xl bg-mint-dark p-3 text-lg font-semibold text-white"
                                 >
                                     Confirmar Cobro
@@ -175,6 +178,10 @@ function PaymentMethod() {
 
                     setIsPaymentModalOpen(false);
                 }}
+            />
+            <InvoiceModal
+                isOpen={isInvoiceModalOpen}
+                onClose={() => setIsInvoiceModalOpen(false)}
             />
         </main>
     );
