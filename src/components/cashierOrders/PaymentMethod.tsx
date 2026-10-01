@@ -6,8 +6,18 @@ import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { HiArrowLeft } from "react-icons/hi";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 
+import PaymentModal, {
+    type PaymentType,
+} from "./PaymentModal";
+
 function PaymentMethod() {
-    const [paymentMethod, setPaymentMethod] = useState("");
+    const [paymentMethod, setPaymentMethod] = useState<PaymentType | "">("");
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+    const openPaymentModal = (method: PaymentType) => {
+        setPaymentMethod(method);
+        setIsPaymentModalOpen(true);
+    };
 
     const order = {
         tableId: 5,
@@ -35,7 +45,7 @@ function PaymentMethod() {
 
     return (
         <main className="min-h-screen bg-white">
-            <div className="h-22 bg-mint px-8 py-4">
+            <div className="h-22 bg-mint-dark px-8 py-4">
                 <RestaurantLogo className="h-16 w-16" />
             </div>
 
@@ -113,36 +123,33 @@ function PaymentMethod() {
                             <div className="flex flex-col items-center gap-5">
                                 <button
                                     type="button"
-                                    onClick={() => setPaymentMethod("sinpe")}
-                                    className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition ${
-                                        paymentMethod === "sinpe"
-                                            ? "bg-mint text-white"
+                                    onClick={() => openPaymentModal("sinpe")}
+                                    className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition ${paymentMethod === "sinpe"
+                                            ? "bg-mint-darker text-white"
                                             : "text-gray-700"
-                                    }`}
+                                        }`}
                                 >
                                     SINPE Móvil
                                 </button>
 
                                 <button
                                     type="button"
-                                    onClick={() => setPaymentMethod("tarjeta")}
-                                    className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition ${
-                                        paymentMethod === "tarjeta"
-                                            ? "bg-mint text-white"
+                                    onClick={() => openPaymentModal("tarjeta")}
+                                    className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition ${paymentMethod === "tarjeta"
+                                            ? "bg-mint-darker text-white"
                                             : "text-gray-700"
-                                    }`}
+                                        }`}
                                 >
                                     Tarjeta
                                 </button>
 
                                 <button
                                     type="button"
-                                    onClick={() => setPaymentMethod("efectivo")}
-                                    className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition ${
-                                        paymentMethod === "efectivo"
-                                            ? "bg-mint text-white"
+                                    onClick={() => openPaymentModal("efectivo")}
+                                    className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition ${paymentMethod === "efectivo"
+                                            ? "bg-mint-darker text-white"
                                             : "text-gray-700"
-                                    }`}
+                                        }`}
                                 >
                                     Efectivo
                                 </button>
@@ -158,6 +165,17 @@ function PaymentMethod() {
                     </div>
                 </div>
             </section>
+            <PaymentModal
+                isOpen={isPaymentModalOpen}
+                paymentMethod={paymentMethod}
+                total={order.total}
+                onClose={() => setIsPaymentModalOpen(false)}
+                onConfirm={() => {
+                    console.log("Pago confirmado:", paymentMethod);
+
+                    setIsPaymentModalOpen(false);
+                }}
+            />
         </main>
     );
 }
