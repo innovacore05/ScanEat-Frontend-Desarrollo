@@ -5,8 +5,8 @@ import FilterOrders from "../waiterOrders/FilterOrders";
 import SearchOrders from "../waiterOrders/SearchOrders";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import { getStoredFirstName } from "../../services/authService";
-import WaiterOrderCard from "../waiterOrders/WaiterOrderCard";
-import type { Order } from "../waiterOrders/WaiterOrderCard";
+import WaiterOrderCard from "../Orders/OrderCard";
+import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
 
