@@ -11,7 +11,7 @@ import QrCodeModal from "./QRCodeModal";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import { ROLE_IDS } from "../../config/roles";
 import { getOrders } from "../../services/orderService";
-import type { Order } from "../waiterOrders/WaiterOrderCard";
+import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 
 
