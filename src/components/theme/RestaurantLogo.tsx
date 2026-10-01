@@ -6,14 +6,14 @@ interface RestaurantLogoProps {
 }
 
 export function RestaurantLogo({
-  className = "h-16 w-16",
+  className = "h-24 w-20",
   alt = "Logo del restaurante",
 }: RestaurantLogoProps) {
   const { theme } = useTheme();
 
   return (
     <div
-      className={`flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden ${className}`}
+      className={`flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden ${className}`}
     >
       <img
         key={theme.logoUrl || "default-logo"}
