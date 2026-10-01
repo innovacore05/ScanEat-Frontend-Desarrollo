@@ -19,6 +19,7 @@ import { Route as authenticationRegisterBusinessRouteImport } from './routes/(au
 import { Route as authenticationResetPasswordRouteImport } from './routes/(authentication)/resetPassword'
 import { Route as authenticationVerificationCodeRouteImport } from './routes/(authentication)/verificationCode'
 import { Route as cashierOrdersCashierOrdersRouteImport } from './routes/(cashierOrders)/cashierOrders'
+import { Route as cashierOrdersPaymentMethodRouteImport } from './routes/(cashierOrders)/paymentMethod'
 import { Route as clientOrdersCheckOrderRouteImport } from './routes/(clientOrders)/checkOrder'
 import { Route as clientOrdersOrderStatusRouteImport } from './routes/(clientOrders)/orderStatus'
 import { Route as clientOrdersReviewPlateRouteImport } from './routes/(clientOrders)/reviewPlate'
@@ -101,6 +102,12 @@ const cashierOrdersCashierOrdersRoute =
   cashierOrdersCashierOrdersRouteImport.update({
     id: '/(cashierOrders)/cashierOrders',
     path: '/cashierOrders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const cashierOrdersPaymentMethodRoute =
+  cashierOrdersPaymentMethodRouteImport.update({
+    id: '/(cashierOrders)/paymentMethod',
+    path: '/paymentMethod',
     getParentRoute: () => rootRouteImport,
   } as any)
 const clientOrdersCheckOrderRoute = clientOrdersCheckOrderRouteImport.update({
@@ -257,6 +264,7 @@ export interface FileRoutesByFullPath {
   '/resetPassword': typeof authenticationResetPasswordRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/cashierOrders': typeof cashierOrdersCashierOrdersRoute
+  '/paymentMethod': typeof cashierOrdersPaymentMethodRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
   '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
@@ -296,6 +304,7 @@ export interface FileRoutesByTo {
   '/resetPassword': typeof authenticationResetPasswordRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/cashierOrders': typeof cashierOrdersCashierOrdersRoute
+  '/paymentMethod': typeof cashierOrdersPaymentMethodRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
   '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
@@ -336,6 +345,7 @@ export interface FileRoutesById {
   '/(authentication)/resetPassword': typeof authenticationResetPasswordRoute
   '/(authentication)/verificationCode': typeof authenticationVerificationCodeRoute
   '/(cashierOrders)/cashierOrders': typeof cashierOrdersCashierOrdersRoute
+  '/(cashierOrders)/paymentMethod': typeof cashierOrdersPaymentMethodRoute
   '/(clientOrders)/checkOrder': typeof clientOrdersCheckOrderRoute
   '/(clientOrders)/orderStatus': typeof clientOrdersOrderStatusRoute
   '/(clientOrders)/reviewPlate': typeof clientOrdersReviewPlateRoute
@@ -377,6 +387,7 @@ export interface FileRouteTypes {
     | '/resetPassword'
     | '/verificationCode'
     | '/cashierOrders'
+    | '/paymentMethod'
     | '/checkOrder'
     | '/orderStatus'
     | '/reviewPlate'
@@ -416,6 +427,7 @@ export interface FileRouteTypes {
     | '/resetPassword'
     | '/verificationCode'
     | '/cashierOrders'
+    | '/paymentMethod'
     | '/checkOrder'
     | '/orderStatus'
     | '/reviewPlate'
@@ -455,6 +467,7 @@ export interface FileRouteTypes {
     | '/(authentication)/resetPassword'
     | '/(authentication)/verificationCode'
     | '/(cashierOrders)/cashierOrders'
+    | '/(cashierOrders)/paymentMethod'
     | '/(clientOrders)/checkOrder'
     | '/(clientOrders)/orderStatus'
     | '/(clientOrders)/reviewPlate'
@@ -495,6 +508,7 @@ export interface RootRouteChildren {
   authenticationResetPasswordRoute: typeof authenticationResetPasswordRoute
   authenticationVerificationCodeRoute: typeof authenticationVerificationCodeRoute
   cashierOrdersCashierOrdersRoute: typeof cashierOrdersCashierOrdersRoute
+  cashierOrdersPaymentMethodRoute: typeof cashierOrdersPaymentMethodRoute
   clientOrdersCheckOrderRoute: typeof clientOrdersCheckOrderRoute
   clientOrdersOrderStatusRoute: typeof clientOrdersOrderStatusRoute
   clientOrdersReviewPlateRoute: typeof clientOrdersReviewPlateRoute
@@ -594,6 +608,13 @@ declare module '@tanstack/react-router' {
       path: '/cashierOrders'
       fullPath: '/cashierOrders'
       preLoaderRoute: typeof cashierOrdersCashierOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(cashierOrders)/paymentMethod': {
+      id: '/(cashierOrders)/paymentMethod'
+      path: '/paymentMethod'
+      fullPath: '/paymentMethod'
+      preLoaderRoute: typeof cashierOrdersPaymentMethodRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(clientOrders)/checkOrder': {
@@ -800,6 +821,7 @@ const rootRouteChildren: RootRouteChildren = {
   authenticationResetPasswordRoute: authenticationResetPasswordRoute,
   authenticationVerificationCodeRoute: authenticationVerificationCodeRoute,
   cashierOrdersCashierOrdersRoute: cashierOrdersCashierOrdersRoute,
+  cashierOrdersPaymentMethodRoute: cashierOrdersPaymentMethodRoute,
   clientOrdersCheckOrderRoute: clientOrdersCheckOrderRoute,
   clientOrdersOrderStatusRoute: clientOrdersOrderStatusRoute,
   clientOrdersReviewPlateRoute: clientOrdersReviewPlateRoute,
