@@ -120,7 +120,7 @@ function InvoiceModal({ isOpen, onClose }: InvoiceModalProps) {
                                     </p>
 
                                     <p className="text-center text-sm font-semibold text-gray-700">
-                                        Ctd.
+                                        Ctd
                                     </p>
 
                                     <p className="text-right text-sm font-semibold text-gray-700">
