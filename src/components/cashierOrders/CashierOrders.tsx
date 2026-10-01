@@ -24,7 +24,7 @@ function CashierOrders() {
 
     return (
         <main className="min-h-screen bg-white">
-            <div className="h-22 bg-mint px-8 py-4">
+            <div className="h-22 bg-mint-dark px-8 py-4">
                 <RestaurantLogo className="h-16 w-16" />
             </div>
 
