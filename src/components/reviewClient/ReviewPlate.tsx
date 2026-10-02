@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { HiArrowLeft, HiStar } from "react-icons/hi";
 import ReviewSuccess from "./reviewSuccess";
@@ -20,7 +20,7 @@ type ReviewValues = {
 };
 
 function ReviewPlate({ orderId, tableId }: ReviewPlateProps) {
-  const navigate = useNavigate();
+
 
   const [products, setProducts] = useState<ReviewableProduct[]>([]);
   const [reviews, setReviews] = useState<Record<number, ReviewValues>>({});

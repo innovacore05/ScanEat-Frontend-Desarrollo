@@ -1,30 +1,43 @@
+
 import { useEffect, useState } from "react";
 import { IoCloseOutline } from "react-icons/io5";
 
 export type PaymentType = "sinpe" | "tarjeta" | "efectivo";
 
+export type PaymentDetails=
+{
+    reference?:string;
+    amountTendered?:number;
+
+};
+
 type PaymentModalProps = {
     isOpen: boolean;
     paymentMethod: PaymentType | "";
     total: string;
+    isSubmitting?: boolean;
+    errorMessage?: string;
     onClose: () => void;
-    onConfirm: () => void;
+    onConfirm: (details: PaymentDetails) => void;
 };
-
 function PaymentModal({
     isOpen,
     paymentMethod,
     total,
+    isSubmitting = false,
+    errorMessage = "",
     onClose,
     onConfirm,
 }: PaymentModalProps) {
     const [cashReceived, setCashReceived] = useState("");
     const [isCashConfirmed, setIsCashConfirmed] = useState(false);
-
-    useEffect(() => {
+const [reference,setReference]=useState("");
+   
+useEffect(() => {
         if (!isOpen) {
             setCashReceived("");
             setIsCashConfirmed(false);
+            setReference("");
         }
     }, [isOpen]);
 
@@ -38,33 +51,46 @@ function PaymentModal({
         efectivo: "Efectivo",
     };
 
-    const totalAmount = Number(total.replace(/[^\d]/g, ""));
-    const receivedAmount = Number(cashReceived);
-    const change = receivedAmount - totalAmount;
+    const totalAmount = Number(total);
+    const receivedAmount=Number(cashReceived);
+    const change = Math.round((receivedAmount-totalAmount)*100)/100;
 
     const formatMoney = (amount: number) =>
-        `₡${amount.toLocaleString("es-CR")}`;
+        `₡${amount.toLocaleString("es-CR",{
+            minimumFractionDigits:2,
+            maximumFractionDigits:2,
+        })}`;
 
     const isCash = paymentMethod === "efectivo";
     const requiresReceipt =
         paymentMethod === "sinpe" || paymentMethod === "tarjeta";
 
     const handleConfirm = () => {
-        if (isCash && !isCashConfirmed) {
-            if (receivedAmount < totalAmount) {
-                return;
-            }
+  if (isCash) {
+    if (!isCashConfirmed) {
+      if (receivedAmount < totalAmount) return;
+      setIsCashConfirmed(true);
+      return;
+    }
 
-            setIsCashConfirmed(true);
-            return;
-        }
+    onConfirm({ amountTendered: receivedAmount });
+    return;
+  }
 
-        onConfirm();
-    };
+  const trimmed = reference.trim();
+  if (!trimmed) return;
+  onConfirm({ reference: trimmed });
+};
+const isDisabled=
+    (isCash &&
+    !isCashConfirmed &&
+    (!cashReceived || receivedAmount<totalAmount))
+||
+(requiresReceipt && !reference.trim());
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="relative flex h-[37rem] w-full max-w-md flex-col rounded-2xl bg-white px-6 py-10">
+            <div className="relative flex h-148 w-full max-w-md flex-col rounded-2xl bg-white px-6 py-10">
                 <button
                     type="button"
                     onClick={onClose}
@@ -89,6 +115,9 @@ function PaymentModal({
                             <input
                                 id="receipt-number"
                                 type="text"
+                                value={reference}
+                                onChange={(event)=>setReference(event.target.value)}
+                                maxLength={50}
                                 className="mt-3 w-44 rounded-md border border-gray-300 p-2 text-center text-sm"
                             />
                         </div>
@@ -128,20 +157,24 @@ function PaymentModal({
                         </div>
                     )}
 
-                    <button
-                        type="button"
-                        onClick={handleConfirm}
-                        disabled={
-                            isCash &&
-                            !isCashConfirmed &&
-                            (!cashReceived || receivedAmount < totalAmount)
-                        }
-                        className="mt-8 w-44 rounded-xl bg-mint-dark p-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        {isCash && !isCashConfirmed
-                            ? "Calcular cambio"
-                            : "Confirmar pago"}
-                    </button>
+                   {errorMessage && (
+    <p className="mt-4 w-full rounded-md bg-red-50 p-3 text-center text-sm text-red-700">
+        {errorMessage}
+    </p>
+)}
+
+<button
+    type="button"
+    onClick={handleConfirm}
+    disabled={isDisabled}
+    className="mt-8 w-44 rounded-xl bg-mint-dark p-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
+>
+    {isCash && !isCashConfirmed
+        ? "Calcular cambio"
+        : isSubmitting
+            ? "Cobrando..."
+            : "Confirmar cobro"}
+</button>
                 </div>
             </div>
         </div>

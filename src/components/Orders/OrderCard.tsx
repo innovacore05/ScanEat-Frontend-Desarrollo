@@ -18,7 +18,7 @@ export type Order = {
   tax?: number;
   total?: number;
   items: OrderItem[];
-  status?: "Pendiente" | "En preparación" | "Listo" | "Entregado";
+status?: "Pendiente" | "En preparación" | "Listo" | "Entregado" | "Pagado";
 };
 
 type OrderCardProps = {

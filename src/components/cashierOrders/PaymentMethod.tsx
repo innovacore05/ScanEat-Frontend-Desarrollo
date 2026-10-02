@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useSearch } from "@tanstack/react-router";
+import { Link, useSearch, useNavigate} from "@tanstack/react-router";
 
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 
@@ -8,8 +8,20 @@ import { BsFillPlusCircleFill } from "react-icons/bs";
 import {
   getPaymentPreview,
   payOrder,
+  type PayOrderPayload,
+  type PayOrderResponse,
   type PaymentPreview,
 } from "../../services/billingService";
+import PaymentModal, {
+  type PaymentDetails, 
+  type PaymentType }from "./PaymentModal";
+import InvoiceModal from "./InvoiceModal";
+
+const formatCRC=(value:string | number)=>
+  `₡${Number(value).toLocaleString("es-CR",{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2,
+  })}`;
 
 function PaymentMethod() {
   const search = useSearch({ strict: false });
@@ -17,7 +29,15 @@ function PaymentMethod() {
 
   const [order, setOrder] = useState<PaymentPreview | null>(null);
   const [loading, setLoading] = useState(true);
-  const [paymentMethod, setPaymentMethod] = useState("");
+ const [paymentMethod, setPaymentMethod] = useState<PaymentType | "">("");
+const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+const navigate=useNavigate();
+
+const [isPaying,setIsPaying]=useState(false);
+const [payError,setPayError]=useState("");
+const [receipt,setReceipt]=useState<PayOrderResponse |null>(null);
+
 
   useEffect(() => {
     const loadOrder = async () => {
@@ -31,9 +51,64 @@ function PaymentMethod() {
       }
     };
     if (orderId) {
-      loadOrder();
-    }
+  void loadOrder();
+} else {
+  setLoading(false);
+}
   }, [orderId]);
+
+const openPaymentModal = (method: PaymentType) => {
+  setPaymentMethod(method);
+  setPayError("");
+  setIsPaymentModalOpen(true);
+};
+
+const closePaymentModal = () => {
+  if (isPaying) return;
+  setIsPaymentModalOpen(false);
+  setPaymentMethod("");
+  setPayError("");
+};
+
+
+const buildPayload = (
+  method: PaymentType,
+  details: PaymentDetails,
+): PayOrderPayload | null => {
+  if (method === "efectivo") {
+    if (details.amountTendered === undefined) return null;
+    return { method: "cash", amountTendered: details.amountTendered };
+  }
+
+  if (!details.reference) return null;
+  return {
+    method: method === "tarjeta" ? "card" : "sinpe",
+    reference: details.reference,
+  };
+};
+const handleCharge = async (details: PaymentDetails) => {
+  if (!paymentMethod || isPaying || receipt) return;
+
+  const payload = buildPayload(paymentMethod, details);
+  if (!payload) return;
+  try{
+  setIsPaying(true);
+    setPayError("");
+    const response = await payOrder(orderId, payload);
+    setReceipt(response);
+    setIsPaymentModalOpen(false);
+    setIsInvoiceModalOpen(true);
+  }catch(error){
+    setPayError(
+      error && typeof error === "object" && "message" in error
+      ?String ((error as {message?:string}).message)
+      :"No se pudo registrar el cobro",
+    );
+
+  }finally{
+    setIsPaying(false);
+  }
+};
 
   if (loading) {
     return <p>Cargando recibo...</p>;
@@ -44,7 +119,7 @@ function PaymentMethod() {
   }
   return (
     <main className="min-h-screen bg-white">
-      <div className="h-22 bg-mint px-8 py-4">
+     <div className="h-22 bg-mint-dark px-8 py-4">
         <RestaurantLogo className="h-16 w-16" />
       </div>
 
@@ -91,7 +166,7 @@ function PaymentMethod() {
                         {line.detail} x {line.quantity}
                       </p>
                       {/* iva */}
-                      <p className="tracking-wider">{line.total}</p>
+                      <p className="tracking-wider">{formatCRC(line.total)}</p>
                     </div>
                   ))}
                 </div>
@@ -100,14 +175,14 @@ function PaymentMethod() {
               <div className="mt-6 border-t border-border pt-4">
                 <div className="flex items-center justify-between">
                   <p>IVA (13%)</p>
-                 <p className="tracking-wider">{order.totals.totalTax}</p>
+                 <p className="tracking-wider">{formatCRC(order.totals.totalTax)}</p>
                 </div>
 
                 <div className="mt-3 flex items-center justify-between">
                   <p className="text-xl font-bold">Total</p>
                   {/* total */}
                   <p className="text-xl font-bold tracking-wider text-mint-dark">
-                    {order.totals.totalSale}
+                    {formatCRC(order.totals.totalSale)}
                   </p>
                 </div>
               </div>
@@ -122,52 +197,72 @@ function PaymentMethod() {
             <div className="flex flex-col justify-center px-2 lg:px-8">
               <div className="flex flex-col items-center gap-5">
                 <button
-                  type="button"
-                  onClick={() => setPaymentMethod("sinpe")}
-                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition ${
-                    paymentMethod === "sinpe"
-                      ? "bg-mint text-white"
-                      : "text-gray-700"
-                  }`}
-                >
-                  SINPE Móvil
-                </button>
+      type="button"
+      onClick={() => openPaymentModal("sinpe")}
+      disabled={isPaying || receipt !== null}
+      className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${
+        paymentMethod === "sinpe"
+          ? "bg-mint-darker text-white"
+          : "text-gray-700"
+      }`}
+    >
+      SINPE Móvil
+    </button>
 
                 <button
-                  type="button"
-                  onClick={() => setPaymentMethod("tarjeta")}
-                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition ${
-                    paymentMethod === "tarjeta"
-                      ? "bg-mint text-white"
-                      : "text-gray-700"
-                  }`}
-                >
-                  Tarjeta
-                </button>
+      type="button"
+      onClick={() => openPaymentModal("tarjeta")}
+      disabled={isPaying || receipt !== null}
+      className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${
+        paymentMethod === "tarjeta"
+          ? "bg-mint-darker text-white"
+          : "text-gray-700"
+      }`}
+    >
+      Tarjeta
+    </button>
 
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("efectivo")}
-                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition ${
-                    paymentMethod === "efectivo"
-                      ? "bg-mint text-white"
-                      : "text-gray-700"
-                  }`}
-                >
-                  Efectivo
-                </button>
+                 <button
+      type="button"
+      onClick={() => openPaymentModal("efectivo")}
+      disabled={isPaying || receipt !== null}
+      className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${
+        paymentMethod === "efectivo"
+          ? "bg-mint-darker text-white"
+          : "text-gray-700"
+      }`}
+    >
+      Efectivo
+    </button>
 
-                <button
-                  type="button"
-                  className="mt-3 w-full max-w-72 cursor-pointer rounded-xl bg-mint-dark p-3 text-lg font-semibold text-white"
-                >
-                  Confirmar Cobro
-                </button>
+                
+
               </div>
             </div>
           </div>
         </div>
       </section>
+
+
+<PaymentModal
+  isOpen={isPaymentModalOpen}
+  paymentMethod={paymentMethod}
+  total={order.totals.totalSale}
+  isSubmitting={isPaying}
+  errorMessage={payError}
+  onClose={closePaymentModal}
+  onConfirm={(details) => void handleCharge(details)}
+/>
+<InvoiceModal
+  isOpen={isInvoiceModalOpen}
+  receipt={receipt}
+  onClose={() => {
+    setIsInvoiceModalOpen(false);
+    void navigate({ to: "/cashierOrders" });
+  }}
+/>
+
+
     </main>
   );
 }
