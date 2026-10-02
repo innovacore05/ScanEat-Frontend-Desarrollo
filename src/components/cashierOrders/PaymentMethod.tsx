@@ -10,18 +10,30 @@ import InvoiceModal from "./InvoiceModal";
 import PaymentModal, {
     type PaymentType,
 } from "./PaymentModal";
+import PaymentStatus, {
+    type StatusType,
+} from "./PaymentStatus";
 
 function PaymentMethod() {
     const [paymentMethod, setPaymentMethod] = useState<PaymentType | "">("");
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+    const [isPaymentStatusOpen, setIsPaymentStatusOpen] = useState(false);
+    const [paymentStatus, setPaymentStatus] = useState<StatusType | "">("");
 
     const openPaymentModal = (method: PaymentType) => {
         setPaymentMethod(method);
         setIsPaymentModalOpen(true);
     };
 
+    const handlePaymentConfirmed = () => {
+        setIsPaymentModalOpen(false);
+        setPaymentStatus("Aprobado"); // Simula un pago aprobado
+        setIsPaymentStatusOpen(true);
+    };
+
     const order = {
+        orderId: 12345,
         tableId: 5,
         date: "02/05/26",
         products: [
@@ -127,8 +139,8 @@ function PaymentMethod() {
                                     type="button"
                                     onClick={() => openPaymentModal("sinpe")}
                                     className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition ${paymentMethod === "sinpe"
-                                            ? "bg-mint-darker text-white"
-                                            : "text-gray-700"
+                                        ? "bg-mint-darker text-white"
+                                        : "text-gray-700"
                                         }`}
                                 >
                                     SINPE Móvil
@@ -138,8 +150,8 @@ function PaymentMethod() {
                                     type="button"
                                     onClick={() => openPaymentModal("tarjeta")}
                                     className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition ${paymentMethod === "tarjeta"
-                                            ? "bg-mint-darker text-white"
-                                            : "text-gray-700"
+                                        ? "bg-mint-darker text-white"
+                                        : "text-gray-700"
                                         }`}
                                 >
                                     Tarjeta
@@ -149,19 +161,11 @@ function PaymentMethod() {
                                     type="button"
                                     onClick={() => openPaymentModal("efectivo")}
                                     className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition ${paymentMethod === "efectivo"
-                                            ? "bg-mint-darker text-white"
-                                            : "text-gray-700"
+                                        ? "bg-mint-darker text-white"
+                                        : "text-gray-700"
                                         }`}
                                 >
                                     Efectivo
-                                </button>
-
-                                <button
-                                    type="button"
-                                    onClick={() => setIsInvoiceModalOpen(true)}
-                                    className="mt-3 w-full max-w-72 cursor-pointer rounded-xl bg-mint-dark p-3 text-lg font-semibold text-white"
-                                >
-                                    Confirmar Cobro
                                 </button>
                             </div>
                         </div>
@@ -173,12 +177,24 @@ function PaymentMethod() {
                 paymentMethod={paymentMethod}
                 total={order.total}
                 onClose={() => setIsPaymentModalOpen(false)}
-                onConfirm={() => {
-                    console.log("Pago confirmado:", paymentMethod);
+                onConfirm={handlePaymentConfirmed}
+            />
 
-                    setIsPaymentModalOpen(false);
+
+            <PaymentStatus
+                isOpen={isPaymentStatusOpen}
+                status={paymentStatus}
+                orderId={order.orderId}
+                paymentMethod={paymentMethod}
+                onConfirm={() => {
+                    setIsPaymentStatusOpen(false);
+
+                    if (paymentStatus === "Aprobado") {
+                        setIsInvoiceModalOpen(true);
+                    }
                 }}
             />
+
             <InvoiceModal
                 isOpen={isInvoiceModalOpen}
                 onClose={() => setIsInvoiceModalOpen(false)}

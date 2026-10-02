@@ -23,7 +23,7 @@ function InvoiceModal({ isOpen, onClose }: InvoiceModalProps) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="relative flex h-[37rem] w-full max-w-md flex-col overflow-y-auto rounded-2xl bg-white px-6 py-10">
+            <div className="relative flex h-148 w-full max-w-md flex-col overflow-y-auto rounded-2xl bg-white px-6 py-10">
                 <button
                     type="button"
                     onClick={onClose}
