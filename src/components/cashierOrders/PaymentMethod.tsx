@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearch, useNavigate} from "@tanstack/react-router";
 
 import { RestaurantLogo } from "../theme/RestaurantLogo";
-
+import PaymentStatus, { type StatusType } from "./PaymentStatus";
 import { HiArrowLeft } from "react-icons/hi";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import {
@@ -37,7 +37,8 @@ const navigate=useNavigate();
 const [isPaying,setIsPaying]=useState(false);
 const [payError,setPayError]=useState("");
 const [receipt,setReceipt]=useState<PayOrderResponse |null>(null);
-
+const [isPaymentStatusOpen, setIsPaymentStatusOpen] = useState(false);
+const [paymentStatus, setPaymentStatus] = useState<StatusType | "">("");
 
   useEffect(() => {
     const loadOrder = async () => {
@@ -97,7 +98,8 @@ const handleCharge = async (details: PaymentDetails) => {
     const response = await payOrder(orderId, payload);
     setReceipt(response);
     setIsPaymentModalOpen(false);
-    setIsInvoiceModalOpen(true);
+    setPaymentStatus("Aprobado");
+    setIsPaymentStatusOpen(true);
   }catch(error){
     setPayError(
       error && typeof error === "object" && "message" in error
@@ -253,6 +255,20 @@ const handleCharge = async (details: PaymentDetails) => {
   onClose={closePaymentModal}
   onConfirm={(details) => void handleCharge(details)}
 />
+
+<PaymentStatus
+  isOpen={isPaymentStatusOpen}
+  status={paymentStatus}
+  orderId={orderId}
+  paymentMethod={paymentMethod}
+  onConfirm={() => {
+    setIsPaymentStatusOpen(false);
+    if (paymentStatus === "Aprobado") {
+      setIsInvoiceModalOpen(true);
+    }
+  }}
+/>
+
 <InvoiceModal
   isOpen={isInvoiceModalOpen}
   receipt={receipt}
