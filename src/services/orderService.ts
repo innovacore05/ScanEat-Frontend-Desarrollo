@@ -31,8 +31,8 @@ export type OrderStatus =
   | "pending"
   | "preparing"
   | "ready"
-  | "delivered";
-  //| "paid";
+  | "delivered"
+  | "paid";
 
 
 type BackendOrderDetail = {
@@ -101,21 +101,15 @@ export type FrontendOrderStatus =
   | "Pendiente"
   | "En preparación"
   | "Listo"
-  | "Entregado";
-  //| "Pagado";
+  | "Entregado"
+  | "Pagado";
 
 export const stateToLabel: Record<OrderStatus, FrontendOrderStatus> = {
   pending: "Pendiente",
   preparing: "En preparación",
   ready: "Listo",
   delivered: "Entregado",
-  //paid: "Pagado",
-};
-export const statusIdToState: Record<number, OrderStatus> = {
-  1: "pending",
-  2: "preparing",
-  3: "ready",
-  4: "delivered",
+  paid: "Pagado",
 };
 
 const mapBackendOrderToFrontend = (backendOrder: BackendOrder) => {
