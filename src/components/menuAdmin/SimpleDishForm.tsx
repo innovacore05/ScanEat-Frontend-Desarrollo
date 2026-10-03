@@ -13,7 +13,6 @@ interface SimpleDishFormProps {
 }
 
 function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
-  const navigate = useNavigate();
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [name, setName] = useState("");

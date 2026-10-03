@@ -18,7 +18,6 @@ interface CustomDishFormProps {
 }
 
 function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
-  const navigate = useNavigate();
   const isEditMode = mode === "edit" && Boolean(productId);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
