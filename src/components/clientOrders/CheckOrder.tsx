@@ -2,8 +2,9 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useCart } from "./CartContext";
 import { HiArrowLeft } from "react-icons/hi";
 import { FiMinus, FiPlus, FiX } from "react-icons/fi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createOrder } from "../../services/orderService";
+import { getPublicTableNumber } from "../../services/tableService";
 
 
 function CheckOrder() {
@@ -17,13 +18,33 @@ function CheckOrder() {
   } = useCart();
 
   const tableId = mesaId?.trim();
-
+  const [tableInfo, setTableInfo] = useState<{tableId: string; tableNumber: number;} | null>(null);
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState<number | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!tableId) return;
+
+    let isCurrentRequest = true;
+
+    void getPublicTableNumber(tableId)
+      .then(({ tableNumber }) => {
+        if (isCurrentRequest) setTableInfo({ tableId, tableNumber });
+      })
+      .catch((error) => {
+        console.error("Error loading table number:", error);
+        if (isCurrentRequest) setTableInfo(null);
+      });
+
+    return () => {
+      isCurrentRequest = false;
+    };
+  }, [tableId]);
+
 console.log("CHECK ORDER CART:", cartItems);
 console.log("CHECK ORDER TABLE:", mesaId);
   const subtotal = cartItems.reduce(
@@ -119,6 +140,12 @@ console.log("ENVIANDO ORDEN:", {
               </span>
             </Link>
           </div>
+
+          {tableInfo && tableInfo.tableId === tableId && (
+            <p className="mt-3 font-bold text-mint-dark">
+              Mesa #{tableInfo.tableNumber}
+            </p>
+          )}
 
           <h3 className="mt-5 text-xl font-bold text-text-primary">
             Resumen del pedido
@@ -258,11 +285,17 @@ console.log("ENVIANDO ORDEN:", {
             >
               <HiArrowLeft className="h-6 w-6" />
 
-              <span className="text-2xl font-bold">
+              <span className="text-3xl font-bold">
                 Revisar pedido
               </span>
             </Link>
           </div>
+
+          {tableInfo && tableInfo.tableId === tableId && (
+            <p className="mt-3 font-bold text-mint-dark text-xl">
+              Mesa #{tableInfo.tableNumber}
+            </p>
+          )}
 
           <div className="mt-8 grid grid-cols-[minmax(0,1fr)_340px] gap-8 xl:grid-cols-[minmax(0,680px)_360px] xl:gap-10">
 
