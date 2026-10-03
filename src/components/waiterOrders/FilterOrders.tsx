@@ -29,7 +29,7 @@ disabled,
               key={id}
               type="button"
               onClick={() => onSelect(active ? null : id)}
-              className={`cursor-pointer flex h-8 w-28 text-sm lg:text-base lg:h-10 lg:w-32 items-center justify-center rounded-lg  transition font-bold
+              className={`cursor-pointer flex h-8 w-30 text-sm lg:text-base lg:h-10 lg:w-36 items-center justify-center rounded-lg  transition font-bold
                 ${active ? "bg-mint-darker text-white" : "bg-white border border-mint-darker text-mint-darker"}`}
               aria-label={name}
               aria-pressed={active}

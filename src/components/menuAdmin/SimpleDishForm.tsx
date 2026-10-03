@@ -225,7 +225,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
             <p className="mt-2 text-sm text-text-primary">{successMessage}</p>
             <button
               type="button"
-              onClick={() => navigate({ to: "/menuManagment" })}
+               onClick={() => setSuccessMessage(null)}
               className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
             >
               Aceptar

@@ -65,13 +65,23 @@ function OrderCard({ order, onDetails, isCashier = false}: OrderCardProps) {
   </Link>
 
   {/* Computadora */}
+  {isCashier ? (
   <Link
-    to={isCashier ? "/paymentMethod" : "/waiterOrderDetails"}
+    to="/paymentMethod"
     search={{ orderId: order.orderId }}
     className="hidden w-20 cursor-pointer rounded-lg border border-mint-dark py-2 text-center text-sm font-bold text-mint-darker hover:bg-mint/10 lg:block"
->
-    {isCashier ? "Pagar" : "Detalles"}
-</Link>
+  >
+    Pagar
+  </Link>
+) : (
+  <button
+    type="button"
+    onClick={onDetails}
+    className="hidden w-20 cursor-pointer rounded-lg border border-mint-dark py-2 text-center text-sm font-bold text-mint-darker hover:bg-mint/10 lg:block"
+  >
+    Detalles
+  </button>
+)}
 </div>
       </div>
     </div>
