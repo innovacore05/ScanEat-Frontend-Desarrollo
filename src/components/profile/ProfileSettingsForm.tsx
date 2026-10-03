@@ -1,18 +1,22 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link} from "@tanstack/react-router";
 import { editProfile,getProfile } from "../../services/authService";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
+import { FaRegCheckCircle } from "react-icons/fa";
+
+import DashboardLayout from "../../components/layout/DashboardLayout";
+
 
 
 function ProfileSettingsForm() {
-	const navigate = useNavigate();
 	const [error, setError] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
-const [firstName, setFirstName] = useState("");
-const [lastName, setLastName] = useState("");
-const [email, setEmail] = useState("");
-const [originalFirstName, setOriginalFirstName] = useState("");
-const [originalLastName, setOriginalLastName] = useState("");
-const [originalEmail, setOriginalEmail] = useState("");
+	const [showSuccess, setShowSuccess] = useState(false);
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
+	const [email, setEmail] = useState("");
+	const [originalFirstName, setOriginalFirstName] = useState("");
+	const [originalLastName, setOriginalLastName] = useState("");
+	const [originalEmail, setOriginalEmail] = useState("");
 
 useEffect(() => {
   const loadProfile = async () => {
@@ -66,7 +70,7 @@ setOriginalEmail(data.user.email);
 
     await editProfile(changes);
 
-    navigate({ to: "/dashboard" });
+    setShowSuccess(true);
   } catch (error) {
     console.error("Error updating profile:", error);
     setError("No se pudo actualizar el perfil. Inténtalo de nuevo.");
@@ -76,8 +80,9 @@ setOriginalEmail(data.user.email);
 }
 
 	return (
-		<main className="min-h-screen bg-brand-white">
-			<div className="h-20 bg-mint-dark" />
+		 <>
+		<DashboardLayout>
+		<main className="min-h-screen bg-brand-white mt-22">
 
 			<section className="-mt-10 min-h-[calc(100vh-5rem)] rounded-t-[40px] bg-white px-6 py-10">
 				<form
@@ -156,7 +161,30 @@ setOriginalEmail(data.user.email);
 					</div>
 				</form>
 			</section>
-		</main>
+			</main>
+			</DashboardLayout>
+
+			{showSuccess ? (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
+					<div className="w-full max-w-sm rounded-[40px] bg-white px-8 py-16 text-center">
+						<FaRegCheckCircle className="mx-auto h-20 w-20 text-mint-dark" />
+						<h1 className="mt-8 text-2xl font-bold text-mint-dark">
+							¡Éxito!
+						</h1>
+						<p className="mt-4 text-text-primary">
+							Tus datos han sido actualizados correctamente.
+						</p>
+						<button
+						type="button"
+						onClick={() => setShowSuccess(false)}
+							className="mt-8 cursor-pointer font-bold text-mint-dark hover:underline"
+						>
+							Aceptar
+						</button>
+						\</div>
+				</div>
+			) : null}
+		</>
 	);
 }
 
