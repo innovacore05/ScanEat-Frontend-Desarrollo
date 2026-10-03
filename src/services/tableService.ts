@@ -5,15 +5,24 @@ import { cookieSessionClient } from "./cookieSessionClient";
 const TABLES_BASE_URL = "/api/table";
 //Validación para que el id de la mesa tenga, entre 1 y 100 caracteres, solo tenga
 //letras, numeros, guiones(medios y bajos). 
-const getTablePath = (tableId: string) => {
+const getTablePath = (tableId: string, baseUrl = TABLES_BASE_URL) => {
   const normalizedTableId = tableId.trim();
 
   if (!/^[A-Za-z0-9_-]{1,100}$/.test(normalizedTableId)) {
     throw new Error("Identificador de mesa inválido");
   }
 
-  return `${TABLES_BASE_URL}/${encodeURIComponent(normalizedTableId)}`;
+  return `${baseUrl}/${encodeURIComponent(normalizedTableId)}`;
 };
+
+export const getPublicTableNumber = async (tableId: string) =>
+  cookieSessionClient.request<{ tableNumber: number }>(
+    getTablePath(tableId, "/api/public/tables"),
+    {
+      method: "GET",
+      fallBackMessage: "No se pudo obtener el número de mesa",
+    },
+  );
 
 
 

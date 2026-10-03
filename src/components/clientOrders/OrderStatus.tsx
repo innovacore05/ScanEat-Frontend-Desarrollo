@@ -13,6 +13,7 @@ import {
   stateToLabel,
   type FrontendOrderStatus,
 } from "../../services/orderService";
+import { getPublicTableNumber } from "../../services/tableService";
 
 type OrderStatusProps = {
   orderId: number;
@@ -66,6 +67,26 @@ const statusIcons = {
 function OrderStatus({ orderId, tableId }: OrderStatusProps) {
   const [status, setStatus] = useState<FrontendOrderStatus>("Pendiente");
   const [error, setError] = useState("");
+  const [tableInfo, setTableInfo] = useState<{tableId: string; tableNumber: number;} | null>(null);
+
+  useEffect(() => {
+    if (!tableId) return;
+
+    let isCurrentRequest = true;
+
+    void getPublicTableNumber(tableId)
+      .then(({ tableNumber }) => {
+        if (isCurrentRequest) setTableInfo({ tableId, tableNumber });
+      })
+      .catch((loadError) => {
+        console.error("No se pudo consultar el número de mesa:", loadError);
+        if (isCurrentRequest) setTableInfo(null);
+      });
+
+    return () => {
+      isCurrentRequest = false;
+    };
+  }, [tableId]);
 
   useEffect(() => {
     let isMounted = true;
@@ -137,6 +158,11 @@ function OrderStatus({ orderId, tableId }: OrderStatusProps) {
         </Link>
 
         <div className="mx-auto mt-10 flex w-full max-w-2xl flex-col items-center text-center">
+          {tableInfo && tableInfo.tableId === tableId && (
+            <p className="mb-1 text-base font-semibold text-mint-dark">
+              Mesa #{tableInfo.tableNumber}
+            </p>
+          )}
           <p className="text-sm font-semibold uppercase tracking-wide text-mint-dark">
             Pedido #{orderId}
           </p>
