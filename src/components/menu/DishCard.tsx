@@ -5,6 +5,7 @@ import { BsFillPlusCircleFill } from "react-icons/bs";
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
 import { useCart } from "../clientOrders/CartContext";
 import { Link } from "@tanstack/react-router";
+import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
 
 import {
 	deleteProduct,
@@ -159,11 +160,11 @@ function DishCard({
 
 	const groupsOptions = async () => {
 		if (!productId) return;
-console.log("CLICK AGREGAR:", productId);
+
 		try {
 			setIsLoadingEdit(true);
 			const product = await getProductById(productId);
-			 console.log("PRODUCTO CARGADO:", product);
+			
 			const isCustom = product.isCustom !== undefined
 				? product.isCustom === true || product.isCustom === 1
 				: productIsCustom(product) || await isCustomProduct(productId);
@@ -174,11 +175,7 @@ console.log("CLICK AGREGAR:", productId);
 				setValidationMessage("");
 				setIsOptionsModalOpen(true);
 			} else {
-				console.log("AGREGANDO AL CARRITO:", {
-    productId,
-    name,
-    price,
-});
+				
 				addToCart({
 					productId,
 					name,
@@ -422,7 +419,7 @@ console.log("CLICK AGREGAR:", productId);
 				</div>
 			)}
 
-			{isDeleteDialogOpen && (
+			{/* {isDeleteDialogOpen && (
 				<div
 					className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
 					role="dialog"
@@ -456,7 +453,19 @@ console.log("CLICK AGREGAR:", productId);
 						</div>
 					</div>
 				</div>
-			)}
+			)} */}
+
+
+<ConfirmDeleteModal
+	isOpen={isDeleteDialogOpen}
+	title="¿Eliminar producto?"
+	message={`¿Deseas eliminar "${name}"? Esta acción no se puede deshacer.`}
+	isLoading={isDeleting}
+	onConfirm={handleDelete}
+	onCancel={() => setIsDeleteDialogOpen(false)}
+/>
+
+
 		</>
 	);
 }

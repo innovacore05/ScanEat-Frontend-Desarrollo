@@ -1,26 +1,23 @@
+import { useEffect,useState } from "react";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import OrderCard, { type Order } from "../Orders/OrderCard";
+import { getOrders } from "../../services/orderService";
 
-function CashierOrders() {
+function CashierOrders (){
+const [orders,setOrders]=useState<Order[]>([]);
 
-    const orders: Order[] = [
-        {
-            orderId: 1,
-            tableId: 5,
-            time: "12:30 p. m.",
-            price: "₡8,500",
-            items: [],
-            status: "Listo",
-        },
-        {
-            orderId: 2,
-            tableId: 3,
-            time: "12:45 p. m.",
-            price: "₡6,200",
-            items: [],
-            status: "Listo",
-        },
-    ];
+useEffect(()=>{
+    const loadOrders =async ()=>{
+        try{
+       const data = await getOrders("delivered",true);
+       setOrders(data);
+        }catch(error){
+        console.error("Error caragdno órdenes:", error);
+        }
+    };
+    loadOrders();
+
+},[]);
 
     return (
         <main className="min-h-screen bg-white">

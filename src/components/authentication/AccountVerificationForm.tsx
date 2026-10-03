@@ -103,7 +103,7 @@ function AccountVerificationForm() {
 			const response = await verifyEmail(email, verificationCode);
 			setVerifiedRoleId(response.user.roleId);
 
-			localStorage.setItem("authToken", response.token);
+			
 			localStorage.setItem("authUser", JSON.stringify(response.user));
 
 			localStorage.removeItem("pendingVerificationEmail");

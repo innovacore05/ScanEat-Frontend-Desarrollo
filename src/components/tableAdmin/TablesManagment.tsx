@@ -13,7 +13,7 @@ import { ROLE_IDS } from "../../config/roles";
 import { getOrders } from "../../services/orderService";
 import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
-
+import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
 
 export type TableItem = {
 	id: string;
@@ -93,22 +93,28 @@ const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	}, []);
 
 	const handleDeleteTable = async () => {
-		if (!selectedTable) return;
+	if (!selectedTable) return;
 
-		try {
-			setIsDeleting(true);
-			await deleteTable(selectedTable.id);
-			setTables((currentTables) =>
-				currentTables.filter((table) => table.id !== selectedTable.id),
-			);
-			setSelectedTable(null);
-			setIsDeleteDialogOpen(false);
-		} catch (error) {
-			console.error("Error eliminando mesa:", error);
-		} finally {
-			setIsDeleting(false);
-		}
-	};
+	try {
+		setIsDeleting(true);
+		await deleteTable(selectedTable.id);
+		setTables((currentTables) =>
+			currentTables.filter((table) => table.id !== selectedTable.id),
+		);
+		setSelectedTable(null);
+		setIsDeleteDialogOpen(false);
+	} catch (error) {
+		console.error("Error eliminando mesa:", error);
+		setIsDeleteDialogOpen(false);
+		setErrorMessage(
+			error && typeof error === "object" && "message" in error
+				? String((error as { message?: string }).message)
+				: "No se pudo eliminar la mesa.",
+		);
+	} finally {
+		setIsDeleting(false);
+	}
+};
 
 	// Keep the admin layout as the visual fallback, but wait for the role
 	// before displaying owner-only table actions.
@@ -117,9 +123,10 @@ const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const dashboardRoute = roleId === ROLE_IDS.waiter ? "/dashboardWaiter" : "/dashboard";
 
 	const tableOrders = orders.filter(
-	(order) => order.tableId === selectedTable?.tableNumber,
-	);
-	
+  (order) =>
+    order.tableId === selectedTable?.tableNumber &&
+    order.status !== "Pagado",
+);
 
 
 
@@ -284,7 +291,7 @@ const handleRequestDelete = () => {
 								{isOwner && <div className="flex flex-wrap gap-3">
 									<Link
 										to="/addTable"
-										className="flex items-center justify-between rounded border w-40 h-8.5 px-3 py-2 text-s font-bold border-border text-text-primary hover:bg-mint-dark/10"
+										className="flex items-center justify-between rounded border min-h-8.5 whitespace-nowrap gap-2 shrink-0 px-3 py-2 text-s font-bold border-border text-text-primary hover:bg-mint-dark/10"
 									>
 										<span>Añadir mesa</span>
 										<IoIosAdd className="text-mint-dark w-8 h-8" />
@@ -293,14 +300,14 @@ const handleRequestDelete = () => {
 									<Link
 										to="/editTable"
 										search={{ tableId: selectedTable?.id }}
-										className={`flex items-center justify-between rounded border w-40 h-8.5 px-3 py-2 text-s font-bold ${selectedTable ? 'border-border text-text-primary hover:border-mint-dark hover:bg-mint-dark/10' : 'border-border/50 text-text-primary/50 cursor-not-allowed'}`}
+										className={`flex items-center justify-between rounded border min-h-8.5 whitespace-nowrap gap-2 shrink-0 px-3 py-2 text-s font-bold ${selectedTable ? 'border-border text-text-primary hover:border-mint-dark hover:bg-mint-dark/10' : 'border-border/50 text-text-primary/50 cursor-not-allowed'}`}
 										disabled={!selectedTable}
 									>
 										<span>Editar mesa</span>
 										<MdOutlineModeEditOutline className={`w-6 h-6  ${selectedTable ? 'text-mint-dark ' : 'text-mint-dark/50'}`} />
 									</Link>
 
-									<button className="cursor-pointer flex items-center justify-between rounded border w-40 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary hover:bg-mint-dark/10"
+									<button className="cursor-pointer flex items-center justify-between rounded border min-h-8.5 whitespace-nowrap gap-2 shrink-0 border-border px-3 py-2 text-s font-bold text-text-primary hover:bg-mint-dark/10"
 										onClick={handleRequestDelete}>
 										<span>Eliminar mesa</span>
 										<AiOutlineDelete className="text-mint-dark w-5 h-5" />
@@ -387,47 +394,14 @@ const handleRequestDelete = () => {
 				</section>
 			</main>
 
-			{isDeleteDialogOpen && selectedTable && (
-				<div
-					className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-					role="dialog"
-					aria-modal="true"
-					aria-labelledby="delete-table-dialog-title"
-				>
-					<div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-						<h3
-							id="delete-table-dialog-title"
-							className="text-lg font-bold text-mint-darker"
-						>
-							¿Eliminar mesa?
-						</h3>
-						<p className="mt-2 text-sm text-text-primary">
-							¿Deseas eliminar la mesa #{selectedTable.tableNumber}? Esta acción no se puede deshacer.
-						</p>
-						<div className="mt-6 flex justify-end gap-3">
-							<button
-								type="button"
-								onClick={() => setIsDeleteDialogOpen(false)}
-								disabled={isDeleting}
-								className="cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold text-text-primary hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
-							>
-								Cancelar
-							</button>
-							<button
-								type="button"
-								onClick={handleDeleteTable}
-								disabled={isDeleting}
-								className="cursor-pointer rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-							>
-								{isDeleting ? "Eliminando..." : "Eliminar"}
-							</button>
-						</div>
-					</div>
-				</div>
-			)}
-
-
-
+			<ConfirmDeleteModal
+	isOpen={isDeleteDialogOpen && !!selectedTable}
+	title="¿Eliminar mesa?"
+	message={`¿Deseas eliminar la mesa #${selectedTable?.tableNumber}? Esta acción no se puede deshacer.`}
+	isLoading={isDeleting}
+	onConfirm={handleDeleteTable}
+	onCancel={() => setIsDeleteDialogOpen(false)}
+/>
 
 
 
@@ -439,8 +413,8 @@ const handleRequestDelete = () => {
     >
         <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl text-center">
             <h3 className="text-lg font-bold text-mint-darker align-middle">
-               Orden activa!
-            </h3>
+   No se puede eliminar la mesa
+</h3>
             <p className="mt-2 text-sm text-text-primary">{errorMessage}</p>
             <div className="mt-6 flex justify-center">
                 <button
