@@ -21,7 +21,7 @@ useEffect(()=>{
 
     return (
         <main className="min-h-screen bg-white">
-            <div className="h-22 bg-mint-dark px-8 py-4">
+            <div className="h-30 bg-neutral-50 border-b-4 border-mint-dark px-8 py-4 flex items-center">
                 <RestaurantLogo className="h-16 w-16" />
             </div>
 

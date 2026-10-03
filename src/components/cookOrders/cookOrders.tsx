@@ -65,12 +65,12 @@ function CookOrders() {
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="flex min-h-22 items-center justify-between gap-4 bg-mint-dark px-4 py-4 sm:px-8">
-        <RestaurantLogo className="h-16 w-16 object-contain sm:h-16 sm:w-16" />
+      <div className="flex h-30 items-center justify-between gap-4 bg-neutral-50 border-b-4 border-mint-dark px-4 py-4 sm:px-8">
+        <RestaurantLogo className="h-16 w-16 object-contain " />
         <Link
           to="/login"
           onClick={logout}
-          className="flex items-center justify-center gap-2 rounded-2xl bg-white px-3 py-3 text-base font-bold text-mint-dark sm:gap-3 sm:px-8 sm:py-4 sm:text-xl"
+          className="flex items-center justify-center gap-2 rounded-2xl bg-mint-dark px-3 py-3 text-base font-bold text-white sm:gap-3 sm:px-8 sm:py-4 sm:text-xl"
         >
           <LuLogOut className="h-4 w-4 sm:h-5 sm:w-5" />
           <span>Cerrar sesión</span>
