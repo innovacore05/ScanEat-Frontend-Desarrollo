@@ -20,8 +20,10 @@ type OrderStatusProps = {
   tableId?: string;
 };
 
+type VisibleStatus = Exclude<FrontendOrderStatus, "Pagado">;
+
 const statusContent: Record<
-  FrontendOrderStatus,
+  VisibleStatus,
   {
     icon: typeof HiClock;
     title: string;
@@ -50,7 +52,7 @@ const statusContent: Record<
   },
 };
 
-const statusOrder: FrontendOrderStatus[] = [
+const statusOrder: VisibleStatus[] = [
   "Pendiente",
   "En preparación",
   "Listo",
@@ -62,10 +64,10 @@ const statusIcons = {
   "En preparación": GiCampCookingPot,
   Listo: HiCheckCircle,
   Entregado: IoBagCheck,
-} satisfies Record<FrontendOrderStatus, typeof HiClock>;
+} satisfies Record<VisibleStatus, typeof HiClock>;
 
 function OrderStatus({ orderId, tableId }: OrderStatusProps) {
-  const [status, setStatus] = useState<FrontendOrderStatus>("Pendiente");
+  const [status, setStatus] = useState<VisibleStatus>("Pendiente");
   const [error, setError] = useState("");
   const [tableInfo, setTableInfo] = useState<{tableId: string; tableNumber: number;} | null>(null);
 
@@ -98,7 +100,10 @@ function OrderStatus({ orderId, tableId }: OrderStatusProps) {
     console.log("ESTADO DE LA ORDEN:", order);
 
     if (isMounted) {
-  const newStatus = stateToLabel[order.state];
+  const mappedStatus = stateToLabel[order.state];
+if (!mappedStatus) return;
+const newStatus: VisibleStatus =
+  mappedStatus === "Pagado" ? "Entregado" : mappedStatus;
 
   setStatus(newStatus);
   setError("");
