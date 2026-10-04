@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getProfile, getStoredFirstName } from "../../services/authService";
 import {
@@ -18,7 +18,6 @@ interface CustomDishFormProps {
 }
 
 function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
-  const navigate = useNavigate();
   const isEditMode = mode === "edit" && Boolean(productId);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -234,7 +233,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
             <p className="mt-2 text-sm text-text-primary">{successMessage}</p>
             <button
               type="button"
-              onClick={() => navigate({ to: "/menuManagment" })}
+              onClick={() => setSuccessMessage(null)}
               className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
             >
               Aceptar

@@ -105,6 +105,15 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
                 Mesas
               </span>
             </Link>
+
+            <Link
+              to="/issuerInformation"
+              className="flex w-full items-center py-3 text-left text-text-primary"
+            >
+              <span className="text-[15px] font-bold cursor-pointer">
+                Datos de hacienda
+              </span>
+            </Link>
           </div>
         </nav>
 
@@ -284,6 +293,15 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
                 >
                   <span className="text-xl font-bold">Mesas</span>
                 </Link>
+
+                <Link
+              to="/issuerInformation"
+              className="flex w-full items-center gap-4 py-4 text-left text-white"
+            >
+              <span className="text-xl font-bold">
+                Datos de hacienda
+              </span>
+            </Link>
 
 
               </div>

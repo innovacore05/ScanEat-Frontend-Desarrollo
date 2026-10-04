@@ -11,7 +11,7 @@ import QrCodeModal from "./QRCodeModal";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import { ROLE_IDS } from "../../config/roles";
 import { getOrders } from "../../services/orderService";
-import type { Order } from "../waiterOrders/WaiterOrderCard";
+import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
 
@@ -93,22 +93,28 @@ const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	}, []);
 
 	const handleDeleteTable = async () => {
-		if (!selectedTable) return;
+	if (!selectedTable) return;
 
-		try {
-			setIsDeleting(true);
-			await deleteTable(selectedTable.id);
-			setTables((currentTables) =>
-				currentTables.filter((table) => table.id !== selectedTable.id),
-			);
-			setSelectedTable(null);
-			setIsDeleteDialogOpen(false);
-		} catch (error) {
-			console.error("Error eliminando mesa:", error);
-		} finally {
-			setIsDeleting(false);
-		}
-	};
+	try {
+		setIsDeleting(true);
+		await deleteTable(selectedTable.id);
+		setTables((currentTables) =>
+			currentTables.filter((table) => table.id !== selectedTable.id),
+		);
+		setSelectedTable(null);
+		setIsDeleteDialogOpen(false);
+	} catch (error) {
+		console.error("Error eliminando mesa:", error);
+		setIsDeleteDialogOpen(false);
+		setErrorMessage(
+			error && typeof error === "object" && "message" in error
+				? String((error as { message?: string }).message)
+				: "No se pudo eliminar la mesa.",
+		);
+	} finally {
+		setIsDeleting(false);
+	}
+};
 
 	// Keep the admin layout as the visual fallback, but wait for the role
 	// before displaying owner-only table actions.
@@ -117,9 +123,10 @@ const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const dashboardRoute = roleId === ROLE_IDS.waiter ? "/dashboardWaiter" : "/dashboard";
 
 	const tableOrders = orders.filter(
-	(order) => order.tableId === selectedTable?.tableNumber,
-	);
-	
+  (order) =>
+    order.tableId === selectedTable?.tableNumber &&
+    order.status !== "Pagado",
+);
 
 
 
@@ -406,8 +413,8 @@ const handleRequestDelete = () => {
     >
         <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl text-center">
             <h3 className="text-lg font-bold text-mint-darker align-middle">
-               Orden activa!
-            </h3>
+   No se puede eliminar la mesa
+</h3>
             <p className="mt-2 text-sm text-text-primary">{errorMessage}</p>
             <div className="mt-6 flex justify-center">
                 <button

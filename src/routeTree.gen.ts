@@ -19,6 +19,7 @@ import { Route as authenticationRegisterBusinessRouteImport } from './routes/(au
 import { Route as authenticationResetPasswordRouteImport } from './routes/(authentication)/resetPassword'
 import { Route as authenticationVerificationCodeRouteImport } from './routes/(authentication)/verificationCode'
 import { Route as cashierOrdersCashierOrdersRouteImport } from './routes/(cashierOrders)/cashierOrders'
+import { Route as cashierOrdersPaymentMethodRouteImport } from './routes/(cashierOrders)/paymentMethod'
 import { Route as clientOrdersCheckOrderRouteImport } from './routes/(clientOrders)/checkOrder'
 import { Route as clientOrdersOrderStatusRouteImport } from './routes/(clientOrders)/orderStatus'
 import { Route as clientOrdersReviewPlateRouteImport } from './routes/(clientOrders)/reviewPlate'
@@ -26,6 +27,7 @@ import { Route as cookOrdersCookOrdersRouteImport } from './routes/(cookOrders)/
 import { Route as dashboardDashboardRouteImport } from './routes/(dashboard)/dashboard'
 import { Route as dashboardDashboardCookRouteImport } from './routes/(dashboard)/dashboardCook'
 import { Route as dashboardDashboardWaiterRouteImport } from './routes/(dashboard)/dashboardWaiter'
+import { Route as issuerInformationIssuerInformationRouteImport } from './routes/(issuerInformation)/issuerInformation'
 import { Route as menuAdminCategoryFormRouteImport } from './routes/(menuAdmin)/categoryForm'
 import { Route as menuAdminCategoryManagementRouteImport } from './routes/(menuAdmin)/categoryManagement'
 import { Route as menuAdminCustomDishFormRouteImport } from './routes/(menuAdmin)/customDishForm'
@@ -103,6 +105,12 @@ const cashierOrdersCashierOrdersRoute =
     path: '/cashierOrders',
     getParentRoute: () => rootRouteImport,
   } as any)
+const cashierOrdersPaymentMethodRoute =
+  cashierOrdersPaymentMethodRouteImport.update({
+    id: '/(cashierOrders)/paymentMethod',
+    path: '/paymentMethod',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const clientOrdersCheckOrderRoute = clientOrdersCheckOrderRouteImport.update({
   id: '/(clientOrders)/checkOrder',
   path: '/checkOrder',
@@ -137,6 +145,12 @@ const dashboardDashboardWaiterRoute =
   dashboardDashboardWaiterRouteImport.update({
     id: '/(dashboard)/dashboardWaiter',
     path: '/dashboardWaiter',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const issuerInformationIssuerInformationRoute =
+  issuerInformationIssuerInformationRouteImport.update({
+    id: '/(issuerInformation)/issuerInformation',
+    path: '/issuerInformation',
     getParentRoute: () => rootRouteImport,
   } as any)
 const menuAdminCategoryFormRoute = menuAdminCategoryFormRouteImport.update({
@@ -257,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/resetPassword': typeof authenticationResetPasswordRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/cashierOrders': typeof cashierOrdersCashierOrdersRoute
+  '/paymentMethod': typeof cashierOrdersPaymentMethodRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
   '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
@@ -264,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof dashboardDashboardRoute
   '/dashboardCook': typeof dashboardDashboardCookRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
   '/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/customDishForm': typeof menuAdminCustomDishFormRoute
@@ -296,6 +312,7 @@ export interface FileRoutesByTo {
   '/resetPassword': typeof authenticationResetPasswordRoute
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/cashierOrders': typeof cashierOrdersCashierOrdersRoute
+  '/paymentMethod': typeof cashierOrdersPaymentMethodRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
   '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
@@ -303,6 +320,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof dashboardDashboardRoute
   '/dashboardCook': typeof dashboardDashboardCookRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
   '/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/customDishForm': typeof menuAdminCustomDishFormRoute
@@ -336,6 +354,7 @@ export interface FileRoutesById {
   '/(authentication)/resetPassword': typeof authenticationResetPasswordRoute
   '/(authentication)/verificationCode': typeof authenticationVerificationCodeRoute
   '/(cashierOrders)/cashierOrders': typeof cashierOrdersCashierOrdersRoute
+  '/(cashierOrders)/paymentMethod': typeof cashierOrdersPaymentMethodRoute
   '/(clientOrders)/checkOrder': typeof clientOrdersCheckOrderRoute
   '/(clientOrders)/orderStatus': typeof clientOrdersOrderStatusRoute
   '/(clientOrders)/reviewPlate': typeof clientOrdersReviewPlateRoute
@@ -343,6 +362,7 @@ export interface FileRoutesById {
   '/(dashboard)/dashboard': typeof dashboardDashboardRoute
   '/(dashboard)/dashboardCook': typeof dashboardDashboardCookRoute
   '/(dashboard)/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/(issuerInformation)/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/(menuAdmin)/categoryForm': typeof menuAdminCategoryFormRoute
   '/(menuAdmin)/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/(menuAdmin)/customDishForm': typeof menuAdminCustomDishFormRoute
@@ -377,6 +397,7 @@ export interface FileRouteTypes {
     | '/resetPassword'
     | '/verificationCode'
     | '/cashierOrders'
+    | '/paymentMethod'
     | '/checkOrder'
     | '/orderStatus'
     | '/reviewPlate'
@@ -384,6 +405,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboardCook'
     | '/dashboardWaiter'
+    | '/issuerInformation'
     | '/categoryForm'
     | '/categoryManagement'
     | '/customDishForm'
@@ -416,6 +438,7 @@ export interface FileRouteTypes {
     | '/resetPassword'
     | '/verificationCode'
     | '/cashierOrders'
+    | '/paymentMethod'
     | '/checkOrder'
     | '/orderStatus'
     | '/reviewPlate'
@@ -423,6 +446,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboardCook'
     | '/dashboardWaiter'
+    | '/issuerInformation'
     | '/categoryForm'
     | '/categoryManagement'
     | '/customDishForm'
@@ -455,6 +479,7 @@ export interface FileRouteTypes {
     | '/(authentication)/resetPassword'
     | '/(authentication)/verificationCode'
     | '/(cashierOrders)/cashierOrders'
+    | '/(cashierOrders)/paymentMethod'
     | '/(clientOrders)/checkOrder'
     | '/(clientOrders)/orderStatus'
     | '/(clientOrders)/reviewPlate'
@@ -462,6 +487,7 @@ export interface FileRouteTypes {
     | '/(dashboard)/dashboard'
     | '/(dashboard)/dashboardCook'
     | '/(dashboard)/dashboardWaiter'
+    | '/(issuerInformation)/issuerInformation'
     | '/(menuAdmin)/categoryForm'
     | '/(menuAdmin)/categoryManagement'
     | '/(menuAdmin)/customDishForm'
@@ -495,6 +521,7 @@ export interface RootRouteChildren {
   authenticationResetPasswordRoute: typeof authenticationResetPasswordRoute
   authenticationVerificationCodeRoute: typeof authenticationVerificationCodeRoute
   cashierOrdersCashierOrdersRoute: typeof cashierOrdersCashierOrdersRoute
+  cashierOrdersPaymentMethodRoute: typeof cashierOrdersPaymentMethodRoute
   clientOrdersCheckOrderRoute: typeof clientOrdersCheckOrderRoute
   clientOrdersOrderStatusRoute: typeof clientOrdersOrderStatusRoute
   clientOrdersReviewPlateRoute: typeof clientOrdersReviewPlateRoute
@@ -502,6 +529,7 @@ export interface RootRouteChildren {
   dashboardDashboardRoute: typeof dashboardDashboardRoute
   dashboardDashboardCookRoute: typeof dashboardDashboardCookRoute
   dashboardDashboardWaiterRoute: typeof dashboardDashboardWaiterRoute
+  issuerInformationIssuerInformationRoute: typeof issuerInformationIssuerInformationRoute
   menuAdminCategoryFormRoute: typeof menuAdminCategoryFormRoute
   menuAdminCategoryManagementRoute: typeof menuAdminCategoryManagementRoute
   menuAdminCustomDishFormRoute: typeof menuAdminCustomDishFormRoute
@@ -596,6 +624,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof cashierOrdersCashierOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(cashierOrders)/paymentMethod': {
+      id: '/(cashierOrders)/paymentMethod'
+      path: '/paymentMethod'
+      fullPath: '/paymentMethod'
+      preLoaderRoute: typeof cashierOrdersPaymentMethodRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(clientOrders)/checkOrder': {
       id: '/(clientOrders)/checkOrder'
       path: '/checkOrder'
@@ -643,6 +678,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboardWaiter'
       fullPath: '/dashboardWaiter'
       preLoaderRoute: typeof dashboardDashboardWaiterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(issuerInformation)/issuerInformation': {
+      id: '/(issuerInformation)/issuerInformation'
+      path: '/issuerInformation'
+      fullPath: '/issuerInformation'
+      preLoaderRoute: typeof issuerInformationIssuerInformationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(menuAdmin)/categoryForm': {
@@ -800,6 +842,7 @@ const rootRouteChildren: RootRouteChildren = {
   authenticationResetPasswordRoute: authenticationResetPasswordRoute,
   authenticationVerificationCodeRoute: authenticationVerificationCodeRoute,
   cashierOrdersCashierOrdersRoute: cashierOrdersCashierOrdersRoute,
+  cashierOrdersPaymentMethodRoute: cashierOrdersPaymentMethodRoute,
   clientOrdersCheckOrderRoute: clientOrdersCheckOrderRoute,
   clientOrdersOrderStatusRoute: clientOrdersOrderStatusRoute,
   clientOrdersReviewPlateRoute: clientOrdersReviewPlateRoute,
@@ -807,6 +850,8 @@ const rootRouteChildren: RootRouteChildren = {
   dashboardDashboardRoute: dashboardDashboardRoute,
   dashboardDashboardCookRoute: dashboardDashboardCookRoute,
   dashboardDashboardWaiterRoute: dashboardDashboardWaiterRoute,
+  issuerInformationIssuerInformationRoute:
+    issuerInformationIssuerInformationRoute,
   menuAdminCategoryFormRoute: menuAdminCategoryFormRoute,
   menuAdminCategoryManagementRoute: menuAdminCategoryManagementRoute,
   menuAdminCustomDishFormRoute: menuAdminCustomDishFormRoute,

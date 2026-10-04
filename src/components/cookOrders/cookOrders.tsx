@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { getOrders, markOrderReady } from "../../services/orderService";
+import { logout } from "../../services/authService";
 import OrderCard from "./OrderCard";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
+import { LuLogOut } from "react-icons/lu";
 
 function CookOrders() {
   const [orders, setOrders] = useState<Array<{
@@ -62,8 +65,16 @@ function CookOrders() {
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="h-22 bg-mint-dark px-8 py-4">
-        <RestaurantLogo className="h-16 w-16 object-contain" />
+      <div className="flex h-30 items-center justify-between gap-4 bg-neutral-50 border-b-4 border-mint-dark px-4 py-4 sm:px-8">
+        <RestaurantLogo className="h-16 w-16 object-contain " />
+        <Link
+          to="/login"
+          onClick={logout}
+          className="flex items-center justify-center gap-2 rounded-2xl bg-mint-dark px-3 py-3 text-base font-bold text-white sm:gap-3 sm:px-8 sm:py-4 sm:text-xl"
+        >
+          <LuLogOut className="h-4 w-4 sm:h-5 sm:w-5" />
+          <span>Cerrar sesión</span>
+        </Link>
       </div>
 
       <section className="px-8 pt-8">

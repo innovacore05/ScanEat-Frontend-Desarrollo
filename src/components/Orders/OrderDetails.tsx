@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { HiArrowLeft } from "react-icons/hi";
-import type { Order } from "../waiterOrders/WaiterOrderCard";
+import type { Order } from "./OrderCard";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import type { ReactNode, ComponentType } from "react";
 import { useState } from "react";

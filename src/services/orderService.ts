@@ -3,7 +3,19 @@ import { buildUrl, cookieSessionClient} from "./cookieSessionClient";
 
 // const ORDERS_BASE_URL = `${import.meta.env.VITE_API_URL}/api/orders`;
 const ORDERS_BASE_URL = "/api/orders";
+const CLIENT_ID_KEY = "scaneat_client_id";
 
+export const getClientId=():string=>{
+  try{
+    const stored =localStorage.getItem(CLIENT_ID_KEY);
+    if(stored)return stored;
+    const created=crypto.randomUUID();
+    localStorage.setItem(CLIENT_ID_KEY,created);
+    return created;
+  }catch{
+    return crypto.randomUUID();
+  }
+};
 
 export type CreateOrderPayload = {
   tableId: string;
@@ -19,8 +31,8 @@ export type OrderStatus =
   | "pending"
   | "preparing"
   | "ready"
-  | "delivered";
-
+  | "delivered"
+  | "paid";
 
 
 type BackendOrderDetail = {
@@ -89,20 +101,15 @@ export type FrontendOrderStatus =
   | "Pendiente"
   | "En preparación"
   | "Listo"
-  | "Entregado";
+  | "Entregado"
+  | "Pagado";
 
 export const stateToLabel: Record<OrderStatus, FrontendOrderStatus> = {
   pending: "Pendiente",
   preparing: "En preparación",
   ready: "Listo",
   delivered: "Entregado",
-};
-
-export const statusIdToState: Record<number, OrderStatus> = {
-  1: "pending",
-  2: "preparing",
-  3: "ready",
-  4: "delivered",
+  paid: "Pagado",
 };
 
 const mapBackendOrderToFrontend = (backendOrder: BackendOrder) => {
@@ -191,12 +198,12 @@ selectedOptions?:Record<string, string>;
   
 }>(ORDERS_BASE_URL,{
   method:"POST",
-  body:JSON.stringify(payload),
+  body:JSON.stringify({...payload,clientId:getClientId()}),
   fallBackMessage: "No se pudo crear el pedido",
 });
 };
 
-export const getOrders = async (state?: string) => {
+export const getOrders = async (state?: string,pendingPayment ?:boolean) => {
 
   // if (state) {
   //   url.searchParams.set("state", state);
@@ -216,7 +223,9 @@ export const getOrders = async (state?: string) => {
   // return (Array.isArray(data) ? data : []).map(mapBackendOrderToFrontend);
 
 const data = await cookieSessionClient.request<BackendOrder[]>(
-  buildUrl(ORDERS_BASE_URL,{state}),
+  buildUrl(ORDERS_BASE_URL,{
+    state,
+  pendingPayment:pendingPayment ? "true" :undefined}),
   {
     method:"GET",
     fallBackMessage:"No se pudieron cargar los pedidos",

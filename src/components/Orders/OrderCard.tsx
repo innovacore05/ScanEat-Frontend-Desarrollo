@@ -18,16 +18,17 @@ export type Order = {
   tax?: number;
   total?: number;
   items: OrderItem[];
-  status?: "Pendiente" | "En preparación" | "Listo" | "Entregado";
+status?: "Pendiente" | "En preparación" | "Listo" | "Entregado" | "Pagado";
 };
 
-type WaiterOrderCardProps = {
+type OrderCardProps = {
 
   order: Order;
     onDetails?: () => void;
+    isCashier?: boolean;
 };
 
-function WaiterOrderCard({ order, onDetails}: WaiterOrderCardProps) {
+function OrderCard({ order, onDetails, isCashier = false}: OrderCardProps) {
   return (
     <div>
       <div className="w-full min-w-0 h-full bg-neutral-100 py-6 px-6 lg:px-8 rounded-2xl flex items-center justify-between gap-6">
@@ -56,25 +57,35 @@ function WaiterOrderCard({ order, onDetails}: WaiterOrderCardProps) {
 
   {/* Celular */}
   <Link
-    to="/waiterOrderDetails"
+    to={isCashier ? "/paymentMethod" : "/waiterOrderDetails"}
     search={{ orderId: order.orderId }}
     className="text-center w-20 rounded-lg border border-mint-dark py-2 text-sm font-bold text-mint-darker cursor-pointer hover:bg-mint/10 lg:hidden"
   >
-    Detalles
+    {isCashier ? "Pagar" : "Detalles"}
   </Link>
 
   {/* Computadora */}
+  {isCashier ? (
+  <Link
+    to="/paymentMethod"
+    search={{ orderId: order.orderId }}
+    className="hidden w-20 cursor-pointer rounded-lg border border-mint-dark py-2 text-center text-sm font-bold text-mint-darker hover:bg-mint/10 lg:block"
+  >
+    Pagar
+  </Link>
+) : (
   <button
     type="button"
     onClick={onDetails}
-    className="hidden w-20 cursor-pointer rounded-lg border border-mint-dark py-2 text-sm font-bold text-mint-darker hover:bg-mint/10 lg:block"
+    className="hidden w-20 cursor-pointer rounded-lg border border-mint-dark py-2 text-center text-sm font-bold text-mint-darker hover:bg-mint/10 lg:block"
   >
     Detalles
   </button>
+)}
 </div>
       </div>
     </div>
   );
 }
 
-export default WaiterOrderCard;
+export default OrderCard;

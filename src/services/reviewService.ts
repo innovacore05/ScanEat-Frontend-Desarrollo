@@ -1,9 +1,10 @@
 import { cookieSessionClient, buildUrl } from "./cookieSessionClient";
-
+import { getClientId } from "./orderService";
 // const REVIEWS_BASE_URL = `${import.meta.env.VITE_API_URL}/api/reviews`;
 const REVIEWS_BASE_URL = "/api/reviews";
 
 export type ReviewableProduct = {
+  detailId: number;
   productId: number;
   productName: string;
   reviewed: boolean;
@@ -16,7 +17,7 @@ export type ReviewableOrderResponse = {
 };
 
 export type CreateReviewItem = {
-  productId: number;
+  detailId: number;
   rating: number;
   name?: string;
   comment?: string;
@@ -54,6 +55,7 @@ export type ProductReviewsResponse = {
 export const getReviewableOrder = async (
   orderId: number,
   tableId: string,
+  
 ): Promise<ReviewableOrderResponse> => {
   
 
@@ -66,7 +68,7 @@ export const getReviewableOrder = async (
   // return response.json() as Promise<ReviewableOrderResponse>;
 
    return cookieSessionClient.request<ReviewableOrderResponse>(
-    buildUrl(`${REVIEWS_BASE_URL}/orders/${orderId}`, { tableId }), {
+    buildUrl(`${REVIEWS_BASE_URL}/orders/${orderId}`, { tableId,clientId: getClientId() }), {
       method:"GET",
     fallBackMessage:"No se pudo cargar la orden",
   });
@@ -95,7 +97,7 @@ export const createOrderReviews = async (
 
  return cookieSessionClient.request(`${REVIEWS_BASE_URL}/orders/${orderId}`,{
     method:"POST",
-    body:JSON.stringify(payload),
+    body: JSON.stringify({ ...payload, clientId: getClientId() }),
    fallBackMessage:"No se pudo enviar la reseña",
   });
 

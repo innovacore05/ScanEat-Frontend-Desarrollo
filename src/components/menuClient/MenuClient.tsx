@@ -8,6 +8,7 @@ import { Link, useSearch } from "@tanstack/react-router";
 import { useCart } from "../clientOrders/CartContext";
 import { getProductReviews } from "../../services/reviewService";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
+import { getPublicTableNumber } from "../../services/tableService";
 
 
 
@@ -85,7 +86,7 @@ function MenuClient() {
   const [hasMore, setHasMore] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
- 
+  const [tableInfo, setTableInfo] = useState<{mesaId: string; tableNumber: number;} | null>(null);
 
 //nuevo
 const [currentOrderId, setCurrentOrderId] = useState<number | null>(null);
@@ -142,6 +143,25 @@ const [currentOrderTableId, setCurrentOrderTableId] = useState<
   useEffect(() => {
     setMesaId(mesaId);
   }, [mesaId, setMesaId]);
+
+  useEffect(() => {
+    if (!mesaId) return;
+
+    let isCurrentRequest = true;
+
+    void getPublicTableNumber(mesaId)
+      .then(({ tableNumber: number }) => {
+        if (isCurrentRequest) setTableInfo({ mesaId, tableNumber: number });
+      })
+      .catch((error) => {
+        console.error("Error loading table number:", error);
+        if (isCurrentRequest) setTableInfo(null);
+      });
+
+    return () => {
+      isCurrentRequest = false;
+    };
+  }, [mesaId]);
 
   const loadProductsWithRatings = async (products: Product[]) => {
   return Promise.all(
@@ -245,10 +265,16 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
       <section className="lg:hidden">
 
         <div className="mt-4 flex flex-col gap-5">
-          <div className="flex justify-start">
+          <div className="flex items-center justify-between">
             <RestaurantLogo
   className="h-16 w-16 object-contain"
 />
+            <h2 className="text-2xl font-bold text-black">Menú</h2>
+            {tableInfo && tableInfo.mesaId === mesaId && (
+              <p className="font-bold text-mint-dark">
+                Mesa #{tableInfo.tableNumber}
+              </p>
+            )}
 
           </div>
           <SearchBar
@@ -303,7 +329,14 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
       <section className="hidden lg:block ml-44 pb-20">
 
 
-        <h2 className="mt-8 text-2xl font-bold text-black">Menú</h2>
+        <div className="mt-8 flex flex-col gap-1">
+          <h2 className="text-2xl font-bold text-black">Menú</h2>
+          {tableInfo && tableInfo.mesaId === mesaId && (
+            <p className="font-bold text-mint-dark text-xl">
+              Mesa #{tableInfo.tableNumber}
+            </p>
+          )}
+        </div>
 
 
 
