@@ -121,8 +121,8 @@ const handleCharge = async (details: PaymentDetails) => {
   }
   return (
     <main className="min-h-screen bg-white">
-     <div className="h-22 bg-mint-dark px-8 py-4">
-        <RestaurantLogo className="h-16 w-16" />
+     <div className="flex h-30 items-center justify-between gap-4 bg-neutral-50 border-b-4 border-mint-dark px-4 py-4 sm:px-8">
+                <RestaurantLogo className="h-16 w-16" />
       </div>
 
       <section className="px-6 py-8 lg:px-8">
