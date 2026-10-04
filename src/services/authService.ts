@@ -1,7 +1,7 @@
 //Este archivo contiene funciones para interactuar con la API de autenticación
 
 import { cookieSessionClient } from "./cookieSessionClient";
-
+//actualizacion para hosting
 
 //Es la url base de la API de autenticación
 // const AUTH_BASE_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
