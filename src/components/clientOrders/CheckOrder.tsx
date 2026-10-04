@@ -113,6 +113,10 @@ console.log("ENVIANDO ORDEN:", {
           ? error.message
           : "No se pudo enviar el pedido.";
 
+      if (message === "La orden de esta mesa ya está siendo procesada") {
+        return;
+      }
+
       alert(message);
     } finally {
       setIsSubmitting(false);

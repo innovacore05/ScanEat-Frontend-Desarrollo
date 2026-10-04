@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { ImEye, ImEyeBlocked } from "react-icons/im";
+import { BsFillArrowLeftCircleFill } from "react-icons/bs";
+import { FaRegCheckCircle } from "react-icons/fa";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { changePassword } from "../../services/authService";
+import DashboardLayout from "../layout/DashboardLayout";
+
 
 function ChangePasswordForm() {
   const navigate = useNavigate();
@@ -14,7 +19,9 @@ function ChangePasswordForm() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-const [isSubmitting,setIsSubmitting]=useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,7 +69,7 @@ setIsSubmitting(true);
 
     try {
       await changePassword(currentPassword, newPassword, confirmPassword);
-      navigate({ to: "/changePasswordSuccess" });
+      setShowSuccess(true);
     } catch (err) {
       const message =
         err && typeof err === "object" && "message" in err
@@ -70,6 +77,7 @@ setIsSubmitting(true);
           : "No se pudo cambiar la contraseña.";
 
       setError(message);
+      setShowError(true);
     }
     finally {
       setIsSubmitting(false);
@@ -77,10 +85,13 @@ setIsSubmitting(true);
   }
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="h-20 bg-mint" />
+    <>
+    <DashboardLayout>
+        
+    <main className="min-h-screen bg-white mt-22">
+      
 
-      <section className="-mt-10 min-h-[calc(100vh-5rem)] rounded-t-[40px] bg-white px-6 py-10">
+      <section className="-mt-10 min-h-[calc(100vh-5rem)] bg-white px-6 py-10">
         <form
           className="mx-auto flex w-full max-w-sm flex-col"
           onSubmit={handleSubmit}
@@ -177,7 +188,66 @@ setIsSubmitting(true);
           </Link>
         </form>
       </section>
-    </main>
+      </main>
+    </DashboardLayout>
+    
+    {showSuccess ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
+          <div className="w-full max-w-sm rounded-[40px] bg-white px-8 py-16 text-center">
+
+            <FaRegCheckCircle className="mx-auto h-20 w-20 text-mint-dark" />
+
+            <h1 className="mt-8 text-2xl font-bold text-mint-dark">
+              ¡Éxito!
+            </h1>
+
+            <p className="mt-4 text-text-primary">
+              Tu contraseña ha sido cambiada correctamente.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/profileSettings" })}
+              className="mt-8 cursor-pointer font-bold text-mint-dark hover:underline"
+            >
+              Aceptar
+            </button>
+
+          </div>
+        </div>
+      ) : null}
+
+      {showError ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
+          <div className="w-full max-w-sm rounded-[40px] bg-white px-8 py-16 text-center">
+
+            <AiOutlineExclamationCircle className="mx-auto h-20 w-20 text-pink" />
+
+            <h1 className="mt-8 text-2xl font-bold text-pink">
+              Problema inesperado
+            </h1>
+
+            <p className="mt-4 text-text-primary">
+              {error}
+            </p>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowError(false);
+                setError("");
+              }}
+              className="mt-8 cursor-pointer text-mint"
+              aria-label="Volver a cambiar contraseña"
+            >
+              <BsFillArrowLeftCircleFill className="mx-auto h-10 w-10" />
+            </button>
+
+          </div>
+        </div>
+      ) : null}
+      </>
+    
   );
 }
 
