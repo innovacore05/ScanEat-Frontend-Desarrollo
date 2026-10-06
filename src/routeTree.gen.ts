@@ -27,6 +27,7 @@ import { Route as cookOrdersCookOrdersRouteImport } from './routes/(cookOrders)/
 import { Route as dashboardDashboardRouteImport } from './routes/(dashboard)/dashboard'
 import { Route as dashboardDashboardCookRouteImport } from './routes/(dashboard)/dashboardCook'
 import { Route as dashboardDashboardWaiterRouteImport } from './routes/(dashboard)/dashboardWaiter'
+import { Route as dashboardSalesReportRouteImport } from './routes/(dashboard)/salesReport'
 import { Route as issuerInformationIssuerInformationRouteImport } from './routes/(issuerInformation)/issuerInformation'
 import { Route as menuAdminCategoryFormRouteImport } from './routes/(menuAdmin)/categoryForm'
 import { Route as menuAdminCategoryManagementRouteImport } from './routes/(menuAdmin)/categoryManagement'
@@ -147,6 +148,11 @@ const dashboardDashboardWaiterRoute =
     path: '/dashboardWaiter',
     getParentRoute: () => rootRouteImport,
   } as any)
+const dashboardSalesReportRoute = dashboardSalesReportRouteImport.update({
+  id: '/(dashboard)/salesReport',
+  path: '/salesReport',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const issuerInformationIssuerInformationRoute =
   issuerInformationIssuerInformationRouteImport.update({
     id: '/(issuerInformation)/issuerInformation',
@@ -279,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof dashboardDashboardRoute
   '/dashboardCook': typeof dashboardDashboardCookRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/salesReport': typeof dashboardSalesReportRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
   '/categoryManagement': typeof menuAdminCategoryManagementRoute
@@ -320,6 +327,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof dashboardDashboardRoute
   '/dashboardCook': typeof dashboardDashboardCookRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/salesReport': typeof dashboardSalesReportRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
   '/categoryManagement': typeof menuAdminCategoryManagementRoute
@@ -362,6 +370,7 @@ export interface FileRoutesById {
   '/(dashboard)/dashboard': typeof dashboardDashboardRoute
   '/(dashboard)/dashboardCook': typeof dashboardDashboardCookRoute
   '/(dashboard)/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/(dashboard)/salesReport': typeof dashboardSalesReportRoute
   '/(issuerInformation)/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/(menuAdmin)/categoryForm': typeof menuAdminCategoryFormRoute
   '/(menuAdmin)/categoryManagement': typeof menuAdminCategoryManagementRoute
@@ -405,6 +414,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboardCook'
     | '/dashboardWaiter'
+    | '/salesReport'
     | '/issuerInformation'
     | '/categoryForm'
     | '/categoryManagement'
@@ -446,6 +456,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboardCook'
     | '/dashboardWaiter'
+    | '/salesReport'
     | '/issuerInformation'
     | '/categoryForm'
     | '/categoryManagement'
@@ -487,6 +498,7 @@ export interface FileRouteTypes {
     | '/(dashboard)/dashboard'
     | '/(dashboard)/dashboardCook'
     | '/(dashboard)/dashboardWaiter'
+    | '/(dashboard)/salesReport'
     | '/(issuerInformation)/issuerInformation'
     | '/(menuAdmin)/categoryForm'
     | '/(menuAdmin)/categoryManagement'
@@ -529,6 +541,7 @@ export interface RootRouteChildren {
   dashboardDashboardRoute: typeof dashboardDashboardRoute
   dashboardDashboardCookRoute: typeof dashboardDashboardCookRoute
   dashboardDashboardWaiterRoute: typeof dashboardDashboardWaiterRoute
+  dashboardSalesReportRoute: typeof dashboardSalesReportRoute
   issuerInformationIssuerInformationRoute: typeof issuerInformationIssuerInformationRoute
   menuAdminCategoryFormRoute: typeof menuAdminCategoryFormRoute
   menuAdminCategoryManagementRoute: typeof menuAdminCategoryManagementRoute
@@ -678,6 +691,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboardWaiter'
       fullPath: '/dashboardWaiter'
       preLoaderRoute: typeof dashboardDashboardWaiterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(dashboard)/salesReport': {
+      id: '/(dashboard)/salesReport'
+      path: '/salesReport'
+      fullPath: '/salesReport'
+      preLoaderRoute: typeof dashboardSalesReportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(issuerInformation)/issuerInformation': {
@@ -850,6 +870,7 @@ const rootRouteChildren: RootRouteChildren = {
   dashboardDashboardRoute: dashboardDashboardRoute,
   dashboardDashboardCookRoute: dashboardDashboardCookRoute,
   dashboardDashboardWaiterRoute: dashboardDashboardWaiterRoute,
+  dashboardSalesReportRoute: dashboardSalesReportRoute,
   issuerInformationIssuerInformationRoute:
     issuerInformationIssuerInformationRoute,
   menuAdminCategoryFormRoute: menuAdminCategoryFormRoute,

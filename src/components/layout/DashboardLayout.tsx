@@ -87,14 +87,14 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
               </span>
             </button>
 
-            <button
-              type="button"
+            <Link
+              to="/salesReport"
               className="flex w-full items-center py-3 text-left text-text-primary"
             >
               <span className="text-[15px] font-bold cursor-pointer">
                 Reporte de ventas
               </span>
-            </button>
+            </Link>
 
             <Link
               to="/tablesManagment"
@@ -279,12 +279,13 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
                   <span className="text-xl font-bold">Descuentos</span>
                 </button>
 
-                <button
-                  type="button"
+                <Link
+                  to="/salesReport"
+                  onClick={() => setIsMenuOpen(false)}
                   className="flex w-full items-center py-4 text-left text-white"
                 >
                   <span className="text-xl font-bold">Reporte de ventas</span>
-                </button>
+                </Link>
 
                 <Link
                   to="/tablesManagment"

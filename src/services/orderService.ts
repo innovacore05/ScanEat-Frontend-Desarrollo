@@ -58,6 +58,7 @@ type BackendOrder = {
   order: {
     orderId: number;
     date: string;
+    paidAt: string | null;
     state: OrderStatus;
     subtotal: string;
     tax: string;
@@ -126,6 +127,8 @@ const mapBackendOrderToFrontend = (backendOrder: BackendOrder) => {
   return {
     orderId: backendOrder.order.orderId,
     tableId: backendOrder.table?.tableNumber ?? Number(backendOrder.order.tableId),
+    date: backendOrder.order.date,
+    paidAt: backendOrder.order.paidAt,
     time: backendOrder.order.date
       ? new Date(backendOrder.order.date).toLocaleTimeString("es-CR", {
           hour: "2-digit",
