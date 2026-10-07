@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { FiDownload, FiRefreshCw, FiCpu, FiCheckCircle } from "react-icons/fi";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, } from "recharts";
+import {FiRefreshCw, FiCpu, FiCheckCircle } from "react-icons/fi";
+import SalesChart, { type SalesPeriod, } from "../../components/sales/SalesChart";
+import OrdersList from "../../components/sales/OrdersList";
 import DashboardLayout from "../layout/DashboardLayout";
 import { getProfile, getStoredFirstName } from "../../services/authService";
 import { getOrders } from "../../services/orderService";
@@ -8,11 +9,7 @@ import { generateAISalesReport } from "../../services/aiService";
 import type { SalesAnalytics } from "../../services/analyticsService";
 import { getSalesAnalytics } from "../../services/analyticsService";
 
-//Este tipo de datos define los periodos de tiempo que se pueden seleccionar para el reporte de ventas.
-type SalesPeriod = | "Hoy"
-  | "Esta semana"
-  | "Último mes"
-  | "Este año";
+
 
 //Este objeto mapea los periodos de tiempo a los valores que se envían a la API para obtener los datos del reporte de ventas.
 const periodToApiValue: Record<SalesPeriod, "today" | "week" | "month" | "year"
@@ -213,33 +210,6 @@ function SalesReport() {
     setPeriod(option);
   };
 
-  //Esta función formatea las etiquetas del eje X del gráfico de barras según el periodo de tiempo seleccionado.
-  const formatChartLabel = (label: string) => {
-    if (period === "Hoy") {
-      return label;
-    }
-
-    const date = new Date(`${label}T12:00:00`);
-
-    if (period === "Este año") {
-      return date.toLocaleDateString("es-CR", {
-        month: "short",
-      });
-    }
-
-    if (period === "Esta semana") {
-      return date.toLocaleDateString("es-CR", {
-        weekday: "short",
-        day: "numeric",
-      });
-    }
-
-    return date.toLocaleDateString("es-CR", {
-      day: "numeric",
-      month: "short",
-    });
-  };
-
   return (
     <DashboardLayout>
       <section className="px-6 py-8 lg:px-15 lg:py-15">
@@ -316,76 +286,11 @@ function SalesReport() {
             </section>
 
             {/* Gráfico */}
-            <section className="min-w-0">
-              <div className="flex justify-center text-sm font-bold text-text-primary">
-                <span>Ventas de {period.toLowerCase()}</span>
-              </div>
-
-              <div className="mt-1 h-44 rounded-xl border border-border px-4 py-3">
-                {isLoadingAnalytics ? (
-                  <div className="flex h-full w-full items-center justify-center text-sm text-text-primary">
-                    Cargando ventas...
-                  </div>
-                ) : analytics?.salesByPeriod?.length ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={analytics.salesByPeriod}
-                      margin={{
-                        top: 5,
-                        right: 10,
-                        left: 10,
-                        bottom: 5,
-                      }}
-                    >
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        vertical={false}
-                      />
-
-                      <XAxis
-                        dataKey="label"
-                        tick={{
-                          fontSize: 14,
-                        }}
-                        axisLine={false}
-                        tickLine={false}
-                        tickFormatter={(value) => formatChartLabel(String(value))}
-                      />
-
-                      <YAxis
-                        tick={{
-                          fontSize: 14,
-                        }}
-                        axisLine={false}
-                        tickLine={false}
-                        width={65}
-                        tickFormatter={(value) =>
-                          `₡${Number(value).toLocaleString("es-CR")}`
-                        }
-                      />
-
-                      <Tooltip
-                        labelFormatter={(label) => formatChartLabel(String(label))}
-                        formatter={(value) => [
-                          `₡${Number(value).toLocaleString("es-CR")}`,
-                          "Ventas",
-                        ]}
-                      />
-
-                      <Bar
-                        dataKey="sales"
-                        fill="var(--color-mint-dark)"
-                        radius={[6, 6, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-sm text-text-primary">
-                    No hay datos de ventas para este periodo.
-                  </div>
-                )}
-              </div>
-            </section>
+            <SalesChart
+              data={analytics?.salesByPeriod ?? []}
+              period={period}
+              isLoading={isLoadingAnalytics}
+            />
           </div>
 
           {/* Esta es la parte de el reporte de la IA*/}
@@ -566,78 +471,11 @@ function SalesReport() {
           </section>
 
           {/*Aquí es la parte de las ordenes*/}
-          <section className="mt-6 rounded-2xl border border-border bg-white p-5 lg:p-7">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-sm text-text-primary">{period}</p>
-
-                <h2 className="text-xl font-bold text-mint-darker">
-                  Detalle de pedidos
-                </h2>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  className="flex items-center gap-2 rounded-xl border border-mint-dark px-3 py-2 text-sm font-semibold text-mint-darker transition hover:bg-mint-light"
-                >
-                  <FiDownload />
-
-                  Exportar
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-5 overflow-x-auto rounded-xl border border-border">
-              <div className="min-w-145">
-                <div className="grid grid-cols-[1fr_1fr_1fr_1fr] items-center bg-neutral-100 px-4 py-3 text-sm font-semibold text-text-primary">
-                  <span>Orden</span>
-                  <span>Mesa</span>
-                  <span>Total</span>
-                  <span>Hora</span>
-                </div>
-
-                <div className="text-sm text-text-primary">
-                  <div className="max-h-80 overflow-y-auto">
-                    {isLoadingOrders ? (
-                      <div className="px-4 py-5 text-sm text-text-primary">
-                        Cargando pedidos...
-                      </div>
-                    ) : orders.length > 0 ? (
-                      orders.map((order) => (
-                        <div
-                          key={order.orderId}
-                          className="grid grid-cols-[1fr_1fr_1fr_1fr] items-center border-t border-border px-4 py-4 text-sm text-text-primary"
-                        >
-                          <span className="font-semibold text-mint-darker">
-                            #{order.orderId}
-                          </span>
-
-                          <span>
-                            Mesa {order.tableId}
-                          </span>
-
-                          <span className="font-semibold">
-                            {order.price}
-                          </span>
-
-                          <span>
-                            {order.time}
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="px-4 py-5 text-sm text-text-primary">
-                        No hay pedidos para este periodo.
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-
-              </div>
-            </div>
-          </section>
+          <OrdersList
+            orders={orders}
+            period={period}
+            isLoading={isLoadingOrders}
+          />
         </div>
       </section>
     </DashboardLayout>
