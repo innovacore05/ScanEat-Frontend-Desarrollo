@@ -259,7 +259,7 @@ function SalesReport() {
           </div>
 
           {/* Filtros y gráfico */}
-          <div className="mt-5 grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
+          <div className="mt-5 grid gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
 
             <section className="flex flex-col">
               <p className="text-sm font-semibold leading-5 text-text-primary">
@@ -273,7 +273,7 @@ function SalesReport() {
                       key={option}
                       type="button"
                       onClick={() => handlePeriodChange(option)}
-                      className={`rounded border px-3 py-1 text-xs transition ${period === option
+                      className={`rounded border px-3 py-1 text-sm transition ${period === option
                         ? "border-mint-dark bg-mint-dark font-semibold text-white"
                         : "border-mint-dark text-mint-darker hover:bg-mint-light"
                         }`}
@@ -345,7 +345,7 @@ function SalesReport() {
                       <XAxis
                         dataKey="label"
                         tick={{
-                          fontSize: 10,
+                          fontSize: 14,
                         }}
                         axisLine={false}
                         tickLine={false}
@@ -354,7 +354,7 @@ function SalesReport() {
 
                       <YAxis
                         tick={{
-                          fontSize: 10,
+                          fontSize: 14,
                         }}
                         axisLine={false}
                         tickLine={false}
@@ -418,7 +418,7 @@ function SalesReport() {
                 type="button"
                 onClick={generateAIReport}
                 disabled={isGeneratingAI}
-                className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-xs font-semibold text-mint-darker transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-70"
+                className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-mint-darker transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 <FiRefreshCw
                   className={isGeneratingAI ? "animate-spin" : ""}
@@ -457,7 +457,7 @@ function SalesReport() {
               ) : aiReport ? (
                 <>
                   {/* Aquí si va el contenido del reporte de la IA */}
-                  <div className="mb-5 flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-xs text-mint-darker">
+                  <div className="mb-5 flex items-center gap-2 rounded-lg border border-border px-4 py-3 text-sm text-mint-darker">
                     <FiCheckCircle className="h-4 w-4" />
 
                     <span>
@@ -579,7 +579,7 @@ function SalesReport() {
               <div className="flex gap-2">
                 <button
                   type="button"
-                  className="flex items-center gap-2 rounded-xl border border-mint-dark px-3 py-2 text-xs font-semibold text-mint-darker transition hover:bg-mint-light"
+                  className="flex items-center gap-2 rounded-xl border border-mint-dark px-3 py-2 text-sm font-semibold text-mint-darker transition hover:bg-mint-light"
                 >
                   <FiDownload />
 

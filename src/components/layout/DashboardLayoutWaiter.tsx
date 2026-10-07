@@ -14,6 +14,8 @@ import { LuLogOut } from "react-icons/lu";
 import { GoHome } from "react-icons/go";
 import { IoRestaurantOutline } from "react-icons/io5";
 import { LuShoppingBag } from "react-icons/lu";
+import { MdOutlineDiscount } from "react-icons/md";
+import { MdOutlineTableBar } from "react-icons/md";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 
 interface DashboardLayoutProps {
@@ -48,16 +50,17 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
     <main className="min-h-screen bg-white">
       {/* Barra lateral - COMPUTADORA */}
 
-            <aside className="fixed left-0 top-0 hidden h-screen w-64 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
+            <aside className="fixed left-0 top-0 hidden h-screen overflow-y-auto w-64 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
               <div className="flex justify-start">
           <RestaurantLogo className="h-16 w-16 object-contain" />
         </div>
-    
+        <div className="mt-10 border-t border-neutral-300 "></div>
+  
 
-        <nav className="mt-10 flex flex-col">
+        <nav className=" flex flex-col gap-3">
           <Link
             to="/dashboardWaiter"
-            className="flex items-center gap-4 py-3 text-left text-text-primary"
+            className="flex items-center gap-4 pb-3 pt-10 text-left text-text-primary"
           >
             <GoHome className="h-6 w-6 shrink-0" />
 
@@ -85,11 +88,11 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
             </span>
           </Link>
 
-          <div className="mt-10">
             <button
               type="button"
-              className="flex w-full items-center py-3 text-left text-text-primary"
+              className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
             >
+              <MdOutlineDiscount className="h-6 w-6 shrink-0" />
               <span className="text-[15px] font-bold cursor-pointer">
                 Descuentos
               </span>
@@ -99,28 +102,18 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
             <Link
               to="/tablesManagment"
               onClick={() => setIsMenuOpen(false)}
-              className="flex w-full items-center py-3 text-left text-text-primary"
+              className="flex w-full items-center gap-4 pt-3 text-left text-text-primary"
             >
+              <MdOutlineTableBar className="h-6 w-6 shrink-0" />
               <span className="text-[15px] font-bold cursor-pointer">
                 Mesas
               </span>
             </Link>
-          </div>
+          
         </nav>
 
         <div className="mt-10 border-t border-neutral-300 pt-5">
         
-
-          <button
-            type="button"
-            className="flex items-center gap-4 py-3 text-left text-text-primary"
-          >
-            <RiNotification2Line className="h-6 w-6 shrink-0" />
-
-            <span className="text-[15px] font-bold cursor-pointer">
-              Notificaciones
-            </span>
-          </button>
 
           {/* //cerrar sesion normal , regresa al registro inicio de sesion/ */}
           <Link
@@ -236,7 +229,8 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
           <button
             type="button"
             className="flex w-full items-center gap-4 py-4 text-left text-white"
-          >
+                >
+                  <MdOutlineDiscount className="h-6 w-6 shrink-0" />
             <span className="text-xl font-bold">Descuentos</span>
           </button>
 
@@ -245,6 +239,7 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
             onClick={() => setIsMenuOpen(false)}
             className="flex w-full items-center gap-4 py-4 text-left text-white"
           >
+            <MdOutlineTableBar className="h-6 w-6 shrink-0" />
             <span className="text-xl font-bold">Mesas</span>
           </Link>
         </div>

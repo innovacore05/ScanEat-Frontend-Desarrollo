@@ -51,7 +51,7 @@ function OrderCard({ order, onDetails, isCashier = false}: OrderCardProps) {
         </div>
 
         <div className="flex flex-col gap-6 lg:gap-8 shrink-0">
-  <p className="py-2 rounded-lg text-base font-semibold bg-mint-dark text-white w-20 text-center">
+  <p className="py-2 px-2 rounded-lg text-base font-semibold bg-mint-dark text-white min-w-20 text-center">
     {order.price}
   </p>
 

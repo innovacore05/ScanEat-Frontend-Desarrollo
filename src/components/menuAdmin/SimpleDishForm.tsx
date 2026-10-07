@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getProfile, getStoredFirstName } from "../../services/authService";
 import { HiArrowLeft } from "react-icons/hi";
@@ -13,6 +13,7 @@ interface SimpleDishFormProps {
 }
 
 function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
+  const navigate = useNavigate();
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -224,7 +225,12 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
             <p className="mt-2 text-sm text-text-primary">{successMessage}</p>
             <button
               type="button"
-               onClick={() => setSuccessMessage(null)}
+              onClick={() => {
+                setSuccessMessage(null);
+                if (isEditMode) {
+                  navigate({ to: "/menuManagment" });
+                }
+              }}
               className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
             >
               Aceptar

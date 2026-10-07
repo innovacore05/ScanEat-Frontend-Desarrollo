@@ -25,7 +25,6 @@ import { Route as clientOrdersOrderStatusRouteImport } from './routes/(clientOrd
 import { Route as clientOrdersReviewPlateRouteImport } from './routes/(clientOrders)/reviewPlate'
 import { Route as cookOrdersCookOrdersRouteImport } from './routes/(cookOrders)/cookOrders'
 import { Route as dashboardDashboardRouteImport } from './routes/(dashboard)/dashboard'
-import { Route as dashboardDashboardCookRouteImport } from './routes/(dashboard)/dashboardCook'
 import { Route as dashboardDashboardWaiterRouteImport } from './routes/(dashboard)/dashboardWaiter'
 import { Route as dashboardSalesReportRouteImport } from './routes/(dashboard)/salesReport'
 import { Route as issuerInformationIssuerInformationRouteImport } from './routes/(issuerInformation)/issuerInformation'
@@ -135,11 +134,6 @@ const cookOrdersCookOrdersRoute = cookOrdersCookOrdersRouteImport.update({
 const dashboardDashboardRoute = dashboardDashboardRouteImport.update({
   id: '/(dashboard)/dashboard',
   path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const dashboardDashboardCookRoute = dashboardDashboardCookRouteImport.update({
-  id: '/(dashboard)/dashboardCook',
-  path: '/dashboardCook',
   getParentRoute: () => rootRouteImport,
 } as any)
 const dashboardDashboardWaiterRoute =
@@ -283,7 +277,6 @@ export interface FileRoutesByFullPath {
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboard': typeof dashboardDashboardRoute
-  '/dashboardCook': typeof dashboardDashboardCookRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
   '/salesReport': typeof dashboardSalesReportRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
@@ -325,7 +318,6 @@ export interface FileRoutesByTo {
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboard': typeof dashboardDashboardRoute
-  '/dashboardCook': typeof dashboardDashboardCookRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
   '/salesReport': typeof dashboardSalesReportRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
@@ -368,7 +360,6 @@ export interface FileRoutesById {
   '/(clientOrders)/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/(cookOrders)/cookOrders': typeof cookOrdersCookOrdersRoute
   '/(dashboard)/dashboard': typeof dashboardDashboardRoute
-  '/(dashboard)/dashboardCook': typeof dashboardDashboardCookRoute
   '/(dashboard)/dashboardWaiter': typeof dashboardDashboardWaiterRoute
   '/(dashboard)/salesReport': typeof dashboardSalesReportRoute
   '/(issuerInformation)/issuerInformation': typeof issuerInformationIssuerInformationRoute
@@ -412,7 +403,6 @@ export interface FileRouteTypes {
     | '/reviewPlate'
     | '/cookOrders'
     | '/dashboard'
-    | '/dashboardCook'
     | '/dashboardWaiter'
     | '/salesReport'
     | '/issuerInformation'
@@ -454,7 +444,6 @@ export interface FileRouteTypes {
     | '/reviewPlate'
     | '/cookOrders'
     | '/dashboard'
-    | '/dashboardCook'
     | '/dashboardWaiter'
     | '/salesReport'
     | '/issuerInformation'
@@ -496,7 +485,6 @@ export interface FileRouteTypes {
     | '/(clientOrders)/reviewPlate'
     | '/(cookOrders)/cookOrders'
     | '/(dashboard)/dashboard'
-    | '/(dashboard)/dashboardCook'
     | '/(dashboard)/dashboardWaiter'
     | '/(dashboard)/salesReport'
     | '/(issuerInformation)/issuerInformation'
@@ -539,7 +527,6 @@ export interface RootRouteChildren {
   clientOrdersReviewPlateRoute: typeof clientOrdersReviewPlateRoute
   cookOrdersCookOrdersRoute: typeof cookOrdersCookOrdersRoute
   dashboardDashboardRoute: typeof dashboardDashboardRoute
-  dashboardDashboardCookRoute: typeof dashboardDashboardCookRoute
   dashboardDashboardWaiterRoute: typeof dashboardDashboardWaiterRoute
   dashboardSalesReportRoute: typeof dashboardSalesReportRoute
   issuerInformationIssuerInformationRoute: typeof issuerInformationIssuerInformationRoute
@@ -677,13 +664,6 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof dashboardDashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(dashboard)/dashboardCook': {
-      id: '/(dashboard)/dashboardCook'
-      path: '/dashboardCook'
-      fullPath: '/dashboardCook'
-      preLoaderRoute: typeof dashboardDashboardCookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(dashboard)/dashboardWaiter': {
@@ -868,7 +848,6 @@ const rootRouteChildren: RootRouteChildren = {
   clientOrdersReviewPlateRoute: clientOrdersReviewPlateRoute,
   cookOrdersCookOrdersRoute: cookOrdersCookOrdersRoute,
   dashboardDashboardRoute: dashboardDashboardRoute,
-  dashboardDashboardCookRoute: dashboardDashboardCookRoute,
   dashboardDashboardWaiterRoute: dashboardDashboardWaiterRoute,
   dashboardSalesReportRoute: dashboardSalesReportRoute,
   issuerInformationIssuerInformationRoute:
