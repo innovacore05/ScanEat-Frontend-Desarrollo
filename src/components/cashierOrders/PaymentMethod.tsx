@@ -119,6 +119,16 @@ const handleCharge = async (details: PaymentDetails) => {
   if (!order) {
     return <p>No se pudo cargar la orden.</p>;
   }
+
+
+const haciendaMessage = !receipt
+  ? ""
+  : receipt.haciendaStatus === "accepted"
+    ? "Hacienda aceptó el comprobante"
+    : receipt.haciendaStatus === "rejected"
+      ? "Hacienda rechazó el comprobante"
+      : "Hacienda aún no confirma el comprobante";
+
   return (
     <main className="min-h-screen bg-white">
      <div className="flex h-30 items-center justify-between gap-4 bg-neutral-50 border-b-4 border-mint-dark px-4 py-4 sm:px-8">
@@ -261,6 +271,7 @@ const handleCharge = async (details: PaymentDetails) => {
   status={paymentStatus}
   orderId={orderId}
   paymentMethod={paymentMethod}
+   haciendaMessage={haciendaMessage}
   onConfirm={() => {
     setIsPaymentStatusOpen(false);
     if (paymentStatus === "Aprobado") {

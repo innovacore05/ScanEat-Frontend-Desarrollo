@@ -13,6 +13,7 @@ type StatusModalProps = {
     status: StatusType | "";
     orderId: number | string;
     paymentMethod: PaymentType | "";
+     haciendaMessage?: string;
     onConfirm: () => void;
 };
 
@@ -21,8 +22,8 @@ function PaymentStatus({
     status,
     orderId,
     paymentMethod,
+    haciendaMessage = "",
     onConfirm,
-
 }: StatusModalProps) {
     if (!isOpen || !status) {
         return null;
@@ -69,6 +70,12 @@ function PaymentStatus({
                 <p className="mt-2 text-s text-gray-600">
                     {content.message}
                 </p>
+
+{haciendaMessage && (
+    <p className="mt-3 text-sm font-semibold text-mint-dark">
+        {haciendaMessage}
+    </p>
+)}
 
                 <div className="mt-8 text-sm text-mint-dark font-medium">
                     <p className="">
