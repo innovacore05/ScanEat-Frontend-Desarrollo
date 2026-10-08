@@ -56,7 +56,6 @@ function WaiterOrders() {
       (selectedCategory === 3 && order.status === "Listo") ||
       (selectedCategory === 4 && order.status === "Entregado");
     const matchesSearch =
-      order.tableId.toString().includes(searchTerm.trim()) ||
       order.orderId.toString().includes(searchTerm.trim());
 
     return matchesCategory && matchesSearch;
