@@ -11,6 +11,7 @@ type OrderItem = {
 export type Order = {
   orderId: number;
   tableId: number;
+  date: string;
   time: string;
   specialInstructions?: string;
   price: string;

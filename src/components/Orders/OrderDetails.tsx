@@ -64,24 +64,24 @@ function OrderDetailsContent({
     <div className="w-full">
       {/* Celular */}
       <section className="lg:hidden">
-       <div className="flex items-center gap-2">
-  {showMobileBack ? (
-    <Link
-      to={mobileBackRoute}
-      className="flex items-center gap-2 text-mint-dark"
-    >
-      <HiArrowLeft className="h-6 w-6" />
+        <div className="flex items-center gap-2">
+          {showMobileBack ? (
+            <Link
+              to={mobileBackRoute}
+              className="flex items-center gap-2 text-mint-dark"
+            >
+              <HiArrowLeft className="h-6 w-6" />
 
-      <span className="text-[32px] font-bold">
-        Orden #{order.orderId}
-      </span>
-    </Link>
-  ) : (
-    <span className="text-2xl font-bold text-mint-dark">
-      Orden #{order.orderId}
-    </span>
-  )}
-</div>
+              <span className="text-[32px] font-bold">
+                Orden #{order.orderId}
+              </span>
+            </Link>
+          ) : (
+            <span className="text-2xl font-bold text-mint-dark">
+              Orden #{order.orderId}
+            </span>
+          )}
+        </div>
 
         <div className="mt-2 rounded-4xl bg-neutral-100 px-6 py-6">
           <div className="flex flex-col gap-4">
@@ -94,9 +94,20 @@ function OrderDetailsContent({
                 Estado: {order.status}
               </p>
 
-              <p className="text-base font-semibold text-text-primary">
-                Hora: {order.time}
-              </p>
+              <div className="text-base font-semibold text-text-primary">
+                <p>
+                  Fecha:{" "}
+                  {new Date(order.date).toLocaleDateString("es-CR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
+                </p>
+
+                <p>
+                  Hora: {order.time}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -219,9 +230,20 @@ function OrderDetailsContent({
                 Estado: {order.status}
               </p>
 
-              <p className="text-lg font-semibold text-text-primary">
-                Hora: {order.time}
-              </p>
+              <div className="text-base font-semibold text-text-primary">
+                <p>
+                  Fecha:{" "}
+                  {new Date(order.date).toLocaleDateString("es-CR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
+                </p>
+
+                <p>
+                  Hora: {order.time}
+                </p>
+              </div>
             </div>
           </div>
 

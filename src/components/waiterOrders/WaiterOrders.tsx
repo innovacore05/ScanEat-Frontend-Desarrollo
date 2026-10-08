@@ -49,12 +49,17 @@ function WaiterOrders() {
   }, [loadOrders]);
 
   const filteredOrders = orders.filter((order) => {
+    if (order.status === "Pagado") {
+      return false;
+    }
+
     const matchesCategory =
       selectedCategory === null ||
       (selectedCategory === 1 && order.status === "Pendiente") ||
       (selectedCategory === 2 && order.status === "En preparación") ||
       (selectedCategory === 3 && order.status === "Listo") ||
       (selectedCategory === 4 && order.status === "Entregado");
+
     const matchesSearch =
       order.tableId.toString().includes(searchTerm.trim()) ||
       order.orderId.toString().includes(searchTerm.trim());
@@ -62,11 +67,16 @@ function WaiterOrders() {
     return matchesCategory && matchesSearch;
   });
 
+  const orderForDetails =
+    filteredOrders.find(
+      (order) => order.orderId === selectedOrder?.orderId,
+    ) ?? filteredOrders[0] ?? null;
+
   return (
     <DashboardLayoutWaiter>
       <main className="min-h-screen bg-white">
 
-              
+
         {/* Celular */}
         <section className="px-6 lg:hidden">
           <div className="flex items-center gap-2">
@@ -116,7 +126,7 @@ function WaiterOrders() {
           </div>
         </section>
 
-              
+
 
         {/* Computadora */}
         <section className="hidden px-15 py-15 lg:block">
@@ -160,11 +170,11 @@ function WaiterOrders() {
             </div>
 
             {/* Detalles */}
-                      <div>
-                          <p className="pb-4 text-xl text-text-primary font-bold ">Orden actual</p>
-              {selectedOrder ? (
+            <div>
+              <p className="pb-4 text-xl text-text-primary font-bold ">Orden actual</p>
+              {orderForDetails ? (
                 <OrderDetails
-                  order={selectedOrder}
+                  order={orderForDetails}
                   embedded
                   onStatusChanged={loadOrders}
                 />
