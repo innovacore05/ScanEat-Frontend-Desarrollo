@@ -17,7 +17,7 @@ function SearchOrders({
         >
             <input
                 type="text"
-                placeholder="Busca un pedido por número de mesa"
+                placeholder="Busca un pedido por número de orden"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-transparent text-base font-normal text-text-primary outline-none placeholder:text-text-primary"
