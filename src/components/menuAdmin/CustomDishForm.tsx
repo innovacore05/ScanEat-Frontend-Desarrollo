@@ -126,8 +126,8 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
       setError("Ingresa un precio válido");
       return;
     }
-    if (discount !== "" && (isNaN(Number(discount)) || Number(discount) < 0)) {
-      setError("Ingresa un descuento válido");
+    if (discount !== "" && (isNaN(Number(discount)) || Number(discount) < 0 || Number(discount) > 100)) {
+      setError("El descuento debe ser un porcentaje entre 0 y 100");
       return;
     }
     if (!category) {
@@ -335,18 +335,23 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
               </select>
 
               {/* Input Discount*/}
-              <input
+              <div className="relative mt-5">
+                <input
                 id="discount"
                 type="number"
-                placeholder="Descuento del platillo (opcional)"
+                placeholder="Descuento del platillo"
                 value={discount}
-                onChange={(event) =>
-                  setDiscount(
-                    event.target.value ? Number(event.target.value) : "",
-                  )
-                }
-                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
-              />
+                  onChange={(event) =>
+                    setDiscount(
+                      event.target.value ? Number(event.target.value) : "",
+                    )
+                  }
+                  className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 pr-10 focus:border-2 focus:border-brown focus:outline-none"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-base text-black font-black pointer-events-none">
+                  %
+                </span>
+              </div>
 
               {/* grupos de opciones */}
               <div className="mt-5">
@@ -612,18 +617,23 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                 ))}
               </select>
 
-              <input
+              <div className="relative">
+                <input
                 id="discount"
                 type="number"
-                placeholder="Descuento del platillo (opcional)"
+                placeholder="Descuento del platillo"
                 value={discount}
-                onChange={(event) =>
-                  setDiscount(
-                    event.target.value ? Number(event.target.value) : "",
-                  )
-                }
-                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
-              />
+                  onChange={(event) =>
+                    setDiscount(
+                      event.target.value ? Number(event.target.value) : "",
+                    )
+                  }
+                  className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 pr-10 focus:border-2 focus:border-brown focus:outline-none"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-base text-black font-black pointer-events-none">
+                  %
+                </span>
+              </div>
 
               {/* grupos de opciones */}
 

@@ -5,7 +5,7 @@ import FilterOrders from "../waiterOrders/FilterOrders";
 import SearchOrders from "../waiterOrders/SearchOrders";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import { getStoredFirstName } from "../../services/authService";
-import WaiterOrderCard from "../Orders/OrderCard";
+import OrderCard from "../Orders/OrderCard";
 import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
@@ -116,7 +116,7 @@ function WaiterOrders() {
 
             <div className="flex flex-col gap-8 pb-20">
               {filteredOrders.map((order) => (
-                <WaiterOrderCard
+                <OrderCard
                   key={order.orderId}
                   order={order}
                   onDetails={() => setSelectedOrder(order)}
@@ -161,7 +161,7 @@ function WaiterOrders() {
             {/* Pedidos */}
             <div className="flex flex-col gap-12">
               {filteredOrders.map((order) => (
-                <WaiterOrderCard
+                <OrderCard
                   key={order.orderId}
                   order={order}
                   onDetails={() => setSelectedOrder(order)}

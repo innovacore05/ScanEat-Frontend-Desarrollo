@@ -157,12 +157,18 @@ function OrderDetailsContent({
                     )}
                   </div>
 
-                  <p className="shrink-0 text-base font-semibold text-text-primary">
-                    ₡
-                    {(
-                      Number(item.price) * item.quantity
-                    ).toLocaleString("es-CR")}
-                  </p>
+                  <div className="shrink-0 flex items-center justify-end gap-2">
+                    {Number(item.discountAmount ?? 0) > 0 && (
+                      <p className="text-sm text-gray-500 line-through">
+                        ₡{(item.price * item.quantity).toLocaleString("es-CR")}
+                      </p>
+                    )}
+                    
+                    <p className="text-base font-semibold text-text-primary">
+                      ₡{Number(item.subtotal ?? item.price * item.quantity).toLocaleString("es-CR")}
+                    </p>
+                  </div>
+                  
                 </div>
               ))}
             </div>
@@ -293,12 +299,18 @@ function OrderDetailsContent({
                     )}
                   </div>
 
-                  <p className="shrink-0 text-lg font-semibold text-text-primary">
-                    ₡
-                    {(
-                      Number(item.price) * item.quantity
-                    ).toLocaleString("es-CR")}
-                  </p>
+                  <div className="shrink-0 flex items-center justify-end gap-2">
+                    {Number(item.discountAmount ?? 0) > 0 && (
+                      <p className="text-sm text-gray-500 line-through">
+                        ₡{(item.price * item.quantity).toLocaleString("es-CR")}
+                      </p>
+                    )}
+                    
+                    <p className="text-lg font-semibold text-text-primary">
+                      ₡{Number(item.subtotal ?? item.price * item.quantity).toLocaleString("es-CR")}
+                    </p>
+                  </div>
+                  
                 </div>
               ))}
             </div>

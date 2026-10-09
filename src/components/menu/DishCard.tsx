@@ -20,6 +20,7 @@ interface DishCardProps {
 	name: string;
 	description: string;
 	price: number;
+	discount?: number;
 	image: string;
 	rating: number;
 	isAdmin: boolean;
@@ -60,6 +61,7 @@ function DishCard({
 	description,
 	price,
 	image,
+	discount,
 	rating,
 	isAdmin,
 	productId,
@@ -180,6 +182,7 @@ function DishCard({
 					productId,
 					name,
 					price,
+					discount,
 					image,
 					quantity: 1,
 					selectedOptions: {},
@@ -221,9 +224,25 @@ function DishCard({
 						{description}
 					</p>
 
-					<span className="mt-2 text-base font-bold text-mint-darker">
-						₡{price.toLocaleString("es-CR")}
-					</span>
+					<div className="mt-2 flex items-center gap-2">
+						
+						{discount ? (
+							<>
+								<span className="relative text-sm font-bold text-mint-darker">
+									₡{price.toLocaleString("es-CR")}
+									<span className="absolute left-0 top-1/2 h-0.5 w-full -rotate-12 bg-red-600" />
+								</span>
+								
+								<span className="text-base font-bold text-mint-darker">
+									₡{(price * (1 - discount / 100)).toLocaleString("es-CR")}
+								</span>
+							</>
+						) : (
+								<span className="text-base font-bold text-mint-darker">
+									₡{price.toLocaleString("es-CR")}
+							</span>
+						)}
+					</div>
 
 					{isDetailView && (isLoadingDetails || detailOptionGroups.length > 0) && (
 						<div className="mt-4">
@@ -400,6 +419,7 @@ function DishCard({
 										productId: productId!,
 										name,
 										price,
+										discount,
 										image,
 										quantity: 1,
 										selectedOptions,
@@ -419,43 +439,7 @@ function DishCard({
 				</div>
 			)}
 
-			{/* {isDeleteDialogOpen && (
-				<div
-					className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-					role="dialog"
-					aria-modal="true"
-					aria-labelledby="delete-dialog-title"
-				>
-					<div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-						<h3 id="delete-dialog-title" className="text-lg font-bold text-mint-darker">
-							¿Eliminar producto?
-						</h3>
-						<p className="mt-2 text-sm text-text-primary">
-							¿Deseas eliminar &ldquo;{name}&rdquo;? Esta acción no se puede deshacer.
-						</p>
-						<div className="mt-6 flex justify-end gap-3">
-							<button
-								type="button"
-								onClick={() => setIsDeleteDialogOpen(false)}
-								disabled={isDeleting}
-								className="cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold text-text-primary hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
-							>
-								Cancelar
-							</button>
-							<button
-								type="button"
-								onClick={handleDelete}
-								disabled={isDeleting}
-								className="cursor-pointer rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-							>
-								{isDeleting ? "Eliminando..." : "Eliminar"}
-							</button>
-						</div>
-					</div>
-				</div>
-			)} */}
-
-
+			
 <ConfirmDeleteModal
 	isOpen={isDeleteDialogOpen}
 	title="¿Eliminar producto?"
