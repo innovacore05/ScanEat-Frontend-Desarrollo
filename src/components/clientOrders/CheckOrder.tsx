@@ -3,7 +3,7 @@ import { useCart } from "./CartContext";
 import { HiArrowLeft } from "react-icons/hi";
 import { FiMinus, FiPlus, FiX } from "react-icons/fi";
 import { useEffect, useState } from "react";
-import { createOrder } from "../../services/orderService";
+import { createOrder,getOrderQuote,type OrderQuote } from "../../services/orderService";
 import { getPublicTableNumber } from "../../services/tableService";
 
 
@@ -24,7 +24,61 @@ function CheckOrder() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState<number | null>(null);
+  
+  // estado de la cotizacion recibida en servidor
+const [orderQuote, setOrderQuote] = useState<OrderQuote | null>(null);
+const [isQuoting, setIsQuoting] = useState(false);
+const [quoteError, setQuoteError] = useState("");
+  
   const navigate = useNavigate();
+
+//  vuelve a cotizar cuando cambia la mesa o el carrito
+useEffect(() => {
+  if (!tableId || cartItems.length === 0) {
+    setOrderQuote(null);
+    setIsQuoting(false);
+    setQuoteError("");
+    return;
+  }
+
+  let cancelled = false;
+
+  const payload = {
+    tableId,
+    items: cartItems.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      selectedOptions: item.selectedOptions ?? {},
+    })),
+  };
+
+  setOrderQuote(null);
+  setIsQuoting(true);
+  setQuoteError("");
+
+  const timer = window.setTimeout(() => {
+    void getOrderQuote(payload)
+      .then((quote) => {
+        if (!cancelled) setOrderQuote(quote);
+      })
+      .catch((error) => {
+        console.error("Error cotizando el pedido:", error);
+        if (!cancelled) {
+          setQuoteError("No se pudo actualizar el total. Intenta de nuevo.");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsQuoting(false);
+      });
+  }, 300);
+
+  return () => {
+    cancelled = true;
+    window.clearTimeout(timer);
+  };
+}, [tableId, cartItems]);
+
+//_________________
 
   useEffect(() => {
     if (!tableId) return;
@@ -47,15 +101,14 @@ function CheckOrder() {
 
 console.log("CHECK ORDER CART:", cartItems);
 console.log("CHECK ORDER TABLE:", mesaId);
-  const subtotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
-  );
 
-  const iva = subtotal * 0.13;
-  const total = subtotal + iva;
 
   const handleCreateOrder = async () => {
+
+
+if (isQuoting || quoteError || !orderQuote) {
+  return;
+}
 
     if (!tableId) {
       alert("No se encontró una mesa válida para este pedido.");
@@ -228,26 +281,70 @@ console.log("ENVIANDO ORDEN:", {
 
           {cartItems.length > 0 && (
             <>
-              <div className="mt-8 flex flex-col gap-2 border-t border-border pt-4">
-                <div className="flex justify-between text-base">
-                  <span>Subtotal</span>
-                  <span>
-                    ₡{subtotal.toLocaleString("es-CR")}
-                  </span>
-                </div>
+              {isQuoting && <p>Actualizando el total…</p>}
 
-                <div className="flex justify-between text-base">
-                  <span>IVA (13%)</span>
-                  <span>₡{iva.toLocaleString("es-CR")}</span>
-                </div>
+{quoteError && (
+  <p role="alert" className="text-red-600">
+    {quoteError}
+  </p>
+)}
 
-                <div className="mt-2 flex justify-between text-xl font-bold text-mint-darker">
-                  <span>Total</span>
-                  <span>
-                    ₡{total.toLocaleString("es-CR")}
-                  </span>
-                </div>
-              </div>
+{orderQuote && (() => {
+  const subtotal = Number(orderQuote.totals.subtotal);
+  const subtotalBeforeDiscount = Number(
+    orderQuote.totals.subtotalBeforeDiscount,
+  );
+  const discount = Number(orderQuote.totals.discount);
+  const hasDiscount = discount > 0;
+
+  return (
+    <>
+      {hasDiscount ? (
+        <>
+          <div className="flex justify-between text-base">
+            <span>Subtotal</span>
+            <span className="line-through text-gray-500">
+              ₡{subtotalBeforeDiscount.toLocaleString("es-CR")}
+            </span>
+          </div>
+
+          <div className="flex justify-between text-base">
+            <span>Descuento</span>
+            <span>
+              −₡{discount.toLocaleString("es-CR")}
+            </span>
+          </div>
+
+          <div className="flex justify-between text-base font-medium">
+            <span>Subtotal con descuento aplicado</span>
+            <span>
+              ₡{subtotal.toLocaleString("es-CR")}
+            </span>
+          </div>
+        </>
+      ) : (
+        <div className="flex justify-between text-base">
+          <span>Subtotal</span>
+          <span>₡{subtotal.toLocaleString("es-CR")}</span>
+        </div>
+      )}
+
+      <div className="flex justify-between text-base">
+        <span>IVA</span>
+        <span>
+          ₡{Number(orderQuote.totals.tax).toLocaleString("es-CR")}
+        </span>
+      </div>
+
+      <div className="mt-2 flex justify-between text-xl font-bold text-mint-darker">
+        <span>Total</span>
+        <span>
+          ₡{Number(orderQuote.totals.total).toLocaleString("es-CR")}
+        </span>
+      </div>
+    </>
+  );
+})()}
 
               <div className="mt-8">
                 <label
@@ -271,7 +368,8 @@ console.log("ENVIANDO ORDEN:", {
               <button
                 type="button"
                 onClick={() => setIsConfirmDialogOpen(true)}
-                className="mt-6 w-full cursor-pointer rounded-2xl bg-mint-dark py-4 text-lg font-bold text-white"
+                disabled={isQuoting || Boolean(quoteError) || !orderQuote || isSubmitting}
+                className="mt-6 w-full cursor-pointer rounded-2xl bg-mint-dark py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 Realizar pedido
               </button>
@@ -389,28 +487,70 @@ console.log("ENVIANDO ORDEN:", {
 
               {cartItems.length > 0 && (
                 <>
-                  <div className="mt-6 flex flex-col gap-2 border-t border-border pt-4">
-                    <div className="flex justify-between text-base">
-                      <span>Subtotal</span>
-                      <span>
-                        ₡{subtotal.toLocaleString("es-CR")}
-                      </span>
-                    </div>
+               {isQuoting && <p>Actualizando el total…</p>}
 
-                    <div className="flex justify-between text-base">
-                      <span>IVA (13%)</span>
-                      <span>
-                        ₡{iva.toLocaleString("es-CR")}
-                      </span>
-                    </div>
+{quoteError && (
+  <p role="alert" className="text-red-600">
+    {quoteError}
+  </p>
+)}
 
-                    <div className="mt-2 flex justify-between text-xl font-bold text-mint-darker">
-                      <span>Total</span>
-                      <span>
-                        ₡{total.toLocaleString("es-CR")}
-                      </span>
-                    </div>
-                  </div>
+{orderQuote && (() => {
+  const subtotal = Number(orderQuote.totals.subtotal);
+  const subtotalBeforeDiscount = Number(
+    orderQuote.totals.subtotalBeforeDiscount,
+  );
+  const discount = Number(orderQuote.totals.discount);
+  const hasDiscount = discount > 0;
+
+  return (
+    <>
+      {hasDiscount ? (
+        <>
+          <div className="flex justify-between text-base">
+            <span>Subtotal</span>
+            <span className="line-through text-gray-500">
+              ₡{subtotalBeforeDiscount.toLocaleString("es-CR")}
+            </span>
+          </div>
+
+          <div className="flex justify-between text-base">
+            <span>Descuento</span>
+            <span>
+              −₡{discount.toLocaleString("es-CR")}
+            </span>
+          </div>
+
+          <div className="flex justify-between text-base font-medium">
+            <span>Subtotal con descuento aplicado</span>
+            <span>
+              ₡{subtotal.toLocaleString("es-CR")}
+            </span>
+          </div>
+        </>
+      ) : (
+        <div className="flex justify-between text-base">
+          <span>Subtotal</span>
+          <span>₡{subtotal.toLocaleString("es-CR")}</span>
+        </div>
+      )}
+
+      <div className="flex justify-between text-base">
+        <span>IVA</span>
+        <span>
+          ₡{Number(orderQuote.totals.tax).toLocaleString("es-CR")}
+        </span>
+      </div>
+
+      <div className="mt-2 flex justify-between text-xl font-bold text-mint-darker">
+        <span>Total</span>
+        <span>
+          ₡{Number(orderQuote.totals.total).toLocaleString("es-CR")}
+        </span>
+      </div>
+    </>
+  );
+})()}
 
                   <div className="mt-8">
                     <label
@@ -434,7 +574,8 @@ console.log("ENVIANDO ORDEN:", {
                   <button
                     type="button"
                     onClick={() => setIsConfirmDialogOpen(true)}
-                    className="mt-6 w-full cursor-pointer rounded-2xl bg-mint-dark py-4 text-lg font-bold text-white"
+                    disabled={isQuoting || Boolean(quoteError) || !orderQuote || isSubmitting}
+                    className="mt-6 w-full cursor-pointer rounded-2xl bg-mint-dark py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     Realizar pedido
                   </button>
@@ -523,7 +664,7 @@ console.log("ENVIANDO ORDEN:", {
 
               <button
                 type="button"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isQuoting || Boolean(quoteError) || !orderQuote}
                 onClick={() => {
                   void handleCreateOrder();
                 }}

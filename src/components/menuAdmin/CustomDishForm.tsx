@@ -6,6 +6,12 @@ import {
   getProductById,
   updateCustomDish,
   getCategories,
+  searchCabys,
+  getFiscalOptions,
+   type Category,
+  type FiscalOption,
+  type CabysSearchResult,
+  
 } from "../../services/productService";
 import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus } from "react-icons/go";
@@ -25,7 +31,18 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
-  const [categories, setCategories] = useState<{ categoryId: number; name: string }[]>([]);
+  
+//cabys
+  const [categories, setCategories] = useState<Category[]>([]);
+const [cabysCode, setCabysCode] = useState("");
+const [fiscalOptions, setFiscalOptions] = useState<FiscalOption[]>([]);
+
+//cabys: busqueda escrita (productos empacados)
+  const [cabysQuery, setCabysQuery] = useState("");
+  const [cabysResults, setCabysResults] = useState<CabysSearchResult[]>([]);
+  const [cabysLabel, setCabysLabel] = useState("");
+
+
   const [discount, setDiscount] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -33,9 +50,26 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
   const [error, setError] = useState("");
 
 
-  const [optionGroups, setOptionGroups] = useState<
+    const [optionGroups, setOptionGroups] = useState<
     { id: string; name: string; options: string[] }[]
   >([]);
+
+
+  //obtener categoria elegida y familia
+  const selectedCategory = categories.find(
+    (cat) => String(cat.categoryId) === category,
+  );
+  const usesSearch = selectedCategory?.fiscalType === "packaged";
+
+
+ 
+  const resetCabys = () => {
+    setCabysCode("");
+    setCabysLabel("");
+    setCabysQuery("");
+    setCabysResults([]);
+  };
+
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -63,6 +97,70 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
     loadCategories();
   }, []);
 
+//cabys
+useEffect(() => {
+  setFiscalOptions([]);
+
+  if (!selectedCategory?.fiscalType ||
+     selectedCategory.fiscalType === "dishes"||
+     selectedCategory.fiscalType === "packaged") {
+    return;
+  }
+
+  let cancelled = false;
+
+  getFiscalOptions(selectedCategory.fiscalType)
+    .then((options) => {
+      if (!cancelled){
+         setFiscalOptions(options);
+      }
+    })
+    .catch((error) => {
+      console.error("Error al cargar opciones CABYS:", error);
+    });
+
+  return () => {
+    cancelled = true;
+  };
+}, [selectedCategory?.categoryId, selectedCategory?.fiscalType]);
+
+
+ //cabys: busqueda con retraso mientras escribe (empacados)
+  useEffect(() => {
+    if (!usesSearch || cabysQuery.trim().length < 3) {
+      setCabysResults([]);
+      return;
+    }
+ 
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      searchCabys(cabysQuery.trim(), "packaged")
+        .then((results) => {
+          if (!cancelled) setCabysResults(results);
+        })
+        .catch((error) => console.error("Error buscando CABYS:", error));
+    }, 300);
+ 
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [cabysQuery, usesSearch]);
+
+
+
+ //cabys: al editar, mostrar el nombre del codigo ya guardado
+  useEffect(() => {
+    if (!usesSearch || !cabysCode || cabysLabel) return;
+ 
+    searchCabys(cabysCode, "packaged")
+      .then((results) => {
+        const hit = results.find((r) => r.code === cabysCode);
+        if (hit) setCabysLabel(hit.label);
+      })
+      .catch((error) => console.error("Error cargando CABYS:", error));
+  }, [usesSearch, cabysCode, cabysLabel]);
+ 
   useEffect(() => {
     if (!isEditMode || !productId) {
       return;
@@ -75,6 +173,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
         setDescription(product.description ?? "");
         setPrice(String(product.price ?? ""));
         setCategory(String(product.categoryId ?? ""));
+        setCabysCode(product.cabysCode ?? "");
         setDiscount(
           product.discount !== undefined && product.discount !== null
             ? Number(product.discount)
@@ -106,6 +205,120 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
     return () => URL.revokeObjectURL(previewUrl);
   }, [image]);
 
+
+  //selector de cabys / aviso
+  const renderCabysField = () => {
+    if (!selectedCategory) {
+      return null;
+    }
+ 
+    if (!selectedCategory.fiscalType) {
+      return (
+        <p className="mt-3 text-sm text-red-600">
+          Esta categoría no tiene una familia fiscal configurada.
+        </p>
+      );
+    }
+ 
+    if (selectedCategory.fiscalType === "dishes") {
+      return (
+        <p className="mt-3 text-sm text-gray-600">
+          El código CABYS se asignará automáticamente.
+        </p>
+      );
+    }
+
+
+ //empacados: búsqueda escrita
+    if (usesSearch) {
+      return (
+        <div className="mt-3">
+          <label className="mb-1 block text-sm font-medium text-text-primary">
+            ¿Qué producto es?
+          </label>
+ 
+          {cabysCode ? (
+            <div className="flex items-center justify-between rounded-lg border border-border px-4 py-2">
+              <span className="text-sm text-text-primary">
+                {cabysLabel || "Producto seleccionado"}
+              </span>
+              <button
+                type="button"
+                className="text-sm font-bold text-mint-darker"
+                onClick={resetCabys}
+              >
+                Cambiar
+              </button>
+            </div>
+          ) : (
+            <>
+              <input
+                type="text"
+                value={cabysQuery}
+                onChange={(event) => setCabysQuery(event.target.value)}
+                placeholder="Buscá: chicles, papas, galletas..."
+                className="w-full rounded-lg border border-border px-4 py-2 focus:border-2 focus:border-brown focus:outline-none"
+              />
+ 
+              {cabysResults.length > 0 && (
+                <ul className="mt-1 max-h-56 overflow-y-auto rounded-lg border border-border bg-white">
+                  {cabysResults.map((result) => (
+                    <li key={result.code}>
+                      <button
+                        type="button"
+                        className="w-full px-4 py-2 text-left text-sm hover:bg-mint-dark/10"
+                        onClick={() => {
+                          setCabysCode(result.code);
+                          setCabysLabel(result.label);
+                          setCabysResults([]);
+                        }}
+                      >
+                        {result.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+ 
+              {cabysQuery.trim().length >= 3 && cabysResults.length === 0 && (
+                <p className="mt-2 text-sm text-gray-600">Sin resultados.</p>
+              )}
+            </>
+          )}
+        </div>
+      );
+    }
+
+
+  return (
+    <div className="mt-3">
+      <label className="mb-1 block text-sm font-medium text-text-primary">
+        Opción CABYS
+      </label>
+
+      <select
+        value={cabysCode}
+        onChange={(event) => setCabysCode(event.target.value)}
+        className="w-full rounded-lg border border-border px-4 py-2 focus:border-2 focus:border-brown focus:outline-none"
+      >
+        <option value="">Selecciona una opción CABYS</option>
+
+        {fiscalOptions.map((option) => (
+          <option key={option.code} value={option.code}>
+           {option.label}
+          </option>
+        ))}
+      </select>
+
+      {fiscalOptions.length === 0 && (
+        <p className="mt-2 text-sm text-gray-600">
+          No hay opciones CABYS activas para esta familia.
+        </p>
+      )}
+    </div>
+  );
+};
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
@@ -126,14 +339,36 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
       setError("Ingresa un precio válido");
       return;
     }
-    if (discount !== "" && (isNaN(Number(discount)) || Number(discount) < 0)) {
-      setError("Ingresa un descuento válido");
-      return;
-    }
+  if (
+  discount !== "" &&
+  (!Number.isFinite(Number(discount)) ||
+    Number(discount) < 0 ||
+    Number(discount) > 100)
+) {
+  setError("El descuento debe estar entre 0 % y 100 %");
+  return;
+}
     if (!category) {
       setError("Selecciona una categoría");
       return;
     }
+
+    //cabys
+      if (!selectedCategory?.fiscalType) {
+      setError("La categoría seleccionada no tiene familia fiscal configurada");
+      return;
+    }
+
+ if (selectedCategory.fiscalType !== "dishes" && !cabysCode) {
+      setError(
+        usesSearch
+          ? "Busca y selecciona qué producto es"
+          : "Selecciona una opción CABYS",
+      );
+      return;
+    }
+
+
     if (optionGroups.length === 0) {
       setError("Ingresa al menos un grupo de opciones");
       return;
@@ -159,11 +394,6 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
       return;
     }
 
-    // if (image && image.size > 1 * 1024 * 1024) {
-    //   setError("La imagen no debe superar 1 MB");
-    //   return;
-    // }
-
 
     try {
       setIsSubmitting(true);
@@ -175,6 +405,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
         discount,
         categoryId: Number(category),
         image,
+        cabysCode,
         optionGroups,
       };
       const data = isEditMode && productId
@@ -198,6 +429,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
         setDescription("");
         setPrice("");
         setCategory("");
+        resetCabys();
         setDiscount("");
         setImage(null);
         setImagePreview(null);
@@ -322,7 +554,11 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
               <select
                 id="category"
                 value={category}
-                onChange={(event) => setCategory(event.target.value)}
+                onChange={(event) => {
+  setCategory(event.target.value);
+  resetCabys();
+}}
+
                 className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-3 py-1.5"
               >
                 <option value="">Categoría</option>
@@ -333,7 +569,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                   </option>
                 ))}
               </select>
-
+{renderCabysField()}
               {/* Input Discount*/}
               <input
                 id="discount"
@@ -597,12 +833,15 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                 onChange={(event) => setPrice(event.target.value)}
                 className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               />
-              <select
-                id="category"
-                value={category}
-                onChange={(event) => setCategory(event.target.value)}
-                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
-              >
+             <select
+  id="category"
+  value={category}
+  onChange={(event) => {
+    setCategory(event.target.value);
+    resetCabys();
+  }}
+  className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
+>
                 <option value="">Categoría</option>
 
                 {categories.map((cat) => (
@@ -611,7 +850,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                   </option>
                 ))}
               </select>
-
+{renderCabysField()}
               <input
                 id="discount"
                 type="number"

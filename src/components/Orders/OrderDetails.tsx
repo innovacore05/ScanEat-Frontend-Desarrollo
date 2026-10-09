@@ -159,7 +159,7 @@ function OrderDetailsContent({
 
           <div className="mt-8 border-t border-border pt-4">
             <div className="flex justify-between text-base">
-              <span>Subtotal</span>
+              <span>Subtotal con descuento aplicado</span>
 
               <span>
                 ₡{subtotal.toLocaleString("es-CR")}
@@ -167,7 +167,7 @@ function OrderDetailsContent({
             </div>
 
             <div className="mt-2 flex justify-between text-base">
-              <span>IVA (13%)</span>
+              <span>IVA </span>
 
               <span>
                 ₡{iva.toLocaleString("es-CR")}
@@ -292,7 +292,7 @@ function OrderDetailsContent({
             </div>
 
             <div className="mt-2 flex justify-between text-base">
-              <span>IVA (13%)</span>
+              <span>IVA </span>
 
               <span>
                 ₡{iva.toLocaleString("es-CR")}

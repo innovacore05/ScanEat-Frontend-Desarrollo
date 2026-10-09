@@ -176,7 +176,7 @@ const handleCharge = async (details: PaymentDetails) => {
 
               <div className="mt-6 border-t border-border pt-4">
                 <div className="flex items-center justify-between">
-                  <p>IVA (13%)</p>
+                  <p>IVA</p>
                  <p className="tracking-wider">{formatCRC(order.totals.totalTax)}</p>
                 </div>
 

@@ -9,29 +9,29 @@ const METHOD_LABELS: Record<
   sinpe: "SINPE Móvil",
 };
 
-const esc = (s: string) =>
-  s.replace(
+const esc = (value: string) =>
+  value.replace(
     /[&<>"']/g,
-    (c) =>
+    (character) =>
       ({
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
         "'": "&#39;",
-      })[c]!
+      })[character]!,
   );
 
-const crc = (v: string | number) =>
-  `₡${Number(v).toLocaleString("es-CR", {
+const crc = (value: string | number) =>
+  `₡${Number(value).toLocaleString("es-CR", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
 
-const row = (l: string, r: string, cls = "") =>
-  `<div class="r ${cls}">
-    <span>${esc(l)}</span>
-    <span>${esc(r)}</span>
+const row = (label: string, value: string, className = "") =>
+  `<div class="r ${className}">
+    <span>${esc(label)}</span>
+    <span>${esc(value)}</span>
   </div>`;
 
 function buildHtml(
@@ -47,7 +47,32 @@ function buildHtml(
     minute: "2-digit",
   });
 
-  const p = receipt.payment;
+  const payment = receipt.payment;
+
+  // declarar y agrupar el IVA por la tarifa 
+  const taxByRate = new Map<number, number>();
+
+  for (const line of receipt.lines) {
+    const rate = Number(line.ivaRate);
+    const amountInCents = Math.round(Number(line.tax) * 100);
+
+    taxByRate.set(
+      rate,
+      (taxByRate.get(rate) ?? 0) + amountInCents,
+    );
+  }
+
+  const taxRows = [...taxByRate.entries()]
+    .map(([rate, amountInCents]) => ({
+      rate,
+      amount: amountInCents / 100,
+    }))
+    .sort((a, b) => a.rate - b.rate);
+
+  const formatRate = (rate: number) =>
+    `${new Intl.NumberFormat("es-CR", {
+      maximumFractionDigits: 2,
+    }).format(rate)}%`;
 
   return `<!doctype html>
 <html>
@@ -106,10 +131,23 @@ function buildHtml(
     font-weight: 700;
   }
 
+  
   .item {
     display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) 7mm 15mm 18mm;
+    gap: 2px;
+    align-items: start;
+  }
+
+  .item span:not(:first-child) {
+    text-align: right;
+  }
+
+  .item-header {
+    font-weight: 700;
+    border-bottom: 1px dashed #000;
+    padding-bottom: 3px;
+    margin-bottom: 4px;
   }
 
   hr {
@@ -127,17 +165,13 @@ function buildHtml(
     logoUrl
       ? `
     <div class="logo-container">
-      <img
-        src="${esc(logoUrl)}"
-        class="logo"
-        alt="Logo"
-      />
+      <img src="${esc(logoUrl)}" class="logo" alt="Logo" />
     </div>
   `
       : ""
   }
 
- <div class="c b">${esc(businessName || "Nombre del negocio")}</div>
+  <div class="c b">${esc(businessName || "Nombre del negocio")}</div>
   <div class="c">Cédula jurídica x-xxx-xxxxx</div>
   <div class="c">Dirección,</div>
   <div class="c">Tel 8888-8888</div>
@@ -158,29 +192,53 @@ function buildHtml(
 
   <hr>
 
+
+  <div class="item item-header">
+    <span>Producto</span>
+    <span>Cant.</span>
+    <span>P. unit.</span>
+    <span>Monto (sin IVA)</span>
+  </div>
+
   ${receipt.lines
     .map(
-      (l) => `
+      (line) => `
       <div class="item">
-        <span>${l.quantity} x ${esc(l.detail)}</span>
-        <span>${crc(l.subtotal)}</span>
+        <span>${esc(line.detail)}</span>
+        <span>${line.quantity}</span>
+        <span>${crc(line.unitPrice)}</span>
+   
+        <span>${crc(line.subtotal)}</span>
       </div>
-    `
+    `,
     )
     .join("")}
 
   <hr>
 
   ${row("Subtotal", crc(receipt.totals.totalNetSale))}
-  ${row("IVA (13%)", crc(receipt.totals.totalTax))}
+
+  ${taxRows
+    .map(({ rate, amount }) =>
+      row(
+        rate === 13
+          ? `IVA tarifa general (${formatRate(rate)})`
+          : `IVA tarifa reducida (${formatRate(rate)})`,
+        crc(amount),
+      ),
+    )
+    .join("")}
+
   ${row("TOTAL", crc(receipt.totals.totalSale), "big")}
 
   <hr>
 
-  ${row("Medio de pago", METHOD_LABELS[p.method])}
-  ${p.reference ? row("Comprobante", p.reference) : ""}
-  ${p.amountTendered ? row("Pagó con", crc(p.amountTendered)) : ""}
-  ${p.change ? row("Cambio", crc(p.change)) : ""}
+  ${row("Medio de pago", METHOD_LABELS[payment.method])}
+  ${payment.reference ? row("Comprobante", payment.reference) : ""}
+  ${payment.amountTendered ? row("Pagó con", crc(payment.amountTendered)) : ""}
+
+  <!-- CAMBIO: mostrar cambio si el backend lo devuelve, incluso si es ₡0.00. -->
+  ${payment.change !== null ? row("Cambio", crc(payment.change)) : ""}
 
   <div class="c" style="margin-top: 8px">
     ¡Gracias por su visita!
@@ -193,7 +251,7 @@ function buildHtml(
 export function printReceipt(
   receipt: PayOrderResponse,
   logoUrl: string | null,
-  businessName:string,
+  businessName: string,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const iframe = document.createElement("iframe");
@@ -201,13 +259,19 @@ export function printReceipt(
     iframe.style.cssText =
       "position:fixed;width:0;height:0;border:0;visibility:hidden";
 
-   iframe.srcdoc = buildHtml(receipt, logoUrl, businessName);
+    iframe.srcdoc = buildHtml(receipt, logoUrl, businessName);
 
     const cleanup = () => setTimeout(() => iframe.remove(), 1000);
 
     iframe.onload = () => {
       try {
-        const win = iframe.contentWindow!;
+        const win = iframe.contentWindow;
+
+        if (!win) {
+          cleanup();
+          reject(new Error("No se pudo abrir la ventana de impresión"));
+          return;
+        }
 
         win.onafterprint = () => {
           cleanup();
@@ -216,9 +280,9 @@ export function printReceipt(
 
         win.focus();
         win.print();
-      } catch (e) {
+      } catch (error) {
         cleanup();
-        reject(e);
+        reject(error);
       }
     };
 

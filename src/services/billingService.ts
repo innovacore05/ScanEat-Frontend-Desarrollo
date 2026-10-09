@@ -4,15 +4,18 @@ const BILLING_BASE_URL= "/api/billing";
 
 export type PaymentMethodType= "cash" | "card" | "sinpe";
 
-export type ReceiptLine={
-    detail:string;
-    quantity:number;
-    unitPrice:string;
-    gross:string;
-    discount:string;
-    subtotal:string;
-    tax:string;
-    total:string;
+export type ReceiptLine = {
+  detail: string;
+  quantity: number;
+  unitPrice: string;
+  gross: string;
+  discount: string;
+  subtotal: string;
+  tax: string;
+  total: string;
+  //  el backend devuelve estas tarifas
+  ivaRate: string;
+  ivaRateCode: string;
 };
 
 export type ReceiptTotals={

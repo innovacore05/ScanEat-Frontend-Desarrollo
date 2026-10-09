@@ -334,3 +334,35 @@ return cookieSessionClient.request<{
 
 
 };
+
+
+// obtiene la cotización del servidor sin crear la orden
+export type OrderQuote = {
+  lines: Array<{
+    productId: number;
+    quantity: number;
+    unitPrice: number;
+    discountAmount: number;
+    subtotal: number;
+    ivaRate: number;
+    taxAmount: number;
+    total: number;
+  }>;
+  totals: {
+    subtotalBeforeDiscount: number;
+    subtotal: number;
+    discount: number;
+    tax: number;
+    total: number;
+  };
+};
+
+export const getOrderQuote = (payload: CreateOrderPayload) =>
+  cookieSessionClient.request<OrderQuote>(`${ORDERS_BASE_URL}/quote`, {
+    method: "POST",
+    body: JSON.stringify({
+      ...payload,
+      clientId: getClientId(),
+    }),
+    fallBackMessage: "No se pudo calcular el resumen del pedido",
+  });
