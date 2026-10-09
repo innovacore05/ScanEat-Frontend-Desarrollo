@@ -6,15 +6,17 @@ type OrdersListProps = {
   orders: Awaited<ReturnType<typeof getOrders>>;
   period: string;
   isLoading?: boolean;
+  showExportButton?: boolean;
 };
 
 function OrdersList({
   orders,
   period,
   isLoading = false,
+  showExportButton = true,
 }: OrdersListProps) {
   return (
-    <section className="mt-6 rounded-2xl border border-border bg-white p-5 lg:p-7">
+    <section className="mt-3 rounded-2xl border border-border bg-white p-5 lg:p-7">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm text-text-primary">
@@ -26,15 +28,17 @@ function OrdersList({
           </h2>
         </div>
 
-        <div className="flex gap-2">
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-xl border border-mint-dark px-3 py-2 text-sm font-semibold text-mint-darker transition hover:bg-mint-light"
-          >
-            <FiDownload />
-            Exportar
-          </button>
-        </div>
+        {showExportButton && (
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className="flex items-center gap-2 rounded-xl border border-mint-dark px-3 py-2 text-sm font-semibold text-mint-darker transition hover:bg-mint-light"
+            >
+              <FiDownload />
+              Exportar
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="mt-5 overflow-x-auto rounded-xl border border-border">

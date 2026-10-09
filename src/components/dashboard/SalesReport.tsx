@@ -470,12 +470,15 @@ function SalesReport() {
             </div>
           </section>
 
-          {/*Aquí es la parte de las ordenes*/}
-          <OrdersList
+          <div className="mt-6">
+            <OrdersList
             orders={orders}
             period={period}
             isLoading={isLoadingOrders}
           />
+          </div>
+          {/*Aquí es la parte de las ordenes*/}
+          
         </div>
       </section>
     </DashboardLayout>
