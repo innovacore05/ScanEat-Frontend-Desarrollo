@@ -729,6 +729,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 ))}
               </select>
 {renderCabysField()}
+              <div className="relative">
               <input
                 id="discount"
                 type="number"

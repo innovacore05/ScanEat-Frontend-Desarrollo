@@ -169,12 +169,14 @@ function PaymentMethod() {
                         {line.detail} x {line.quantity}
                       </p>
 
-                      <div className="flex shrink-0 items-center justify-end gap-2">
-                        {Number(line.discount) > 0 && (
-                          <p className="text-sm text-gray-500 line-through">
-                            {formatCRC(Number(line.gross) * 1.13)}
-                          </p>
-                        )}
+                     <div className="flex shrink-0 items-center justify-end gap-2">
+      {Number(line.discount) > 0 && (
+        <p className="text-sm text-gray-500 line-through">
+          {formatCRC(
+            Number(line.gross) * (1 + Number(line.ivaRate) / 100),
+          )}
+        </p>
+      )}
 
                         <p className="tracking-wider ">
                           {formatCRC(line.total)}
