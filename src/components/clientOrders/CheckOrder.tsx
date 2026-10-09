@@ -232,9 +232,24 @@ console.log("ENVIANDO ORDEN:", {
                         {item.name}
                       </h3>
 
-                      <p className="text-base font-bold text-mint-darker">
-                        ₡{item.price.toLocaleString("es-CR")}
-                      </p>
+                      <div className="flex flex-wrap items-center gap-2">
+                            {Number(item.discount ?? 0) > 0 ? (
+                              <>
+                                <span className="relative text-sm font-bold text-mint-darker">
+                                  ₡{item.price.toLocaleString("es-CR")}
+                                  <span className="absolute left-0 top-1/2 h-0.5 w-full -rotate-12 bg-red-600" />
+                                </span>
+                                
+                                <span className="text-base font-bold text-mint-darker">
+                                  ₡{(item.price * (1 - Number(item.discount) / 100)).toLocaleString("es-CR")}
+                                </span>
+                              </>
+                            ) : (
+                                <span className="text-base font-bold text-mint-darker">
+                                  ₡{item.price.toLocaleString("es-CR")}
+                              </span>
+                            )}
+                          </div>
 
                       <div className="mt-2 flex items-center gap-2">
                         <button
@@ -431,9 +446,24 @@ console.log("ENVIANDO ORDEN:", {
                             {item.name}
                           </h3>
 
-                          <p className="mt-1 text-lg font-bold text-mint-darker">
-                            ₡{item.price.toLocaleString("es-CR")}
-                          </p>
+                          <div className="flex flex-wrap items-center gap-2">
+                            {Number(item.discount ?? 0) > 0 ? (
+                              <>
+                                <span className="relative text-sm font-bold text-mint-darker">
+                                  ₡{item.price.toLocaleString("es-CR")}
+                                  <span className="absolute left-0 top-1/2 h-0.5 w-full -rotate-12 bg-red-600" />
+                                </span>
+                                
+                                <span className="text-base font-bold text-mint-darker">
+                                  ₡{(item.price * (1 - Number(item.discount) / 100)).toLocaleString("es-CR")}
+                                </span>
+                              </>
+                            ) : (
+                                <span className="text-base font-bold text-mint-darker">
+                                  ₡{item.price.toLocaleString("es-CR")}
+                              </span>
+                            )}
+                          </div>
 
                           <div className="mt-3 flex items-center gap-2">
                             <button

@@ -53,6 +53,7 @@ function ProductList({
             name={product.productName ?? ""}
             description={product.description ?? ""}
             price={product.price}
+            discount={ Number(product.discount ?? 0) }
             image={product.image ?? ""}
             rating={product.rating}
             isAdmin={false}
@@ -61,9 +62,9 @@ function ProductList({
             productId={product.productId}
             optionGroups={product.optionGroups}
             onDelete={onDeleteProduct}
-			isDetailView={selectedProductId === product.productId}
-			onViewMore={() => onViewMore(product.productId)}
-			onCloseDetails={onCloseDetails}
+            isDetailView={selectedProductId === product.productId}
+            onViewMore={() => onViewMore(product.productId)}
+            onCloseDetails={onCloseDetails}
           />
         </div>
       ))}

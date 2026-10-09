@@ -13,6 +13,7 @@ import { MdOutlineTableBar } from "react-icons/md";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { IoReceiptOutline } from "react-icons/io5";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
+import { LuHistory } from "react-icons/lu";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -151,6 +152,17 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <span className="text-[15px] font-bold">
               Negocio
+            </span>
+          </Link>
+
+          <Link
+            to= "/historySales"
+            className="flex items-center gap-4 pt-3 text-left text-text-primary"
+          >
+            <LuHistory className="h-6 w-6 shrink-0" />
+
+            <span className="text-[15px] font-bold">
+              Historial de ventas
             </span>
           </Link>
 
@@ -304,6 +316,17 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
                 Datos de hacienda
               </span>
             </Link>
+
+            <Link
+            to= "/historySales"
+            className="flex w-full items-center gap-4 py-4 text-left text-white"
+          >
+            <LuHistory className="h-6 w-6 shrink-0" />
+
+            <span className="text-xl font-bold">
+              Historial de ventas
+            </span>
+          </Link>
 
 
               </div>

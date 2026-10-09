@@ -5,7 +5,7 @@ import FilterOrders from "../waiterOrders/FilterOrders";
 import SearchOrders from "../waiterOrders/SearchOrders";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import { getStoredFirstName } from "../../services/authService";
-import WaiterOrderCard from "../Orders/OrderCard";
+import OrderCard from "../Orders/OrderCard";
 import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
@@ -49,12 +49,17 @@ function WaiterOrders() {
   }, [loadOrders]);
 
   const filteredOrders = orders.filter((order) => {
+    if (order.status === "Pagado") {
+      return false;
+    }
+
     const matchesCategory =
       selectedCategory === null ||
       (selectedCategory === 1 && order.status === "Pendiente") ||
       (selectedCategory === 2 && order.status === "En preparación") ||
       (selectedCategory === 3 && order.status === "Listo") ||
       (selectedCategory === 4 && order.status === "Entregado");
+
     const matchesSearch =
       order.tableId.toString().includes(searchTerm.trim()) ||
       order.orderId.toString().includes(searchTerm.trim());
@@ -62,11 +67,16 @@ function WaiterOrders() {
     return matchesCategory && matchesSearch;
   });
 
+  const orderForDetails =
+    filteredOrders.find(
+      (order) => order.orderId === selectedOrder?.orderId,
+    ) ?? filteredOrders[0] ?? null;
+
   return (
     <DashboardLayoutWaiter>
       <main className="min-h-screen bg-white">
 
-              
+
         {/* Celular */}
         <section className="px-6 lg:hidden">
           <div className="flex items-center gap-2">
@@ -106,7 +116,7 @@ function WaiterOrders() {
 
             <div className="flex flex-col gap-8 pb-20">
               {filteredOrders.map((order) => (
-                <WaiterOrderCard
+                <OrderCard
                   key={order.orderId}
                   order={order}
                   onDetails={() => setSelectedOrder(order)}
@@ -116,7 +126,7 @@ function WaiterOrders() {
           </div>
         </section>
 
-              
+
 
         {/* Computadora */}
         <section className="hidden px-15 py-15 lg:block">
@@ -151,7 +161,7 @@ function WaiterOrders() {
             {/* Pedidos */}
             <div className="flex flex-col gap-12">
               {filteredOrders.map((order) => (
-                <WaiterOrderCard
+                <OrderCard
                   key={order.orderId}
                   order={order}
                   onDetails={() => setSelectedOrder(order)}
@@ -160,11 +170,11 @@ function WaiterOrders() {
             </div>
 
             {/* Detalles */}
-                      <div>
-                          <p className="pb-4 text-xl text-text-primary font-bold ">Orden actual</p>
-              {selectedOrder ? (
+            <div>
+              <p className="pb-4 text-xl text-text-primary font-bold ">Orden actual</p>
+              {orderForDetails ? (
                 <OrderDetails
-                  order={selectedOrder}
+                  order={orderForDetails}
                   embedded
                   onStatusChanged={loadOrders}
                 />

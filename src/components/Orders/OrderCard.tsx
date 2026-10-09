@@ -3,14 +3,17 @@ import { Link } from "@tanstack/react-router";
 
 type OrderItem = {
   name: string;
-    quantity: number;
+  quantity: number;
   price: number;
+  discountAmount?: number;
+  subtotal?: number;
   options?: Record<string, string>;
 };
 
 export type Order = {
   orderId: number;
   tableId: number;
+  date: string;
   time: string;
   specialInstructions?: string;
   price: string;

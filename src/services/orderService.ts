@@ -21,9 +21,9 @@ export type CreateOrderPayload = {
   tableId: string;
   observation?: string;
   items: Array<{
-    productId: number;
-    quantity: number;
-    selectedOptions: Record<string, string>;
+  productId: number;
+  quantity: number;
+  selectedOptions: Record<string, string>;
   }>;
 };
 
@@ -42,6 +42,7 @@ type BackendOrderDetail = {
   quantity: number;
   unitPrice: string;
   subtotal: string;
+  discountAmount?: number | string | null;
   isCustom: number | null;
   selectedOptions: Record<string, string>;
   optionGroups: Array<{
@@ -119,6 +120,8 @@ const mapBackendOrderToFrontend = (backendOrder: BackendOrder) => {
     name: detail.productName,
     quantity: detail.quantity,
     price: Number(detail.unitPrice || 0),
+    discountAmount: Number(detail.discountAmount ?? 0),
+    subtotal: Number(detail.subtotal || 0),
     options: Object.keys(detail.selectedOptions ?? {}).length
       ? formatSelectedOptions(detail.selectedOptions, detail.optionGroups ?? [])
       : undefined,
