@@ -36,8 +36,12 @@ function DashboardWaiter() {
                     <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2 xl:gap-6 mt-6">
                         <div>
                         <DataSummary />
+                        <div className="mt-5">
                         <PendingTables />
+                        </div>
+                        <div className="mt-5">
                         <FavoritesToday />
+                        </div>
                         </div>
 
                         <div>

@@ -20,7 +20,7 @@ const periodToApiValue: Record< SalesPeriod, "today" | "week" | "month" | "year"
 
 function DashboardForm() {
   const [firstName, setFirstName] = useState(getStoredFirstName);
-  const [period] = useState<SalesPeriod>("Esta semana");
+  const [period] = useState<SalesPeriod>("Hoy");
 
   const [analytics, setAnalytics] = useState<SalesAnalytics | null>(null);
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(false);
@@ -110,7 +110,7 @@ function DashboardForm() {
             <div className="min-w-0 rounded-xl bg-white">
               <SalesChart
                 data={analytics?.salesByPeriod ?? []}
-                period={period}
+                period="Hoy"
                 isLoading={isLoadingAnalytics}
               />
             </div>
