@@ -33,7 +33,7 @@ export type PaymentPreview={
     tableNumber:number;
 lines:Array<ReceiptLine & {detailId:number}>;
 totals:ReceiptTotals;
-
+taxSummary: { rate: number; amount: string }[];
 //producto sin codigo cabys
 missingCabys:string[];
 };
@@ -53,6 +53,7 @@ receiptId: number;
     haciendaStatus:string;
     lines:ReceiptLine[];
     totals:ReceiptTotals;
+    taxSummary: { rate: number; amount: string }[];
     payment:{
         method:PaymentMethodType;
         reference:string|null;

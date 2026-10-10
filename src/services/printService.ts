@@ -49,26 +49,6 @@ function buildHtml(
 
   const payment = receipt.payment;
 
-  // declarar y agrupar el IVA por la tarifa 
-  const taxByRate = new Map<number, number>();
-
-  for (const line of receipt.lines) {
-    const rate = Number(line.ivaRate);
-    const amountInCents = Math.round(Number(line.tax) * 100);
-
-    taxByRate.set(
-      rate,
-      (taxByRate.get(rate) ?? 0) + amountInCents,
-    );
-  }
-
-  const taxRows = [...taxByRate.entries()]
-    .map(([rate, amountInCents]) => ({
-      rate,
-      amount: amountInCents / 100,
-    }))
-    .sort((a, b) => a.rate - b.rate);
-
   const formatRate = (rate: number) =>
     `${new Intl.NumberFormat("es-CR", {
       maximumFractionDigits: 2,
@@ -131,7 +111,6 @@ function buildHtml(
     font-weight: 700;
   }
 
-  
   .item {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 7mm 15mm 18mm;
@@ -148,6 +127,17 @@ function buildHtml(
     border-bottom: 1px dashed #000;
     padding-bottom: 3px;
     margin-bottom: 4px;
+  }
+
+  .rate {
+    display: block;
+    font-size: 10px;
+  }
+
+  .old {
+    display: block;
+    font-size: 10px;
+    text-decoration: line-through;
   }
 
   hr {
@@ -181,10 +171,9 @@ function buildHtml(
   <div class="c b">TICKET</div>
 
   ${row("Consecutivo", "Pendiente")}
-  ${row("Fecha", date)}
-  ${row("Mesa", `#${receipt.tableNumber}`)}
-  ${row("Condición venta", "Contado")}
-  ${row("Clave", "Pendiente")}
+  ${row("Fecha de emisión", date)}
+  ${row("Clave numérica", "Pendiente")}
+  ${row("Condición de venta", "Contado")}
 
   <hr>
 
@@ -192,23 +181,28 @@ function buildHtml(
 
   <hr>
 
-
   <div class="item item-header">
     <span>Producto</span>
     <span>Cant.</span>
     <span>P. unit.</span>
-    <span>Monto (sin IVA)</span>
+    <span>Total c/IVA</span>
   </div>
 
   ${receipt.lines
     .map(
       (line) => `
       <div class="item">
-        <span>${esc(line.detail)}</span>
+        <span>
+          ${esc(line.detail)}
+          <small class="rate">IVA ${formatRate(Number(line.ivaRate))}</small>
+        </span>
         <span>${line.quantity}</span>
-        <span>${crc(line.unitPrice)}</span>
-   
-        <span>${crc(line.subtotal)}</span>
+        <span>${
+          Number(line.discount) > 0
+            ? `<small class="old">${crc(line.unitPrice)}</small>${crc(Number(line.subtotal) / line.quantity)}`
+            : crc(line.unitPrice)
+        }</span>
+        <span>${crc(line.total)}</span>
       </div>
     `,
     )
@@ -216,16 +210,11 @@ function buildHtml(
 
   <hr>
 
-  ${row("Subtotal", crc(receipt.totals.totalNetSale))}
+  ${row("Subtotal (sin IVA)", crc(receipt.totals.totalNetSale))}
 
-  ${taxRows
+  ${receipt.taxSummary
     .map(({ rate, amount }) =>
-      row(
-        rate === 13
-          ? `IVA tarifa general (${formatRate(rate)})`
-          : `IVA tarifa reducida (${formatRate(rate)})`,
-        crc(amount),
-      ),
+      row(`IVA (${formatRate(rate)})`, crc(amount)),
     )
     .join("")}
 

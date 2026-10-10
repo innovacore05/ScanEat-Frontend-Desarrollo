@@ -329,7 +329,7 @@ function CheckOrder() {
                         <div className="flex justify-between text-base">
                           <span>Descuento</span>
                           <span>
-                            −₡{discount.toLocaleString("es-CR")}
+                            ₡{discount.toLocaleString("es-CR")}
                           </span>
                         </div>
 
@@ -555,7 +555,7 @@ function CheckOrder() {
                             <div className="flex justify-between text-base">
                               <span>Descuento</span>
                               <span>
-                                −₡{discount.toLocaleString("es-CR")}
+                                ₡{discount.toLocaleString("es-CR")}
                               </span>
                             </div>
 

@@ -59,11 +59,11 @@ const CATEGORY_ICONS = [
 
 
 const FISCAL_TYPES:{key:FiscalType;label:string;hint:string;Icon:IconType}[]=[
-    { key: "dishes", label: "Platillos", hint: "Comida preparada: hamburguesas, casados, pizzas", Icon: LuUtensils },
-    { key: "hot_drinks", label: "Bebidas calientes", hint: "Café, té, chocolate", Icon: GiCoffeeCup },
-    { key: "cold_drinks", label: "Bebidas frías sin alcohol", hint: "Batidos, refrescos, jugos, agua", Icon: RiDrinks2Line },
-    { key: "alcohol_drinks", label: "Bebidas con alcohol", hint: "Cerveza, licores, cócteles", Icon: LuWine },
-    { key: "packaged", label: "Productos empacados", hint: "Papitas, galletas, chicles", Icon: LuPackage },
+    { key: "dishes", label: "Platillos", hint: "Comida preparada: hamburguesas, casados, pizzas, etc", Icon: LuUtensils },
+    { key: "hot_drinks", label: "Bebidas calientes", hint: "Café, té, chocolate, etc", Icon: GiCoffeeCup },
+    { key: "cold_drinks", label: "Bebidas frías sin alcohol", hint: "Batidos, refrescos, jugos, agua, etc", Icon: RiDrinks2Line },
+    { key: "alcohol_drinks", label: "Bebidas con alcohol", hint: "Cerveza, licores, cócteles, etc", Icon: LuWine },
+    { key: "packaged", label: "Productos empacados", hint: "Papitas, galletas, chicles, etc", Icon: LuPackage },
 ];
 
 

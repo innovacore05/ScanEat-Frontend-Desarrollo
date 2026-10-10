@@ -122,6 +122,9 @@ function PaymentMethod() {
     return <p>No se pudo cargar la orden.</p>;
   }
 
+  
+
+
   return (
     <main className="min-h-screen bg-white">
       <div className="flex h-30 items-center justify-between gap-4 bg-neutral-50 border-b-4 border-mint-dark px-4 py-4 sm:px-8">
@@ -149,6 +152,7 @@ function PaymentMethod() {
           </p>
 
           <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+           {/* ---- */}
             <div className="rounded-xl border border-border p-6 lg:p-8">
               <h2 className="text-center text-2xl font-bold text-mint-dark lg:text-3xl">
                 Recibo
@@ -165,20 +169,25 @@ function PaymentMethod() {
                       key={line.detailId}
                       className="flex items-center justify-between gap-4"
                     >
-                      <p className="min-w-0 flex-1">
-                        {line.detail} x {line.quantity}
-                      </p>
+                      <div className="min-w-0 flex-1">
+                        <p>
+                          {line.detail} x {line.quantity}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          IVA {Number(line.ivaRate)} %
+                        </p>
+                      </div>
 
-                     <div className="flex shrink-0 items-center justify-end gap-2">
-      {Number(line.discount) > 0 && (
-        <p className="text-sm text-gray-500 line-through">
-          {formatCRC(
-            Number(line.gross) * (1 + Number(line.ivaRate) / 100),
-          )}
-        </p>
-      )}
+                      <div className="flex shrink-0 items-center justify-end gap-2">
+                        {Number(line.discount) > 0 && (
+                          <p className="text-sm text-gray-500 line-through">
+                            {formatCRC(
+                              Number(line.gross) * (1 + Number(line.ivaRate) / 100),
+                            )}
+                          </p>
+                        )}
 
-                        <p className="tracking-wider ">
+                        <p className="tracking-wider">
                           {formatCRC(line.total)}
                         </p>
                       </div>
@@ -189,11 +198,20 @@ function PaymentMethod() {
 
               <div className="mt-6 border-t border-border pt-4">
                 <div className="flex items-center justify-between">
-                  <p>IVA</p>
-                 <p className="tracking-wider">{formatCRC(order.totals.totalTax)}</p>
+                  <p>Subtotal (sin IVA)</p>
+                                   <p className="tracking-wider">{formatCRC(order.totals.totalNetSale)}</p>
                 </div>
 
-                <div className="mt-3 flex items-center justify-between">
+                  {order.taxSummary.map(({ rate, amount }) => (
+                  <div
+                    key={rate}
+                    className="mt-2 flex items-center justify-between"
+                  >
+                    <p>IVA ({rate} %)</p>
+                    <p className="tracking-wider">{formatCRC(amount)}</p>
+                  </div>
+                ))}
+                <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
                   <p className="text-xl font-bold text-mint-dark">Total</p>
                   {/* total */}
                   <p className="text-xl font-bold tracking-wider text-mint-dark">

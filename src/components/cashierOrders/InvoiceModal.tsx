@@ -19,7 +19,6 @@ const formatCRC = (value: string | number) =>
 
 
 
-
 const methodLabels: Record<PayOrderResponse["payment"]["method"], string> = {
     cash: "Efectivo",
     card: "Tarjeta",
@@ -58,33 +57,10 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
 
     if (!isOpen || !receipt) return null;
 
-    // agrupar el IVA de las lineas por su tasa exacta
-     const taxByRate = new Map<number, number>();
-
-    for (const line of receipt.lines) {
-        const rate = Number(line.ivaRate);
-        const amountInCents = Math.round(Number(line.tax) * 100);
-
-        taxByRate.set(
-            rate,
-            (taxByRate.get(rate) ?? 0) + amountInCents,
-        );
-    }
-    const taxRows = [...taxByRate.entries()]
-        .map(([rate, amountInCents]) => ({
-            rate,
-            amount: amountInCents / 100,
-        }))
-        .sort((a, b) => a.rate - b.rate);
-
     const formatRate = (rate: number) =>
         `${new Intl.NumberFormat("es-CR", {
             maximumFractionDigits: 2,
         }).format(rate)} %`;
-
-
-
-
 
 
     const handlePrint = async () => {
@@ -117,6 +93,8 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
                     <IoCloseOutline className="h-6 w-6" />
                 </button>
 
+
+                {/* Emisor */}
                 <div className="mt-4 mb-4 flex flex-col items-center gap-2 text-center">
                     <RestaurantLogo className="h-16 w-16 mb-2" />
 
@@ -140,31 +118,32 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
                     <h1 className="text-center text-xl font-bold text-mint-dark">
                         Ticket
                     </h1>
-
+                    {/* Datos del comprobante */}
                     <div className="mt-3 flex flex-col gap-2">
                         <Row label="Consecutivo" value="Pendiente" />
-                        <Row label="Fecha" value={issueDate} />
-                        <Row label="Mesa" value={`#${receipt.tableNumber}`} />
-                        <Row label="Condición venta" value="Contado" />
-                        <Row label="Clave" value="Pendiente" />
+                        <Row label="Fecha de emisión" value={issueDate} />
+                        <Row label="Clave numérica" value="Pendiente" />
+                        <Row label="Condición de venta" value="Contado" />
+
+
                     </div>
 
                     <div className="mt-4 border border-border"></div>
-
+                    {/* Receptor */}
                     <div className="mt-4">
                         <Row label="Cliente" value="Cliente de contado" />
                     </div>
 
                     <div className="mt-4 border border-border"></div>
-
+                    {/* Detalle */}
                     <div className="mt-4">
                         <h1 className="text-xl font-bold text-mint-dark">
                             Detalle de pedido
                         </h1>
 
-                        <div className="mt-5 max-h-60 overflow-y-auto pr-6">
+                        <div className="mt-5 max-h-60  pr-0">
                             <div className="flex flex-col gap-4">
-                                 <div className="grid grid-cols-[minmax(0,1fr)_38px_82px_88px] items-center gap-2 border-b border-border pb-2">
+                                <div className="grid grid-cols-[minmax(0,1fr)_38px_82px_88px] items-center gap-2 border-b border-border pb-3">
                                     <p className="text-xs font-semibold text-gray-700">
                                         Producto
                                     </p>
@@ -175,28 +154,51 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
                                         Precio unitario
                                     </p>
                                     <p className="text-right text-xs font-semibold text-gray-700">
-                                        Monto (sin IVA)
+                                        Total (con IVA)
                                     </p>
                                 </div>
 
                                 {receipt.lines.map((line, index) => (
-                                    <div
-                                        key={index}
-                                        className="grid grid-cols-[minmax(0,1fr)_38px_82px_88px] gap-2 border-b border-border py-2"
-                                    >
-                                        <p className="text-sm text-gray-700">{line.detail}</p>
-                                        <p className="text-center text-sm text-gray-700">
-                                            {line.quantity}
-                                        </p>
-                                        <p className="text-right text-sm text-gray-700">
-                                            {formatCRC(line.unitPrice)}
-                                        </p>
+                                   
+                                   <div
+    key={index}
+    className={`grid grid-cols-[minmax(0,1fr)_38px_82px_88px] gap-2 py-2 ${index !== receipt.lines.length - 1
+        ? "border-b border-border"
+        : ""
+        }`}
+>
+    <div className="min-w-0">
+        <p className="text-sm text-gray-700">{line.detail}</p>
+        <p className="text-xs text-gray-500">
+            IVA {formatRate(Number(line.ivaRate))}
+        </p>
+    </div>
 
-                                        {/* monto de la linea despues del descuento y antes del IVA */}
-                                        <p className="text-right text-sm text-gray-700">
-                                            {formatCRC(line.subtotal)}
-                                        </p>
-                                    </div>
+    <p className="text-center text-sm text-gray-700">
+        {line.quantity}
+    </p>
+
+    {/* precio unitario: con descuento tacha el original y muestra el nuevo debajo */}
+    <div className="text-right text-sm text-gray-700">
+        {Number(line.discount) > 0 ? (
+            <>
+                <p className="text-xs text-gray-500 line-through">
+                    {formatCRC(line.unitPrice)}
+                </p>
+                <p>
+                    {formatCRC(Number(line.subtotal) / line.quantity)}
+                </p>
+            </>
+        ) : (
+            <p>{formatCRC(line.unitPrice)}</p>
+        )}
+    </div>
+
+    {/* monto de la linea despues del descuento y con IVA */}
+    <p className="text-right text-sm text-gray-700">
+        {formatCRC(line.total)}
+    </p>
+</div>
                                 ))}
                             </div>
                         </div>
@@ -204,26 +206,23 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
 
                     <div className="mt-4 border border-border"></div>
 
+                    {/* Resumen */}
                     <div className="mt-4 flex flex-col gap-2">
                         <Row
-                            label="Subtotal"
+                            label="Subtotal (sin IVA)"
                             value={formatCRC(receipt.totals.totalNetSale)}
                         />
 
 
                         {/*  mostrar las tarifas que realmente aparecen en las LINEAS */}
-                        {taxRows.map(({ rate, amount }) => (
+                        {receipt.taxSummary.map(({ rate, amount }) => (
                             <Row
                                 key={rate}
-                                label={
-                                    rate === 13
-                                        ? `IVA tarifa general (${formatRate(rate)})`
-                                        : `IVA tarifa reducida (${formatRate(rate)})`
-                                }
+                                label={`IVA (${formatRate(rate)})`}
                                 value={formatCRC(amount)}
                             />
                         ))}
-                        
+
                     </div>
 
                     <div className="mt-4 border border-border"></div>

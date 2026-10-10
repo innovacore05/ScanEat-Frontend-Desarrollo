@@ -352,9 +352,9 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
   discount !== "" &&
   (!Number.isFinite(Number(discount)) ||
     Number(discount) < 0 ||
-    Number(discount) > 100)
+     Number(discount) >= 100)
 ) {
-  setError("El descuento debe estar entre 0 % y 100 %");
+  setError("El descuento debe estar entre 1 % y 99 %");
   return;
 }
 
