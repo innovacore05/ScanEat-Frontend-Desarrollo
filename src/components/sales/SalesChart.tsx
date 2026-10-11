@@ -53,6 +53,18 @@ function SalesChart({
     });
   };
 
+const formatCurrencyAxis = (value: number) => {
+  if (value >= 1_000_000) {
+    return `₡${Math.round(value / 1_000_000)} mill.`;
+  }
+
+  if (value >= 1_000) {
+    return `₡${Math.round(value / 1_000)} mil`;
+  }
+
+  return `₡${value.toLocaleString("es-CR")}`;
+};
+
   return (
     <section className="min-w-0">
       <div className="flex justify-center text-sm font-bold text-text-primary">
@@ -94,13 +106,13 @@ function SalesChart({
 
               <YAxis
                 tick={{
-                  fontSize: 14,
+                  fontSize: 11,
                 }}
                 axisLine={false}
                 tickLine={false}
-                width={65}
+                width={75}
                 tickFormatter={(value) =>
-                  `₡${Number(value).toLocaleString("es-CR")}`
+                  formatCurrencyAxis(Number(value))
                 }
               />
 

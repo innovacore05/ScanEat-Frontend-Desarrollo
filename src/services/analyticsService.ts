@@ -18,7 +18,7 @@ export type SalesAnalytics = {
     totalOrders: number;
     averageOrder: number;
   };
-    salesByPeriod: {
+  salesByPeriod: {
     label: string;
     sales: number;
   }[];
@@ -28,6 +28,13 @@ export type SalesAnalytics = {
     name: string;
     quantity: number;
   } | null;
+
+  topProducts: {
+    productId: number;
+    name: string;
+    quantity: number;
+  }[];
+
   peakHours: {
     hour: number;
     orders: number;

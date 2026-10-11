@@ -256,7 +256,7 @@ function SalesReport() {
 
 
               <div className="mt-6 grid w-full grid-cols-3 items-start gap-2 rounded-xl bg-mint-dark px-4 py-4 text-center text-white">
-                <div className="min-w-0">
+                <div className="min-w-0 border-r">
                   <p className="whitespace-nowrap text-sm leading-5">Ventas totales</p>
                   <p className="mt-2 text-sm font-semibold leading-5">
                     {isLoadingAnalytics
@@ -265,7 +265,7 @@ function SalesReport() {
                   </p>
                 </div>
 
-                <div className="min-w-0">
+                <div className="min-w-0 border-r">
                   <p className="whitespace-nowrap text-sm leading-5">Pedidos</p>
                   <p className="mt-2 text-sm font-semibold leading-5">
                     {isLoadingAnalytics
