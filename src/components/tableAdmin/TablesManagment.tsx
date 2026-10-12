@@ -200,7 +200,7 @@ const handleRequestDelete = () => {
 									<p className="mt-2 text-s">
 										Asientos: {selectedTable.chairNumber}
 									</p>
-									<p className="text-s">Mesero asignado: Luisa</p>
+									
 								</div>
 							) : (
 								<p className="mt-2 text-text-primary">
@@ -355,7 +355,6 @@ const handleRequestDelete = () => {
 								<div className="mt-2 rounded-lg bg-mint-dark px-4 py-3 text-white">
 									<p className="text-lg font-bold">Mesa #{selectedTable.tableNumber}</p>
 									<p className="mt-2 text-s">Asientos: {selectedTable.chairNumber}</p>
-									<p className="text-s">Mesero asignado: Luisa</p>
 								</div>
 							) : (
 								<p className="mt-2 text-text-primary">Selecciona una mesa para ver sus detalles.</p>
