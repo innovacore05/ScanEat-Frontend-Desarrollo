@@ -5,24 +5,29 @@ const CATEGORIES = [
   { id: 3, name: "Listo" },
   { id: 4, name: "Entregado" },
 ]
+import Skeleton from "../shared/Skeleton";
 
 function FilterOrders({
 
 selected,
 onSelect,
 disabled,
+isLoading = false,
 
 }:{
      selected: number | null;
   onSelect: (id: number | null) => void;
   disabled: boolean;
+  isLoading?: boolean;
 }){
     return(
 
 <div>
       <p className="mb-3 text-base font-bold text-text-primary">Filtro</p>
       <div className="flex flex-wrap items-center gap-5">
-        {CATEGORIES.map(({ id, name}) => {
+        {isLoading ? CATEGORIES.map(({ id }) => (
+          <Skeleton key={id} className="h-8 w-30 rounded-lg lg:h-10 lg:w-36" />
+        )) : CATEGORIES.map(({ id, name}) => {
           const active = !disabled && selected === id;
           return (
             <button

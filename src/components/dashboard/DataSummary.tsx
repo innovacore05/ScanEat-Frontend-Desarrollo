@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getSalesAnalytics } from "../../services/analyticsService";
 import type { SalesAnalytics } from "../../services/analyticsService";
 import { getOrders } from "../../services/orderService";
+import Skeleton from "../shared/Skeleton";
 
 function DataSummary() {
   const [analytics, setAnalytics] = useState<SalesAnalytics | null>(null);
@@ -63,38 +64,54 @@ function DataSummary() {
     <div className="grid grid-cols-2 gap-3 sm:gap-4">
       <div className="flex min-w-0 flex-col gap-1 rounded-lg bg-neutral-50 p-3 sm:p-4">
         <h2 className="text-sm sm:text-base">Ventas hoy</h2>
-        <p className="text-xl font-bold text-mint-dark sm:text-2xl">
-          {isLoading
-            ? "Cargando..."
-            : hasError
-              ? "—"
-              : `₡${(summary?.totalSales ?? 0).toLocaleString("es-CR")}`}
-        </p>
+        <div className="text-xl font-bold text-mint-dark sm:text-2xl">
+          {isLoading ? (
+            <Skeleton className="h-7 w-24" />
+          ) : hasError ? (
+            "—"
+          ) : (
+            `₡${(summary?.totalSales ?? 0).toLocaleString("es-CR")}`
+          )}
+        </div>
       </div>
 
       <div className="flex min-w-0 flex-col gap-1 rounded-lg bg-neutral-50 p-3 sm:p-4">
         <h2 className="text-sm sm:text-base">Órdenes hoy</h2>
-        <p className="text-xl font-bold text-mint-dark sm:text-2xl">
-          {isLoading
-            ? "Cargando..."
-            : hasError
-              ? "—"
-              : summary?.totalOrders ?? 0}
-        </p>
+        <div className="text-xl font-bold text-mint-dark sm:text-2xl">
+          {isLoading ? (
+            <Skeleton className="h-7 w-16" />
+          ) : hasError ? (
+            "—"
+          ) : (
+            summary?.totalOrders ?? 0
+          )}
+        </div>
       </div>
 
       <div className="flex min-w-0 flex-col gap-1 rounded-lg bg-neutral-50 p-3 sm:p-4">
         <h2 className="text-sm sm:text-base">Mesas ocupadas</h2>
-        <p className="text-xl font-bold text-mint-dark sm:text-2xl">
-          {isLoading ? "Cargando..." : hasError ? "—" : occupiedTables}
-        </p>
+        <div className="text-xl font-bold text-mint-dark sm:text-2xl">
+          {isLoading ? (
+            <Skeleton className="h-7 w-12" />
+          ) : hasError ? (
+            "—"
+          ) : (
+            occupiedTables
+          )}
+        </div>
       </div>
 
       <div className="flex min-w-0 flex-col gap-1 rounded-lg bg-neutral-50 p-3 sm:p-4">
         <h2 className="text-sm sm:text-base">En cocina</h2>
-        <p className="text-xl font-bold text-mint-dark sm:text-2xl">
-          {isLoading ? "Cargando..." : hasError ? "—" : ordersInKitchen}
-        </p>
+        <div className="text-xl font-bold text-mint-dark sm:text-2xl">
+          {isLoading ? (
+            <Skeleton className="h-7 w-12" />
+          ) : hasError ? (
+            "—"
+          ) : (
+            ordersInKitchen
+          )}
+        </div>
       </div>
     </div>
   );

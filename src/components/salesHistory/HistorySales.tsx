@@ -7,12 +7,18 @@ import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
 import HistoryCard from "../salesHistory/HistoryCard";
 import type { Order } from "../Orders/OrderCard";
+import Skeleton from "../shared/Skeleton";
 
 function HistorySales() {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [orders, setOrders] = useState<Order[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const loadOrders = useCallback(async () => {
+    const loadOrders = useCallback(async (showLoading = false) => {
+        if (showLoading) {
+            setIsLoading(true);
+        }
+
         try {
             const backendOrders = await getOrders("paid");
             setOrders(backendOrders);
@@ -26,11 +32,15 @@ function HistorySales() {
         } catch (error) {
             console.error("No se pudieron cargar los pedidos:", error);
             setOrders([]);
+        } finally {
+            if (showLoading) {
+                setIsLoading(false);
+            }
         }
     }, []);
 
     useEffect(() => {
-        void loadOrders();
+        void loadOrders(true);
 
         const intervalId = window.setInterval(() => {
             void loadOrders();
@@ -65,7 +75,11 @@ function HistorySales() {
 
                     <div className="mt-8 grid grid-cols-1 gap-6">
                         <div className="flex min-w-0 flex-col gap-4">
-                            {orders.map((order) => (
+                            {isLoading ? (
+                                Array.from({ length: 4 }, (_, index) => (
+                                    <Skeleton key={index} className="h-44 w-full rounded-2xl" />
+                                ))
+                            ) : orders.map((order) => (
                                 <HistoryCard
                                     key={order.orderId}
                                     order={order}
@@ -79,7 +93,9 @@ function HistorySales() {
                                 Orden actual
                             </p>
 
-                            {selectedOrder ? (
+                            {isLoading ? (
+                                <Skeleton className="min-h-80 w-full rounded-4xl" />
+                            ) : selectedOrder ? (
                                 <OrderDetails
                                     order={selectedOrder}
                                     embedded
@@ -112,7 +128,11 @@ function HistorySales() {
                     <div className="mt-8 grid grid-cols-[minmax(0,612px)_minmax(280px,1fr)] gap-6">
                         {/* Pedidos */}
                         <div className="flex flex-col gap-12">
-                            {orders.map((order) => (
+                            {isLoading ? (
+                                Array.from({ length: 4 }, (_, index) => (
+                                    <Skeleton key={index} className="h-44 w-full rounded-2xl" />
+                                ))
+                            ) : orders.map((order) => (
                                 <HistoryCard
                                     key={order.orderId}
                                     order={order}
@@ -124,7 +144,9 @@ function HistorySales() {
                         {/* Detalles */}
                         <div>
                             <p className="pb-4 text-xl text-text-primary font-bold ">Orden actual</p>
-                            {selectedOrder ? (
+                            {isLoading ? (
+                                <Skeleton className="min-h-80 w-full rounded-4xl" />
+                            ) : selectedOrder ? (
                                 <OrderDetails
                                     order={selectedOrder}
                                     embedded

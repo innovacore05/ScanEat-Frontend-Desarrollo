@@ -14,6 +14,7 @@ import { getOrders } from "../../services/orderService";
 import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
+import Skeleton from "../shared/Skeleton";
 
 export type TableItem = {
 	id: string;
@@ -33,6 +34,7 @@ function TablesManagment() {
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [orders, setOrders] = useState<Order[]>([]);
+	const [isLoadingTables, setIsLoadingTables] = useState(true);
 
 const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -63,6 +65,8 @@ const [errorMessage, setErrorMessage] = useState<string | null>(null);
 				setTables(data);
 			} catch (error) {
 				console.error("Error trayendo mesas:", error);
+			} finally {
+				setIsLoadingTables(false);
 			}
 		};
 
@@ -118,7 +122,7 @@ const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	// before displaying owner-only table actions.
 	const isOwner = roleId === ROLE_IDS.owner;
 	const Layout = roleId === ROLE_IDS.waiter ? DashboardLayoutWaiter : DashboardLayout;
-	const dashboardRoute = roleId === ROLE_IDS.waiter ? "/dashboardWaiter" : "/dashboard";
+	const dashboardRoute = roleId === ROLE_IDS.waiter ? "/dashboardWaiter" : "/dashboardAdmin";
 
 	const tableOrders = orders.filter(
   (order) =>
@@ -159,7 +163,13 @@ const handleRequestDelete = () => {
 
 					<div className="mt-2 flex flex-1 flex-col gap-6 rounded-t-4xl bg-neutral-50 px-6 py-8 sm:px-8">
 						<div className="mt-4 flex flex-col gap-2">
-							{tables.length === 0 ? (
+							{isLoadingTables ? (
+								<div className="space-y-2">
+									{Array.from({ length: 5 }, (_, index) => (
+										<Skeleton key={index} className="h-10 w-full rounded border border-border" />
+									))}
+								</div>
+							) : tables.length === 0 ? (
 								<p>No hay mesas creadas.</p>
 							) : (
 								tables.map((table) => (
@@ -310,7 +320,13 @@ const handleRequestDelete = () => {
 							</div>
 
 							<div className="mt-4 flex flex-col gap-2">
-								{tables.length === 0 ? (
+								{isLoadingTables ? (
+									<div className="space-y-2">
+										{Array.from({ length: 6 }, (_, index) => (
+											<Skeleton key={index} className="h-10 w-full rounded border border-border" />
+										))}
+									</div>
+								) : tables.length === 0 ? (
 									<p>No hay mesas creadas.</p>
 								) : (
 									tables.map((table) => (

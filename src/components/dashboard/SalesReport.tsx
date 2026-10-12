@@ -11,6 +11,7 @@ import { Link } from "@tanstack/react-router";
 import { HiArrowLeft } from "react-icons/hi";
 import { getStoredRoleId } from "../../services/authService";
 import { ROLE_IDS } from "../../config/roles";
+import Skeleton from "../shared/Skeleton";
 
 
 //Este objeto mapea los periodos de tiempo a los valores que se envían a la API para obtener los datos del reporte de ventas.
@@ -58,19 +59,31 @@ function SalesReport() {
 
   //Este efecto se ejecuta cada vez que el periodo de tiempo seleccionado cambia.
   useEffect(() => {
+    let cancelled = false;
+
     const loadAnalytics = async () => {
       setIsLoadingAnalytics(true);
       try {
         const data = await getSalesAnalytics(periodToApiValue[period]);
-        setAnalytics(data);
+        if (!cancelled) {
+          setAnalytics(data);
+        }
       } catch (error) {
-        console.error("Error loading sales analytics:", error);
+        if (!cancelled) {
+          console.error("Error loading sales analytics:", error);
+        }
       } finally {
-        setIsLoadingAnalytics(false);
+        if (!cancelled) {
+          setIsLoadingAnalytics(false);
+        }
       }
     };
 
     void loadAnalytics();
+
+    return () => {
+      cancelled = true;
+    };
   }, [period]);
 
   //  Este efecto de cargar ordenes se ejecuta cada vez que el periodo de tiempo seleccionado cambia.
@@ -261,27 +274,33 @@ function SalesReport() {
                 <div className="min-w-0 border-r">
                   <p className="whitespace-nowrap text-sm leading-5">Ventas totales</p>
                   <p className="mt-2 text-sm font-semibold leading-5">
-                    {isLoadingAnalytics
-                      ? "..."
-                      : `₡${(analytics?.summary.totalSales ?? 0).toLocaleString("es-CR")}`}
+                    {isLoadingAnalytics ? (
+                      <Skeleton className="mx-auto h-4 w-20 bg-white/30" />
+                    ) : (
+                      `₡${(analytics?.summary.totalSales ?? 0).toLocaleString("es-CR")}`
+                    )}
                   </p>
                 </div>
 
                 <div className="min-w-0 border-r">
                   <p className="whitespace-nowrap text-sm leading-5">Pedidos</p>
                   <p className="mt-2 text-sm font-semibold leading-5">
-                    {isLoadingAnalytics
-                      ? "..."
-                      : analytics?.summary.totalOrders ?? 0}
+                    {isLoadingAnalytics ? (
+                      <Skeleton className="mx-auto h-4 w-10 bg-white/30" />
+                    ) : (
+                      analytics?.summary.totalOrders ?? 0
+                    )}
                   </p>
                 </div>
 
                 <div className="min-w-0">
                   <p className="whitespace-nowrap text-sm leading-5">Cancelados</p>
                   <p className="mt-2 text-sm font-semibold leading-5">
-                    {isLoadingAnalytics
-                      ? "..."
-                      : analytics?.cancellations.total ?? 0}
+                    {isLoadingAnalytics ? (
+                      <Skeleton className="mx-auto h-4 w-10 bg-white/30" />
+                    ) : (
+                      analytics?.cancellations.total ?? 0
+                    )}
                   </p>
                 </div>
               </div>

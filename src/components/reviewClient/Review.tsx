@@ -8,6 +8,7 @@ import {
   type ProductReviewsResponse,
 } from "../../services/reviewService";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
+import Skeleton from "../shared/Skeleton";
 
 function Stars({ rating }: { rating: number }) {
   return (
@@ -124,7 +125,40 @@ function Review() {
           <span>Reseñas</span>
         </Link>
 
-        {loading && <p className="mt-8">Cargando reseñas...</p>}
+        {loading && (
+          <div className="mt-5">
+            <header className="border-b border-border pb-5">
+              <Skeleton className="h-8 w-56" />
+              <div className="mt-5 flex items-center gap-6">
+                <div className="space-y-2">
+                  <Skeleton className="h-12 w-16" />
+                  <Skeleton className="h-5 w-28" />
+                  <Skeleton className="h-4 w-20" />
+                </div>
+                <div className="space-y-2">
+                  {Array.from({ length: 5 }, (_, index) => (
+                    <Skeleton key={index} className="h-2 w-32 rounded-full" />
+                  ))}
+                </div>
+              </div>
+            </header>
+
+            <section className="mt-5 space-y-3">
+              {Array.from({ length: 3 }, (_, index) => (
+                <article key={index} className="rounded-lg border border-border p-4">
+                  <div className="flex items-center justify-between">
+                    <Skeleton className="h-5 w-28" />
+                    <Skeleton className="h-6 w-6 rounded-full" />
+                  </div>
+                  <Skeleton className="mt-3 h-4 w-32" />
+                  <Skeleton className="mt-3 h-4 w-full" />
+                  <Skeleton className="mt-2 h-4 w-4/5" />
+                  <Skeleton className="mt-3 h-3 w-20" />
+                </article>
+              ))}
+            </section>
+          </div>
+        )}
 
         {error && (
           <p className="mt-8 rounded-md bg-red-50 p-4 text-sm text-red-700">

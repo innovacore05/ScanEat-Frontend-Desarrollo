@@ -1,6 +1,7 @@
 
 import { FiDownload } from "react-icons/fi";
 import { getOrders } from "../../services/orderService";
+import Skeleton from "../shared/Skeleton";
 
 type OrdersListProps = {
   orders: Awaited<ReturnType<typeof getOrders>>;
@@ -99,8 +100,10 @@ function OrdersList({
           <div className="text-sm text-text-primary">
             <div className="max-h-80 overflow-y-auto">
               {isLoading ? (
-                <div className="px-4 py-5 text-sm text-text-primary">
-                  Cargando pedidos...
+                <div className="space-y-3 px-4 py-5">
+                  {Array.from({ length: 4 }, (_, index) => (
+                    <Skeleton key={index} className="h-10 w-full" />
+                  ))}
                 </div>
               ) : orders.length > 0 ? (
                 orders.map((order) => (

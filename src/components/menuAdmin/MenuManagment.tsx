@@ -8,6 +8,7 @@ import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
+import Skeleton from "../shared/Skeleton";
 
 
 //limite de muestras
@@ -62,7 +63,11 @@ function ProductList({
         }`}
     >
       {initialLoading && (
-        <p className="text-text-primary">Cargando platillos...</p>
+        <>
+          {Array.from({ length: 6 }, (_, index) => (
+            <Skeleton key={index} className="h-80 w-full rounded-2xl lg:w-87.5" />
+          ))}
+        </>
       )}
       {!initialLoading && products.length === 0 && (
         <p className="text-text-primary">No hay platillos...</p>
@@ -97,6 +102,7 @@ function ProductList({
 function MenuManagment() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -116,6 +122,8 @@ function MenuManagment() {
         setCategories(data);
       } catch (error) {
         console.error("Error loading categories:", error);
+      } finally {
+        setIsLoadingCategories(false);
       }
     };
 
@@ -243,6 +251,7 @@ function MenuManagment() {
                   setSearchTerm("");
                 }}
                 disabled={!!searchTerm}
+                isLoading={isLoadingCategories}
               />
             </div>
 
@@ -330,6 +339,7 @@ function MenuManagment() {
                 setSearchTerm("");
               }}
               disabled={!!searchTerm}
+              isLoading={isLoadingCategories}
             />
           </div>
 

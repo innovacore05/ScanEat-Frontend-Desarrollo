@@ -7,6 +7,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from "recharts";
+import Skeleton from "../shared/Skeleton";
 
 import type { SalesAnalytics } from "../../services/analyticsService";
 
@@ -73,9 +74,7 @@ const formatCurrencyAxis = (value: number) => {
 
       <div className="mt-1 h-44 rounded-xl border border-border px-4 py-3">
         {isLoading ? (
-          <div className="flex h-full w-full items-center justify-center text-sm text-text-primary">
-            Cargando ventas...
-          </div>
+          <Skeleton className="h-full w-full rounded-lg" />
         ) : data?.length ? (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart

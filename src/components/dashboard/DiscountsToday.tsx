@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { getProducts, type Product } from "../../services/productService";
 import SearchBar from "../menu/SearchBar";
+import Skeleton from "../shared/Skeleton";
 
 function DiscountsToday() {
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadDiscounts = async () => {
@@ -18,6 +20,8 @@ function DiscountsToday() {
         setProducts(discounts);
       } catch (error) {
         console.error("No se pudieron cargar los descuentos:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -43,7 +47,18 @@ function DiscountsToday() {
       </div>
 
       <div className="flex flex-col gap-3 border border-border rounded-2xl">
-        {visibleProducts.map((product) => {
+        {isLoading ? (
+          Array.from({ length: 3 }, (_, index) => (
+            <div key={index} className="flex h-30 overflow-hidden rounded-xl bg-white">
+              <Skeleton className="h-full w-44 rounded-none" />
+              <div className="flex flex-1 flex-col gap-3 px-4 py-3">
+                <Skeleton className="h-4 w-36" />
+                <Skeleton className="h-3 w-full max-w-sm" />
+                <Skeleton className="mt-auto h-4 w-28" />
+              </div>
+            </div>
+          ))
+        ) : visibleProducts.map((product) => {
           const discount = Number(product.discount ?? 0);
           const finalPrice = product.price * (1 - discount / 100);
 
