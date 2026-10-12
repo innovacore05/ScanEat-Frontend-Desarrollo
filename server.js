@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
-// Todo lo que llegue a /api se reenvía al backend
+// Todo lo que llegue a /api se reenvia al backend
 app.use(
   "/api",
   createProxyMiddleware({
