@@ -4,15 +4,18 @@ const BILLING_BASE_URL= "/api/billing";
 
 export type PaymentMethodType= "cash" | "card" | "sinpe";
 
-export type ReceiptLine={
-    detail:string;
-    quantity:number;
-    unitPrice:string;
-    gross:string;
-    discount:string;
-    subtotal:string;
-    tax:string;
-    total:string;
+export type ReceiptLine = {
+  detail: string;
+  quantity: number;
+  unitPrice: string;
+  gross: string;
+  discount: string;
+  subtotal: string;
+  tax: string;
+  total: string;
+  //  el backend devuelve estas tarifas
+  ivaRate: string;
+  ivaRateCode: string;
 };
 
 export type ReceiptTotals={
@@ -30,7 +33,7 @@ export type PaymentPreview={
     tableNumber:number;
 lines:Array<ReceiptLine & {detailId:number}>;
 totals:ReceiptTotals;
-
+taxSummary: { rate: number; amount: string }[];
 //producto sin codigo cabys
 missingCabys:string[];
 };
@@ -50,6 +53,7 @@ receiptId: number;
     haciendaStatus:string;
     lines:ReceiptLine[];
     totals:ReceiptTotals;
+    taxSummary: { rate: number; amount: string }[];
     payment:{
         method:PaymentMethodType;
         reference:string|null;

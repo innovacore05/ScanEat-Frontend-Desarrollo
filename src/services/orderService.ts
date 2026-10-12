@@ -21,9 +21,9 @@ export type CreateOrderPayload = {
   tableId: string;
   observation?: string;
   items: Array<{
-    productId: number;
-    quantity: number;
-    selectedOptions: Record<string, string>;
+  productId: number;
+  quantity: number;
+  selectedOptions: Record<string, string>;
   }>;
 };
 
@@ -42,6 +42,7 @@ type BackendOrderDetail = {
   quantity: number;
   unitPrice: string;
   subtotal: string;
+  discountAmount?: number | string | null;
   isCustom: number | null;
   selectedOptions: Record<string, string>;
   optionGroups: Array<{
@@ -58,6 +59,7 @@ type BackendOrder = {
   order: {
     orderId: number;
     date: string;
+    paidAt: string | null;
     state: OrderStatus;
     subtotal: string;
     tax: string;
@@ -118,6 +120,8 @@ const mapBackendOrderToFrontend = (backendOrder: BackendOrder) => {
     name: detail.productName,
     quantity: detail.quantity,
     price: Number(detail.unitPrice || 0),
+    discountAmount: Number(detail.discountAmount ?? 0),
+    subtotal: Number(detail.subtotal || 0),
     options: Object.keys(detail.selectedOptions ?? {}).length
       ? formatSelectedOptions(detail.selectedOptions, detail.optionGroups ?? [])
       : undefined,
@@ -126,6 +130,8 @@ const mapBackendOrderToFrontend = (backendOrder: BackendOrder) => {
   return {
     orderId: backendOrder.order.orderId,
     tableId: backendOrder.table?.tableNumber ?? Number(backendOrder.order.tableId),
+    date: backendOrder.order.date,
+    paidAt: backendOrder.order.paidAt,
     time: backendOrder.order.date
       ? new Date(backendOrder.order.date).toLocaleTimeString("es-CR", {
           hour: "2-digit",
@@ -331,3 +337,35 @@ return cookieSessionClient.request<{
 
 
 };
+
+
+// obtiene la cotización del servidor sin crear la orden
+export type OrderQuote = {
+  lines: Array<{
+    productId: number;
+    quantity: number;
+    unitPrice: number;
+    discountAmount: number;
+    subtotal: number;
+    ivaRate: number;
+    taxAmount: number;
+    total: number;
+  }>;
+  totals: {
+    subtotalBeforeDiscount: number;
+    subtotal: number;
+    discount: number;
+    tax: number;
+    total: number;
+  };
+};
+
+export const getOrderQuote = (payload: CreateOrderPayload) =>
+  cookieSessionClient.request<OrderQuote>(`${ORDERS_BASE_URL}/quote`, {
+    method: "POST",
+    body: JSON.stringify({
+      ...payload,
+      clientId: getClientId(),
+    }),
+    fallBackMessage: "No se pudo calcular el resumen del pedido",
+  });

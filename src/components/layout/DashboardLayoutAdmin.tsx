@@ -4,18 +4,22 @@ import { getProfile, getStoredFirstName, logout } from "../../services/authServi
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { RiSettingsLine } from "react-icons/ri";
-import { RiNotification2Line } from "react-icons/ri";
 import { LuLogOut } from "react-icons/lu";
 import { GoHome } from "react-icons/go";
 import { IoRestaurantOutline } from "react-icons/io5";
 import { FiUsers } from "react-icons/fi";
+import { MdOutlineDiscount } from "react-icons/md";
+import { MdOutlineTableBar } from "react-icons/md";
+import { HiOutlineDocumentReport } from "react-icons/hi";
+import { IoReceiptOutline } from "react-icons/io5";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
+import { LuHistory } from "react-icons/lu";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-function DashboardLayout({ children }: DashboardLayoutProps) {
+function DashboardAdmin({ children }: DashboardLayoutProps) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -46,7 +50,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
     <main className="min-h-screen bg-white">
       {/* Barra lateral - COMPUTADORA */}
 
-      <aside className="fixed left-0 top-0 hidden h-screen w-64 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
+      <aside className="fixed left-0 top-0 hidden h-screen overflow-y-auto w-64 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
         <div className="flex justify-start">
           <RestaurantLogo className="h-16 w-16 object-contain" />
           <span className="font-bold text-mint-darker">
@@ -54,10 +58,12 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
           </span>
         </div>
 
-        <nav className="mt-10 flex flex-col">
+        <div className="mt-10 border-t border-neutral-300 "></div>
+
+        <nav className="flex flex-col gap-3">
           <Link
-            to="/dashboard"
-            className="flex items-center gap-4 py-3 text-left text-text-primary"
+            to="/dashboardAdmin"
+            className="flex items-center gap-4 pb-3 pt-10 text-left text-text-primary"
           >
             <GoHome className="h-6 w-6 shrink-0" />
 
@@ -66,58 +72,59 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
           <Link
             to="/menuManagment"
-            className="flex items-center gap-4 py-3 text-left text-text-primary"
+            className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
           >
             <IoRestaurantOutline className="h-6 w-6 shrink-0" />
 
             <span className="text-[15px] font-bold cursor-pointer">Menú</span>
           </Link>
 
-
-
-          <div className="mt-10">
-
-
-            <button
-              type="button"
-              className="flex w-full items-center py-3 text-left text-text-primary"
+            <Link
+              to="/discountProducts"
+              className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
             >
+              <MdOutlineDiscount className="h-6 w-6 shrink-0" />
               <span className="text-[15px] font-bold cursor-pointer">
                 Descuentos
               </span>
-            </button>
+            </Link>
 
-            <button
-              type="button"
-              className="flex w-full items-center py-3 text-left text-text-primary"
+            <Link
+              to="/salesReport"
+              className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
             >
+              <HiOutlineDocumentReport className="h-6 w-6 shrink-0" />
               <span className="text-[15px] font-bold cursor-pointer">
                 Reporte de ventas
               </span>
-            </button>
+            </Link>
 
             <Link
               to="/tablesManagment"
               onClick={() => setIsMenuOpen(false)}
-              className="flex w-full items-center py-3 text-left text-text-primary"
+              className="flex w-full items-center gap-4 pt-3 text-left text-text-primary"
             >
+              <MdOutlineTableBar className="h-6 w-6 shrink-0" />
               <span className="text-[15px] font-bold cursor-pointer">
                 Mesas
               </span>
             </Link>
-
-            <Link
-              to="/issuerInformation"
-              className="flex w-full items-center py-3 text-left text-text-primary"
-            >
-              <span className="text-[15px] font-bold cursor-pointer">
-                Datos de hacienda
-              </span>
-            </Link>
-          </div>
+          
         </nav>
 
-        <div className="mt-10 border-t border-neutral-300 pt-5">
+        <div className="mt-10 flex flex-col gap-3  border-t border-neutral-300">
+
+           <Link
+              to="/issuerInformation"
+              className="flex items-center gap-4 py-3 pt-10 text-left text-text-primary"
+            >
+              <IoReceiptOutline className="h-6 w-6 shrink-0" />
+              <span className="text-[15px] font-bold cursor-pointer ">
+                Datos de hacienda
+              </span>
+          </Link>
+          
+          
           <Link
             to="/profileSettings"
             className="flex items-center gap-4 py-3 text-left text-text-primary"
@@ -139,7 +146,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
           <Link
             to="/customization"
-            className="flex items-center gap-4 py-3 text-left text-text-primary"
+            className="flex items-center gap-4 pt-3 text-left text-text-primary"
           >
             <RiSettingsLine className="h-6 w-6 shrink-0" />
 
@@ -148,16 +155,18 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
             </span>
           </Link>
 
-          <button
-            type="button"
-            className="flex items-center gap-4 py-3 text-left text-text-primary"
+          <Link
+            to= "/historySales"
+            className="flex items-center gap-4 pt-3 text-left text-text-primary"
           >
-            <RiNotification2Line className="h-6 w-6 shrink-0" />
+            <LuHistory className="h-6 w-6 shrink-0" />
 
-            <span className="text-[15px] font-bold cursor-pointer">
-              Notificaciones
+            <span className="text-[15px] font-bold">
+              Historial de ventas
             </span>
-          </button>
+          </Link>
+
+            <div className="mt-7 border-t border-neutral-300 pt-5">
 
           {/* //cerrar sesion normal , regresa al registro inicio de sesion/ */}
           <Link
@@ -171,7 +180,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
               Cerrar sesión
             </span>
           </Link>
-
+</div>
 
         </div>
 
@@ -250,7 +259,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="mt-14 w-full">
               <div className="flex flex-col gap-2">
                 <Link
-                  to="/dashboard"
+                  to="/dashboardAdmin"
                   onClick={() => setIsMenuOpen(false)}
                   className="flex w-full items-center gap-4 py-4 text-left text-white"
                 >
@@ -271,40 +280,56 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
               </div>
 
-              <div className="mt-10 flex flex-col gap-2">
-                <button
-                  type="button"
-                  className="flex w-full items-center py-4 text-left text-white"
+             
+                <Link
+                  to="/discountProducts"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex w-full items-center gap-4 py-4 text-left text-white"
                 >
+                  <MdOutlineDiscount className="h-6 w-6 shrink-0" />
                   <span className="text-xl font-bold">Descuentos</span>
-                </button>
+                </Link>
 
-                <button
-                  type="button"
-                  className="flex w-full items-center py-4 text-left text-white"
+                <Link
+                  to="/salesReport"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex w-full items-center gap-4 py-4 text-left text-white"
                 >
+                  <HiOutlineDocumentReport className="h-6 w-6 shrink-0" />
                   <span className="text-xl font-bold">Reporte de ventas</span>
-                </button>
+                </Link>
 
                 <Link
                   to="/tablesManagment"
                   onClick={() => setIsMenuOpen(false)}
                   className="flex w-full items-center gap-4 py-4 text-left text-white"
                 >
+                  <MdOutlineTableBar className="h-6 w-6 shrink-0" />
                   <span className="text-xl font-bold">Mesas</span>
                 </Link>
 
                 <Link
               to="/issuerInformation"
               className="flex w-full items-center gap-4 py-4 text-left text-white"
-            >
+                >
+              <IoReceiptOutline className="h-6 w-6 shrink-0" />
               <span className="text-xl font-bold">
                 Datos de hacienda
               </span>
             </Link>
 
+            <Link
+            to= "/historySales"
+            className="flex w-full items-center gap-4 py-4 text-left text-white"
+          >
+            <LuHistory className="h-6 w-6 shrink-0" />
 
-              </div>
+            <span className="text-xl font-bold">
+              Historial de ventas
+            </span>
+          </Link>
+
+
             </div>
           </div>
         </>
@@ -358,16 +383,6 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
                 <span className="text-xl font-bold">Negocio</span>
               </Link>
 
-
-
-              <button
-                type="button"
-                className="flex w-full items-center gap-4 py-4 text-left text-white"
-              >
-                <RiNotification2Line className="h-6 w-6 shrink-0" />
-
-                <span className="text-xl font-bold">Notificaciones</span>
-              </button>
               {/* cerrar sesion regresa al registro/inicio de sesion */}
               <Link
                 to="/login"
@@ -396,4 +411,4 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
   );
 }
 
-export default DashboardLayout;
+export default DashboardAdmin;

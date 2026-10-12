@@ -4,6 +4,19 @@ import { cookieSessionClient } from "./cookieSessionClient";
 // const BUSINESS_BASE_URL = `${import.meta.env.VITE_API_URL}/api/businesses`;
 const BUSINESS_BASE_URL = "/api/businesses";
 
+
+export const generateBusinessCode = async (): Promise<{
+    code: string;
+}> => {
+    return cookieSessionClient.request<{ code: string }>(
+        `${BUSINESS_BASE_URL}/generate-code`,
+        {
+            method: "GET",
+            fallBackMessage: "No se pudo generar el código del negocio",
+        }
+    );
+};
+
 export const createBusiness = async (
     name: string,
     email: string,

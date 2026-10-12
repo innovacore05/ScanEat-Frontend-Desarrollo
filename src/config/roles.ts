@@ -7,7 +7,7 @@ export const ROLE_IDS = {
 
 export function getDashboardForRole(
 	roleId: number,
-): "/dashboard" | "/cookOrders" | "/dashboardWaiter" | "/cashierOrders" {
+): "/dashboardAdmin" | "/cookOrders" | "/dashboardWaiter" | "/cashierOrders" {
 	switch (roleId) {
 		case ROLE_IDS.cook:
 			return "/cookOrders";
@@ -16,7 +16,7 @@ export function getDashboardForRole(
 		case ROLE_IDS.cashier:
 			return "/cashierOrders";
 		case ROLE_IDS.owner:
-			return "/dashboard";
+			return "/dashboardAdmin";
 
 		default:
 			throw new Error(`Rol no soportado: ${roleId}`);

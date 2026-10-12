@@ -1,4 +1,4 @@
-import DashboardLayout from "../../components/layout/DashboardLayout";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import { LuPlus } from "react-icons/lu";
 import { IoSearch } from "react-icons/io5";
 import { AiOutlineCloudUpload } from "react-icons/ai";
@@ -6,7 +6,7 @@ import { Link } from "@tanstack/react-router";
 
 function IssuerInformation() {
   return (
-    <DashboardLayout>
+    <DashboardLayoutAdmin>
       <main className="min-h-screen bg-brand-white p-15">
         <div className="mx-auto w-full max-w-6xl">
           <div className="mb-10">
@@ -312,23 +312,23 @@ function IssuerInformation() {
 
           <div className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-end">
             <Link
-              to="/dashboard"
+              to="/dashboardAdmin"
               type="button"
-              className="rounded-lg border border-border px-6 py-2 font-semibold"
+              className="text-center rounded-lg border border-border px-6 py-2 font-semibold"
             >
               Cancelar
             </Link>
 
             <button
               type="button"
-              className="rounded-lg border border-border bg-mint-dark px-6 py-2 font-semibold text-white"
+              className=" rounded-lg border border-border bg-mint-dark px-6 py-2 font-semibold text-white"
             >
               Guardar
             </button>
           </div>
         </div>
       </main>
-    </DashboardLayout>
+    </DashboardLayoutAdmin>
   );
 }
 

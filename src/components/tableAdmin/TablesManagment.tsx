@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { getProfile, getStoredFirstName, getStoredRoleId } from "../../services/authService";
+import { getProfile, getStoredRoleId } from "../../services/authService";
 import { HiArrowLeft } from "react-icons/hi";
 import { useEffect, useState } from "react";
-import DashboardLayout from "../layout/DashboardLayout";
+import DashboardLayout from "../layout/DashboardLayoutAdmin";
 import { IoIosAdd } from "react-icons/io";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -24,7 +24,6 @@ export type TableItem = {
 };
 
 function TablesManagment() {
-	const [firstName, setFirstName] = useState(getStoredFirstName);
 	const [roleId, setRoleId] = useState<number | null>(getStoredRoleId);
 	const [tables, setTables] = useState<TableItem[]>([]);
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
@@ -48,7 +47,6 @@ const [errorMessage, setErrorMessage] = useState<string | null>(null);
 		const loadProfile = async () => {
 			try {
 				const data = await getProfile();
-				setFirstName(data.user.firstName);
 				setRoleId(data.user.roleId);
 			} catch (error) {
 				console.error("Error loading profile:", error);
@@ -202,7 +200,7 @@ const handleRequestDelete = () => {
 									<p className="mt-2 text-s">
 										Asientos: {selectedTable.chairNumber}
 									</p>
-									<p className="text-s">Mesero asignado: Luisa</p>
+									
 								</div>
 							) : (
 								<p className="mt-2 text-text-primary">
@@ -274,14 +272,9 @@ const handleRequestDelete = () => {
 				{/* Computadora */}
 
 				<section className="hidden px-15 py-15 lg:block">
-					<div className="rounded-2xl bg-mint-dark px-8 py-6">
-						<h1 className="text-3xl font-bold text-white">
-							¡Hola, {firstName || "Usuario"}!
-						</h1>
-					</div>
+			
 
-
-					<div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-2">
+					<div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
 						<div>
 							<div className="flex items-center justify-between flex-wrap gap-3">
 								<h2 className="text-2xl font-bold text-mint-dark">
@@ -362,7 +355,6 @@ const handleRequestDelete = () => {
 								<div className="mt-2 rounded-lg bg-mint-dark px-4 py-3 text-white">
 									<p className="text-lg font-bold">Mesa #{selectedTable.tableNumber}</p>
 									<p className="mt-2 text-s">Asientos: {selectedTable.chairNumber}</p>
-									<p className="text-s">Mesero asignado: Luisa</p>
 								</div>
 							) : (
 								<p className="mt-2 text-text-primary">Selecciona una mesa para ver sus detalles.</p>

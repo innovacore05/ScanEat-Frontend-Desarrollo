@@ -5,6 +5,7 @@ export type CartItem = {
   productId: number;
   name: string;
   price: number;
+  discount?: number;
   image: string;
   quantity: number;
   selectedOptions: Record<string, string>;

@@ -4,13 +4,13 @@ import { RiDrinks2Line } from "react-icons/ri";
 import { GiCoffeeCup } from "react-icons/gi";
 import { LuSandwich } from "react-icons/lu";
 import { LuUtensils } from "react-icons/lu";
-import DashboardLayout from "../../components/layout/DashboardLayout";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import DishCard from "../menu/DishCard";
 
 //Editar menu celular
 function EditMenu() {
 	return (
-		<DashboardLayout>
+		<DashboardLayoutAdmin>
 			<main className="min-h-screen bg-brand-white px-6 py-8">
 
 				<div className="mt-2 flex items-center rounded-lg border border-border bg-white px-4 py-3">
@@ -96,7 +96,7 @@ function EditMenu() {
 				</div>
 
 			</main>
-		</DashboardLayout>
+		</DashboardLayoutAdmin>
 	);
 }
 

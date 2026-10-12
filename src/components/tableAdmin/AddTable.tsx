@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { HiArrowLeft } from "react-icons/hi";
 import { getProfile, getStoredFirstName } from "../../services/authService";
-import DashboardLayout from "../layout/DashboardLayout";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import { useEffect, useState } from "react";
 import { IoIosAdd } from "react-icons/io";
 import { MdOutlineModeEditOutline } from "react-icons/md";
@@ -78,7 +78,7 @@ function AddTable() {
 	// };
 
 	return (
-		<DashboardLayout>
+		<DashboardLayoutAdmin>
 			<main className="flex min-h-screen flex-col bg-white ">
 
 				{/* Celular */}
@@ -263,7 +263,7 @@ function AddTable() {
 					</div>
 				</section>
 			</main>
-		</DashboardLayout >
+		</DashboardLayoutAdmin >
 	);
 }
 

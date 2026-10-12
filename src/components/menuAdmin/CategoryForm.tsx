@@ -1,10 +1,11 @@
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { HiArrowLeft } from "react-icons/hi";
-import DashboardLayout from "../../components/layout/DashboardLayout";
-import { getCategories, } from "../../services/productService";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
+import { getCategories, type FiscalType } from "../../services/productService";
 import { createCategory, updateCategory, } from "../../services/productService";
 import {
+   
     LuCakeSlice,
     LuSandwich,
     LuCroissant,
@@ -12,6 +13,8 @@ import {
     LuIceCreamBowl,
     LuSalad,
     LuBadgePercent,
+    LuWine,
+    LuPackage,
 } from "react-icons/lu";
 
 import {
@@ -30,6 +33,7 @@ import {
     GiDonut,
     GiChocolateBar,
 } from "react-icons/gi";
+import type { IconType } from "react-icons";
 
 const CATEGORY_ICONS = [
     { key: "dessert", name: "Postres", Icon: LuCakeSlice },
@@ -52,6 +56,17 @@ const CATEGORY_ICONS = [
     { key: "promotion", name: "Promociones", Icon: LuBadgePercent },
 ];
 
+
+
+const FISCAL_TYPES:{key:FiscalType;label:string;hint:string;Icon:IconType}[]=[
+    { key: "dishes", label: "Platillos", hint: "Comida preparada: hamburguesas, casados, pizzas, etc", Icon: LuUtensils },
+    { key: "hot_drinks", label: "Bebidas calientes", hint: "Café, té, chocolate, etc", Icon: GiCoffeeCup },
+    { key: "cold_drinks", label: "Bebidas frías sin alcohol", hint: "Batidos, refrescos, jugos, agua, etc", Icon: RiDrinks2Line },
+    { key: "alcohol_drinks", label: "Bebidas con alcohol", hint: "Cerveza, licores, cócteles, etc", Icon: LuWine },
+    { key: "packaged", label: "Productos empacados", hint: "Papitas, galletas, chicles, etc", Icon: LuPackage },
+];
+
+
 function CategoryForm() {
 
     const [name, setName] = useState("");
@@ -65,6 +80,8 @@ function CategoryForm() {
     });
     const isEditMode = mode === "edit";
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+//nuevo
+const [fiscalType,setFiscalType]=useState<FiscalType|"">("");
 
     const handleCreateCategory = async () => {
         setError("");
@@ -79,6 +96,11 @@ function CategoryForm() {
             return;
         }
 
+        if(!fiscalType)
+        {
+            setError("Selecciona qué vendes en esta categoría");
+            return;
+        }
         try {
             setIsCreating(true);
 
@@ -87,11 +109,13 @@ function CategoryForm() {
                     categoryId,
                     name,
                     icon: selectedIcon,
+                    fiscalType
                 });
             } else {
                 await createCategory({
                     name,
                     icon: selectedIcon,
+                    fiscalType
                 });
             }
 
@@ -107,6 +131,8 @@ function CategoryForm() {
         } finally {
             setIsCreating(false);
         }
+
+        
 
     };
 
@@ -130,6 +156,7 @@ function CategoryForm() {
 
                 setName(category.name);
                 setSelectedIcon(category.icon ?? "");
+                setFiscalType(category.fiscalType??"");
             } catch (error) {
                 console.error("Error loading category:", error);
             } finally {
@@ -142,7 +169,7 @@ function CategoryForm() {
 
 
     return (
-        <DashboardLayout>
+        <DashboardLayoutAdmin>
             <main className="min-h-screen bg-white px-8 py-8 lg:px-15 lg:py-15">
                 <div className="flex items-center gap-2">
                     <Link
@@ -200,6 +227,46 @@ function CategoryForm() {
                                 );
                             })}
                         </div>
+
+
+{/* nuevo para cabys */}
+
+<div className="mt-8 mx-w-2x1">
+    <p className="mb-1 text-base font-bold text-text-primary">
+¿Qué vendes en esta categoría?
+    </p>
+    
+    <p className="mb-3 text-sm text-gray-600">
+ Lo usamos para facturar correctamente. Si lo cambiás después, solo afecta a ventas futuras.
+    </p>
+
+ <div role="radiogroup" aria-label="Tipo de producto" className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {FISCAL_TYPES.map(({ key, label, hint, Icon }) => {
+            const selected = fiscalType === key;
+
+            return (
+                <button
+                 key={key}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => setFiscalType(key)}
+                    className={`flex items-start gap-3 rounded-xl border-2 p-3 text-left transition ${
+                        selected
+                            ? "border-mint-dark bg-mint-dark/10"
+                            : "border-border hover:border-mint-dark"
+                    }`}>
+ <Icon className="mt-0.5 h-6 w-6 shrink-0 text-mint-dark" />
+                    <span>
+                        <span className="block font-bold text-text-primary">{label}</span>
+                        <span className="block text-xs text-gray-600">{hint}</span>
+                    </span>
+                </button>
+            )
+})}
+</div>
+</div>
+
                         <button
                             type="button"
                             onClick={handleCreateCategory}
@@ -246,7 +313,7 @@ function CategoryForm() {
                     </div>
                 </div>
             )}
-        </DashboardLayout>
+        </DashboardLayoutAdmin>
     );
 }
 

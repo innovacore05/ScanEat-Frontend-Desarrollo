@@ -1,11 +1,18 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { getProfile, getStoredFirstName } from "../../services/authService";
 import { HiArrowLeft } from "react-icons/hi";
-import { GoPlus } from "react-icons/go";
+import { GoPlus, GoTag } from "react-icons/go";
 import { FiCamera } from "react-icons/fi";
-import DashboardLayout from "../../components/layout/DashboardLayout";
-import { createProduct, getProductById, updateProduct, getCategories, } from "../../services/productService";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
+import { createProduct, 
+  getProductById, 
+  updateProduct, 
+  getCategories, 
+  getFiscalOptions, 
+  searchCabys,
+  type Category, 
+  type FiscalOption,
+type CabysSearchResult} from "../../services/productService";
 
 interface SimpleDishFormProps {
   mode?: "create" | "edit";
@@ -13,35 +20,45 @@ interface SimpleDishFormProps {
 }
 
 function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
+  const navigate = useNavigate();
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
-  const [categories, setCategories] = useState<{ categoryId: number; name: string }[]>([]);
+ 
+  //cabys
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [cabysCode, setCabysCode] = useState("");
+  const [fiscalOptions, setFiscalOptions] = useState<FiscalOption[]>([]);
+  //cabys: busqueda escrita (productos empacados)
+  const [cabysQuery, setCabysQuery] = useState("");
+  const [cabysResults, setCabysResults] = useState<CabysSearchResult[]>([]);
+  const [cabysLabel, setCabysLabel] = useState("");
+ 
   const [discount, setDiscount] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [firstName, setFirstName] = useState(getStoredFirstName);
   const isEditMode = mode === "edit" && Boolean(productId);
   const [error, setError] = useState("");
+
+  //obtener categorias elegidas y familia 
+ const selectedCategory = categories.find(
+  (cat) => String(cat.categoryId) === category,
+);
+  const usesSearch = selectedCategory?.fiscalType === "packaged";
+
+  const resetCabys = () => {
+    setCabysCode("");
+    setCabysLabel("");
+    setCabysQuery("");
+    setCabysResults([]);
+  };
 
   {
     /* useEffect para cargar el nombre del usuario */
   }
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const data = await getProfile();
-        setFirstName(data.user.firstName);
-      } catch (error) {
-        console.error("Error loading profile:", error);
-      }
-    };
-
-    loadProfile();
-  }, []);
 
   {
     /* useEffect para cargar las categorías */
@@ -58,6 +75,73 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
 
     loadCategories();
   }, []);
+
+//cabys:consultar opciones 
+ useEffect(() => {
+    setFiscalOptions([]);
+
+    if (!selectedCategory?.fiscalType || 
+      selectedCategory.fiscalType === "dishes"||
+    selectedCategory.fiscalType === "packaged") {
+      return;
+    }
+
+    let cancelled = false;
+
+    getFiscalOptions(selectedCategory.fiscalType)
+      .then((options) => {
+        if (!cancelled) {
+          setFiscalOptions(options);
+        }
+      })
+      .catch((error) => {
+        console.error("Error al cargar opciones CABYS:", error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCategory?.categoryId, selectedCategory?.fiscalType]);
+
+
+//cabys
+ //cabys: búsqueda con retraso mientras escribe (empacados)
+  useEffect(() => {
+    if (!usesSearch || cabysQuery.trim().length < 3) {
+      setCabysResults([]);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      searchCabys(cabysQuery.trim(), "packaged")
+        .then((results) => {
+          if (!cancelled) setCabysResults(results);
+        })
+        .catch((error) => console.error("Error buscando CABYS:", error));
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [cabysQuery, usesSearch]);
+
+  //cabys: al editar, mostrar el nombre del código ya guardado
+  useEffect(() => {
+    if (!usesSearch || !cabysCode || cabysLabel) return;
+
+    searchCabys(cabysCode, "packaged")
+      .then((results) => {
+        const hit = results.find((r) => r.code === cabysCode);
+        if (hit) setCabysLabel(hit.label);
+      })
+      .catch((error) => console.error("Error cargando CABYS:", error));
+  }, [usesSearch, cabysCode]);
+
+
+
+
 
   {
     /* useEffect para actualizar la vista previa de la imagen */
@@ -86,6 +170,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
         setDescription(product.description ?? "");
         setPrice(String(product.price ?? ""));
         setCategory(String(product.categoryId ?? ""));
+        setCabysCode(product.cabysCode ?? "");
         const productDiscount =
           product.discount ??
           product.discountPercentage ??
@@ -105,6 +190,122 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
 
     loadProduct();
   }, [isEditMode, productId]);
+
+//selector para elegir 
+  const renderCabysField = () => {
+    if (!selectedCategory) {
+      return null;
+    }
+
+    if (!selectedCategory.fiscalType) {
+      return (
+        <p className="mt-3 text-sm text-red-600">
+          Esta categoría no tiene una familia fiscal configurada.
+        </p>
+      );
+    }
+
+    if (selectedCategory.fiscalType === "dishes") {
+      return (
+        <p className="mt-3 text-sm text-gray-600">
+          El código CABYS se asignará automáticamente.
+        </p>
+      );
+    }
+//empacados: búsqueda escrita
+    if (usesSearch) {
+      return (
+        <div className="mt-3">
+          <label className="mb-1 block text-sm font-medium text-text-primary">
+            ¿Qué producto es?
+          </label>
+
+          {cabysCode ? (
+            <div className="flex items-center justify-between rounded-lg border border-border px-4 py-2">
+              <span className="text-sm text-text-primary">
+                {cabysLabel || "Producto seleccionado"}
+              </span>
+              <button
+                type="button"
+                className="text-sm font-bold text-mint-darker"
+                onClick={resetCabys}
+              >
+                Cambiar
+              </button>
+            </div>
+          ) : (
+            <>
+              <input
+                type="text"
+                value={cabysQuery}
+                onChange={(event) => setCabysQuery(event.target.value)}
+                placeholder="Buscá: chicles, papas, galletas..."
+                className="w-full rounded-lg border border-border px-4 py-2 focus:border-2 focus:border-brown focus:outline-none"
+              />
+
+              {cabysResults.length > 0 && (
+                <ul className="mt-1 max-h-56 overflow-y-auto rounded-lg border border-border bg-white">
+                  {cabysResults.map((result) => (
+                    <li key={result.code}>
+                      <button
+                        type="button"
+                        className="w-full px-4 py-2 text-left text-sm hover:bg-mint-dark/10"
+                        onClick={() => {
+                          setCabysCode(result.code);
+                          setCabysLabel(result.label);
+                          setCabysResults([]);
+                        }}
+                      >
+                        {result.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {cabysQuery.trim().length >= 3 && cabysResults.length === 0 && (
+                <p className="mt-2 text-sm text-gray-600">Sin resultados.</p>
+              )}
+            </>
+          )}
+        </div>
+      );
+    }
+ return (
+      <div className="mt-3">
+        <label
+          htmlFor="cabysCode"
+          className="mb-1 block text-sm font-medium text-text-primary"
+        >
+          Opción CABYS
+        </label>
+
+        <select
+          id="cabysCode"
+          value={cabysCode}
+          onChange={(event) => setCabysCode(event.target.value)}
+          className="w-full rounded-lg border border-border px-4 py-2 focus:border-2 focus:border-brown focus:outline-none"
+        >
+          <option value="">Selecciona una opción CABYS</option>
+
+          {fiscalOptions.map((option) => (
+            <option key={option.code} value={option.code}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+
+        {fiscalOptions.length === 0 && (
+          <p className="mt-2 text-sm text-gray-600">
+            No hay opciones CABYS activas para esta familia.
+          </p>
+        )}
+      </div>
+    );
+  };
+
+
 
   {
     /* Manejo del envío del formulario */
@@ -133,15 +334,36 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
       return;
     }
 
-    if (discount !== "" && (isNaN(Number(discount)) || Number(discount) < 0)) {
-      setError("Ingresa un descuento válido");
-      return;
-    }
+    if (
+  discount !== "" &&
+  (!Number.isFinite(Number(discount)) ||
+    Number(discount) < 0 ||
+     Number(discount) >= 100)
+) {
+  setError("El descuento debe estar entre 1 % y 99 %");
+  return;
+}
 
     if (!category) {
       setError("Selecciona una categoría");
       return;
     }
+
+ if (!selectedCategory?.fiscalType) {
+      setError("La categoría seleccionada no tiene familia fiscal configurada");
+      return;
+    }
+
+ 
+  if (selectedCategory.fiscalType !== "dishes" && !cabysCode) {
+  setError(
+    usesSearch
+      ? "Busca y selecciona qué producto es"
+      : "Selecciona una opción CABYS",
+  );
+  return;
+}
+
     if (!image && !imagePreview) {
       setError("Selecciona una imagen para el platillo");
       return;
@@ -150,11 +372,8 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
       setError("La imagen debe ser JPG, JPEG, PNG o WEBP");
       return;
     }
-    // if (image && image.size > 1 * 1024 * 1024) {
-    //   setError("La imagen no debe superar 1 MB");
-    //   return;
-    // }
 
+    
     try {
       setIsSubmitting(true);
 
@@ -167,6 +386,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
           discount,
           categoryId: Number(category),
           image,
+          cabysCode,
         });
 
         console.log("Producto actualizado:", data);
@@ -181,6 +401,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
         discount,
         categoryId: Number(category),
         image,
+        cabysCode,
       });
 
       console.log("Producto creado:", data);
@@ -192,6 +413,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
       setDescription("");
       setPrice("");
       setCategory("");
+      resetCabys();
       setDiscount("");
       setImage(null);
       setImagePreview(null);
@@ -209,7 +431,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayoutAdmin>
       {successMessage && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -224,7 +446,12 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
             <p className="mt-2 text-sm text-text-primary">{successMessage}</p>
             <button
               type="button"
-               onClick={() => setSuccessMessage(null)}
+              onClick={() => {
+                setSuccessMessage(null);
+                if (isEditMode) {
+                  navigate({ to: "/menuManagment" });
+                }
+              }}
               className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
             >
               Aceptar
@@ -238,7 +465,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
         <section className="lg:hidden">
           <div className="flex items-center gap-2">
             <Link
-              to="/dashboard"
+              to="/dashboardAdmin"
               className="flex items-center gap-2 text-mint-dark"
             >
               <HiArrowLeft className="h-6 w-6" />
@@ -312,7 +539,10 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
               <select
                 id="category"
                 value={category}
-                onChange={(event) => setCategory(event.target.value)}
+                onChange={(event) => {
+  setCategory(event.target.value);
+  resetCabys();
+}}
                 className="w-full mt-5 font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-3 py-1.5"
               >
                 <option value="">Categoría</option>
@@ -323,20 +553,26 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                   </option>
                 ))}
               </select>
-
+{renderCabysField()}
               {/* Input Discount*/}
-              <input
+              <div className="relative mt-5">
+                <input
                 id="discount"
                 type="number"
-                placeholder="Descuento del platillo (opcional)"
+                placeholder="Descuento del platillo"
                 value={discount}
-                onChange={(event) =>
-                  setDiscount(
-                    event.target.value ? Number(event.target.value) : "",
-                  )
-                }
-                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
-              />
+                  onChange={(event) =>
+                    setDiscount(
+                      event.target.value ? Number(event.target.value) : "",
+                    )
+                  }
+                  className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 pr-10 focus:border-2 focus:border-brown focus:outline-none"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-base text-black font-black pointer-events-none">
+                  %
+                </span>
+              </div>
+
               {error ? (
                 <p className="text-sm mt-3 text-red-600">{error}</p>
               ) : null}
@@ -365,13 +601,9 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
         {/* Computadora */}
 
         <section className="hidden lg:block">
-          <div className="rounded-2xl bg-mint-dark px-8 py-6">
-            <h1 className="text-3xl font-bold text-white">
-              Hola, {firstName + "!" || "Usuario !"}
-            </h1>
-          </div>
+      
 
-          <h2 className="mt-8 text-2xl font-bold text-black">
+          <h2 className="text-2xl font-bold text-black">
             {isEditMode ? "Editar platillo" : "Menú"}
           </h2>
 
@@ -396,6 +628,17 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
               </span>
 
               <GoPlus className="h-6 w-6 shrink-0 text-mint-dark" />
+            </Link>
+
+            <Link
+                to="/categoryManagement"
+                className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3 hover:bg-mint-dark/10"
+            >
+                <span className="text-base font-bold text-text-primary">
+                  Gestionar categorías
+                </span>
+            
+                <GoTag className="h-6 w-6 shrink-0 text-mint-dark" />
             </Link>
           </div>
 
@@ -450,7 +693,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 placeholder="Descripcion del platillo"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="w-fullfont-normal text-black text-base resize-none rounded-lg border border-border px-4 py-4 focus:border-2 focus:border-brown focus:outline-none"
+               className="w-full font-normal text-black text-base resize-none rounded-lg border border-border px-4 py-4 focus:border-2 focus:border-brown focus:outline-none"
               />
               <input
                 id="price"
@@ -463,7 +706,10 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
               <select
                 id="category"
                 value={category}
-                onChange={(event) => setCategory(event.target.value)}
+                onChange={(event) => {
+  setCategory(event.target.value);
+  resetCabys();
+}}
                 className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               >
 
@@ -475,19 +721,25 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                   </option>
                 ))}
               </select>
-
+{renderCabysField()}
+              <div className="relative">
               <input
                 id="discount"
                 type="number"
-                placeholder="Descuento del platillo (opcional)"
+                placeholder="Descuento del platillo"
                 value={discount}
-                onChange={(event) =>
-                  setDiscount(
-                    event.target.value ? Number(event.target.value) : "",
-                  )
-                }
-                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
-              />
+                  onChange={(event) =>
+                    setDiscount(
+                      event.target.value ? Number(event.target.value) : "",
+                    )
+                  }
+                  className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 pr-10 focus:border-2 focus:border-brown focus:outline-none"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-base text-black font-black pointer-events-none">
+                  %
+                </span>
+              </div>
+
 
               {error ? (
                 <p className="text-sm text-red-600">{error}</p>
@@ -517,7 +769,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
           </form>
         </section>
       </main>
-    </DashboardLayout>
+    </DashboardLayoutAdmin>
   );
 }
 
