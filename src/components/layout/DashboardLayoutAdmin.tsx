@@ -19,7 +19,7 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-function DashboardLayout({ children }: DashboardLayoutProps) {
+function DashboardAdmin({ children }: DashboardLayoutProps) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -62,7 +62,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
         <nav className="flex flex-col gap-3">
           <Link
-            to="/dashboard"
+            to="/dashboardAdmin"
             className="flex items-center gap-4 pb-3 pt-10 text-left text-text-primary"
           >
             <GoHome className="h-6 w-6 shrink-0" />
@@ -72,22 +72,22 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
           <Link
             to="/menuManagment"
-            className="flex items-center gap-4 py-3 text-left text-text-primary"
+            className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
           >
             <IoRestaurantOutline className="h-6 w-6 shrink-0" />
 
             <span className="text-[15px] font-bold cursor-pointer">Menú</span>
           </Link>
 
-            <button
-              type="button"
+            <Link
+              to="/discountProducts"
               className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
             >
               <MdOutlineDiscount className="h-6 w-6 shrink-0" />
               <span className="text-[15px] font-bold cursor-pointer">
                 Descuentos
               </span>
-            </button>
+            </Link>
 
             <Link
               to="/salesReport"
@@ -259,7 +259,7 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="mt-14 w-full">
               <div className="flex flex-col gap-2">
                 <Link
-                  to="/dashboard"
+                  to="/dashboardAdmin"
                   onClick={() => setIsMenuOpen(false)}
                   className="flex w-full items-center gap-4 py-4 text-left text-white"
                 >
@@ -280,14 +280,15 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
 
               </div>
 
-              <div className="mt-10 flex flex-col gap-2">
-                <button
-                  type="button"
+             
+                <Link
+                  to="/discountProducts"
+                  onClick={() => setIsMenuOpen(false)}
                   className="flex w-full items-center gap-4 py-4 text-left text-white"
                 >
                   <MdOutlineDiscount className="h-6 w-6 shrink-0" />
                   <span className="text-xl font-bold">Descuentos</span>
-                </button>
+                </Link>
 
                 <Link
                   to="/salesReport"
@@ -329,7 +330,6 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
           </Link>
 
 
-              </div>
             </div>
           </div>
         </>
@@ -411,4 +411,4 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
   );
 }
 
-export default DashboardLayout;
+export default DashboardAdmin;

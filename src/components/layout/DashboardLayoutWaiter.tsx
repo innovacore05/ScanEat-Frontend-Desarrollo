@@ -88,15 +88,15 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
             </span>
           </Link>
 
-            <button
-              type="button"
+            <Link
+              to="/discountProducts"
               className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
             >
               <MdOutlineDiscount className="h-6 w-6 shrink-0" />
               <span className="text-[15px] font-bold cursor-pointer">
                 Descuentos
               </span>
-            </button>
+            </Link>
 
 
             <Link
@@ -226,13 +226,14 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
         </div>
 
         <div className="mt-10 flex flex-col gap-2">
-          <button
-            type="button"
+          <Link
+            to="/discountProducts"
+            onClick={() => setIsMenuOpen(false)}
             className="flex w-full items-center gap-4 py-4 text-left text-white"
                 >
                   <MdOutlineDiscount className="h-6 w-6 shrink-0" />
             <span className="text-xl font-bold">Descuentos</span>
-          </button>
+          </Link>
 
           <Link
             to="/tablesManagment"

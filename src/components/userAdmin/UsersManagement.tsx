@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
 import { Link } from "@tanstack/react-router";
-import DashboardLayout from "../layout/DashboardLayout";
-import { getProfile, getStoredFirstName } from "../../services/authService";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import { ROLE_IDS } from "../../config/roles";
 import {
   deleteUser,
@@ -14,7 +13,6 @@ import UserCard from "./UserCard";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
 
 function UsersManagement() {
-  const [firstName, setFirstName] = useState(getStoredFirstName);
   const [users, setUsers] = useState<ManagedUser[]>([]);
   const [selectedUser, setSelectedUser] = useState<ManagedUser | null>(null);
   const [userToDelete, setUserToDelete] = useState<ManagedUser | null>(null);
@@ -35,14 +33,7 @@ function UsersManagement() {
   });
 
   useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const data = await getProfile();
-        setFirstName(data.user.firstName);
-      } catch (profileError) {
-        console.error("Error cargando el perfil:", profileError);
-      }
-    };
+    
 
     const loadUsers = async () => {
       try {
@@ -62,7 +53,6 @@ function UsersManagement() {
       }
     };
 
-    loadProfile();
     loadUsers();
   }, []);
 
@@ -138,18 +128,12 @@ function UsersManagement() {
   };
 
   return (
-    <DashboardLayout>
-      <section className="px-8 py-8 lg:px-15 lg:pt-15 lg:pb-0 hidden lg:block">
-        <div className="rounded-2xl bg-mint-dark px-8 py-6">
-          <h1 className="text-3xl font-bold text-white">
-            ¡Hola, {firstName || "Usuario"}!
-          </h1>
-        </div>
-      </section>
-      <main className="min-h-screen bg-white px-4 py-6 sm:px-6 sm:py-8 lg:px-15 lg:pt-4 lg:pb-15">
+    <DashboardLayoutAdmin>
+      
+      <main className="min-h-screen bg-white px-8 py-8 sm:px-6 sm:py-8 lg:px-15 lg:pt-15 lg:pb-15">
         <div className="w-full">
           <Link
-            to="/dashboard"
+            to="/dashboardAdmin"
             className="mb-1 flex items-center gap-2 text-mint-dark lg:hidden"
           >
             <HiArrowLeft className="h-6 w-6" />
@@ -311,7 +295,7 @@ function UsersManagement() {
           onCancel={() => setUserToDelete(null)}
         />
       </main>
-    </DashboardLayout>
+    </DashboardLayoutAdmin>
   );
 }
 

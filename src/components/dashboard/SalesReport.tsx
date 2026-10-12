@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import {FiRefreshCw, FiCpu, FiCheckCircle } from "react-icons/fi";
 import SalesChart, { type SalesPeriod, } from "../../components/sales/SalesChart";
 import OrdersList from "../../components/sales/OrdersList";
-import DashboardLayout from "../layout/DashboardLayout";
-import { getProfile, getStoredFirstName } from "../../services/authService";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import { getOrders } from "../../services/orderService";
 import { generateAISalesReport } from "../../services/aiService";
 import type { SalesAnalytics } from "../../services/analyticsService";
 import { getSalesAnalytics } from "../../services/analyticsService";
-
+import { Link } from "@tanstack/react-router";
+import { HiArrowLeft } from "react-icons/hi";
+import { getStoredRoleId } from "../../services/authService";
+import { ROLE_IDS } from "../../config/roles";
 
 
 //Este objeto mapea los periodos de tiempo a los valores que se envían a la API para obtener los datos del reporte de ventas.
@@ -22,7 +24,6 @@ const periodToApiValue: Record<SalesPeriod, "today" | "week" | "month" | "year"
 
 
 function SalesReport() {
-  const [firstName, setFirstName] = useState(getStoredFirstName);
   const [period, setPeriod] = useState<SalesPeriod>("Hoy");
   const [analytics, setAnalytics] = useState<SalesAnalytics | null>(null);
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(false);
@@ -54,18 +55,6 @@ function SalesReport() {
     }
   };
 
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const data = await getProfile();
-        setFirstName(data.user.firstName);
-      } catch (error) {
-        console.error("Error loading profile:", error);
-      }
-    };
-
-    void loadProfile();
-  }, []);
 
   //Este efecto se ejecuta cada vez que el periodo de tiempo seleccionado cambia.
   useEffect(() => {
@@ -210,23 +199,36 @@ function SalesReport() {
     setPeriod(option);
   };
 
+  const roleId = getStoredRoleId();
+  
+  const dashboardRoute =
+  roleId === ROLE_IDS.waiter
+    ? "/dashboardWaiter"
+    : "/dashboardAdmin";
+
+  
   return (
-    <DashboardLayout>
+    <DashboardLayoutAdmin>
       <section className="px-6 py-8 lg:px-15 lg:py-15">
         <div className="w-full">
-          <div className="rounded-2xl bg-mint-dark px-8 py-6">
-            <h1 className="text-3xl font-bold text-white">
-              ¡Hola, {firstName || "Usuario"}!
-            </h1>
-          </div>
+          <div className="mt-4 flex items-center gap-2 md:hidden">
+  <Link
+    to={dashboardRoute}
+    className="flex items-center gap-2 text-mint-dark"
+  >
+    <HiArrowLeft className="h-6 w-6 shrink-0" />
 
-          <div className="mt-7 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 className="text-3xl font-bold text-mint-dark">
-                Reporte de ventas
-              </h2>
-            </div>
-          </div>
+    <span className="text-[32px] font-bold text-mint-dark">
+      Reporte de ventas
+    </span>
+  </Link>
+</div>
+
+          <div className="mt-7 hidden flex-wrap items-end justify-between gap-4 md:flex">
+  <h2 className="text-3xl font-bold text-mint-dark">
+    Reporte de ventas
+  </h2>
+</div>
 
           {/* Filtros y gráfico */}
           <div className="mt-5 grid gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
@@ -481,7 +483,7 @@ function SalesReport() {
           
         </div>
       </section>
-    </DashboardLayout>
+    </DashboardLayoutAdmin>
   );
 }
 

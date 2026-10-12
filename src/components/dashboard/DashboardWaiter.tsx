@@ -24,31 +24,27 @@ function DashboardWaiter() {
 
     return (
         <DashboardLayoutWaiter>
-            <main className="min-h-screen bg-brand-white">
+            <main className="min-h-screen bg-brand-white px-4 py-5 sm:px-6 sm:py-8 lg:px-15 lg:py-15">
 
-				{/* Computadora */}
-				<section className="hidden lg:block px-15 py-15">
-					<div className="rounded-2xl bg-mint-dark px-8 py-6">
-						<h1 className="text-3xl font-bold text-white">
+					<div className="rounded-2xl bg-mint-dark px-5 py-5 sm:px-8 sm:py-6">
+						<h1 className="text-3xl font-bold text-white sm:text-3xl">
 							¡Hola, {firstName || "Usuario"}!
 						</h1>
 					</div>
-                    <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2 xl:gap-6 mt-6">
-                        <div>
+                    <div className="mt-5 grid grid-cols-1 items-start gap-5 xl:grid-cols-2 xl:gap-6">
+                        <div className="min-w-0 space-y-5">
                         <DataSummary />
-                        <div className="mt-5">
+                        
                         <PendingTables />
-                        </div>
-                        <div className="mt-5">
+                        
                         <FavoritesToday />
-                        </div>
+                        
                         </div>
 
-                        <div>
+                        <div className="min-w-0">
                             <DiscountsToday />
                         </div>
                     </div>
-				</section>
 
 			</main>
         </DashboardLayoutWaiter>

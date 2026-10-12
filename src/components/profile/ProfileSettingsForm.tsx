@@ -3,7 +3,7 @@ import { editProfile,getProfile } from "../../services/authService";
 import { useEffect, useState } from "react";
 import { FaRegCheckCircle } from "react-icons/fa";
 
-import DashboardLayout from "../../components/layout/DashboardLayout";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 
 
 
@@ -81,7 +81,7 @@ setOriginalEmail(data.user.email);
 
 	return (
 		 <>
-		<DashboardLayout>
+		<DashboardLayoutAdmin>
 		<main className="min-h-screen bg-brand-white mt-22">
 
 			<section className="-mt-10 min-h-[calc(100vh-5rem)] rounded-t-[40px] bg-white px-6 py-10">
@@ -145,7 +145,7 @@ setOriginalEmail(data.user.email);
 						{error && <p className="mt-4 text-center text-sm text-red-600">{error}</p>}
 
 						<Link
-							to="/dashboard"
+							to="/dashboardAdmin"
 							className="mt-16 block w-full cursor-pointer rounded-lg border border-mint-dark px-4 py-3 text-center text-base font-bold text-mint-dark hover:bg-mint-dark/10"
 						>
 							Cancelar cambios
@@ -162,7 +162,7 @@ setOriginalEmail(data.user.email);
 				</form>
 			</section>
 			</main>
-			</DashboardLayout>
+			</DashboardLayoutAdmin>
 
 			{showSuccess ? (
 				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">

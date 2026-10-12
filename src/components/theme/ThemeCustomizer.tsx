@@ -19,7 +19,7 @@ import {
   uploadRestaurantLogo,
 } from "../../services/themeService";
 import { getProfile } from "../../services/authService";
-import DashboardLayout from "../layout/DashboardLayout";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import { updateBusiness } from "../../services/businessService";
 
 function ThemeCustomizer() {
@@ -256,7 +256,7 @@ function ThemeCustomizer() {
 
 
   return (
-    <DashboardLayout>
+    <DashboardLayoutAdmin>
       <div className="flex flex-col lg:flex-row">
 
 
@@ -267,7 +267,7 @@ function ThemeCustomizer() {
           >
             <div className="flex items-center gap-2">
               <Link
-                to="/dashboard"
+                to="/dashboardAdmin"
                 className="flex items-center gap-2 text-mint-dark"
               >
                 <HiArrowLeft className="h-6 w-6 lg:hidden" />
@@ -472,7 +472,7 @@ function ThemeCustomizer() {
           </section>
         </main>
       </div>
-    </DashboardLayout>
+    </DashboardLayoutAdmin>
   );
 }
 

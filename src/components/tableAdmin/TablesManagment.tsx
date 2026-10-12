@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { getProfile, getStoredFirstName, getStoredRoleId } from "../../services/authService";
 import { HiArrowLeft } from "react-icons/hi";
 import { useEffect, useState } from "react";
-import DashboardLayout from "../layout/DashboardLayout";
+import DashboardLayout from "../layout/DashboardLayoutAdmin";
 import { IoIosAdd } from "react-icons/io";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -274,14 +274,9 @@ const handleRequestDelete = () => {
 				{/* Computadora */}
 
 				<section className="hidden px-15 py-15 lg:block">
-					<div className="rounded-2xl bg-mint-dark px-8 py-6">
-						<h1 className="text-3xl font-bold text-white">
-							¡Hola, {firstName || "Usuario"}!
-						</h1>
-					</div>
+			
 
-
-					<div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-2">
+					<div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
 						<div>
 							<div className="flex items-center justify-between flex-wrap gap-3">
 								<h2 className="text-2xl font-bold text-mint-dark">

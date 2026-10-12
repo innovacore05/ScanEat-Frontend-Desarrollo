@@ -4,7 +4,6 @@ import { HiArrowLeft } from "react-icons/hi";
 import FilterOrders from "../waiterOrders/FilterOrders";
 import SearchOrders from "../waiterOrders/SearchOrders";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
-import { getStoredFirstName } from "../../services/authService";
 import OrderCard from "../Orders/OrderCard";
 import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
@@ -12,7 +11,6 @@ import { getOrders } from "../../services/orderService";
 
 function WaiterOrders() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [firstName] = useState(getStoredFirstName);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     null,
   );
@@ -130,13 +128,8 @@ function WaiterOrders() {
 
         {/* Computadora */}
         <section className="hidden px-15 py-15 lg:block">
-          <div className="rounded-2xl bg-mint-dark px-8 py-6">
-            <h1 className="text-3xl font-bold text-white">
-              ¡Hola, {firstName ? `${firstName}!` : "Usuario!"}
-            </h1>
-          </div>
 
-          <h2 className="mt-8 text-2xl font-bold text-mint-dark">
+          <h2 className=" text-2xl font-bold text-mint-dark">
             Pedidos
           </h2>
 

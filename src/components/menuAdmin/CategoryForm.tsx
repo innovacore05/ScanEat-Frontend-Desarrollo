@@ -1,7 +1,7 @@
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { HiArrowLeft } from "react-icons/hi";
-import DashboardLayout from "../../components/layout/DashboardLayout";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import { getCategories, type FiscalType } from "../../services/productService";
 import { createCategory, updateCategory, } from "../../services/productService";
 import {
@@ -169,7 +169,7 @@ const [fiscalType,setFiscalType]=useState<FiscalType|"">("");
 
 
     return (
-        <DashboardLayout>
+        <DashboardLayoutAdmin>
             <main className="min-h-screen bg-white px-8 py-8 lg:px-15 lg:py-15">
                 <div className="flex items-center gap-2">
                     <Link
@@ -308,7 +308,7 @@ const [fiscalType,setFiscalType]=useState<FiscalType|"">("");
                     </div>
                 </div>
             )}
-        </DashboardLayout>
+        </DashboardLayoutAdmin>
     );
 }
 

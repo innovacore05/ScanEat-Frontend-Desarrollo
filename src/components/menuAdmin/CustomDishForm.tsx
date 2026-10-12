@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { getProfile, getStoredFirstName } from "../../services/authService";
 import {
   createCustomDish,
   getProductById,
@@ -14,9 +13,9 @@ import {
 
 } from "../../services/productService";
 import { HiArrowLeft } from "react-icons/hi";
-import { GoPlus } from "react-icons/go";
+import { GoPlus, GoTag } from "react-icons/go";
 import { FiCamera } from "react-icons/fi";
-import DashboardLayout from "../../components/layout/DashboardLayout";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 
 interface CustomDishFormProps {
   mode?: "create" | "edit";
@@ -46,7 +45,6 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
   const [discount, setDiscount] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [firstName, setFirstName] = useState(getStoredFirstName);
   const [error, setError] = useState("");
 
 
@@ -71,18 +69,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
   };
 
 
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const data = await getProfile();
-        setFirstName(data.user.firstName);
-      } catch (error) {
-        console.error("Error loading profile:", error);
-      }
-    };
 
-    loadProfile();
-  }, []);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -450,7 +437,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayoutAdmin>
       {successMessage && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -478,7 +465,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
         <section className="lg:hidden">
           <div className="flex items-center gap-2">
             <Link
-              to="/dashboard"
+              to="/dashboardAdmin"
               className="flex items-center gap-2 text-mint-dark"
             >
               <HiArrowLeft className="h-6 w-6" />
@@ -741,13 +728,8 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
         {/* Computadora */}
 
         <section className="hidden lg:block">
-          <div className="rounded-2xl bg-mint-dark px-8 py-6">
-            <h1 className="text-3xl font-bold text-white">
-              Hola, {firstName + "!" || "Usuario !"}
-            </h1>
-          </div>
 
-          <h2 className="mt-8 text-2xl font-bold text-black">Menú</h2>
+          <h2 className=" text-2xl font-bold text-black">Menú</h2>
 
           <div className="mt-6 flex gap-4">
             <Link
@@ -770,6 +752,16 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
               </span>
 
               <GoPlus className="h-6 w-6 shrink-0 text-mint-dark" />
+            </Link>
+            <Link
+                to="/categoryManagement"
+                className="flex items-center justify-between gap-8 rounded-lg border border-border px-5 py-3 hover:bg-mint-dark/10"
+            >
+              <span className="text-base font-bold text-text-primary">
+                Gestionar categorías
+              </span>
+                        
+              <GoTag className="h-6 w-6 shrink-0 text-mint-dark" />
             </Link>
           </div>
 
@@ -1037,7 +1029,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
           </form>
         </section>
       </main>
-    </DashboardLayout >
+    </DashboardLayoutAdmin >
   );
 }
 

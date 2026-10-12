@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import DashboardLayout from "../layout/DashboardLayout";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import DataSummary from "./DataSummary";
 import PendingTables from "./PendingTables";
 import FavoritesToday from "./FavoritesToday";
@@ -91,7 +91,7 @@ function DashboardForm() {
   }, []);
 
   return (
-    <DashboardLayout>
+    <DashboardLayoutAdmin>
       <section className="px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
         <div className="mb-6 rounded-2xl bg-mint-dark px-5 py-5 sm:px-8 sm:py-6">
           <h1 className="text-2xl font-bold text-white sm:text-3xl">
@@ -130,7 +130,7 @@ function DashboardForm() {
           </div>
         </div>
       </section>
-    </DashboardLayout>
+    </DashboardLayoutAdmin>
   );
 }
 

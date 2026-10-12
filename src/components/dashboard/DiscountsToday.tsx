@@ -70,7 +70,7 @@ function DiscountsToday() {
                 <div className="mt-8">
                   <span className="relative mr-2 text-xs text-text-primary">
                     ₡{product.price.toLocaleString("es-CR")}
-                    <span className="absolute left-0 top-1/2 h-px w-full rotate-[-12deg] bg-red-500" />
+                    <span className="absolute left-0 top-1/2 h-px w-full -rotate-12 bg-red-500" />
                   </span>
 
                   <span className="font-bold text-mint-dark">

@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as MenuRouteImport } from './routes/menu'
 import { Route as authenticationAccountVerificationRouteImport } from './routes/(authentication)/accountVerification'
 import { Route as authenticationForgotPasswordRouteImport } from './routes/(authentication)/forgotPassword'
 import { Route as authenticationLoginRouteImport } from './routes/(authentication)/login'
@@ -24,11 +23,12 @@ import { Route as clientOrdersCheckOrderRouteImport } from './routes/(clientOrde
 import { Route as clientOrdersOrderStatusRouteImport } from './routes/(clientOrders)/orderStatus'
 import { Route as clientOrdersReviewPlateRouteImport } from './routes/(clientOrders)/reviewPlate'
 import { Route as cookOrdersCookOrdersRouteImport } from './routes/(cookOrders)/cookOrders'
-import { Route as dashboardDashboardRouteImport } from './routes/(dashboard)/dashboard'
+import { Route as dashboardDashboardAdminRouteImport } from './routes/(dashboard)/dashboardAdmin'
 import { Route as dashboardDashboardWaiterRouteImport } from './routes/(dashboard)/dashboardWaiter'
 import { Route as dashboardSalesReportRouteImport } from './routes/(dashboard)/salesReport'
 import { Route as historySalesHistorySalesRouteImport } from './routes/(historySales)/historySales'
 import { Route as issuerInformationIssuerInformationRouteImport } from './routes/(issuerInformation)/issuerInformation'
+import { Route as menuDiscountProductsRouteImport } from './routes/(menu)/discountProducts'
 import { Route as menuAdminCategoryFormRouteImport } from './routes/(menuAdmin)/categoryForm'
 import { Route as menuAdminCategoryManagementRouteImport } from './routes/(menuAdmin)/categoryManagement'
 import { Route as menuAdminCustomDishFormRouteImport } from './routes/(menuAdmin)/customDishForm'
@@ -53,11 +53,6 @@ import { Route as waiterOrdersWaiterOrdersRouteImport } from './routes/(waiterOr
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MenuRoute = MenuRouteImport.update({
-  id: '/menu',
-  path: '/menu',
   getParentRoute: () => rootRouteImport,
 } as any)
 const authenticationAccountVerificationRoute =
@@ -132,9 +127,9 @@ const cookOrdersCookOrdersRoute = cookOrdersCookOrdersRouteImport.update({
   path: '/cookOrders',
   getParentRoute: () => rootRouteImport,
 } as any)
-const dashboardDashboardRoute = dashboardDashboardRouteImport.update({
-  id: '/(dashboard)/dashboard',
-  path: '/dashboard',
+const dashboardDashboardAdminRoute = dashboardDashboardAdminRouteImport.update({
+  id: '/(dashboard)/dashboardAdmin',
+  path: '/dashboardAdmin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const dashboardDashboardWaiterRoute =
@@ -160,6 +155,11 @@ const issuerInformationIssuerInformationRoute =
     path: '/issuerInformation',
     getParentRoute: () => rootRouteImport,
   } as any)
+const menuDiscountProductsRoute = menuDiscountProductsRouteImport.update({
+  id: '/(menu)/discountProducts',
+  path: '/discountProducts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const menuAdminCategoryFormRoute = menuAdminCategoryFormRouteImport.update({
   id: '/(menuAdmin)/categoryForm',
   path: '/categoryForm',
@@ -269,7 +269,6 @@ const waiterOrdersWaiterOrdersRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/menu': typeof MenuRoute
   '/accountVerification': typeof authenticationAccountVerificationRoute
   '/forgotPassword': typeof authenticationForgotPasswordRoute
   '/login': typeof authenticationLoginRoute
@@ -283,11 +282,12 @@ export interface FileRoutesByFullPath {
   '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
-  '/dashboard': typeof dashboardDashboardRoute
+  '/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
   '/salesReport': typeof dashboardSalesReportRoute
   '/historySales': typeof historySalesHistorySalesRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
+  '/discountProducts': typeof menuDiscountProductsRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
   '/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/customDishForm': typeof menuAdminCustomDishFormRoute
@@ -311,7 +311,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/menu': typeof MenuRoute
   '/accountVerification': typeof authenticationAccountVerificationRoute
   '/forgotPassword': typeof authenticationForgotPasswordRoute
   '/login': typeof authenticationLoginRoute
@@ -325,11 +324,12 @@ export interface FileRoutesByTo {
   '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
-  '/dashboard': typeof dashboardDashboardRoute
+  '/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
   '/salesReport': typeof dashboardSalesReportRoute
   '/historySales': typeof historySalesHistorySalesRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
+  '/discountProducts': typeof menuDiscountProductsRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
   '/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/customDishForm': typeof menuAdminCustomDishFormRoute
@@ -354,7 +354,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/menu': typeof MenuRoute
   '/(authentication)/accountVerification': typeof authenticationAccountVerificationRoute
   '/(authentication)/forgotPassword': typeof authenticationForgotPasswordRoute
   '/(authentication)/login': typeof authenticationLoginRoute
@@ -368,11 +367,12 @@ export interface FileRoutesById {
   '/(clientOrders)/orderStatus': typeof clientOrdersOrderStatusRoute
   '/(clientOrders)/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/(cookOrders)/cookOrders': typeof cookOrdersCookOrdersRoute
-  '/(dashboard)/dashboard': typeof dashboardDashboardRoute
+  '/(dashboard)/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/(dashboard)/dashboardWaiter': typeof dashboardDashboardWaiterRoute
   '/(dashboard)/salesReport': typeof dashboardSalesReportRoute
   '/(historySales)/historySales': typeof historySalesHistorySalesRoute
   '/(issuerInformation)/issuerInformation': typeof issuerInformationIssuerInformationRoute
+  '/(menu)/discountProducts': typeof menuDiscountProductsRoute
   '/(menuAdmin)/categoryForm': typeof menuAdminCategoryFormRoute
   '/(menuAdmin)/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/(menuAdmin)/customDishForm': typeof menuAdminCustomDishFormRoute
@@ -398,7 +398,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/menu'
     | '/accountVerification'
     | '/forgotPassword'
     | '/login'
@@ -412,11 +411,12 @@ export interface FileRouteTypes {
     | '/orderStatus'
     | '/reviewPlate'
     | '/cookOrders'
-    | '/dashboard'
+    | '/dashboardAdmin'
     | '/dashboardWaiter'
     | '/salesReport'
     | '/historySales'
     | '/issuerInformation'
+    | '/discountProducts'
     | '/categoryForm'
     | '/categoryManagement'
     | '/customDishForm'
@@ -440,7 +440,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/menu'
     | '/accountVerification'
     | '/forgotPassword'
     | '/login'
@@ -454,11 +453,12 @@ export interface FileRouteTypes {
     | '/orderStatus'
     | '/reviewPlate'
     | '/cookOrders'
-    | '/dashboard'
+    | '/dashboardAdmin'
     | '/dashboardWaiter'
     | '/salesReport'
     | '/historySales'
     | '/issuerInformation'
+    | '/discountProducts'
     | '/categoryForm'
     | '/categoryManagement'
     | '/customDishForm'
@@ -482,7 +482,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/menu'
     | '/(authentication)/accountVerification'
     | '/(authentication)/forgotPassword'
     | '/(authentication)/login'
@@ -496,11 +495,12 @@ export interface FileRouteTypes {
     | '/(clientOrders)/orderStatus'
     | '/(clientOrders)/reviewPlate'
     | '/(cookOrders)/cookOrders'
-    | '/(dashboard)/dashboard'
+    | '/(dashboard)/dashboardAdmin'
     | '/(dashboard)/dashboardWaiter'
     | '/(dashboard)/salesReport'
     | '/(historySales)/historySales'
     | '/(issuerInformation)/issuerInformation'
+    | '/(menu)/discountProducts'
     | '/(menuAdmin)/categoryForm'
     | '/(menuAdmin)/categoryManagement'
     | '/(menuAdmin)/customDishForm'
@@ -525,7 +525,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  MenuRoute: typeof MenuRoute
   authenticationAccountVerificationRoute: typeof authenticationAccountVerificationRoute
   authenticationForgotPasswordRoute: typeof authenticationForgotPasswordRoute
   authenticationLoginRoute: typeof authenticationLoginRoute
@@ -539,11 +538,12 @@ export interface RootRouteChildren {
   clientOrdersOrderStatusRoute: typeof clientOrdersOrderStatusRoute
   clientOrdersReviewPlateRoute: typeof clientOrdersReviewPlateRoute
   cookOrdersCookOrdersRoute: typeof cookOrdersCookOrdersRoute
-  dashboardDashboardRoute: typeof dashboardDashboardRoute
+  dashboardDashboardAdminRoute: typeof dashboardDashboardAdminRoute
   dashboardDashboardWaiterRoute: typeof dashboardDashboardWaiterRoute
   dashboardSalesReportRoute: typeof dashboardSalesReportRoute
   historySalesHistorySalesRoute: typeof historySalesHistorySalesRoute
   issuerInformationIssuerInformationRoute: typeof issuerInformationIssuerInformationRoute
+  menuDiscountProductsRoute: typeof menuDiscountProductsRoute
   menuAdminCategoryFormRoute: typeof menuAdminCategoryFormRoute
   menuAdminCategoryManagementRoute: typeof menuAdminCategoryManagementRoute
   menuAdminCustomDishFormRoute: typeof menuAdminCustomDishFormRoute
@@ -573,13 +573,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/menu': {
-      id: '/menu'
-      path: '/menu'
-      fullPath: '/menu'
-      preLoaderRoute: typeof MenuRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(authentication)/accountVerification': {
@@ -673,11 +666,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof cookOrdersCookOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(dashboard)/dashboard': {
-      id: '/(dashboard)/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof dashboardDashboardRouteImport
+    '/(dashboard)/dashboardAdmin': {
+      id: '/(dashboard)/dashboardAdmin'
+      path: '/dashboardAdmin'
+      fullPath: '/dashboardAdmin'
+      preLoaderRoute: typeof dashboardDashboardAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(dashboard)/dashboardWaiter': {
@@ -706,6 +699,13 @@ declare module '@tanstack/react-router' {
       path: '/issuerInformation'
       fullPath: '/issuerInformation'
       preLoaderRoute: typeof issuerInformationIssuerInformationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menu)/discountProducts': {
+      id: '/(menu)/discountProducts'
+      path: '/discountProducts'
+      fullPath: '/discountProducts'
+      preLoaderRoute: typeof menuDiscountProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(menuAdmin)/categoryForm': {
@@ -853,7 +853,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  MenuRoute: MenuRoute,
   authenticationAccountVerificationRoute:
     authenticationAccountVerificationRoute,
   authenticationForgotPasswordRoute: authenticationForgotPasswordRoute,
@@ -868,12 +867,13 @@ const rootRouteChildren: RootRouteChildren = {
   clientOrdersOrderStatusRoute: clientOrdersOrderStatusRoute,
   clientOrdersReviewPlateRoute: clientOrdersReviewPlateRoute,
   cookOrdersCookOrdersRoute: cookOrdersCookOrdersRoute,
-  dashboardDashboardRoute: dashboardDashboardRoute,
+  dashboardDashboardAdminRoute: dashboardDashboardAdminRoute,
   dashboardDashboardWaiterRoute: dashboardDashboardWaiterRoute,
   dashboardSalesReportRoute: dashboardSalesReportRoute,
   historySalesHistorySalesRoute: historySalesHistorySalesRoute,
   issuerInformationIssuerInformationRoute:
     issuerInformationIssuerInformationRoute,
+  menuDiscountProductsRoute: menuDiscountProductsRoute,
   menuAdminCategoryFormRoute: menuAdminCategoryFormRoute,
   menuAdminCategoryManagementRoute: menuAdminCategoryManagementRoute,
   menuAdminCustomDishFormRoute: menuAdminCustomDishFormRoute,

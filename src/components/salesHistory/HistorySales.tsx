@@ -2,15 +2,13 @@
 import { Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
-import DashboardLayout from "../layout/DashboardLayout";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
 import HistoryCard from "../salesHistory/HistoryCard";
-import { getStoredFirstName } from "../../services/authService";
 import type { Order } from "../Orders/OrderCard";
 
 function HistorySales() {
-    const [firstName] = useState(getStoredFirstName);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [orders, setOrders] = useState<Order[]>([]);
 
@@ -46,13 +44,13 @@ function HistorySales() {
 
 
     return (
-        <DashboardLayout>
+        <DashboardLayoutAdmin>
             <main className="min-h-screen bg-white">
                 {/* Celular */}
                 <section className="px-6 lg:hidden">
                     <div className="flex items-center gap-2">
                         <Link
-                            to="/dashboard"
+                            to="/dashboardAdmin"
                             className="flex items-center gap-2 text-mint-dark"
                         >
                             <HiArrowLeft className="h-6 w-6" />
@@ -101,13 +99,9 @@ function HistorySales() {
 
                 {/* Computadora */}
                 <section className="hidden px-15 py-15 lg:block">
-                    <div className="rounded-2xl bg-mint-dark px-8 py-6">
-                        <h1 className="text-3xl font-bold text-white">
-                            ¡Hola, {firstName ? `${firstName}!` : "Usuario!"}
-                        </h1>
-                    </div>
+                   
 
-                    <h2 className="mt-8 text-2xl font-bold text-mint-dark">
+                    <h2 className=" text-2xl font-bold text-mint-dark">
                         Historial de ventas
                     </h2>
 
@@ -147,7 +141,7 @@ function HistorySales() {
                     </div>
                 </section>
             </main>
-        </DashboardLayout>
+        </DashboardLayoutAdmin>
     );
 }
 

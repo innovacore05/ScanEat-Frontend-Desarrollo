@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { getProfile, getStoredFirstName } from "../../services/authService";
 import { getProducts,getCategories, type Product, type Category } from "../../services/productService";
 import { HiArrowLeft } from "react-icons/hi";
 import DashboardLayoutWaiter from "../../components/layout/DashboardLayoutWaiter";
@@ -75,7 +74,6 @@ function ProductList({
 
 
 function MenuWaiter() {
-  const [firstName, setFirstName] = useState(getStoredFirstName);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -87,18 +85,7 @@ function MenuWaiter() {
 	const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
 
 
-  // cargar el perfil
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const data = await getProfile();
-        setFirstName(data.user.firstName);
-      } catch (error) {
-        console.error("Error loading profile:", error);
-      }
-    };
-    loadProfile();
-  }, []);
+  
 
   // Cargar las categorías del negocio
 useEffect(() => {
@@ -233,13 +220,9 @@ useEffect(() => {
         {/* Computadora */}
 
         <section className="hidden px-15 py-15 lg:block">
-          <div className="rounded-2xl bg-mint-dark px-8 py-6">
-            <h1 className="text-3xl font-bold text-white ">
-              ¡Hola, {firstName ? `${firstName}!` : "Usuario!"}
-            </h1>
-          </div>
+          
 
-          <h2 className="mt-8 text-2xl font-bold text-black">Menú</h2>
+          <h2 className=" text-2xl font-bold text-black">Menú</h2>
 
 
           <SearchBar

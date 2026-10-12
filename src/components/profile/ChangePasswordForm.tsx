@@ -5,7 +5,7 @@ import { FaRegCheckCircle } from "react-icons/fa";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { changePassword } from "../../services/authService";
-import DashboardLayout from "../layout/DashboardLayout";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 
 
 function ChangePasswordForm() {
@@ -86,7 +86,7 @@ setIsSubmitting(true);
 
   return (
     <>
-    <DashboardLayout>
+    <DashboardLayoutAdmin>
         
     <main className="min-h-screen bg-white mt-22">
       
@@ -189,7 +189,7 @@ setIsSubmitting(true);
         </form>
       </section>
       </main>
-    </DashboardLayout>
+    </DashboardLayoutAdmin>
     
     {showSuccess ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
