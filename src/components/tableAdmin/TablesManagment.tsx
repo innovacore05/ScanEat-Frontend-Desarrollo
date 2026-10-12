@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { getProfile, getStoredFirstName, getStoredRoleId } from "../../services/authService";
+import { getProfile, getStoredRoleId } from "../../services/authService";
 import { HiArrowLeft } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import DashboardLayout from "../layout/DashboardLayoutAdmin";
@@ -24,7 +24,6 @@ export type TableItem = {
 };
 
 function TablesManagment() {
-	const [firstName, setFirstName] = useState(getStoredFirstName);
 	const [roleId, setRoleId] = useState<number | null>(getStoredRoleId);
 	const [tables, setTables] = useState<TableItem[]>([]);
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
@@ -48,7 +47,6 @@ const [errorMessage, setErrorMessage] = useState<string | null>(null);
 		const loadProfile = async () => {
 			try {
 				const data = await getProfile();
-				setFirstName(data.user.firstName);
 				setRoleId(data.user.roleId);
 			} catch (error) {
 				console.error("Error loading profile:", error);
