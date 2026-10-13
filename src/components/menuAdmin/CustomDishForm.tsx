@@ -221,7 +221,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
       return (
         <div className="mt-3">
           <label className="mb-1 block text-sm font-medium text-text-primary">
-            ¿Qué producto es?
+            Relación de CABYS con Hacienda: ¿qué producto es?
           </label>
 
           {cabysCode ? (
@@ -484,7 +484,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
               {/* Input image*/}
               <label
                 htmlFor="image"
-                className="flex h-48 w-full cursor-pointer items-center justify-center rounded-2xl bg-mint-dark transition hover:opacity-90 mt-6"
+                className="mt-6 flex h-48 w-full cursor-pointer items-center justify-center rounded-2xl bg-mint-dark transition hover:opacity-90"
               >
                 {imagePreview ? (
                   <img
@@ -493,7 +493,12 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                     className="h-full w-full rounded-2xl object-cover"
                   />
                 ) : (
-                  <FiCamera className="h-20 w-20 text-white" />
+                  <div className="flex flex-col items-center gap-2">
+                    <FiCamera className="h-20 w-20 text-white" />
+                    <span className="text-sm font-medium text-white">
+                      Selecciona una imagen
+                    </span>
+                  </div>
                 )}
               </label>
               <input
@@ -788,7 +793,12 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                     className="h-full w-full rounded-2xl object-cover"
                   />
                 ) : (
-                  <FiCamera className="h-20 w-20 text-white" />
+                  <div className="flex flex-col items-center gap-2">
+                    <FiCamera className="h-20 w-20 text-white" />
+                    <span className="text-sm font-medium text-white">
+                      Selecciona una imagen
+                    </span>
+                  </div>
                 )}
               </label>
               <input
