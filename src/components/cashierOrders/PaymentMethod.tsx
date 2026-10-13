@@ -257,13 +257,16 @@ function PaymentMethod() {
                   <p>Subtotal (sin IVA)</p>
                                    <p className="tracking-wider">{formatCRC(order.totals.totalNetSale)}</p>
                 </div>
-
+<div className="flex items-center justify-between">
+                  <p>Descuento</p>
+                                   <p className="tracking-wider">{formatCRC(order.totals.totalDiscount)}</p>
+                </div>
                   {order.taxSummary.map(({ rate, amount }) => (
                   <div
                     key={rate}
                     className="mt-2 flex items-center justify-between"
                   >
-                    <p>IVA ({rate} %)</p>
+                    <p>IVA </p>
                     <p className="tracking-wider">{formatCRC(amount)}</p>
                   </div>
                 ))}

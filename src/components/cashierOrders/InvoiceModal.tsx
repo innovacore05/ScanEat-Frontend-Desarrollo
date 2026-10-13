@@ -116,7 +116,7 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
 
                 <div className="mt-4 flex flex-col">
                     <h1 className="text-center text-xl font-bold text-mint-dark">
-                        Ticket
+                        Tiquete Electrónico
                     </h1>
                     {/* Datos del comprobante */}
                     <div className="mt-3 flex flex-col gap-2">
@@ -159,46 +159,46 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
                                 </div>
 
                                 {receipt.lines.map((line, index) => (
-                                   
-                                   <div
-    key={index}
-    className={`grid grid-cols-[minmax(0,1fr)_38px_82px_88px] gap-2 py-2 ${index !== receipt.lines.length - 1
-        ? "border-b border-border"
-        : ""
-        }`}
->
-    <div className="min-w-0">
-        <p className="text-sm text-gray-700">{line.detail}</p>
-        <p className="text-xs text-gray-500">
-            IVA {formatRate(Number(line.ivaRate))}
-        </p>
-    </div>
 
-    <p className="text-center text-sm text-gray-700">
-        {line.quantity}
-    </p>
+                                    <div
+                                        key={index}
+                                        className={`grid grid-cols-[minmax(0,1fr)_38px_82px_88px] gap-2 py-2 ${index !== receipt.lines.length - 1
+                                            ? "border-b border-border"
+                                            : ""
+                                            }`}
+                                    >
+                                        <div className="min-w-0">
+                                            <p className="text-sm text-gray-700">{line.detail}</p>
+                                            <p className="text-xs text-gray-500">
+                                                IVA {formatRate(Number(line.ivaRate))}
+                                            </p>
+                                        </div>
 
-    {/* precio unitario: con descuento tacha el original y muestra el nuevo debajo */}
-    <div className="text-right text-sm text-gray-700">
-        {Number(line.discount) > 0 ? (
-            <>
-                <p className="text-xs text-gray-500 line-through">
-                    {formatCRC(line.unitPrice)}
-                </p>
-                <p>
-                    {formatCRC(Number(line.subtotal) / line.quantity)}
-                </p>
-            </>
-        ) : (
-            <p>{formatCRC(line.unitPrice)}</p>
-        )}
-    </div>
+                                        <p className="text-center text-sm text-gray-700">
+                                            {line.quantity}
+                                        </p>
 
-    {/* monto de la linea despues del descuento y con IVA */}
-    <p className="text-right text-sm text-gray-700">
-        {formatCRC(line.total)}
-    </p>
-</div>
+                                        {/* precio unitario: con descuento tacha el original y muestra el nuevo debajo */}
+                                        <div className="text-right text-sm text-gray-700">
+                                            {Number(line.discount) > 0 ? (
+                                                <>
+                                                    <p className="text-xs text-gray-500 line-through">
+                                                        {formatCRC(line.unitPrice)}
+                                                    </p>
+                                                    <p>
+                                                        {formatCRC(Number(line.subtotal) / line.quantity)}
+                                                    </p>
+                                                </>
+                                            ) : (
+                                                <p>{formatCRC(line.unitPrice)}</p>
+                                            )}
+                                        </div>
+
+                                        {/* monto de la linea despues del descuento y con IVA */}
+                                        <p className="text-right text-sm text-gray-700">
+                                            {formatCRC(line.total)}
+                                        </p>
+                                    </div>
                                 ))}
                             </div>
                         </div>
@@ -212,17 +212,32 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
                             label="Subtotal (sin IVA)"
                             value={formatCRC(receipt.totals.totalNetSale)}
                         />
-
+                        {/* si hay descuento  */}
+                        <Row
+                            label="Descuento"
+                            value={formatCRC(receipt.totals.totalDiscount)}
+                        />
 
                         {/*  mostrar las tarifas que realmente aparecen en las LINEAS */}
                         {receipt.taxSummary.map(({ rate, amount }) => (
                             <Row
                                 key={rate}
-                                label={`IVA (${formatRate(rate)})`}
+                                label={`IVA ${formatRate(Number(rate))}`}
                                 value={formatCRC(amount)}
                             />
                         ))}
-
+                        {receipt.payment.method === "cash" && (
+                            <>
+                                <Row
+                                    label="Su pago"
+                                    value={formatCRC(receipt.payment.amountTendered ?? 0)}
+                                />
+                                <Row
+                                    label="Su vuelto"
+                                    value={formatCRC(receipt.payment.change ?? 0)}
+                                />
+                            </>
+                        )}
                     </div>
 
                     <div className="mt-4 border border-border"></div>
@@ -253,19 +268,8 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
                                 />
                             )}
 
-                            {receipt.payment.amountTendered && (
-                                <Row
-                                    label="Pagó con"
-                                    value={formatCRC(receipt.payment.amountTendered)}
-                                />
-                            )}
-
-                            {receipt.payment.change !== null && (
-                                <Row
-                                    label="Cambio"
-                                    value={formatCRC(receipt.payment.change)}
-                                />
-                            )}
+                         
+                          
                         </div>
                     </div>
 
