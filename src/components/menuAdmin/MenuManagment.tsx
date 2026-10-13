@@ -1,14 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { getProfile, getStoredFirstName } from "../../services/authService";
 import { getProducts, getCategories, type Product, type Category } from "../../services/productService";
 import { getProductReviews } from "../../services/reviewService";
 import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus, GoTag } from "react-icons/go";
-import DashboardLayout from "../../components/layout/DashboardLayout";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
+import Skeleton from "../shared/Skeleton";
 
 
 //limite de muestras
@@ -63,7 +63,11 @@ function ProductList({
         }`}
     >
       {initialLoading && (
-        <p className="text-text-primary">Cargando platillos...</p>
+        <>
+          {Array.from({ length: 6 }, (_, index) => (
+            <Skeleton key={index} className="h-80 w-full rounded-2xl lg:w-87.5" />
+          ))}
+        </>
       )}
       {!initialLoading && products.length === 0 && (
         <p className="text-text-primary">No hay platillos...</p>
@@ -75,6 +79,7 @@ function ProductList({
             name={product.productName ?? ""}
             description={product.description ?? ""}
             price={product.price}
+            discount={ Number(product.discount ?? 0) }
             image={product.image ?? ""}
             rating={product.rating}
             isAdmin={true}
@@ -95,9 +100,9 @@ function ProductList({
 
 
 function MenuManagment() {
-  const [firstName, setFirstName] = useState(getStoredFirstName);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -107,18 +112,7 @@ function MenuManagment() {
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
 
 
-  // cargar el perfil
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const data = await getProfile();
-        setFirstName(data.user.firstName);
-      } catch (error) {
-        console.error("Error loading profile:", error);
-      }
-    };
-    loadProfile();
-  }, []);
+
 
   // cargar las categorias
   useEffect(() => {
@@ -128,6 +122,8 @@ function MenuManagment() {
         setCategories(data);
       } catch (error) {
         console.error("Error loading categories:", error);
+      } finally {
+        setIsLoadingCategories(false);
       }
     };
 
@@ -189,13 +185,13 @@ function MenuManagment() {
 
 
   return (
-    <DashboardLayout>
+    <DashboardLayoutAdmin>
       <main className="min-h-screen bg-white  ">
         {/* Celular */}
         <section className="lg:hidden px-8 ">
           <div className="flex items-center gap-2">
             <Link
-              to="/dashboard"
+              to="/dashboardAdmin"
               className="flex items-center gap-2 text-mint-dark"
             >
               <HiArrowLeft className="h-6 w-6" />
@@ -255,6 +251,7 @@ function MenuManagment() {
                   setSearchTerm("");
                 }}
                 disabled={!!searchTerm}
+                isLoading={isLoadingCategories}
               />
             </div>
 
@@ -289,13 +286,9 @@ function MenuManagment() {
         {/* Computadora */}
 
         <section className="hidden px-15 py-15 lg:block">
-          <div className="rounded-2xl bg-mint-dark px-8 py-6">
-            <h1 className="text-3xl font-bold text-white ">
-              ¡Hola, {firstName ? `${firstName}!` : "Usuario!"}
-            </h1>
-          </div>
+          
 
-          <h2 className="mt-8 text-2xl font-bold text-black">Menú</h2>
+          <h2 className="text-2xl font-bold text-black">Menú</h2>
 
           <div className="mt-6 flex gap-4">
             <Link
@@ -346,6 +339,7 @@ function MenuManagment() {
                 setSearchTerm("");
               }}
               disabled={!!searchTerm}
+              isLoading={isLoadingCategories}
             />
           </div>
 
@@ -378,7 +372,7 @@ function MenuManagment() {
           )}
         </section>
       </main>
-    </DashboardLayout>
+    </DashboardLayoutAdmin>
   );
 }
 

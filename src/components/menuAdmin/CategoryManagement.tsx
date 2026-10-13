@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
-import DashboardLayout from "../../components/layout/DashboardLayout";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import { getCategories, deleteCategory, type Category, } from "../../services/productService";
 import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import {
@@ -79,7 +79,7 @@ function CategoryManagement() {
 
 
     return (
-        <DashboardLayout>
+        <DashboardLayoutAdmin>
 
             {/* {categoryToDelete && (
                 <div
@@ -311,7 +311,7 @@ function CategoryManagement() {
                     )}
                 </div>
             </main>
-        </DashboardLayout>
+        </DashboardLayoutAdmin>
     );
 }
 

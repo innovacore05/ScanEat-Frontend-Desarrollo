@@ -4,22 +4,23 @@ import { HiArrowLeft } from "react-icons/hi";
 import FilterOrders from "../waiterOrders/FilterOrders";
 import SearchOrders from "../waiterOrders/SearchOrders";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
-import { getStoredFirstName } from "../../services/authService";
-import WaiterOrderCard from "../Orders/OrderCard";
+import OrderCard from "../Orders/OrderCard";
 import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
+import Skeleton from "../shared/Skeleton";
 
 function WaiterOrders() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [firstName] = useState(getStoredFirstName);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     null,
   );
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
 
-  const loadOrders = useCallback(async () => {
+  const loadOrders = useCallback(async (showLoading = false) => {
+    if (showLoading) setIsLoadingOrders(true);
     try {
       const backendOrders = await getOrders();
       setOrders(backendOrders);
@@ -33,11 +34,13 @@ function WaiterOrders() {
     } catch (error) {
       console.error("No se pudieron cargar los pedidos:", error);
       setOrders([]);
+    } finally {
+      if (showLoading) setIsLoadingOrders(false);
     }
   }, []);
 
   useEffect(() => {
-    void loadOrders();
+    void loadOrders(true);
 
     const intervalId = window.setInterval(() => {
       void loadOrders();
@@ -49,12 +52,17 @@ function WaiterOrders() {
   }, [loadOrders]);
 
   const filteredOrders = orders.filter((order) => {
+    if (order.status === "Pagado") {
+      return false;
+    }
+
     const matchesCategory =
       selectedCategory === null ||
       (selectedCategory === 1 && order.status === "Pendiente") ||
       (selectedCategory === 2 && order.status === "En preparación") ||
       (selectedCategory === 3 && order.status === "Listo") ||
       (selectedCategory === 4 && order.status === "Entregado");
+
     const matchesSearch =
       order.tableId.toString().includes(searchTerm.trim()) ||
       order.orderId.toString().includes(searchTerm.trim());
@@ -62,11 +70,16 @@ function WaiterOrders() {
     return matchesCategory && matchesSearch;
   });
 
+  const orderForDetails =
+    filteredOrders.find(
+      (order) => order.orderId === selectedOrder?.orderId,
+    ) ?? filteredOrders[0] ?? null;
+
   return (
     <DashboardLayoutWaiter>
       <main className="min-h-screen bg-white">
 
-              
+
         {/* Celular */}
         <section className="px-6 lg:hidden">
           <div className="flex items-center gap-2">
@@ -97,6 +110,7 @@ function WaiterOrders() {
                   setSearchTerm("");
                 }}
                 disabled={!!searchTerm}
+                isLoading={isLoadingOrders}
               />
             </div>
 
@@ -105,8 +119,10 @@ function WaiterOrders() {
             </p>
 
             <div className="flex flex-col gap-8 pb-20">
-              {filteredOrders.map((order) => (
-                <WaiterOrderCard
+              {isLoadingOrders ? Array.from({ length: 3 }, (_, index) => (
+                <Skeleton key={index} className="h-44 w-full rounded-2xl" />
+              )) : filteredOrders.map((order) => (
+                <OrderCard
                   key={order.orderId}
                   order={order}
                   onDetails={() => setSelectedOrder(order)}
@@ -116,17 +132,12 @@ function WaiterOrders() {
           </div>
         </section>
 
-              
+
 
         {/* Computadora */}
         <section className="hidden px-15 py-15 lg:block">
-          <div className="rounded-2xl bg-mint-dark px-8 py-6">
-            <h1 className="text-3xl font-bold text-white">
-              ¡Hola, {firstName ? `${firstName}!` : "Usuario!"}
-            </h1>
-          </div>
 
-          <h2 className="mt-8 text-2xl font-bold text-mint-dark">
+          <h2 className=" text-2xl font-bold text-mint-dark">
             Pedidos
           </h2>
 
@@ -144,14 +155,17 @@ function WaiterOrders() {
                 setSearchTerm("");
               }}
               disabled={!!searchTerm}
+              isLoading={isLoadingOrders}
             />
           </div>
 
           <div className="mt-8 grid grid-cols-[minmax(0,612px)_minmax(280px,1fr)] gap-6">
             {/* Pedidos */}
             <div className="flex flex-col gap-12">
-              {filteredOrders.map((order) => (
-                <WaiterOrderCard
+              {isLoadingOrders ? Array.from({ length: 4 }, (_, index) => (
+                <Skeleton key={index} className="h-44 w-full rounded-2xl" />
+              )) : filteredOrders.map((order) => (
+                <OrderCard
                   key={order.orderId}
                   order={order}
                   onDetails={() => setSelectedOrder(order)}
@@ -160,11 +174,13 @@ function WaiterOrders() {
             </div>
 
             {/* Detalles */}
-                      <div>
-                          <p className="pb-4 text-xl text-text-primary font-bold ">Orden actual</p>
-              {selectedOrder ? (
+            <div>
+              <p className="pb-4 text-xl text-text-primary font-bold ">Orden actual</p>
+              {isLoadingOrders ? (
+                <Skeleton className="min-h-80 w-full rounded-4xl" />
+              ) : orderForDetails ? (
                 <OrderDetails
-                  order={selectedOrder}
+                  order={orderForDetails}
                   embedded
                   onStatusChanged={loadOrders}
                 />

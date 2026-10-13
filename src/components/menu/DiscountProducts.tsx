@@ -1,0 +1,302 @@
+import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { getStoredRoleId } from "../../services/authService";
+import { getProducts,getCategories, type Product, type Category } from "../../services/productService";
+import { HiArrowLeft } from "react-icons/hi";
+import DishCard from "../menu/DishCard";
+import CategoryFilter from "../menu/CategoryFilter";
+import SearchBar from "../menu/SearchBar";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
+import DashboardLayoutWaiter from "../../components/layout/DashboardLayoutWaiter";
+import Skeleton from "../shared/Skeleton";
+
+
+//limite de muestras
+const PAGE_SIZE = 10;
+
+
+//funcion de carga de datos de platillos/productos desde la bd:
+function ProductList({
+  initialLoading,
+  isFiltering,
+  products,
+  onDeleteProduct,
+  selectedProductId,
+  onViewMore,
+  onCloseDetails,
+}: {
+  initialLoading: boolean;
+  isFiltering: boolean;
+  products: Product[];
+  onDeleteProduct: (productId: number) => void;
+  selectedProductId: number | null;
+  onViewMore: (productId: number) => void;
+  onCloseDetails: () => void;
+}) {
+  const visibleProducts = selectedProductId === null
+    ? products
+    : products.filter((product) => product.productId === selectedProductId);
+  return (
+    <div
+      className={`contents transition-opacity duration-200 ${
+        isFiltering ? "opacity-50" : "opacity-100"
+      }`}
+    >
+      {initialLoading && (
+        <>
+          {Array.from({ length: 6 }, (_, index) => (
+            <Skeleton key={index} className="h-80 w-full rounded-2xl lg:w-87.5" />
+          ))}
+        </>
+      )}
+      {!initialLoading && products.length === 0 && (
+        <p className="text-text-primary">No hay platillos...</p>
+      )}
+
+    {visibleProducts.map((product) => (
+    <div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
+          <DishCard
+            name={product.productName ?? ""}
+            description={product.description ?? ""}
+            price={product.price}
+            discount={ Number(product.discount ?? 0) }
+            image={product.image ?? ""}
+            rating={product.rating}
+            isAdmin={false}
+            showRating={false}
+            showActions={false}
+            productId={product.productId}
+            optionGroups={product.optionGroups}
+            onDelete={onDeleteProduct}
+            isDetailView={selectedProductId === product.productId}
+            onViewMore={() => onViewMore(product.productId)}
+            onCloseDetails={onCloseDetails}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
+
+function DiscountProducts() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [isFiltering, setIsFiltering] = useState(false);
+  const [hasMore , setHasMore]=useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+  const roleId = getStoredRoleId();
+  const dashboardPath =
+    roleId === 3 ? "/dashboardWaiter" : "/dashboardAdmin";
+  const Layout =
+    roleId === 1
+    ? DashboardLayoutAdmin
+    : DashboardLayoutWaiter;
+
+    const discountedProducts = products.filter(
+  (product) => Number(product.discount ?? 0) > 0
+  );
+
+
+
+  // Cargar las categorías del negocio
+useEffect(() => {
+  const loadCategories = async () => {
+    try {
+      const data = await getCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error("Error loading categories:", error);
+    } finally {
+      setIsLoadingCategories(false);
+    }
+  };
+
+  loadCategories();
+}, []);
+
+  //cargar los productos
+  useEffect(() => {
+    const loadProducts = async () => {
+    setSelectedProductId(null);
+      setIsFiltering(true);
+      try {
+        const data = await getProducts({
+          search: searchTerm,
+          //si hay texto en elbuscador se ignora categoria
+          category: searchTerm ? undefined : selectedCategory ?? undefined,
+          limit:PAGE_SIZE,
+          offset:0
+        });
+        setProducts(data.products);
+        setHasMore(data.hasMore);
+      } catch (error) {
+        console.error("Error loading products:", error);
+      } finally {
+        setInitialLoading(false);
+        setIsFiltering(false);
+      }
+    };
+    //duracion de carga entre busqueda o filtro
+    const delay = searchTerm ? 400 : 0;
+    const timeoutId = setTimeout(loadProducts, delay);
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, selectedCategory]);
+
+  const handleLoadMore=async()=>{
+    setIsLoadingMore(true);
+    try{
+      const data = await getProducts({
+        search: searchTerm,
+        category: searchTerm ? undefined : selectedCategory ?? undefined,
+        limit: PAGE_SIZE,
+        offset: products.length,
+      });
+        setProducts((prev)=>[...prev, ...data.products]);
+        setHasMore(data.hasMore)
+    }catch(error){
+      console.error("Error loading more products:", error);
+  } finally {
+      setIsLoadingMore(false);
+    }
+};
+
+  const handleDeleteProduct = (productId: number) => {
+    setProducts((prev) => prev.filter((product) => product.productId !== productId));
+    setSelectedProductId((current) => current === productId ? null : current);
+  };
+
+
+  return (
+    <Layout>
+      <main className="min-h-screen bg-brand-white  ">
+        {/* Celular */}
+        <section className="lg:hidden px-8 ">
+          <div className="flex items-center gap-2">
+            <Link
+              to={dashboardPath}
+              className="flex items-center gap-2 text-mint-dark"
+            >
+              <HiArrowLeft className="h-6 w-6" />
+
+              <span className="text-[32px] font-bold">Platillos con descuentos</span>
+            </Link>
+          </div>
+          
+
+          <div className="mt-4 flex flex-col gap-5  bg-white  ">
+            <SearchBar
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              className="mt-6 w-full"
+            />
+
+            <div className="mt-2">
+              <CategoryFilter
+              categories={categories}
+                selected={selectedCategory}
+                onSelect={(id) => {
+                  setSelectedCategory(id);
+                  setSearchTerm("");
+                }}
+                disabled={!!searchTerm}
+                isLoading={isLoadingCategories}
+              />
+            </div>
+
+             <div className="-mx-8  bg-neutral-50 px-8 pb-20 rounded-t-4xl ">
+            <div className=" mt-8 flex flex-col gap-4">
+              <ProductList
+                initialLoading={initialLoading}
+                isFiltering={isFiltering}
+                products={discountedProducts}
+                onDeleteProduct={handleDeleteProduct}
+        selectedProductId={selectedProductId}
+        onViewMore={setSelectedProductId}
+        onCloseDetails={() => setSelectedProductId(null)}
+              />
+            </div>
+
+      {hasMore && selectedProductId === null && (
+              <button
+                type="button"
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="w-full mt-6  rounded-2xl bg-white border border-border py-3 text-base font-bold text-mint-dark disabled:opacity-50"
+              >
+                {isLoadingMore ? "Cargando..." : "Cargar más"}
+              </button>
+            )}
+
+          </div>
+          </div>
+        </section>
+
+        {/* Computadora */}
+
+        <section className="hidden px-15 py-15 lg:block">
+          
+
+          <h2 className=" text-2xl font-bold text-black">Menú</h2>
+
+
+          <SearchBar
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            className="mt-8 w-153"
+          />
+
+          <div className="mt-6">
+            <CategoryFilter
+            categories={categories}
+              selected={selectedCategory}
+              onSelect={(id) => {
+                setSelectedCategory(id);
+                setSearchTerm(""); 
+              }}
+              disabled={!!searchTerm}
+              isLoading={isLoadingCategories}
+            />
+          </div>
+  
+          <h2 className="mt-8 text-2xl font-bold text-black">Platillos con descuentos</h2>
+
+          {/* Platillos */}
+          <div className="mt-6 flex flex-wrap gap-4">
+            <ProductList
+              initialLoading={initialLoading}
+              isFiltering={isFiltering}
+              products={discountedProducts}
+              onDeleteProduct={handleDeleteProduct}
+        selectedProductId={selectedProductId}
+        onViewMore={setSelectedProductId}
+        onCloseDetails={() => setSelectedProductId(null)}
+            />
+          </div>
+
+      {hasMore && selectedProductId === null && (
+            <div className="mt-6 flex justify-center ">
+              <button
+                type="button"
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="rounded-lg bg-white border border-border px-8 py-3 text-base font-bold text-mint-dark disabled:opacity-50"
+              >
+                {isLoadingMore ? "Cargando..." : "Cargar más"}
+              </button>
+            </div>
+          )}
+        </section>
+      </main>
+    </Layout>
+  );
+}
+
+export default DiscountProducts
+;

@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { createBusiness } from "../../services/businessService";
+import { createBusiness, generateBusinessCode } from "../../services/businessService";
+
+
+
+
 
 function RegisterBusiness() {
     const navigate = useNavigate();
@@ -11,6 +15,24 @@ function RegisterBusiness() {
     const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+
+    async function handleGenerateCode() {
+    setError("");
+
+    try {
+        const result = await generateBusinessCode();
+        setBusinessCode(result.code);
+    } catch (err) {
+        const message =
+            err &&
+            typeof err === "object" &&
+            "message" in err
+                ? String((err as { message?: string }).message)
+                : "No se pudo generar el código del negocio.";
+
+        setError(message);
+    }
+}
 
     async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -123,16 +145,24 @@ function RegisterBusiness() {
                         className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
                     />
 
-                    <input
-                        id="businessCode"
-                        type="text"
-                        placeholder="Código del negocio"
-                        value={businessCode}
-                        onChange={(event) =>
-                            setBusinessCode(event.target.value)
-                        }
-                        className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
-                    />
+                    <div className="flex w-full gap-2">
+                        <input
+                            id="businessCode"
+                            type="text"
+                            placeholder="Genera un código para tu negocio"
+                            value={businessCode}
+                            readOnly
+                            className="min-w-0 flex-1 cursor-not-allowed rounded-lg border border-border bg-gray-100 px-4 py-3 text-gray-700 focus:outline-none"
+                        />
+
+                        <button
+                            type="button"
+                            onClick={handleGenerateCode}
+                            className="shrink-0 rounded-lg bg-mint-dark px-3 py-2 text-sm text-white hover:bg-mint-dark/90"
+                        >
+                            Generar
+                        </button>
+                    </div>
 
                     {error ? (
                         <p className="text-sm text-red-600">

@@ -18,6 +18,9 @@ price:number;
 image:string|null;
 rating:number;
 categoryId:number;
+
+cabysCode?: string | null;
+
 discount?: number | string;
 discountPercentage?: number | string;
 discount_percent?: number | string;
@@ -40,6 +43,37 @@ const normalizeProduct = (product: Product): Product => ({
     image: getImageUrl(product.image),
 });
 
+//familias fiscales
+export type FiscalType =
+  | "dishes"
+  | "hot_drinks"
+  | "cold_drinks"
+  | "alcohol_drinks"
+  | "packaged"
+ ;
+
+  //para filtro de las opciones de cabys segun la categorai general 
+export type Category = {
+  categoryId: number;
+  name: string;
+  icon: string | null;
+  fiscalType: FiscalType | null;
+};
+
+//respuesta de obtener las opciones de tipo
+
+export type FiscalOption = {
+  code: string;
+  label: string;
+  ivaRate: number;
+};
+
+export type CabysSearchResult = {
+  code: string;
+  label: string;
+  ivaRate: number;
+};
+
 
 //obtener lista de productos , filtrado por categoria y busqueda
 
@@ -51,6 +85,7 @@ export const getProducts=async(params?:{
     mesaId?: string;
 })=>{
     const query=new URLSearchParams();
+
     if (params?.mesaId) {
     query.append("mesaId", params.mesaId);
 }
@@ -73,26 +108,7 @@ const url=queryString
 ? `${MENU_BASE_URL}/products?${queryString}`
 :`${MENU_BASE_URL}/products`;
 
-// const token = localStorage.getItem("authToken");
 
-// const response = await fetch(url, {
-//   method: "GET",
-//   headers: {
-//     ...(token ? { Authorization: `Bearer ${token}` } : {}),
-//   },
-// });
-// const data=await response.json().catch(()=>({}));
-
-// if(!response.ok){
-//     throw data as ApiError;
-// }
-
-//     const page = data as ProductsPage;
-
-//     return {
-//         ...page,
-//         products: page.products.map(normalizeProduct),
-//     };
 const data = await cookieSessionClient.request<ProductsPage>(
     url,{method:"GET",
      fallBackMessage: "No se pudieron cargar los productos",});
@@ -105,17 +121,8 @@ return {
 
 
 //obtener producto de menu por id
-
 export const getProductById= async (id: number | string)=>{
-//     const response =await fetch (`${MENU_BASE_URL}/products/${id}`, {
-//         method:"GET",
-//     });
-//     const data=await response.json().catch(()=>({}));
-//     if(!response.ok){
-//         throw data as ApiError;
-//     }
-//     return normalizeProduct(data as Product);
-// }
+
 const data =await cookieSessionClient.request<Product>(
         `${MENU_BASE_URL}/products/${id}`,
         {method:"GET",
@@ -127,34 +134,7 @@ const data =await cookieSessionClient.request<Product>(
 
 
 export const isCustomProduct = async (id: number): Promise<boolean> => {
-//     const token = localStorage.getItem("authToken");
 
-// const response = await fetch(`${MENU_BASE_URL}/products/${id}`, {
-//     method: "GET",
-//     headers: {
-//         ...(token ? { Authorization: `Bearer ${token}` } : {}),
-//     },
-// });
-
-//     if (response.ok) {
-//         return true;
-//     }
-
-//     if (response.status === 404 || response.status === 405) {
-//         return false;
-//     }
-
-//     const data = await response.json().catch(() => ({}));
-//     throw data as ApiError;
-// };
-
-// const data =await cookieSessionClient.request<Product>(
-//         `${MENU_BASE_URL}/products/${id}`,
-//         {method:"GET",
-//             fallBackMessage: "No se pudo cargar el producto",
-//             },
-//     );
-//     return normalizeProduct(data);
 try{
         await cookieSessionClient.request(
             `${MENU_BASE_URL}/products/custom/${id}`, {
@@ -176,11 +156,9 @@ try{
     }
 };
 
-export type Category = {
-    categoryId: number;
-    name: string;
-    icon: string | null;
-};
+
+
+
 
 // obtener lista de categorias
 export const getCategories = async (
@@ -199,19 +177,23 @@ export const getCategories = async (
     );
 };
 
+
 //Crear categoria de menu
 export const createCategory = async ({
     name,
     icon,
+    fiscalType,
 }: {
     name: string;
     icon: string;
+    fiscalType: FiscalType;
 }) => {
     return cookieSessionClient.request(`${MENU_BASE_URL}/categories`, {
         method: "POST",
         body: JSON.stringify({
             name,
             icon,
+            fiscalType
         }),
         headers: {
             "Content-Type": "application/json",
@@ -236,10 +218,12 @@ export const updateCategory = async ({
     categoryId,
     name,
     icon,
+    fiscalType,
 }: {
     categoryId: number;
     name: string;
     icon: string;
+    fiscalType:FiscalType;
 }) => {
     return cookieSessionClient.request(
         `${MENU_BASE_URL}/categories/${categoryId}`,
@@ -248,6 +232,7 @@ export const updateCategory = async ({
             body: JSON.stringify({
                 name,
                 icon,
+                fiscalType
             }),
             headers: {
                 "Content-Type": "application/json",
@@ -293,6 +278,7 @@ export const createProduct = async ({
     discount,
     categoryId,
     image,
+    cabysCode,
 }: {
     name: string;
     description: string;
@@ -300,45 +286,19 @@ export const createProduct = async ({
     discount: number | "";
     categoryId: number;
     image: File | null;
+    cabysCode:string;
 }) => {
-    //  const token = localStorage.getItem("authToken");
-    // const formData = new FormData();
-
-    // formData.append("name", name);
-    // formData.append("description", description);
-    // formData.append("price", price);
-    // formData.append("categoryId", String(categoryId));
-
-    // if (discount !== "") {
-    //     formData.append("discount", String(discount));
-    // }
-
-    // if (image) {
-    //     formData.append("image", image);
-    // }
-
-    // const response = await fetch(`${MENU_BASE_URL}/products`, {
-    //     method: "POST",
-    //     headers: {
-    //         ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← ahora sí dentro de headers
-    //     },
-    //     body: formData,
-       
-    // });
-
-    // const data = await response.json().catch(() => ({}));
-
-    // if (!response.ok) {
-    //     throw data as ApiError;
-    // }
-
-    // return data;
-    
+  
 const formData=new FormData();
 formData.append("name", name);
     formData.append("description", description);
     formData.append("price", price);
     formData.append("categoryId", String(categoryId));
+
+if (cabysCode.trim()) {
+  formData.append("cabysCode", cabysCode.trim());
+}
+
 
     if (discount !== "") {
         formData.append("discount", String(discount));
@@ -364,6 +324,7 @@ export const updateProduct = async (
         discount,
         categoryId,
         image,
+        cabysCode,
     }: {
         name: string;
         description: string;
@@ -371,6 +332,7 @@ export const updateProduct = async (
         discount: number | "";
         categoryId: number;
         image: File | null;
+        cabysCode: string;
     },
 ) => {
 
@@ -383,6 +345,10 @@ export const updateProduct = async (
     formData.append("price", price);
     formData.append("categoryId", String(categoryId));
 
+if(cabysCode.trim()){
+    formData.append("cabysCode",cabysCode.trim());
+}
+
     if (discount !== "") {
         formData.append("discount", String(discount));
     }
@@ -391,20 +357,7 @@ export const updateProduct = async (
         formData.append("image", image);
     }
 
-    // const response = await fetch(`${MENU_BASE_URL}/products/${id}`, {
-    //     method: "PUT",
-    //      headers: {
-    //         ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← agregar
-    //     },
-    //     body: formData,
-    // });
-
-    // const data = await response.json().catch(() => ({}));
-
-    // if (!response.ok) {
-    //     throw data as ApiError;
-    // }
-
+    
     // return data;
      return cookieSessionClient.request(`${MENU_BASE_URL}/products/${id}`, {
      method:"PUT",
@@ -421,6 +374,7 @@ export const createCustomDish = async ({
     discount,
     categoryId,
     image,
+    cabysCode,
     optionGroups,
 }: {
     name: string;
@@ -429,6 +383,7 @@ export const createCustomDish = async ({
     discount: number | "";
     categoryId: number;
     image: File | null;
+    cabysCode:string;
     optionGroups: { id: string; name: string; options: string[] }[];
 }) => {
     // const token = localStorage.getItem("authToken");
@@ -440,6 +395,11 @@ export const createCustomDish = async ({
     formData.append("price", price);
     formData.append("categoryId", String(categoryId));
 
+if(cabysCode.trim()){
+    formData.append("cabysCode", cabysCode.trim());
+}
+
+
     if (discount !== "") {
         formData.append("discount", String(discount));
     }
@@ -450,19 +410,6 @@ export const createCustomDish = async ({
 
     formData.append("optionGroups", JSON.stringify(optionGroups));
 
-    // const response = await fetch(`${MENU_BASE_URL}/products/custom`, {
-    //     method: "POST",
-    //     headers: {
-    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    //     },
-    //     body: formData,
-    // });
-
-    // const data = await response.json().catch(() => ({}));
-
-    // if (!response.ok) {
-    //     throw data as ApiError;
-    // }
 
     // return data;
 
@@ -475,33 +422,7 @@ export const createCustomDish = async ({
 
 
 export const deleteProduct = async (id: number) => {
-    //const token = localStorage.getItem("authToken");
-    //         const response = await fetch(url, {
-    //             method: "DELETE",
-    //             headers: {
-    //   ...(token ? { Authorization: `Bearer ${token}` } : {}), // ← agregar
-    // },
-    //         });
-
-    //         if (response.ok) {
-    //             return true;
-    //         }
-
-    //         const data = await response.json().catch(() => ({}));
-
-    //         if (response.status === 404 || response.status === 405) {
-    //             lastError = data as ApiError;
-    //             continue;
-    //         }
-
-    //         throw data as ApiError;
-    //     } catch (error) {
-    //         lastError = error as ApiError;
-    //     }
-    // }
-
-    // throw lastError as ApiError;
-             //return true;
+   
         
     return cookieSessionClient.request(
         `${MENU_BASE_URL}/products/${id}`,
@@ -523,6 +444,7 @@ export const updateCustomDish = async (
         discount,
         categoryId,
         image,
+        cabysCode,
         optionGroups,
     }: {
         name: string;
@@ -531,6 +453,7 @@ export const updateCustomDish = async (
         discount: number | "";
         categoryId: number;
         image: File | null;
+        cabysCode:string;
         optionGroups: { id: string; name: string; options: string[] }[];
     },
 ) => {
@@ -543,6 +466,10 @@ export const updateCustomDish = async (
     formData.append("price", price);
     formData.append("categoryId", String(categoryId));
 
+if(cabysCode.trim()){
+formData.append("cabysCode", cabysCode.trim());
+}
+
     if (discount !== "") {
         formData.append("discount", String(discount));
     }
@@ -553,19 +480,7 @@ export const updateCustomDish = async (
 
     formData.append("optionGroups", JSON.stringify(optionGroups));
 
-    // const response = await fetch(`${MENU_BASE_URL}/products/custom/${id}`, {
-    //     method: "PUT",
-    //     headers: {
-    //         ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    //     },
-    //     body: formData,
-    // });
-
-    // const data = await response.json().catch(() => ({}));
-
-    // if (!response.ok) {
-    //     throw data as ApiError;
-    // }
+   
 
     // return data;
      return cookieSessionClient.request(`${MENU_BASE_URL}/products/custom/${id}`, {
@@ -573,4 +488,31 @@ export const updateCustomDish = async (
         body: formData,
         fallBackMessage: "No se pudo actualizar el platillo personalizado",
     });
+};
+
+//nuevo: obtener opciones de cabys de la familia elegida
+
+export const getFiscalOptions = (type: FiscalType) => {
+  const params = new URLSearchParams({ type });
+
+  return cookieSessionClient.request<FiscalOption[]>(
+    `${MENU_BASE_URL}/fiscal-options?${params.toString()}`,
+    {
+      method: "GET",
+      fallBackMessage: "No se pudieron cargar las opciones CABYS",
+    },
+  );
+};
+
+//buscar cabys por descripcion o codigo por medio del back
+export const searchCabys = (query: string, type: FiscalType) => {
+  const params = new URLSearchParams({ q: query, type });
+
+  return cookieSessionClient.request<CabysSearchResult[]>(
+    `${MENU_BASE_URL}/cabys/search?${params.toString()}`,
+    {
+      method: "GET",
+      fallBackMessage: "No se pudieron buscar opciones CABYS",
+    },
+  );
 };

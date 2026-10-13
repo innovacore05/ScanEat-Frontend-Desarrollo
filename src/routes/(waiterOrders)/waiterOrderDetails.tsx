@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import WaiterOrderDetails from "../../components/Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
 import type { Order } from "../../components/Orders/OrderCard";
+import Skeleton from "../../components/shared/Skeleton";
 
 export const Route = createFileRoute("/(waiterOrders)/waiterOrderDetails",)({
   validateSearch: (search) => ({
@@ -36,7 +37,12 @@ function RouteComponent() {
   }, [orderId]);
 
   if (isLoading) {
-    return <p>Cargando orden...</p>;
+    return (
+      <main className="min-h-screen bg-white p-6">
+        <Skeleton className="mb-6 h-8 w-48" />
+        <Skeleton className="h-48 w-full rounded-xl" />
+      </main>
+    );
   }
 
   if (!order) {

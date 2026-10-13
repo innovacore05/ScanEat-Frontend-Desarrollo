@@ -6,6 +6,7 @@ import {
 } from "react";
 import { Link } from "@tanstack/react-router";
 import { HiArrowLeft } from "react-icons/hi";
+import { LuLockKeyhole } from "react-icons/lu";
 import ColorPickerField from "./ColorPickerField";
 import { useTheme } from "../../contexts/ThemeContext";
 import {
@@ -18,7 +19,7 @@ import {
   uploadRestaurantLogo,
 } from "../../services/themeService";
 import { getProfile } from "../../services/authService";
-import DashboardLayout from "../layout/DashboardLayout";
+import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import { updateBusiness } from "../../services/businessService";
 
 function ThemeCustomizer() {
@@ -255,7 +256,7 @@ function ThemeCustomizer() {
 
 
   return (
-    <DashboardLayout>
+    <DashboardLayoutAdmin>
       <div className="flex flex-col lg:flex-row">
 
 
@@ -266,7 +267,7 @@ function ThemeCustomizer() {
           >
             <div className="flex items-center gap-2">
               <Link
-                to="/dashboard"
+                to="/dashboardAdmin"
                 className="flex items-center gap-2 text-mint-dark"
               >
                 <HiArrowLeft className="h-6 w-6 lg:hidden" />
@@ -351,10 +352,10 @@ function ThemeCustomizer() {
               </p>
             )}
 
-            
+
             {themeMessage && (
               <p className="mt-2 text-center font-medium text-sm text-mint-darker">
-               {themeMessage}
+                {themeMessage}
               </p>
             )}
 
@@ -426,16 +427,26 @@ function ThemeCustomizer() {
                 className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
               />
 
-              <input
-                id="businessCode"
-                type="text"
-                placeholder="Código del negocio"
-                value={businessCode}
-                onChange={(event) =>
-                  setBusinessCode(event.target.value)
-                }
-                className="w-full rounded-lg border border-border px-4 py-3 focus:border-2 focus:border-brown focus:outline-none"
-              />
+              <div className="flex flex-col gap-1">
+
+                <div className="relative">
+                  <input
+                    id="businessCode"
+                    type="text"
+                    value={businessCode}
+                    readOnly
+                    className="w-full cursor-not-allowed rounded-lg border border-gray-200 bg-gray-100 px-4 py-3 pr-11 text-gray-500 focus:outline-none"
+                  />
+
+                  <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-400">
+                    <LuLockKeyhole size={18} />
+                  </span>
+                </div>
+
+                <p className="text-xs text-gray-500">
+                  El código del negocio no se puede modificar.
+                </p>
+              </div>
 
               {error ? (
                 <p className="text-sm text-red-600">
@@ -444,7 +455,7 @@ function ThemeCustomizer() {
               ) : null}
               {businessMessage && (
                 <p className="mt-3 text-center text-sm font-medium text-mint-darker">
-                   {businessMessage}
+                  {businessMessage}
                 </p>
               )}
               <button
@@ -461,7 +472,7 @@ function ThemeCustomizer() {
           </section>
         </main>
       </div>
-    </DashboardLayout>
+    </DashboardLayoutAdmin>
   );
 }
 

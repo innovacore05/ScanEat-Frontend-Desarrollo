@@ -9,7 +9,9 @@ function RootComponent() {
     return (
         <ThemeProvider>
             <AuthSessionSync />
-            <Outlet />
+            <div className="route-transition">
+                <Outlet />
+            </div>
         </ThemeProvider>
     );
 }

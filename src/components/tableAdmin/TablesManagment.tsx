@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { getProfile, getStoredFirstName, getStoredRoleId } from "../../services/authService";
+import { getProfile, getStoredRoleId } from "../../services/authService";
 import { HiArrowLeft } from "react-icons/hi";
 import { useEffect, useState } from "react";
-import DashboardLayout from "../layout/DashboardLayout";
+import DashboardLayout from "../layout/DashboardLayoutAdmin";
 import { IoIosAdd } from "react-icons/io";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -14,6 +14,7 @@ import { getOrders } from "../../services/orderService";
 import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
+import Skeleton from "../shared/Skeleton";
 
 export type TableItem = {
 	id: string;
@@ -24,7 +25,6 @@ export type TableItem = {
 };
 
 function TablesManagment() {
-	const [firstName, setFirstName] = useState(getStoredFirstName);
 	const [roleId, setRoleId] = useState<number | null>(getStoredRoleId);
 	const [tables, setTables] = useState<TableItem[]>([]);
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
@@ -34,6 +34,7 @@ function TablesManagment() {
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [orders, setOrders] = useState<Order[]>([]);
+	const [isLoadingTables, setIsLoadingTables] = useState(true);
 
 const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -48,7 +49,6 @@ const [errorMessage, setErrorMessage] = useState<string | null>(null);
 		const loadProfile = async () => {
 			try {
 				const data = await getProfile();
-				setFirstName(data.user.firstName);
 				setRoleId(data.user.roleId);
 			} catch (error) {
 				console.error("Error loading profile:", error);
@@ -65,6 +65,8 @@ const [errorMessage, setErrorMessage] = useState<string | null>(null);
 				setTables(data);
 			} catch (error) {
 				console.error("Error trayendo mesas:", error);
+			} finally {
+				setIsLoadingTables(false);
 			}
 		};
 
@@ -120,7 +122,7 @@ const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	// before displaying owner-only table actions.
 	const isOwner = roleId === ROLE_IDS.owner;
 	const Layout = roleId === ROLE_IDS.waiter ? DashboardLayoutWaiter : DashboardLayout;
-	const dashboardRoute = roleId === ROLE_IDS.waiter ? "/dashboardWaiter" : "/dashboard";
+	const dashboardRoute = roleId === ROLE_IDS.waiter ? "/dashboardWaiter" : "/dashboardAdmin";
 
 	const tableOrders = orders.filter(
   (order) =>
@@ -161,7 +163,13 @@ const handleRequestDelete = () => {
 
 					<div className="mt-2 flex flex-1 flex-col gap-6 rounded-t-4xl bg-neutral-50 px-6 py-8 sm:px-8">
 						<div className="mt-4 flex flex-col gap-2">
-							{tables.length === 0 ? (
+							{isLoadingTables ? (
+								<div className="space-y-2">
+									{Array.from({ length: 5 }, (_, index) => (
+										<Skeleton key={index} className="h-10 w-full rounded border border-border" />
+									))}
+								</div>
+							) : tables.length === 0 ? (
 								<p>No hay mesas creadas.</p>
 							) : (
 								tables.map((table) => (
@@ -202,7 +210,7 @@ const handleRequestDelete = () => {
 									<p className="mt-2 text-s">
 										Asientos: {selectedTable.chairNumber}
 									</p>
-									<p className="text-s">Mesero asignado: Luisa</p>
+									
 								</div>
 							) : (
 								<p className="mt-2 text-text-primary">
@@ -274,14 +282,9 @@ const handleRequestDelete = () => {
 				{/* Computadora */}
 
 				<section className="hidden px-15 py-15 lg:block">
-					<div className="rounded-2xl bg-mint-dark px-8 py-6">
-						<h1 className="text-3xl font-bold text-white">
-							¡Hola, {firstName || "Usuario"}!
-						</h1>
-					</div>
+			
 
-
-					<div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-2">
+					<div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
 						<div>
 							<div className="flex items-center justify-between flex-wrap gap-3">
 								<h2 className="text-2xl font-bold text-mint-dark">
@@ -317,7 +320,13 @@ const handleRequestDelete = () => {
 							</div>
 
 							<div className="mt-4 flex flex-col gap-2">
-								{tables.length === 0 ? (
+								{isLoadingTables ? (
+									<div className="space-y-2">
+										{Array.from({ length: 6 }, (_, index) => (
+											<Skeleton key={index} className="h-10 w-full rounded border border-border" />
+										))}
+									</div>
+								) : tables.length === 0 ? (
 									<p>No hay mesas creadas.</p>
 								) : (
 									tables.map((table) => (
@@ -362,7 +371,6 @@ const handleRequestDelete = () => {
 								<div className="mt-2 rounded-lg bg-mint-dark px-4 py-3 text-white">
 									<p className="text-lg font-bold">Mesa #{selectedTable.tableNumber}</p>
 									<p className="mt-2 text-s">Asientos: {selectedTable.chairNumber}</p>
-									<p className="text-s">Mesero asignado: Luisa</p>
 								</div>
 							) : (
 								<p className="mt-2 text-text-primary">Selecciona una mesa para ver sus detalles.</p>

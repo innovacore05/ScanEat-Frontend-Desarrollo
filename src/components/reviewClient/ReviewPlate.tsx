@@ -7,6 +7,7 @@ import {
   getReviewableOrder,
   type ReviewableProduct,
 } from "../../services/reviewService";
+import Skeleton from "../shared/Skeleton";
 
 type ReviewPlateProps = {
   orderId: number;
@@ -146,8 +147,33 @@ function ReviewPlate({ orderId, tableId }: ReviewPlateProps) {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-[#f8f8f8] p-8">
-        <p>Cargando productos del pedido...</p>
+      <main className="min-h-screen bg-[#f8f8f8] px-4 py-5 sm:px-6 sm:py-8 md:px-10 lg:px-16">
+        <div className="mx-auto w-full max-w-5xl">
+          <Skeleton className="h-6 w-28" />
+          <Skeleton className="mt-6 h-9 w-56" />
+          <Skeleton className="mt-2 h-4 w-72 max-w-full" />
+
+          <section className="mt-6 grid grid-cols-1 gap-4 sm:mt-8 sm:gap-6 md:grid-cols-2">
+            {Array.from({ length: 4 }, (_, index) => (
+              <article
+                key={index}
+                className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-5"
+              >
+                <Skeleton className="h-6 w-44" />
+                <Skeleton className="mt-4 h-8 w-36" />
+                <Skeleton className="mt-3 h-3 w-64 max-w-full" />
+                <div className="mt-5 rounded-md border border-gray-200 p-3 sm:p-4">
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="mt-3 h-16 w-full" />
+                </div>
+                <div className="mt-5 rounded-md border border-gray-200 p-3 sm:p-4">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="mt-3 h-24 w-full" />
+                </div>
+              </article>
+            ))}
+          </section>
+        </div>
       </main>
     );
   };

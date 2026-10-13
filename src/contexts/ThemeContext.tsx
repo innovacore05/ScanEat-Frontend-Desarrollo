@@ -2,6 +2,7 @@ import {
     createContext,
     useContext,
     useEffect,
+    useRef,
     useState,
     type ReactNode,
 } from "react";
@@ -53,9 +54,10 @@ function applyTheme(theme: ThemeFormValues) {
 function ThemeLoadingScreen() {
     return (
         <main className="flex min-h-screen items-center justify-center bg-white">
-            <p className="text-text-primary">
-                Cargando...
-            </p>
+            <div className="flex w-48 flex-col items-center gap-3">
+                <div className="h-16 w-16 animate-pulse rounded-full bg-neutral-200" />
+                <div className="h-4 w-28 animate-pulse rounded bg-neutral-200" />
+            </div>
         </main>
     );
 }
@@ -69,6 +71,7 @@ export function ThemeProvider({
         useState<ThemeFormValues>(DEFAULT_THEME);
     const location = useLocation();
     const [isLoading, setIsLoading] = useState(true);
+    const hasLoadedTheme = useRef(false);
 
     async function reloadTheme() {
         setIsLoading(true);
@@ -129,6 +132,7 @@ export function ThemeProvider({
             applyTheme(DEFAULT_THEME);
         } finally {
             setIsLoading(false);
+            hasLoadedTheme.current = true;
         }
     }
 
@@ -168,7 +172,7 @@ export function ThemeProvider({
         JSON.stringify(location.search),
     ]);
 
-    if (isLoading) {
+    if (isLoading && !hasLoadedTheme.current) {
         return <ThemeLoadingScreen />;
     }
 

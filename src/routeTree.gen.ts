@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as MenuRouteImport } from './routes/menu'
 import { Route as authenticationAccountVerificationRouteImport } from './routes/(authentication)/accountVerification'
 import { Route as authenticationForgotPasswordRouteImport } from './routes/(authentication)/forgotPassword'
 import { Route as authenticationLoginRouteImport } from './routes/(authentication)/login'
@@ -24,10 +23,12 @@ import { Route as clientOrdersCheckOrderRouteImport } from './routes/(clientOrde
 import { Route as clientOrdersOrderStatusRouteImport } from './routes/(clientOrders)/orderStatus'
 import { Route as clientOrdersReviewPlateRouteImport } from './routes/(clientOrders)/reviewPlate'
 import { Route as cookOrdersCookOrdersRouteImport } from './routes/(cookOrders)/cookOrders'
-import { Route as dashboardDashboardRouteImport } from './routes/(dashboard)/dashboard'
-import { Route as dashboardDashboardCookRouteImport } from './routes/(dashboard)/dashboardCook'
+import { Route as dashboardDashboardAdminRouteImport } from './routes/(dashboard)/dashboardAdmin'
 import { Route as dashboardDashboardWaiterRouteImport } from './routes/(dashboard)/dashboardWaiter'
+import { Route as dashboardSalesReportRouteImport } from './routes/(dashboard)/salesReport'
+import { Route as historySalesHistorySalesRouteImport } from './routes/(historySales)/historySales'
 import { Route as issuerInformationIssuerInformationRouteImport } from './routes/(issuerInformation)/issuerInformation'
+import { Route as menuDiscountProductsRouteImport } from './routes/(menu)/discountProducts'
 import { Route as menuAdminCategoryFormRouteImport } from './routes/(menuAdmin)/categoryForm'
 import { Route as menuAdminCategoryManagementRouteImport } from './routes/(menuAdmin)/categoryManagement'
 import { Route as menuAdminCustomDishFormRouteImport } from './routes/(menuAdmin)/customDishForm'
@@ -52,11 +53,6 @@ import { Route as waiterOrdersWaiterOrdersRouteImport } from './routes/(waiterOr
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MenuRoute = MenuRouteImport.update({
-  id: '/menu',
-  path: '/menu',
   getParentRoute: () => rootRouteImport,
 } as any)
 const authenticationAccountVerificationRoute =
@@ -131,14 +127,9 @@ const cookOrdersCookOrdersRoute = cookOrdersCookOrdersRouteImport.update({
   path: '/cookOrders',
   getParentRoute: () => rootRouteImport,
 } as any)
-const dashboardDashboardRoute = dashboardDashboardRouteImport.update({
-  id: '/(dashboard)/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const dashboardDashboardCookRoute = dashboardDashboardCookRouteImport.update({
-  id: '/(dashboard)/dashboardCook',
-  path: '/dashboardCook',
+const dashboardDashboardAdminRoute = dashboardDashboardAdminRouteImport.update({
+  id: '/(dashboard)/dashboardAdmin',
+  path: '/dashboardAdmin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const dashboardDashboardWaiterRoute =
@@ -147,12 +138,28 @@ const dashboardDashboardWaiterRoute =
     path: '/dashboardWaiter',
     getParentRoute: () => rootRouteImport,
   } as any)
+const dashboardSalesReportRoute = dashboardSalesReportRouteImport.update({
+  id: '/(dashboard)/salesReport',
+  path: '/salesReport',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const historySalesHistorySalesRoute =
+  historySalesHistorySalesRouteImport.update({
+    id: '/(historySales)/historySales',
+    path: '/historySales',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const issuerInformationIssuerInformationRoute =
   issuerInformationIssuerInformationRouteImport.update({
     id: '/(issuerInformation)/issuerInformation',
     path: '/issuerInformation',
     getParentRoute: () => rootRouteImport,
   } as any)
+const menuDiscountProductsRoute = menuDiscountProductsRouteImport.update({
+  id: '/(menu)/discountProducts',
+  path: '/discountProducts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const menuAdminCategoryFormRoute = menuAdminCategoryFormRouteImport.update({
   id: '/(menuAdmin)/categoryForm',
   path: '/categoryForm',
@@ -262,7 +269,6 @@ const waiterOrdersWaiterOrdersRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/menu': typeof MenuRoute
   '/accountVerification': typeof authenticationAccountVerificationRoute
   '/forgotPassword': typeof authenticationForgotPasswordRoute
   '/login': typeof authenticationLoginRoute
@@ -276,10 +282,12 @@ export interface FileRoutesByFullPath {
   '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
-  '/dashboard': typeof dashboardDashboardRoute
-  '/dashboardCook': typeof dashboardDashboardCookRoute
+  '/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/salesReport': typeof dashboardSalesReportRoute
+  '/historySales': typeof historySalesHistorySalesRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
+  '/discountProducts': typeof menuDiscountProductsRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
   '/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/customDishForm': typeof menuAdminCustomDishFormRoute
@@ -303,7 +311,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/menu': typeof MenuRoute
   '/accountVerification': typeof authenticationAccountVerificationRoute
   '/forgotPassword': typeof authenticationForgotPasswordRoute
   '/login': typeof authenticationLoginRoute
@@ -317,10 +324,12 @@ export interface FileRoutesByTo {
   '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
-  '/dashboard': typeof dashboardDashboardRoute
-  '/dashboardCook': typeof dashboardDashboardCookRoute
+  '/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/salesReport': typeof dashboardSalesReportRoute
+  '/historySales': typeof historySalesHistorySalesRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
+  '/discountProducts': typeof menuDiscountProductsRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
   '/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/customDishForm': typeof menuAdminCustomDishFormRoute
@@ -345,7 +354,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/menu': typeof MenuRoute
   '/(authentication)/accountVerification': typeof authenticationAccountVerificationRoute
   '/(authentication)/forgotPassword': typeof authenticationForgotPasswordRoute
   '/(authentication)/login': typeof authenticationLoginRoute
@@ -359,10 +367,12 @@ export interface FileRoutesById {
   '/(clientOrders)/orderStatus': typeof clientOrdersOrderStatusRoute
   '/(clientOrders)/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/(cookOrders)/cookOrders': typeof cookOrdersCookOrdersRoute
-  '/(dashboard)/dashboard': typeof dashboardDashboardRoute
-  '/(dashboard)/dashboardCook': typeof dashboardDashboardCookRoute
+  '/(dashboard)/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/(dashboard)/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/(dashboard)/salesReport': typeof dashboardSalesReportRoute
+  '/(historySales)/historySales': typeof historySalesHistorySalesRoute
   '/(issuerInformation)/issuerInformation': typeof issuerInformationIssuerInformationRoute
+  '/(menu)/discountProducts': typeof menuDiscountProductsRoute
   '/(menuAdmin)/categoryForm': typeof menuAdminCategoryFormRoute
   '/(menuAdmin)/categoryManagement': typeof menuAdminCategoryManagementRoute
   '/(menuAdmin)/customDishForm': typeof menuAdminCustomDishFormRoute
@@ -388,7 +398,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/menu'
     | '/accountVerification'
     | '/forgotPassword'
     | '/login'
@@ -402,10 +411,12 @@ export interface FileRouteTypes {
     | '/orderStatus'
     | '/reviewPlate'
     | '/cookOrders'
-    | '/dashboard'
-    | '/dashboardCook'
+    | '/dashboardAdmin'
     | '/dashboardWaiter'
+    | '/salesReport'
+    | '/historySales'
     | '/issuerInformation'
+    | '/discountProducts'
     | '/categoryForm'
     | '/categoryManagement'
     | '/customDishForm'
@@ -429,7 +440,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/menu'
     | '/accountVerification'
     | '/forgotPassword'
     | '/login'
@@ -443,10 +453,12 @@ export interface FileRouteTypes {
     | '/orderStatus'
     | '/reviewPlate'
     | '/cookOrders'
-    | '/dashboard'
-    | '/dashboardCook'
+    | '/dashboardAdmin'
     | '/dashboardWaiter'
+    | '/salesReport'
+    | '/historySales'
     | '/issuerInformation'
+    | '/discountProducts'
     | '/categoryForm'
     | '/categoryManagement'
     | '/customDishForm'
@@ -470,7 +482,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/menu'
     | '/(authentication)/accountVerification'
     | '/(authentication)/forgotPassword'
     | '/(authentication)/login'
@@ -484,10 +495,12 @@ export interface FileRouteTypes {
     | '/(clientOrders)/orderStatus'
     | '/(clientOrders)/reviewPlate'
     | '/(cookOrders)/cookOrders'
-    | '/(dashboard)/dashboard'
-    | '/(dashboard)/dashboardCook'
+    | '/(dashboard)/dashboardAdmin'
     | '/(dashboard)/dashboardWaiter'
+    | '/(dashboard)/salesReport'
+    | '/(historySales)/historySales'
     | '/(issuerInformation)/issuerInformation'
+    | '/(menu)/discountProducts'
     | '/(menuAdmin)/categoryForm'
     | '/(menuAdmin)/categoryManagement'
     | '/(menuAdmin)/customDishForm'
@@ -512,7 +525,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  MenuRoute: typeof MenuRoute
   authenticationAccountVerificationRoute: typeof authenticationAccountVerificationRoute
   authenticationForgotPasswordRoute: typeof authenticationForgotPasswordRoute
   authenticationLoginRoute: typeof authenticationLoginRoute
@@ -526,10 +538,12 @@ export interface RootRouteChildren {
   clientOrdersOrderStatusRoute: typeof clientOrdersOrderStatusRoute
   clientOrdersReviewPlateRoute: typeof clientOrdersReviewPlateRoute
   cookOrdersCookOrdersRoute: typeof cookOrdersCookOrdersRoute
-  dashboardDashboardRoute: typeof dashboardDashboardRoute
-  dashboardDashboardCookRoute: typeof dashboardDashboardCookRoute
+  dashboardDashboardAdminRoute: typeof dashboardDashboardAdminRoute
   dashboardDashboardWaiterRoute: typeof dashboardDashboardWaiterRoute
+  dashboardSalesReportRoute: typeof dashboardSalesReportRoute
+  historySalesHistorySalesRoute: typeof historySalesHistorySalesRoute
   issuerInformationIssuerInformationRoute: typeof issuerInformationIssuerInformationRoute
+  menuDiscountProductsRoute: typeof menuDiscountProductsRoute
   menuAdminCategoryFormRoute: typeof menuAdminCategoryFormRoute
   menuAdminCategoryManagementRoute: typeof menuAdminCategoryManagementRoute
   menuAdminCustomDishFormRoute: typeof menuAdminCustomDishFormRoute
@@ -559,13 +573,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/menu': {
-      id: '/menu'
-      path: '/menu'
-      fullPath: '/menu'
-      preLoaderRoute: typeof MenuRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(authentication)/accountVerification': {
@@ -659,18 +666,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof cookOrdersCookOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(dashboard)/dashboard': {
-      id: '/(dashboard)/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof dashboardDashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(dashboard)/dashboardCook': {
-      id: '/(dashboard)/dashboardCook'
-      path: '/dashboardCook'
-      fullPath: '/dashboardCook'
-      preLoaderRoute: typeof dashboardDashboardCookRouteImport
+    '/(dashboard)/dashboardAdmin': {
+      id: '/(dashboard)/dashboardAdmin'
+      path: '/dashboardAdmin'
+      fullPath: '/dashboardAdmin'
+      preLoaderRoute: typeof dashboardDashboardAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(dashboard)/dashboardWaiter': {
@@ -680,11 +680,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardDashboardWaiterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(dashboard)/salesReport': {
+      id: '/(dashboard)/salesReport'
+      path: '/salesReport'
+      fullPath: '/salesReport'
+      preLoaderRoute: typeof dashboardSalesReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(historySales)/historySales': {
+      id: '/(historySales)/historySales'
+      path: '/historySales'
+      fullPath: '/historySales'
+      preLoaderRoute: typeof historySalesHistorySalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(issuerInformation)/issuerInformation': {
       id: '/(issuerInformation)/issuerInformation'
       path: '/issuerInformation'
       fullPath: '/issuerInformation'
       preLoaderRoute: typeof issuerInformationIssuerInformationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menu)/discountProducts': {
+      id: '/(menu)/discountProducts'
+      path: '/discountProducts'
+      fullPath: '/discountProducts'
+      preLoaderRoute: typeof menuDiscountProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(menuAdmin)/categoryForm': {
@@ -832,7 +853,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  MenuRoute: MenuRoute,
   authenticationAccountVerificationRoute:
     authenticationAccountVerificationRoute,
   authenticationForgotPasswordRoute: authenticationForgotPasswordRoute,
@@ -847,11 +867,13 @@ const rootRouteChildren: RootRouteChildren = {
   clientOrdersOrderStatusRoute: clientOrdersOrderStatusRoute,
   clientOrdersReviewPlateRoute: clientOrdersReviewPlateRoute,
   cookOrdersCookOrdersRoute: cookOrdersCookOrdersRoute,
-  dashboardDashboardRoute: dashboardDashboardRoute,
-  dashboardDashboardCookRoute: dashboardDashboardCookRoute,
+  dashboardDashboardAdminRoute: dashboardDashboardAdminRoute,
   dashboardDashboardWaiterRoute: dashboardDashboardWaiterRoute,
+  dashboardSalesReportRoute: dashboardSalesReportRoute,
+  historySalesHistorySalesRoute: historySalesHistorySalesRoute,
   issuerInformationIssuerInformationRoute:
     issuerInformationIssuerInformationRoute,
+  menuDiscountProductsRoute: menuDiscountProductsRoute,
   menuAdminCategoryFormRoute: menuAdminCategoryFormRoute,
   menuAdminCategoryManagementRoute: menuAdminCategoryManagementRoute,
   menuAdminCustomDishFormRoute: menuAdminCustomDishFormRoute,
