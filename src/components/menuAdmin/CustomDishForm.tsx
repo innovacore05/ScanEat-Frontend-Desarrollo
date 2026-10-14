@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   createCustomDish,
@@ -23,6 +23,7 @@ interface CustomDishFormProps {
 }
 
 function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
+  const navigate = useNavigate();
   const isEditMode = mode === "edit" && Boolean(productId);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -438,34 +439,73 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
 
   return (
     <DashboardLayoutAdmin>
-      {successMessage && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="success-dialog-title"
+      
+{successMessage && (
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="success-dialog-title"
+  >
+    <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl">
+      <h2
+        id="success-dialog-title"
+        className="text-lg font-bold text-mint-darker"
+      >
+        ¡Listo!
+      </h2>
+
+      <p className="mt-2 text-sm text-text-primary">
+        {isEditMode
+          ? "Platillo actualizado correctamente."
+          : "Platillo guardado correctamente."}
+      </p>
+
+      {isEditMode ? (
+        <button
+          type="button"
+          onClick={() => {
+            setSuccessMessage(null);
+            void navigate({ to: "/menuManagment" });
+          }}
+          className="mt-6 w-30 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
         >
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl">
-            <h2 id="success-dialog-title" className="text-lg font-bold text-mint-darker">
-              ¡Listo!
-            </h2>
-            <p className="mt-2 text-sm text-text-primary">{successMessage}</p>
-            <button
-              type="button"
-              onClick={() => setSuccessMessage(null)}
-              className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
-            >
-              Aceptar
-            </button>
-          </div>
+          Aceptar
+        </button>
+      ) : (
+        <div className="flex flex-col gap-3 sm:flex-row justify-center">
+          <button
+            type="button"
+            onClick={() => {
+              setSuccessMessage(null);
+            }}
+            className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
+          >
+            Añadir otro platillo
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setSuccessMessage(null);
+              void navigate({ to: "/menuManagment" });
+            }}
+            className=" mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
+          >
+            Volver al menú
+          </button>
         </div>
       )}
+    </div>
+  </div>
+)}
+
       <main className="min-h-screen bg-brand-white px-8 py-8">
         {/* Celular */}
         <section className="lg:hidden">
           <div className="flex items-center gap-2">
             <Link
-              to="/dashboardAdmin"
+              to="/menuManagment"
               className="flex items-center gap-2 text-mint-dark"
             >
               <HiArrowLeft className="h-6 w-6" />
@@ -523,13 +563,13 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
               />
 
               {/* Input Description*/}
-              <input
+              <textarea
                 id="description"
-                type="text"
                 placeholder="Descripción del platillo"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
+                rows={3}
+                className="mt-5 w-full resize-none overflow-y-auto rounded-lg border border-border px-4 py-1.5 text-base font-normal text-black focus:border-2 focus:border-brown focus:outline-none"
               />
 
               {/* Input Price*/}
@@ -539,7 +579,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                 placeholder="Precio del platillo"
                 value={price}
                 onChange={(event) => setPrice(event.target.value)}
-                className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
+                className="mt-4 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
               />
 
               {/* Input Category son varias en formato desplegable*/}
@@ -825,12 +865,13 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                 className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
               />
 
-              <input
+              <textarea
                 id="description"
                 placeholder="Descripcion del platillo"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-4 focus:border-2 focus:border-brown focus:outline-none"
+                rows={4}
+                className="w-full resize-none overflow-y-auto rounded-lg border border-border px-4 py-3 text-base font-normal text-black focus:border-2 focus:border-brown focus:outline-none"
               />
 
               <input
