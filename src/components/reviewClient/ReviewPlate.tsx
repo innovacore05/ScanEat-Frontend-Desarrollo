@@ -128,21 +128,61 @@ function ReviewPlate({ orderId, tableId }: ReviewPlateProps) {
      
       setIsSuccess(true);
 
-    } catch (submitError) {
+            } catch (submitError) {
       console.error("No se pudieron guardar las reseñas:", submitError);
 
-      setError(
-        submitError instanceof Error
+      const message =
+        submitError &&
+        typeof submitError === "object" &&
+        "message" in submitError &&
+        typeof submitError.message === "string"
           ? submitError.message
-          : "No se pudieron guardar las reseñas.",
+          : "No se pudieron guardar las reseñas.";
+
+      const rejectedReviews =
+        submitError &&
+        typeof submitError === "object" &&
+        "rejectedReviews" in submitError &&
+        Array.isArray(submitError.rejectedReviews)
+          ? submitError.rejectedReviews
+          : [];
+
+      const rejectionText = rejectedReviews
+        .map((item) => {
+          if (
+            item &&
+            typeof item === "object" &&
+            "detailId" in item &&
+            "reason" in item &&
+            typeof item.detailId === "number" &&
+            typeof item.reason === "string"
+          ) {
+            const fields: Array<"name" | "comment"> =
+              "fields" in item && Array.isArray(item.fields)
+                ? item.fields.filter(
+                    (field: unknown): field is "name" | "comment" =>
+                      field === "name" || field === "comment",
+                  )
+                : [];
+            const labels = fields
+              .map((field) => (field === "name" ? "nombre" : "comentario"))
+              .join(" y ");
+            const fieldLabel = labels || "reseña";
+            return `Revisa el ${fieldLabel} de la reseña. La razón: ${item.reason}`;
+          }
+
+          return null;
+        })
+        .filter((value): value is string => value !== null)
+        .join(" ");
+
+      setError(
+        rejectionText ? `${message} ${rejectionText}` : message,
       );
     } finally {
       setIsSubmitting(false);
     }
   };
-
-
-
 
 
   if (isLoading) {
@@ -289,6 +329,7 @@ if (isSuccess) {
                         <textarea
                           id={`name-${product.detailId}`}
                           value={review.name}
+                          maxLength={80}
                           onChange={(event) =>
                             updateReview(product.detailId, {
                               name: event.target.value,
