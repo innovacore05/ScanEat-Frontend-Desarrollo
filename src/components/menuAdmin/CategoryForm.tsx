@@ -270,7 +270,7 @@ const [fiscalType,setFiscalType]=useState<FiscalType|"">("");
                         <button
                             type="button"
                             onClick={handleCreateCategory}
-                            disabled={isCreating}
+                            disabled={isCreating||loadingCategory}
                             className="mt-8 rounded-lg bg-mint-dark px-6 py-3 text-base font-bold text-white transition  hover:bg-mint-darker disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {isEditMode ? "Guardar cambios" : "Crear categoría"}

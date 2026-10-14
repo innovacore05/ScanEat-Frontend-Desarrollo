@@ -5,9 +5,11 @@ import { getOrders } from "../../services/orderService";
 import { logout } from "../../services/authService";
 import { LuLogOut } from "react-icons/lu";
 import { Link } from "@tanstack/react-router";
+import Skeleton from "../shared/Skeleton";
 
 function CashierOrders (){
 const [orders,setOrders]=useState<Order[]>([]);
+const [isLoading,setIsLoading]=useState(true);
 
 useEffect(()=>{
     const loadOrders =async ()=>{
@@ -16,6 +18,8 @@ useEffect(()=>{
        setOrders(data);
         }catch(error){
         console.error("Error caragdno órdenes:", error);
+        } finally {
+        setIsLoading(false);
         }
     };
     loadOrders();
@@ -47,7 +51,11 @@ useEffect(()=>{
                     </p>
 
                     <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-                        {orders.map((order) => (
+                        {isLoading ? (
+                            Array.from({ length: 4 }, (_, index) => (
+                                <Skeleton key={index} className="h-56 w-full rounded-2xl" />
+                            ))
+                        ) : orders.map((order) => (
                             <OrderCard
                                 key={order.orderId}
                                 order={order}

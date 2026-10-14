@@ -220,7 +220,10 @@ function DishCard({
 						{name}
 					</h2>
 
-					<p className="mt-1 text-sm text-text-primary">
+					<p
+						className={`mt-1 text-sm text-text-primary" ${
+							isDetailView ? "" : "line-clamp-2"
+						}`}>
 						{description}
 					</p>
 

@@ -3,6 +3,7 @@ import {
   getSalesAnalytics,
   type SalesAnalytics,
 } from "../../services/analyticsService";
+import Skeleton from "../shared/Skeleton";
 
 function FavoritesToday() {
   const [topProducts, setTopProducts] = useState<
@@ -40,9 +41,11 @@ function FavoritesToday() {
       </h2>
 
       {loading ? (
-        <p className="text-sm text-gray-500">
-          Cargando productos...
-        </p>
+        <div className="space-y-3">
+          {Array.from({ length: 3 }, (_, index) => (
+            <Skeleton key={index} className="h-8 w-full rounded-lg" />
+          ))}
+        </div>
       ) : error ? (
         <p className="text-sm text-red-500">
           No se pudieron cargar los productos.

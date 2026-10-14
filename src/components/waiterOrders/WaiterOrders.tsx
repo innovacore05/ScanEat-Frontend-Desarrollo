@@ -8,6 +8,7 @@ import OrderCard from "../Orders/OrderCard";
 import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
+import Skeleton from "../shared/Skeleton";
 
 function WaiterOrders() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,8 +17,10 @@ function WaiterOrders() {
   );
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
 
-  const loadOrders = useCallback(async () => {
+  const loadOrders = useCallback(async (showLoading = false) => {
+    if (showLoading) setIsLoadingOrders(true);
     try {
       const backendOrders = await getOrders();
       setOrders(backendOrders);
@@ -31,11 +34,13 @@ function WaiterOrders() {
     } catch (error) {
       console.error("No se pudieron cargar los pedidos:", error);
       setOrders([]);
+    } finally {
+      if (showLoading) setIsLoadingOrders(false);
     }
   }, []);
 
   useEffect(() => {
-    void loadOrders();
+    void loadOrders(true);
 
     const intervalId = window.setInterval(() => {
       void loadOrders();
@@ -105,6 +110,7 @@ function WaiterOrders() {
                   setSearchTerm("");
                 }}
                 disabled={!!searchTerm}
+                isLoading={isLoadingOrders}
               />
             </div>
 
@@ -113,7 +119,9 @@ function WaiterOrders() {
             </p>
 
             <div className="flex flex-col gap-8 pb-20">
-              {filteredOrders.map((order) => (
+              {isLoadingOrders ? Array.from({ length: 3 }, (_, index) => (
+                <Skeleton key={index} className="h-44 w-full rounded-2xl" />
+              )) : filteredOrders.map((order) => (
                 <OrderCard
                   key={order.orderId}
                   order={order}
@@ -147,13 +155,16 @@ function WaiterOrders() {
                 setSearchTerm("");
               }}
               disabled={!!searchTerm}
+              isLoading={isLoadingOrders}
             />
           </div>
 
           <div className="mt-8 grid grid-cols-[minmax(0,612px)_minmax(280px,1fr)] gap-6">
             {/* Pedidos */}
             <div className="flex flex-col gap-12">
-              {filteredOrders.map((order) => (
+              {isLoadingOrders ? Array.from({ length: 4 }, (_, index) => (
+                <Skeleton key={index} className="h-44 w-full rounded-2xl" />
+              )) : filteredOrders.map((order) => (
                 <OrderCard
                   key={order.orderId}
                   order={order}
@@ -165,7 +176,9 @@ function WaiterOrders() {
             {/* Detalles */}
             <div>
               <p className="pb-4 text-xl text-text-primary font-bold ">Orden actual</p>
-              {orderForDetails ? (
+              {isLoadingOrders ? (
+                <Skeleton className="min-h-80 w-full rounded-4xl" />
+              ) : orderForDetails ? (
                 <OrderDetails
                   order={orderForDetails}
                   embedded

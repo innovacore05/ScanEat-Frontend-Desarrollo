@@ -28,11 +28,31 @@ const crc = (value: string | number) =>
     maximumFractionDigits: 2,
   })}`;
 
-const row = (label: string, value: string, className = "") =>
-  `<div class="r ${className}">
+
+const num = (value: string | number) =>
+  Number(value).toLocaleString("es-CR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+const row = (label: string, value: string) =>
+  `<div class="r">
     <span>${esc(label)}</span>
-    <span>${esc(value)}</span>
+    <span class="v">${esc(value)}</span>
   </div>`;
+
+// Fila de totales: etiqueta | C | monto
+const totalRow = (label: string, value: string, className = "") =>
+  `<div class="t ${className}">
+    <span class="tl">${esc(label)}</span>
+    <span>C</span>
+    <span class="ta">${esc(value)}</span>
+  </div>`;
+
+// Titulo de seccion con linea punteada que se extiende (SU PAGO :)
+const section = (label: string) => `<div class="sec">${esc(label)}</div>`;
+
+const divider = `<div class="line"></div>`;
 
 function buildHtml(
   receipt: PayOrderResponse,
@@ -48,11 +68,48 @@ function buildHtml(
   });
 
   const payment = receipt.payment;
+  const isCash = payment.method === "cash";
 
   const formatRate = (rate: number) =>
-    `${new Intl.NumberFormat("es-CR", {
-      maximumFractionDigits: 2,
-    }).format(rate)}%`;
+    `${new Intl.NumberFormat("es-CR", { maximumFractionDigits: 2 }).format(rate)}%`;
+
+  const linesHtml = receipt.lines
+    .map((line) => {
+      const gross = Number(line.unitPrice) * line.quantity;
+      const discountPct =
+        Number(line.discount) > 0 && gross > 0
+          ? (Number(line.discount) / gross) * 100
+          : 0;
+
+      return `
+      <div class="item">
+        <div class="item-name">${esc(line.detail)}</div>
+        ${
+          discountPct > 0
+            ? `<div class="item-desc">Desc: ${formatRate(discountPct)}</div>`
+            : ""
+        }
+        <div class="item-calc">
+          <span>${line.quantity}</span>
+          <span class="n">${num(line.unitPrice)}</span>
+          <span class="n">${num(line.subtotal)}</span>
+          <span class="n">iva${formatRate(Number(line.ivaRate))}</span>
+        </div>
+      </div>`;
+    })
+    .join("");
+
+const ivaByRate = new Map<number, number>();
+for (const { rate, amount } of receipt.taxSummary) {
+  const key = Number(rate);
+  ivaByRate.set(key, (ivaByRate.get(key) ?? 0) + Number(amount));
+}
+const ivaRows = [...ivaByRate.entries()]
+  .sort(([a], [b]) => a - b)
+  .map(([rate, amount]) => totalRow(`IVA ${formatRate(rate)}`, num(amount)))
+  .join("");
+
+
 
   return `<!doctype html>
 <html>
@@ -74,20 +131,16 @@ function buildHtml(
 
   body {
     box-sizing: border-box;
-    padding: 4mm;
+    padding: 6mm 5mm 12mm;
     color: #000;
-    font: 12px/1.35 "Courier New", monospace;
+    font: 12px/1.5 "Courier New", monospace;
   }
 
-  .c {
-    text-align: center;
-  }
+  .c { text-align: center; }
+  .b { font-weight: 700; }
 
-  .b {
-    font-weight: 700;
-  }
-
-  .logo-container {
+  /* Emisor */
+  .header {
     text-align: center;
     margin-bottom: 4mm;
   }
@@ -97,53 +150,112 @@ function buildHtml(
     width: 30mm;
     max-height: 25mm;
     object-fit: contain;
-    margin: 0 auto;
+    margin: 0 auto 4mm;
   }
 
+  .header .name {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 2mm;
+  }
+
+  .header div { margin: 1mm 0; }
+
+  /* Separadores */
+  .line {
+    border-top: 1px dashed #000;
+    margin: 4mm 0;
+  }
+
+  .title {
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 2mm;
+  }
+
+  /* Datos del comprobante */
   .r {
     display: flex;
     justify-content: space-between;
-    gap: 8px;
+    gap: 3mm;
+    padding: 0.8mm 0;
   }
 
-  .big {
-    font-size: 16px;
-    font-weight: 700;
+  .r .v {
+    text-align: right;
+    word-break: break-all;
+  }
+
+  /* Detalle de pedido */
+  .items-head {
+    margin-bottom: 2mm;
   }
 
   .item {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 7mm 15mm 18mm;
-    gap: 2px;
-    align-items: start;
+    padding: 2mm 0;
   }
 
-  .item span:not(:first-child) {
-    text-align: right;
-  }
-
-  .item-header {
+  .item-name {
     font-weight: 700;
+    word-break: break-word;
+  }
+
+  .item-desc {
+    margin-top: 0.5mm;
+  }
+
+  .item-calc {
+    display: grid;
+    grid-template-columns: 6mm 1fr 1fr 17mm;
+    gap: 1.5mm;
+    margin-top: 1mm;
+  }
+
+  .item-calc .n { text-align: right; }
+
+  /* Totales: etiqueta | C | monto */
+  .t {
+    display: grid;
+    grid-template-columns: 1fr 6mm auto;
+    gap: 2mm;
+    padding: 1mm 0;
+    text-transform: uppercase;
+  }
+
+  .t .ta { text-align: right; }
+
+  .t.big {
+    font-size: 15px;
+    font-weight: 700;
+    padding: 1.5mm 0;
+  }
+
+  /* Titulo de seccion con linea punteada (SU PAGO :) */
+  .sec {
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+    margin-top: 3mm;
+    text-transform: uppercase;
+  }
+
+  .sec::after {
+    content: "";
+    flex: 1;
     border-bottom: 1px dashed #000;
-    padding-bottom: 3px;
-    margin-bottom: 4px;
   }
 
-  .rate {
-    display: block;
-    font-size: 10px;
+  .legend {
+    text-align: center;
+    margin-top: 8mm;
+    font-size: 11px;
   }
 
-  .old {
-    display: block;
-    font-size: 10px;
-    text-decoration: line-through;
-  }
-
-  hr {
-    border: 0;
-    border-top: 1px dashed #000;
-    margin: 6px 0;
+  .thanks {
+    text-align: center;
+    margin-top: 4mm;
+    font-weight: 700;
   }
 </style>
 
@@ -151,87 +263,55 @@ function buildHtml(
 
 <body>
 
+  <!-- Emisor -->
+  <div class="header">
+    ${logoUrl ? `<img src="${esc(logoUrl)}" class="logo" alt="Logo" />` : ""}
+    <div class="name">${esc(businessName || "Nombre del negocio")}</div>
+    <div>Cédula jurídica x-xxx-xxxxx</div>
+    <div>Dirección,</div>
+    <div>Tel 8888-8888</div>
+  </div>
+
+  ${divider}
+
+  <!-- Datos del comprobante -->
+  <div class="title">Tiquete Electrónico</div>
+  ${row("Consecutivo", "Pendiente")}
+  ${row("Fecha", date)}
+  ${row("Clave numérica", "Pendiente")}
+  ${row("Condición de venta", "Contado")}
+  ${row("Cliente", "Cliente de contado")}
+
+  ${divider}
+
+  <!-- Detalle -->
+  <div class="items-head">Cantidad - Precio - SubTotal</div>
+  ${linesHtml}
+
+  ${divider}
+
+  <!-- Totales -->
+  ${totalRow("Subtotal:", num(receipt.totals.totalNetSale))}
+  ${totalRow("Descuento:", num(receipt.totals.totalDiscount))}
+  ${ivaRows}
+  ${totalRow("Total:", num(receipt.totals.totalSale), "big")}
+
+  <!-- Pago -->
+  ${section("Su pago :")}
+  ${totalRow(
+    METHOD_LABELS[payment.method],
+    num(isCash ? (payment.amountTendered ?? 0) : receipt.totals.totalSale),
+  )}
+  ${payment.reference ? row("Comprobante", payment.reference) : ""}
+
   ${
-    logoUrl
-      ? `
-    <div class="logo-container">
-      <img src="${esc(logoUrl)}" class="logo" alt="Logo" />
-    </div>
-  `
+    isCash
+      ? section("Su vuelto :") + totalRow("Efectivo", num(payment.change ?? 0))
       : ""
   }
 
-  <div class="c b">${esc(businessName || "Nombre del negocio")}</div>
-  <div class="c">Cédula jurídica x-xxx-xxxxx</div>
-  <div class="c">Dirección,</div>
-  <div class="c">Tel 8888-8888</div>
-
-  <hr>
-
-  <div class="c b">TICKET</div>
-
-  ${row("Consecutivo", "Pendiente")}
-  ${row("Fecha de emisión", date)}
-  ${row("Clave numérica", "Pendiente")}
-  ${row("Condición de venta", "Contado")}
-
-  <hr>
-
-  ${row("Cliente", "Cliente de contado")}
-
-  <hr>
-
-  <div class="item item-header">
-    <span>Producto</span>
-    <span>Cant.</span>
-    <span>P. unit.</span>
-    <span>Total c/IVA</span>
-  </div>
-
-  ${receipt.lines
-    .map(
-      (line) => `
-      <div class="item">
-        <span>
-          ${esc(line.detail)}
-          <small class="rate">IVA ${formatRate(Number(line.ivaRate))}</small>
-        </span>
-        <span>${line.quantity}</span>
-        <span>${
-          Number(line.discount) > 0
-            ? `<small class="old">${crc(line.unitPrice)}</small>${crc(Number(line.subtotal) / line.quantity)}`
-            : crc(line.unitPrice)
-        }</span>
-        <span>${crc(line.total)}</span>
-      </div>
-    `,
-    )
-    .join("")}
-
-  <hr>
-
-  ${row("Subtotal (sin IVA)", crc(receipt.totals.totalNetSale))}
-
-  ${receipt.taxSummary
-    .map(({ rate, amount }) =>
-      row(`IVA (${formatRate(rate)})`, crc(amount)),
-    )
-    .join("")}
-
-  ${row("TOTAL", crc(receipt.totals.totalSale), "big")}
-
-  <hr>
-
-  ${row("Medio de pago", METHOD_LABELS[payment.method])}
-  ${payment.reference ? row("Comprobante", payment.reference) : ""}
-  ${payment.amountTendered ? row("Pagó con", crc(payment.amountTendered)) : ""}
-
-  <!-- CAMBIO: mostrar cambio si el backend lo devuelve, incluso si es ₡0.00. -->
-  ${payment.change !== null ? row("Cambio", crc(payment.change)) : ""}
-
-  <div class="c" style="margin-top: 8px">
-    ¡Gracias por su visita!
-  </div>
+  <div class="legend">iva = impuestos, C = Colones</div>
+  <div class="thanks">¡Gracias por su visita!</div>
 
 </body>
 </html>`;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Skeleton from "../shared/Skeleton";
 import { Link, useSearch, useNavigate } from "@tanstack/react-router";
 
 import { RestaurantLogo } from "../theme/RestaurantLogo";
@@ -115,7 +116,62 @@ function PaymentMethod() {
   };
 
   if (loading) {
-    return <p>Cargando recibo...</p>;
+    return (
+      <main className="min-h-screen bg-white">
+        <div className="flex h-30 items-center justify-between gap-4 border-b-4 border-mint-dark bg-neutral-50 px-4 py-4 sm:px-8">
+          <RestaurantLogo className="h-16 w-16" />
+        </div>
+        <section className="px-6 py-8 lg:px-8">
+          <div className="mx-auto max-w-300">
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-8 w-8 rounded-full" />
+              <Skeleton className="h-10 w-96 max-w-full" />
+            </div>
+
+            <Skeleton className="mt-6 h-14 w-74 max-w-full rounded-xl" />
+
+            <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              <div className="rounded-xl border border-border p-6 lg:p-8">
+                <Skeleton className="mx-auto h-9 w-28" />
+                <Skeleton className="mt-8 h-6 w-44" />
+
+                <div className="mt-6 space-y-5">
+                  {Array.from({ length: 4 }, (_, index) => (
+                    <div key={index} className="flex items-center justify-between gap-4">
+                      <div className="flex flex-1 flex-col gap-2">
+                        <Skeleton className="h-4 w-40" />
+                        <Skeleton className="h-3 w-20" />
+                      </div>
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 border-t border-border pt-4">
+                  <div className="space-y-3">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <div className="border-t border-border pt-3">
+                      <Skeleton className="h-6 w-full" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-end">
+                  <Skeleton className="h-9 w-9 rounded-full" />
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center justify-center gap-5 px-2 lg:px-8">
+                <Skeleton className="h-14 w-full max-w-72 rounded-xl" />
+                <Skeleton className="h-14 w-full max-w-72 rounded-xl" />
+                <Skeleton className="h-14 w-full max-w-72 rounded-xl" />
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    );
   }
 
   if (!order) {
@@ -201,13 +257,16 @@ function PaymentMethod() {
                   <p>Subtotal (sin IVA)</p>
                                    <p className="tracking-wider">{formatCRC(order.totals.totalNetSale)}</p>
                 </div>
-
+<div className="flex items-center justify-between">
+                  <p>Descuento</p>
+                                   <p className="tracking-wider">{formatCRC(order.totals.totalDiscount)}</p>
+                </div>
                   {order.taxSummary.map(({ rate, amount }) => (
                   <div
                     key={rate}
                     className="mt-2 flex items-center justify-between"
                   >
-                    <p>IVA ({rate} %)</p>
+                    <p>IVA </p>
                     <p className="tracking-wider">{formatCRC(amount)}</p>
                   </div>
                 ))}

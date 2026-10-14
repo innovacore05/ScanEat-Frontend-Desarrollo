@@ -219,7 +219,7 @@ function CheckOrder() {
                     key={item.cartItemId}
                     className="flex min-h-32 overflow-hidden rounded-2xl bg-white shadow-sm"
                   >
-                    <div className="w-32 shrink-0">
+                    <div className="w-32 h-34 shrink-0">
                       <img
                         src={item.image}
                         alt={item.name}
@@ -228,7 +228,7 @@ function CheckOrder() {
                     </div>
 
                     <div className="flex min-w-0 flex-1 flex-col justify-center px-4 py-3">
-                      <h3 className="text-base font-bold text-mint-darker">
+                      <h3 className="line-clamp-2 text-base font-bold text-mint-darker">
                         {item.name}
                       </h3>
 
@@ -437,7 +437,7 @@ function CheckOrder() {
                         key={item.cartItemId}
                         className="flex min-h-36 overflow-hidden rounded-2xl bg-white shadow-sm"
                       >
-                        <div className="w-40 shrink-0">
+                        <div className="w-40 h-40 shrink-0">
                           <img
                             src={item.image}
                             alt={item.name}
@@ -446,7 +446,7 @@ function CheckOrder() {
                         </div>
 
                         <div className="flex min-w-0 flex-1 flex-col justify-center px-6 py-4">
-                          <h3 className="text-lg font-bold text-mint-darker">
+                          <h3 className="line-clamp-2 text-lg font-bold text-mint-darker">
                             {item.name}
                           </h3>
 

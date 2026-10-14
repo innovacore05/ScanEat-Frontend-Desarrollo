@@ -11,6 +11,7 @@ import {
 } from "../../services/userService";
 import UserCard from "./UserCard";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
+import Skeleton from "../shared/Skeleton";
 
 function UsersManagement() {
   const [users, setUsers] = useState<ManagedUser[]>([]);
@@ -148,7 +149,11 @@ function UsersManagement() {
             </p>
           )}
           {isLoading && (
-            <p className="mt-8 text-text-primary">Cargando usuarios...</p>
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {Array.from({ length: 4 }, (_, index) => (
+                <Skeleton key={index} className="h-36 rounded-2xl" />
+              ))}
+            </div>
           )}
           {!isLoading && users.length === 0 && (
             <p className="mt-8 text-text-primary">

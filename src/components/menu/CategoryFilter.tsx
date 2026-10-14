@@ -21,6 +21,7 @@ import {
   GiDonut,
   GiChocolateBar,
 } from "react-icons/gi";
+import Skeleton from "../shared/Skeleton";
 
 
 //categorias asociadas a iconos
@@ -57,11 +58,13 @@ function CategoryFilter({
   selected,
   onSelect,
   disabled,
+  isLoading = false,
 }: {
   categories: Category[];
   selected: number | null;
   onSelect: (id: number | null) => void;
   disabled: boolean;
+  isLoading?: boolean;
 }) {
 
   return (
@@ -69,7 +72,11 @@ function CategoryFilter({
     <div>
       <p className="mb-3 text-base font-bold text-text-primary">Filtro</p>
       <div className="flex items-center gap-5">
-        {categories.map(({ categoryId, name, icon }) => {
+        {isLoading ? (
+          Array.from({ length: 5 }, (_, index) => (
+            <Skeleton key={index} className="h-14 w-14 rounded-2xl" />
+          ))
+        ) : categories.map(({ categoryId, name, icon }) => {
           const Icon =
   CATEGORY_ICONS[icon as keyof typeof CATEGORY_ICONS] ??
   LuUtensils;

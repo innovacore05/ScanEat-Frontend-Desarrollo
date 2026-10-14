@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { GiRoundTable } from "react-icons/gi";
 import { getOrders } from "../../services/orderService";
+import Skeleton from "../shared/Skeleton";
 
 function PendingTables() {
   const [tables, setTables] = useState<number[]>([]);
@@ -39,9 +40,11 @@ function PendingTables() {
 
       <div className="flex min-h-28 flex-col rounded-xl bg-mint-dark p-4">
         {isLoading ? (
-          <p className="flex flex-1 items-center justify-center text-center text-sm text-white">
-            Cargando mesas...
-          </p>
+          <div className="grid flex-1 grid-cols-3 items-center gap-3">
+            {Array.from({ length: 3 }, (_, index) => (
+              <Skeleton key={index} className="mx-auto h-10 w-10 rounded-full bg-white/30" />
+            ))}
+          </div>
         ) : error ? (
           <p className="flex flex-1 items-center justify-center text-center text-sm text-white">
             No se pudieron cargar las mesas.
