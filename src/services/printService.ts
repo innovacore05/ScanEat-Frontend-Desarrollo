@@ -22,11 +22,11 @@ const esc = (value: string) =>
       })[character]!,
   );
 
-const crc = (value: string | number) =>
-  `₡${Number(value).toLocaleString("es-CR", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+// const crc = (value: string | number) =>
+//   `₡${Number(value).toLocaleString("es-CR", {
+//     minimumFractionDigits: 2,
+//     maximumFractionDigits: 2,
+//   })}`;
 
 
 const num = (value: string | number) =>
