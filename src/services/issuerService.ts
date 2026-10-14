@@ -19,6 +19,27 @@ export type IssuerConfig = {
   address: string;
   environment: string;
 };
+export type TaxpayerLookup = {
+ legalName: string | null;
+  tradeName: string | null;
+  registered: boolean | null;
+  legalIdType: string;
+  canIssue: boolean | null;
+  chargesVat: boolean | null;
+  hasCommercialActivity: boolean;
+  activities: { code: string; description: string }[];
+};
+
+
+async function lookupTaxpayer(legalId: string): Promise<TaxpayerLookup> {
+  return cookieSessionClient.request<TaxpayerLookup>(
+    `/api/issuer/lookup/${encodeURIComponent(legalId)}`,
+    {
+      method: "GET",
+      fallBackMessage: "No se pudo consultar la cédula.",
+    },
+  );
+}
 
 
 export type IssuerConfigResponse = IssuerConfig &
@@ -60,4 +81,5 @@ export const issuerService = {
   get: getIssuer,
   save: saveIssuer,
   uploadCertificate,
+  lookupTaxpayer,
 };

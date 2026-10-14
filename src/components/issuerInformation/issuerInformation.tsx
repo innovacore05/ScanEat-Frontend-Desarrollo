@@ -39,7 +39,10 @@ const [certificateUploadedAt,setCertificateUploadedAt]=useState<string |null>(nu
     type: "ok" | "error";
     text: string;
   } | null>(null);
-
+const [lookingUp, setLookingUp] = useState(false);
+const [activityOptions, setActivityOptions] = useState<
+  { code: string; description: string }[]
+>([]);
 
 //hook de datos de provincia canton distrito
 const {
@@ -130,6 +133,50 @@ useEffect(() => {
     );
   }
 
+  //para busacr el contribuyente:
+  const handleLookup = async () => {
+  const id = form.legalId.trim();
+  if (!id) return;
+  setLookingUp(true);
+  setFeedback(null);
+  setActivityOptions([]);
+  try {
+    const result = await issuerService.lookupTaxpayer(id);
+    setForm((prev) => ({
+      ...prev,
+      legalName: result.legalName ?? prev.legalName,
+      tradeName: result.tradeName ?? prev.tradeName,
+      legalIdType: result.legalIdType,
+      // la principal viene primero
+      activityCode: result.activities[0]?.code ?? prev.activityCode,
+    }));
+    if (result.activities.length > 1) setActivityOptions(result.activities);
+
+    if (result.registered === false || result.canIssue === false) {
+      setFeedback({
+        type: "error",
+        text: "Hacienda indica que este contribuyente no puede emitir comprobantes. Revisá su situación en TRIBU-CR.",
+      });
+    } else if (!result.hasCommercialActivity) {
+      setFeedback({
+        type: "error",
+        text: "Esta cédula no tiene una actividad económica comercial inscrita en Hacienda. El negocio debe registrar su actividad en TRIBU-CR antes de poder emitir comprobantes.",
+      });
+    } else if (result.chargesVat === false) {
+      setFeedback({
+        type: "error",
+        text: "Este emisor es de régimen simplificado y no traslada IVA: el sistema cobra IVA en las líneas, así que habría que revisarlo antes de emitir en producción.",
+      });
+    }
+  } catch (error) {
+    setFeedback({
+      type: "error",
+      text: getErrorMessage(error, "No se pudo consultar la cédula"),
+    });
+  } finally {
+    setLookingUp(false);
+  }
+};
 
   return (
     <DashboardLayoutAdmin>
@@ -180,9 +227,16 @@ useEffect(() => {
                     className="w-full rounded-lg border border-border px-4 py-3 pr-12 text-text-primary outline-none focus:border-2 focus:border-brown"
                   />
 
-                  <div className="flex w-15 shrink-0 items-center justify-center rounded-lg border border-border p-3 text-text-primary">
-                    <IoSearch className="h-6 w-6" />
-                  </div>
+                  <button
+  type="button"
+  onClick={() => void handleLookup()}
+  disabled={lookingUp || !form.legalId.trim()}
+  aria-label="Consultar cédula en Hacienda"
+  className="flex w-15 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border p-3 text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
+>
+  <IoSearch className="h-6 w-6" />
+</button>
+
                 </div>
               </div>
             </div>
@@ -231,6 +285,23 @@ useEffect(() => {
                 onChange={handleChange}
                 className="w-full rounded-lg border border-border px-4 py-3 pr-12 text-text-primary outline-none focus:border-2 focus:border-brown"
               />
+
+              {activityOptions.length > 1 && (
+  <select
+    value={form.activityCode}
+    onChange={(e) =>
+      setForm((prev) => ({ ...prev, activityCode: e.target.value }))
+    }
+    className="mt-2 w-full rounded-lg border border-border bg-white px-4 py-3 text-text-primary"
+  >
+    <option value="">Elegí una actividad</option>
+    {activityOptions.map((a) => (
+      <option key={a.code} value={a.code}>
+        {a.code} — {a.description}
+      </option>
+    ))}
+  </select>
+)}
             </div>
           </div>
 
