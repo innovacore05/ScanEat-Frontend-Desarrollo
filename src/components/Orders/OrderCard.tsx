@@ -13,6 +13,7 @@ type OrderItem = {
 export type Order = {
   orderId: number;
   tableId: number;
+  tableUuid?: string;
   date: string;
   time: string;
   specialInstructions?: string;

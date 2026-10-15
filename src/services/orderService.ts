@@ -131,6 +131,7 @@ const mapBackendOrderToFrontend = (backendOrder: BackendOrder) => {
     orderId: backendOrder.order.orderId,
     tableId: backendOrder.table?.tableNumber ?? Number(backendOrder.order.tableId),
     date: backendOrder.order.date,
+     tableUuid: backendOrder.order.tableId,
     paidAt: backendOrder.order.paidAt,
     time: backendOrder.order.date
       ? new Date(backendOrder.order.date).toLocaleTimeString("es-CR", {
@@ -369,3 +370,24 @@ export const getOrderQuote = (payload: CreateOrderPayload) =>
     }),
     fallBackMessage: "No se pudo calcular el resumen del pedido",
   });
+
+  export type AddItemsPayload = {
+    items: Array<{
+        productId: number;
+        quantity: number;
+        selectedOptions: Record<string, string>;
+    }>;
+};
+
+export const addItemsToOrder = (
+    orderId: number,
+    payload: AddItemsPayload,
+) =>
+    cookieSessionClient.request(
+        `/api/orders/${orderId}/items`,
+        {
+            method: "POST",
+            body: JSON.stringify(payload),
+            fallBackMessage: "No se pudieron agregar los productos",
+        },
+    );

@@ -182,6 +182,7 @@ function WaiterOrders() {
                 <OrderDetails
                   order={orderForDetails}
                   embedded
+                  canAddProducts
                   onStatusChanged={loadOrders}
                 />
               ) : (

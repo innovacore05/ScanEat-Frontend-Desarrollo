@@ -1,9 +1,13 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import {
+  Link,
+  useNavigate,
+  useSearch,
+} from "@tanstack/react-router";
 import { useCart } from "./CartContext";
 import { HiArrowLeft } from "react-icons/hi";
 import { FiMinus, FiPlus, FiX } from "react-icons/fi";
 import { useEffect, useState } from "react";
-import { createOrder, getOrderQuote, type OrderQuote } from "../../services/orderService";
+import { addItemsToOrder, createOrder, getOrderQuote, type OrderQuote } from "../../services/orderService";
 import { getPublicTableNumber } from "../../services/tableService";
 
 
@@ -16,6 +20,17 @@ function CheckOrder() {
     removeFromCart,
     clearCart,
   } = useCart();
+
+  const {
+    orderId,
+    mode,
+    returnTo,
+  } = useSearch({
+    from: "/(clientOrders)/checkOrder",
+  });
+
+  const isAddingToOrder =
+    mode === "add" && orderId !== undefined;
 
   const tableId = mesaId?.trim();
   const [tableInfo, setTableInfo] = useState<{ tableId: string; tableNumber: number; } | null>(null);
@@ -34,7 +49,11 @@ function CheckOrder() {
 
   //  vuelve a cotizar cuando cambia la mesa o el carrito
   useEffect(() => {
-    if (!tableId || cartItems.length === 0) {
+    if (
+      isAddingToOrder ||
+      !tableId ||
+      cartItems.length === 0
+    ) {
       setOrderQuote(null);
       setIsQuoting(false);
       setQuoteError("");
@@ -76,7 +95,7 @@ function CheckOrder() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [tableId, cartItems]);
+  }, [tableId, cartItems, isAddingToOrder]);
 
   //_________________
 
@@ -104,9 +123,11 @@ function CheckOrder() {
 
 
   const handleCreateOrder = async () => {
-
-
-    if (isQuoting || quoteError || !orderQuote) {
+    if (
+      isQuoting ||
+      quoteError ||
+      (!isAddingToOrder && !orderQuote)
+    ) {
       return;
     }
 
@@ -122,41 +143,43 @@ function CheckOrder() {
 
     setIsSubmitting(true);
 
+    const items = cartItems.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      selectedOptions: item.selectedOptions ?? {},
+    }));
+
     try {
-      console.log("ENVIANDO ORDEN:", {
-        tableId,
-        items: cartItems.map((item) => ({
-          productId: item.productId,
-          quantity: item.quantity,
-          selectedOptions: item.selectedOptions ?? {},
-        })),
-      });
+      let resultingOrderId = orderId;
 
-      const createdOrder = await createOrder({
+      if (isAddingToOrder && orderId) {
+        await addItemsToOrder(orderId, { items });
+      } else {
+        const createdOrder = await createOrder({
+          tableId,
+          observation: specialInstructions.trim() || undefined,
+          items,
+        });
 
-        tableId,
-        observation: specialInstructions.trim() || undefined,
-        items: cartItems.map((item) => ({
-          productId: item.productId,
-          quantity: item.quantity,
-          selectedOptions: item.selectedOptions ?? {},
-        })),
-      });
+        resultingOrderId = createdOrder.order.orderId;
+
+        localStorage.setItem(
+          "currentOrderId",
+          String(resultingOrderId),
+        );
+
+        localStorage.setItem("currentOrderTableId", tableId);
+      }
 
       clearCart();
       setSpecialInstructions("");
       setIsConfirmDialogOpen(false);
 
-      localStorage.setItem(
-        "currentOrderId",
-        String(createdOrder.order.orderId),
-      );
+      if (resultingOrderId) {
+        setCreatedOrderId(resultingOrderId);
+      }
 
-      localStorage.setItem("currentOrderTableId", tableId);
-
-      setCreatedOrderId(createdOrder.order.orderId);
       setIsSuccessDialogOpen(true);
-
     } catch (error) {
       const message =
         typeof error === "object" &&
@@ -166,14 +189,52 @@ function CheckOrder() {
           ? error.message
           : "No se pudo enviar el pedido.";
 
-      if (message === "La orden de esta mesa ya está siendo procesada") {
-        return;
-      }
-
       alert(message);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const canSubmit = isAddingToOrder
+    ? cartItems.length > 0 && !isSubmitting
+    : !isQuoting &&
+    !quoteError &&
+    Boolean(orderQuote) &&
+    !isSubmitting;
+
+  const handleSuccess = () => {
+    if (createdOrderId === null) {
+      return;
+    }
+
+    setIsSuccessDialogOpen(false);
+
+    if (!isAddingToOrder) {
+      void navigate({
+        to: "/orderStatus",
+        search: {
+          orderId: createdOrderId,
+          tableId,
+        },
+      });
+
+      return;
+    }
+
+    if (returnTo === "cashier") {
+      void navigate({
+        to: "/paymentMethod",
+        search: {
+          orderId: createdOrderId,
+        },
+      });
+
+      return;
+    }
+
+    void navigate({
+      to: "/waiterOrders",
+    });
   };
 
   return (
@@ -187,7 +248,11 @@ function CheckOrder() {
           <div className="flex items-center gap-2">
             <Link
               to="/menuClient"
-              search={{ mesaId: tableId }}
+              search={{
+                mesaId: tableId,
+                orderId,
+                mode,
+              }}
               className="flex items-center gap-2 text-mint-dark"
             >
               <HiArrowLeft className="h-6 w-6" />
@@ -300,70 +365,70 @@ function CheckOrder() {
           {cartItems.length > 0 && (
             <>
               <div className="mt-8 flex flex-col gap-2 border-t border-border pt-4">
-  {isQuoting && <p>Actualizando el total…</p>}
+                {isQuoting && <p>Actualizando el total…</p>}
 
-  {quoteError && (
-    <p role="alert" className="text-red-600">
-      {quoteError}
-    </p>
-  )}
-              {orderQuote && (() => {
-                const subtotal = Number(orderQuote.totals.subtotal);
-                const subtotalBeforeDiscount = Number(
-                  orderQuote.totals.subtotalBeforeDiscount,
-                );
-                const discount = Number(orderQuote.totals.discount);
-                const hasDiscount = discount > 0;
+                {quoteError && (
+                  <p role="alert" className="text-red-600">
+                    {quoteError}
+                  </p>
+                )}
+                {orderQuote && (() => {
+                  const subtotal = Number(orderQuote.totals.subtotal);
+                  const subtotalBeforeDiscount = Number(
+                    orderQuote.totals.subtotalBeforeDiscount,
+                  );
+                  const discount = Number(orderQuote.totals.discount);
+                  const hasDiscount = discount > 0;
 
-                return (
-                  <>
-                    {hasDiscount ? (
-                      <>
+                  return (
+                    <>
+                      {hasDiscount ? (
+                        <>
+                          <div className="flex justify-between text-base">
+                            <span>Subtotal</span>
+                            <span className="line-through text-gray-500">
+                              ₡{subtotalBeforeDiscount.toLocaleString("es-CR")}
+                            </span>
+                          </div>
+
+                          <div className="flex justify-between text-base">
+                            <span>Descuento</span>
+                            <span>
+                              ₡{discount.toLocaleString("es-CR")}
+                            </span>
+                          </div>
+
+                          <div className="flex justify-between text-base font-medium">
+                            <span>Subtotal con descuento aplicado</span>
+                            <span>
+                              ₡{subtotal.toLocaleString("es-CR")}
+                            </span>
+                          </div>
+                        </>
+                      ) : (
                         <div className="flex justify-between text-base">
                           <span>Subtotal</span>
-                          <span className="line-through text-gray-500">
-                            ₡{subtotalBeforeDiscount.toLocaleString("es-CR")}
-                          </span>
+                          <span>₡{subtotal.toLocaleString("es-CR")}</span>
                         </div>
+                      )}
 
-                        <div className="flex justify-between text-base">
-                          <span>Descuento</span>
-                          <span>
-                            ₡{discount.toLocaleString("es-CR")}
-                          </span>
-                        </div>
-
-                        <div className="flex justify-between text-base font-medium">
-                          <span>Subtotal con descuento aplicado</span>
-                          <span>
-                            ₡{subtotal.toLocaleString("es-CR")}
-                          </span>
-                        </div>
-                      </>
-                    ) : (
                       <div className="flex justify-between text-base">
-                        <span>Subtotal</span>
-                        <span>₡{subtotal.toLocaleString("es-CR")}</span>
+                        <span>IVA</span>
+                        <span>
+                          ₡{Number(orderQuote.totals.tax).toLocaleString("es-CR")}
+                        </span>
                       </div>
-                    )}
 
-                    <div className="flex justify-between text-base">
-                      <span>IVA</span>
-                      <span>
-                        ₡{Number(orderQuote.totals.tax).toLocaleString("es-CR")}
-                      </span>
-                    </div>
-
-                    <div className="mt-2 flex justify-between text-xl font-bold text-mint-darker">
-                      <span>Total</span>
-                      <span>
-                        ₡{Number(orderQuote.totals.total).toLocaleString("es-CR")}
-                      </span>
-                    </div>
-                  </>
-                );
-               })()}
-</div>
+                      <div className="mt-2 flex justify-between text-xl font-bold text-mint-darker">
+                        <span>Total</span>
+                        <span>
+                          ₡{Number(orderQuote.totals.total).toLocaleString("es-CR")}
+                        </span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
 
               <div className="mt-8">
                 <label
@@ -387,10 +452,12 @@ function CheckOrder() {
               <button
                 type="button"
                 onClick={() => setIsConfirmDialogOpen(true)}
-                disabled={isQuoting || Boolean(quoteError) || !orderQuote || isSubmitting}
+                disabled={!canSubmit}
                 className="mt-6 w-full cursor-pointer rounded-2xl bg-mint-dark py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Realizar pedido
+                {isAddingToOrder
+                  ? "Agregar productos a la orden"
+                  : "Realizar pedido"}
               </button>
             </>
           )}
@@ -524,72 +591,72 @@ function CheckOrder() {
 
               {cartItems.length > 0 && (
                 <>
-                 <div className="mt-6 flex flex-col gap-2 border-t border-border pt-4">
-  {isQuoting && <p>Actualizando el total…</p>}
+                  <div className="mt-6 flex flex-col gap-2 border-t border-border pt-4">
+                    {isQuoting && <p>Actualizando el total…</p>}
 
-  {quoteError && (
-    <p role="alert" className="text-red-600">
-      {quoteError}
-    </p>
-  )}
+                    {quoteError && (
+                      <p role="alert" className="text-red-600">
+                        {quoteError}
+                      </p>
+                    )}
 
-                  {orderQuote && (() => {
-                    const subtotal = Number(orderQuote.totals.subtotal);
-                    const subtotalBeforeDiscount = Number(
-                      orderQuote.totals.subtotalBeforeDiscount,
-                    );
-                    const discount = Number(orderQuote.totals.discount);
-                    const hasDiscount = discount > 0;
+                    {orderQuote && (() => {
+                      const subtotal = Number(orderQuote.totals.subtotal);
+                      const subtotalBeforeDiscount = Number(
+                        orderQuote.totals.subtotalBeforeDiscount,
+                      );
+                      const discount = Number(orderQuote.totals.discount);
+                      const hasDiscount = discount > 0;
 
-                    return (
-                      <>
-                        {hasDiscount ? (
-                          <>
+                      return (
+                        <>
+                          {hasDiscount ? (
+                            <>
+                              <div className="flex justify-between text-base">
+                                <span>Subtotal</span>
+                                <span className="line-through text-gray-500">
+                                  ₡{subtotalBeforeDiscount.toLocaleString("es-CR")}
+                                </span>
+                              </div>
+
+                              <div className="flex justify-between text-base">
+                                <span>Descuento</span>
+                                <span>
+                                  ₡{discount.toLocaleString("es-CR")}
+                                </span>
+                              </div>
+
+                              <div className="flex justify-between text-base font-medium">
+                                <span>Subtotal con descuento aplicado</span>
+                                <span>
+                                  ₡{subtotal.toLocaleString("es-CR")}
+                                </span>
+                              </div>
+                            </>
+                          ) : (
                             <div className="flex justify-between text-base">
                               <span>Subtotal</span>
-                              <span className="line-through text-gray-500">
-                                ₡{subtotalBeforeDiscount.toLocaleString("es-CR")}
-                              </span>
+                              <span>₡{subtotal.toLocaleString("es-CR")}</span>
                             </div>
+                          )}
 
-                            <div className="flex justify-between text-base">
-                              <span>Descuento</span>
-                              <span>
-                                ₡{discount.toLocaleString("es-CR")}
-                              </span>
-                            </div>
-
-                            <div className="flex justify-between text-base font-medium">
-                              <span>Subtotal con descuento aplicado</span>
-                              <span>
-                                ₡{subtotal.toLocaleString("es-CR")}
-                              </span>
-                            </div>
-                          </>
-                        ) : (
                           <div className="flex justify-between text-base">
-                            <span>Subtotal</span>
-                            <span>₡{subtotal.toLocaleString("es-CR")}</span>
+                            <span>IVA</span>
+                            <span>
+                              ₡{Number(orderQuote.totals.tax).toLocaleString("es-CR")}
+                            </span>
                           </div>
-                        )}
 
-                        <div className="flex justify-between text-base">
-                          <span>IVA</span>
-                          <span>
-                            ₡{Number(orderQuote.totals.tax).toLocaleString("es-CR")}
-                          </span>
-                        </div>
-
-                        <div className="mt-2 flex justify-between text-xl font-bold text-mint-darker">
-                          <span>Total</span>
-                          <span>
-                            ₡{Number(orderQuote.totals.total).toLocaleString("es-CR")}
-                          </span>
-                        </div>
-                      </>
-                    );
+                          <div className="mt-2 flex justify-between text-xl font-bold text-mint-darker">
+                            <span>Total</span>
+                            <span>
+                              ₡{Number(orderQuote.totals.total).toLocaleString("es-CR")}
+                            </span>
+                          </div>
+                        </>
+                      );
                     })()}
-</div>
+                  </div>
 
                   <div className="mt-8">
                     <label
@@ -613,10 +680,12 @@ function CheckOrder() {
                   <button
                     type="button"
                     onClick={() => setIsConfirmDialogOpen(true)}
-                    disabled={isQuoting || Boolean(quoteError) || !orderQuote || isSubmitting}
+                    disabled={!canSubmit}
                     className="mt-6 w-full cursor-pointer rounded-2xl bg-mint-dark py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Realizar pedido
+                    {isAddingToOrder
+                      ? "Agregar productos a la orden"
+                      : "Realizar pedido"}
                   </button>
                 </>
               )}
@@ -644,21 +713,8 @@ function CheckOrder() {
             </p>
             <button
               type="button"
-              onClick={() => {
-                if (createdOrderId === null) {
-                  return;
-                }
-
-                setIsSuccessDialogOpen(false);
-                void navigate({
-                  to: "/orderStatus",
-                  search: {
-                    orderId: createdOrderId,
-                    tableId,
-                  },
-                });
-              }}
-              className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white hover:opacity-90"
+              onClick={handleSuccess}
+              className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white"
             >
               Aceptar
             </button>
@@ -680,17 +736,22 @@ function CheckOrder() {
               id="confirm-dialog-title"
               className="text-lg font-bold text-mint-darker"
             >
-              ¿Confirmar pedido?
+              {isAddingToOrder
+                ? "¿Agregar productos a la orden?"
+                : "¿Confirmar pedido?"}
             </h3>
 
             <p className="mt-2 text-sm text-text-primary">
-              Una vez confirmado, será enviado para su
-              preparación.
+              {isAddingToOrder
+                ? "Los productos se agregarán a la orden existente."
+                : "Una vez confirmado, será enviado para su preparación."}
             </p>
 
-            <p className="mt-2 text-sm text-red-500">
-              Solo una persona por mesa puede confirmar el pedido.
-            </p>
+            {!isAddingToOrder && (
+              <p className="mt-2 text-sm text-red-500">
+                Solo una persona por mesa puede confirmar el pedido.
+              </p>
+            )}
 
             <div className="mt-6 flex justify-end gap-3">
               <button
@@ -703,7 +764,7 @@ function CheckOrder() {
 
               <button
                 type="button"
-                disabled={isSubmitting || isQuoting || Boolean(quoteError) || !orderQuote}
+                disabled={!canSubmit}
                 onClick={() => {
                   void handleCreateOrder();
                 }}

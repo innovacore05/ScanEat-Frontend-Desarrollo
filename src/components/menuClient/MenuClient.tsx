@@ -5,7 +5,11 @@ import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
 import Skeleton from "../shared/Skeleton";
-import { Link, useSearch } from "@tanstack/react-router";
+import {
+  Link,
+  useSearch,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useCart } from "../clientOrders/CartContext";
 import { getProductReviews } from "../../services/reviewService";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
@@ -62,7 +66,7 @@ function ProductList({
             name={product.productName ?? ""}
             description={product.description ?? ""}
             price={product.price}
-            discount={ Number(product.discount ?? 0) }
+            discount={Number(product.discount ?? 0)}
             image={product.image ?? ""}
             rating={product.rating}
             isAdmin={false}
@@ -93,59 +97,65 @@ function MenuClient() {
   const [hasMore, setHasMore] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
-  const [tableInfo, setTableInfo] = useState<{mesaId: string; tableNumber: number;} | null>(null);
+  const [tableInfo, setTableInfo] = useState<{ mesaId: string; tableNumber: number; } | null>(null);
 
-//nuevo
-const [currentOrderId, setCurrentOrderId] = useState<number | null>(null);
+  //nuevo
+  const [currentOrderId, setCurrentOrderId] = useState<number | null>(null);
 
-const [currentOrderTableId, setCurrentOrderTableId] = useState<
-  string | undefined
->(undefined);
-
-
- const { cartCount, setMesaId } = useCart();
+  const [currentOrderTableId, setCurrentOrderTableId] = useState<
+    string | undefined
+  >(undefined);
 
 
+  const { cartCount, setMesaId } = useCart();
 
 
 
-
-  const { mesaId } = useSearch({
+  const {
+    mesaId,
+    orderId,
+    mode,
+    returnTo,
+  } = useSearch({
     from: "/(menuClient)/menuClient",
   });
 
+
+  const isAddingToOrder =
+    mode === "add" && orderId !== undefined;
+
   useEffect(() => {
-  const savedOrderId = localStorage.getItem("currentOrderId");
-  const savedOrderTableId = localStorage.getItem("currentOrderTableId");
+    const savedOrderId = localStorage.getItem("currentOrderId");
+    const savedOrderTableId = localStorage.getItem("currentOrderTableId");
 
-  if (!mesaId || !savedOrderId || !savedOrderTableId) {
-    setCurrentOrderId(null);
-    setCurrentOrderTableId(undefined);
-    return;
-  }
+    if (!mesaId || !savedOrderId || !savedOrderTableId) {
+      setCurrentOrderId(null);
+      setCurrentOrderTableId(undefined);
+      return;
+    }
 
-  if (savedOrderTableId !== mesaId) {
-    localStorage.removeItem("currentOrderId");
-    localStorage.removeItem("currentOrderTableId");
+    if (savedOrderTableId !== mesaId) {
+      localStorage.removeItem("currentOrderId");
+      localStorage.removeItem("currentOrderTableId");
 
-    setCurrentOrderId(null);
-    setCurrentOrderTableId(undefined);
-    return;
-  }
+      setCurrentOrderId(null);
+      setCurrentOrderTableId(undefined);
+      return;
+    }
 
-  const parsedOrderId = Number(savedOrderId);
+    const parsedOrderId = Number(savedOrderId);
 
-  if (Number.isInteger(parsedOrderId) && parsedOrderId > 0) {
-    setCurrentOrderId(parsedOrderId);
-    setCurrentOrderTableId(savedOrderTableId);
-  } else {
-    localStorage.removeItem("currentOrderId");
-    localStorage.removeItem("currentOrderTableId");
+    if (Number.isInteger(parsedOrderId) && parsedOrderId > 0) {
+      setCurrentOrderId(parsedOrderId);
+      setCurrentOrderTableId(savedOrderTableId);
+    } else {
+      localStorage.removeItem("currentOrderId");
+      localStorage.removeItem("currentOrderTableId");
 
-    setCurrentOrderId(null);
-    setCurrentOrderTableId(undefined);
-  }
-}, [mesaId]);
+      setCurrentOrderId(null);
+      setCurrentOrderTableId(undefined);
+    }
+  }, [mesaId]);
 
   useEffect(() => {
     setMesaId(mesaId);
@@ -171,40 +181,40 @@ const [currentOrderTableId, setCurrentOrderTableId] = useState<
   }, [mesaId]);
 
   const loadProductsWithRatings = async (products: Product[]) => {
-  return Promise.all(
-    products.map(async (product) => {
-      try {
-        const reviewData = await getProductReviews(product.productId);
+    return Promise.all(
+      products.map(async (product) => {
+        try {
+          const reviewData = await getProductReviews(product.productId);
 
-        return {
-          ...product,
-          rating: reviewData.averageRating,
-        };
-      } catch {
-        return {
-          ...product,
-          rating: 0,
-        };
-      }
-    }),
-  );
-};
-useEffect(() => {
-  if (!mesaId) return;
-
-  const loadCategories = async () => {
-    try {
-      const data = await getCategories(mesaId);
-      setCategories(data);
-    } catch (error) {
-      console.error("Error loading categories:", error);
-    } finally {
-      setIsLoadingCategories(false);
-    }
+          return {
+            ...product,
+            rating: reviewData.averageRating,
+          };
+        } catch {
+          return {
+            ...product,
+            rating: 0,
+          };
+        }
+      }),
+    );
   };
+  useEffect(() => {
+    if (!mesaId) return;
 
-  loadCategories();
-}, [mesaId]);
+    const loadCategories = async () => {
+      try {
+        const data = await getCategories(mesaId);
+        setCategories(data);
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      } finally {
+        setIsLoadingCategories(false);
+      }
+    };
+
+    loadCategories();
+  }, [mesaId]);
 
 
   //cargar los productos
@@ -223,7 +233,7 @@ useEffect(() => {
         });
         const productsWithRatings = await loadProductsWithRatings(data.products);
 
-setProducts(productsWithRatings);
+        setProducts(productsWithRatings);
         setHasMore(data.hasMore);
       } catch (error) {
         console.error("Error loading products:", error);
@@ -236,7 +246,7 @@ setProducts(productsWithRatings);
     const delay = searchTerm ? 400 : 0;
     const timeoutId = setTimeout(loadProducts, delay);
     return () => clearTimeout(timeoutId);
-  },[searchTerm, selectedCategory, mesaId]);;
+  }, [searchTerm, selectedCategory, mesaId]);;
 
   const handleLoadMore = async () => {
     setIsLoadingMore(true);
@@ -250,7 +260,7 @@ setProducts(productsWithRatings);
       });
       const productsWithRatings = await loadProductsWithRatings(data.products);
 
-setProducts((prev) => [...prev, ...productsWithRatings]);
+      setProducts((prev) => [...prev, ...productsWithRatings]);
       setHasMore(data.hasMore)
     } catch (error) {
       console.error("Error loading more products:", error);
@@ -265,7 +275,24 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
   };
 
 
+  const navigate = useNavigate();
 
+  const handleReturnFromAdd = () => {
+    if (returnTo === "cashier" && orderId !== undefined) {
+      void navigate({
+        to: "/paymentMethod",
+        search: {
+          orderId,
+        },
+      });
+
+      return;
+    }
+
+    void navigate({
+      to: "/waiterOrders",
+    });
+  };
 
   return (
 
@@ -276,8 +303,8 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
         <div className="mt-4 flex flex-col gap-5">
           <div className="flex items-center justify-between">
             <RestaurantLogo
-  className="h-16 w-16 object-contain"
-/>
+              className="h-16 w-16 object-contain"
+            />
             <h2 className="text-2xl font-bold text-black">Menú</h2>
             {tableInfo && tableInfo.mesaId === mesaId && (
               <p className="font-bold text-mint-dark">
@@ -294,7 +321,7 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
 
           <div className="mt-2">
             <CategoryFilter
-            categories={categories}
+              categories={categories}
               selected={selectedCategory}
               onSelect={(id) => {
                 setSelectedCategory(id);
@@ -341,6 +368,19 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
 
         <div className="mt-8 flex flex-col gap-1">
           <h2 className="text-2xl font-bold text-black">Menú</h2>
+
+          {isAddingToOrder && (
+            <button
+              type="button"
+              onClick={handleReturnFromAdd}
+              className="flex items-center gap-2 text-mint-dark"
+            >
+
+              <span>Volver</span>
+              
+            </button>
+          )}
+
           {tableInfo && tableInfo.mesaId === mesaId && (
             <p className="font-bold text-mint-dark text-xl">
               Mesa #{tableInfo.tableNumber}
@@ -358,7 +398,7 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
 
         <div className="mt-6">
           <CategoryFilter
-          categories={categories}
+            categories={categories}
             selected={selectedCategory}
             onSelect={(id) => {
               setSelectedCategory(id);
@@ -406,34 +446,38 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
           className="absolute top-6 hidden h-16 w-16 object-contain lg:block"
         />
 
-{/* nuevo */}
-{currentOrderId !== null ? (
+        {/* nuevo */}
+        {!isAddingToOrder && currentOrderId !== null ? (
+          <Link
+            to="/orderStatus"
+            search={{
+              orderId: currentOrderId,
+              tableId: currentOrderTableId ?? mesaId,
+            }}
+            className="absolute flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
+          >
+            <LuShoppingBag className="h-7 w-7 text-white" />
+          </Link>
+        ) : (
+          <Link
+            to="/checkOrder"
+            search={{
+              mesaId,
+              orderId,
+              mode,
+              returnTo,
+            }}
+            className="absolute flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
+          >
+            <LuShoppingBag className="h-7 w-7 text-white" />
 
-<Link
-    to="/orderStatus"
-    search={{
-      orderId: currentOrderId,
-      tableId: currentOrderTableId ?? mesaId,
-    }}
-    className="absolute cursor-pointer flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
-  >
-    <LuShoppingBag className="h-7 w-7 text-white" />
-  </Link>
-
-):(
-        <Link
-          to="/checkOrder"
-          search={{ mesaId }}
-          className="absolute cursor-pointer flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
-        >
-          <LuShoppingBag className="h-7 w-7 text-white" />
-          {cartCount > 0 && (
-            <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">
-              {cartCount}
-            </span>
-          )}
-        </Link>
-)}
+            {cartCount > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+        )}
       </div>
 
     </main>
