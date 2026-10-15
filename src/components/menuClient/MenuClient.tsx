@@ -14,6 +14,7 @@ import { useCart } from "../clientOrders/CartContext";
 import { getProductReviews } from "../../services/reviewService";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { getPublicTableNumber } from "../../services/tableService";
+import { HiArrowLeft } from "react-icons/hi";
 
 
 
@@ -301,6 +302,17 @@ function MenuClient() {
       <section className="lg:hidden">
 
         <div className="mt-4 flex flex-col gap-5">
+          {isAddingToOrder && (
+            <button
+              type="button"
+              onClick={handleReturnFromAdd}
+              className="flex w-fit items-center gap-2 text-mint-dark"
+            >
+              <HiArrowLeft className="h-6 w-6" />
+              <span className="font-semibold">Volver</span>
+            </button>
+          )}
+
           <div className="flex items-center justify-between">
             <RestaurantLogo
               className="h-16 w-16 object-contain"

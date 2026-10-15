@@ -63,7 +63,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
         <nav className="flex flex-col gap-3">
           <Link
             to="/dashboardAdmin"
-            className="flex items-center gap-4 pb-3 pt-10 text-left text-text-primary"
+           activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
           >
             <GoHome className="h-6 w-6 shrink-0" />
 
@@ -72,7 +79,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
           <Link
             to="/menuManagment"
-            className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
+            activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
           >
             <IoRestaurantOutline className="h-6 w-6 shrink-0" />
 
@@ -81,7 +95,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
             <Link
               to="/discountProducts"
-              className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
+              activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
             >
               <MdOutlineDiscount className="h-6 w-6 shrink-0" />
               <span className="text-[15px] font-bold cursor-pointer">
@@ -91,7 +112,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
             <Link
               to="/salesReport"
-              className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
+              activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
             >
               <HiOutlineDocumentReport className="h-6 w-6 shrink-0" />
               <span className="text-[15px] font-bold cursor-pointer">
@@ -102,7 +130,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
             <Link
               to="/tablesManagment"
               onClick={() => setIsMenuOpen(false)}
-              className="flex w-full items-center gap-4 pt-3 text-left text-text-primary"
+              activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
             >
               <MdOutlineTableBar className="h-6 w-6 shrink-0" />
               <span className="text-[15px] font-bold cursor-pointer">
@@ -112,11 +147,18 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
           
         </nav>
 
-        <div className="mt-10 flex flex-col gap-3  border-t border-neutral-300">
+        <div className="mt-10 flex flex-col gap-3  border-t border-neutral-300 pt-5">
 
            <Link
               to="/issuerInformation"
-              className="flex items-center gap-4 py-3 pt-10 text-left text-text-primary"
+              activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
             >
               <IoReceiptOutline className="h-6 w-6 shrink-0" />
               <span className="text-[15px] font-bold cursor-pointer ">
@@ -127,7 +169,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
           
           <Link
             to="/profileSettings"
-            className="flex items-center gap-4 py-3 text-left text-text-primary"
+            activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
           >
             <RiSettingsLine className="h-6 w-6 shrink-0" />
 
@@ -136,7 +185,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
           <Link
             to="/usersManagment"
-            className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
+            activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
           >
             <FiUsers className="h-6 w-6 shrink-0" />
             <span className="text-[15px] font-bold cursor-pointer">
@@ -146,7 +202,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
           <Link
             to="/customization"
-            className="flex items-center gap-4 pt-3 text-left text-text-primary"
+            activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
           >
             <RiSettingsLine className="h-6 w-6 shrink-0" />
 
@@ -157,7 +220,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
           <Link
             to= "/historySales"
-            className="flex items-center gap-4 pt-3 text-left text-text-primary"
+            activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
           >
             <LuHistory className="h-6 w-6 shrink-0" />
 
@@ -172,7 +242,7 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
           <Link
             to="/login"
             onClick={logout}
-            className="flex items-center gap-4 py-3 pb-8 text-left text-text-primary border-b border-neutral-300"
+            className="flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10"
           >
             <LuLogOut className="h-6 w-6 shrink-0" />
 
@@ -261,7 +331,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
                 <Link
                   to="/dashboardAdmin"
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex w-full items-center gap-4 py-4 text-left text-white"
+                  activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
                 >
                   <GoHome className="h-6 w-6 shrink-0" />
 
@@ -271,7 +348,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
                 <Link
                   to="/menuManagment"
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex w-full items-center gap-4 py-4 text-left text-white"
+                  activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
                 >
                   <IoRestaurantOutline className="h-6 w-6 shrink-0" />
 
@@ -284,7 +368,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
                 <Link
                   to="/discountProducts"
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex w-full items-center gap-4 py-4 text-left text-white"
+                  activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
                 >
                   <MdOutlineDiscount className="h-6 w-6 shrink-0" />
                   <span className="text-xl font-bold">Descuentos</span>
@@ -293,7 +384,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
                 <Link
                   to="/salesReport"
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex w-full items-center gap-4 py-4 text-left text-white"
+                  activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
                 >
                   <HiOutlineDocumentReport className="h-6 w-6 shrink-0" />
                   <span className="text-xl font-bold">Reporte de ventas</span>
@@ -302,7 +400,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
                 <Link
                   to="/tablesManagment"
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex w-full items-center gap-4 py-4 text-left text-white"
+                  activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
                 >
                   <MdOutlineTableBar className="h-6 w-6 shrink-0" />
                   <span className="text-xl font-bold">Mesas</span>
@@ -310,7 +415,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
                 <Link
               to="/issuerInformation"
-              className="flex w-full items-center gap-4 py-4 text-left text-white"
+              activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
                 >
               <IoReceiptOutline className="h-6 w-6 shrink-0" />
               <span className="text-xl font-bold">
@@ -320,7 +432,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
             <Link
             to= "/historySales"
-            className="flex w-full items-center gap-4 py-4 text-left text-white"
+            activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
           >
             <LuHistory className="h-6 w-6 shrink-0" />
 
@@ -358,7 +477,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
             <div className="mt-14 w-48">
               <Link
                 to="/profileSettings"
-                className="flex w-full items-center gap-4 py-4 text-left text-white"
+                activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
               >
                 <RiSettingsLine className="h-6 w-6 shrink-0" />
 
@@ -368,7 +494,14 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
               <Link
                 to="/usersManagment"
                 onClick={() => setIsMenuOpen(false)}
-                className="flex w-full items-center gap-4 py-4 text-left text-white"
+                activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
               >
                 <FiUsers className="h-6 w-6 shrink-0" />
                 <span className="text-xl font-bold">Gestión de personal</span>

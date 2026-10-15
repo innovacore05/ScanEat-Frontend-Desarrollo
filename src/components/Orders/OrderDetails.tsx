@@ -203,27 +203,29 @@ function OrderDetailsContent({
             </div>
           </div>
 
-          {canAddProducts && order.status === "Pendiente" && (
-            <Link
-              to="/menuClient"
-              search={{
-                mesaId: order.tableUuid,
-                orderId: order.orderId,
-                mode: "add",
-              }}
-              className="rounded-lg bg-mint-dark px-4 py-2 font-semibold text-white"
-            >
-              Agregar productos
-            </Link>
-          )}
+          {(canAddProducts && order.status === "Pendiente") || canChangeStatus ? (
+            <div className="mt-6 flex w-full flex-col gap-3">
+              {canAddProducts && order.status === "Pendiente" && (
+                <Link
+                  to="/menuClient"
+                  search={{
+                    mesaId: order.tableUuid,
+                    orderId: order.orderId,
+                    mode: "add",
+                    returnTo: "waiter",
+                  }}
+                  className="flex min-h-12 w-full items-center justify-center rounded-lg bg-mint-dark px-4 py-3 text-center font-semibold text-white"
+                >
+                  Agregar productos
+                </Link>
+              )}
 
-          {canChangeStatus && (
-            <div className="mt-8 flex justify-end">
+              {canChangeStatus && (
               <button
                 type="button"
                 onClick={() => void handleStatusChange()}
                 disabled={isUpdating}
-                className="cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-lg font-bold text-white"
+                className="flex min-h-12 w-full items-center justify-center cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-lg font-bold text-white"
               >
                 {isUpdating
                   ? "Actualizando..."
@@ -231,8 +233,9 @@ function OrderDetailsContent({
                     ? "Entregar"
                     : "Confirmar"}
               </button>
+              )}
             </div>
-          )}
+          ) : null}
         </div>
       </section>
 

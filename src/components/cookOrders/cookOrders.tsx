@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { getOrders, markOrderReady } from "../../services/orderService";
+import { getKitchenOrders, markKitchenOrderReady } from "../../services/orderService";
 import { logout } from "../../services/authService";
 import OrderCard from "./OrderCard";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
@@ -18,7 +18,7 @@ function CookOrders() {
 
   const loadOrders = async () => {
     try {
-      const backendOrders = await getOrders("in_preparation");
+      const backendOrders = await getKitchenOrders();
 
       setOrders(
         backendOrders.map((order) => ({
@@ -53,7 +53,7 @@ function CookOrders() {
   const handleReadyOrder = async (orderId: number) => {
     try {
       setUpdatingOrderId(orderId);
-      await markOrderReady(orderId);
+      await markKitchenOrderReady(orderId);
       await loadOrders();
     } catch (error) {
       console.error("No se pudo marcar la orden como lista:", error);

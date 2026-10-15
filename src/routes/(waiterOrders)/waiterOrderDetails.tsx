@@ -49,5 +49,11 @@ function RouteComponent() {
     return <p>Orden no encontrada</p>;
   }
 
-  return <WaiterOrderDetails order={order} onStatusChanged={loadOrder} />;
+  return (
+    <WaiterOrderDetails
+      order={order}
+      onStatusChanged={loadOrder}
+      canAddProducts
+    />
+  );
 }

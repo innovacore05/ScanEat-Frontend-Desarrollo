@@ -240,6 +240,17 @@ const data = await cookieSessionClient.request<BackendOrder[]>(
 );
 return (Array.isArray(data)?data:[]).map(mapBackendOrderToFrontend);
 };
+
+export const getKitchenOrders = async () => {
+  const data = await cookieSessionClient.request<BackendOrder[]>(
+    `${ORDERS_BASE_URL}/kitchen`,
+    {
+      method: "GET",
+      fallBackMessage: "No se pudieron cargar los pedidos del cocinero",
+    },
+  );
+  return (Array.isArray(data) ? data : []).map(mapBackendOrderToFrontend);
+};
   
 
 export const confirmOrder = async (orderId: number) => {
@@ -391,3 +402,14 @@ export const addItemsToOrder = (
             fallBackMessage: "No se pudieron agregar los productos",
         },
     );
+
+
+export const markKitchenOrderReady = async (orderId: number) => {
+  return cookieSessionClient.request(
+    `${ORDERS_BASE_URL}/${orderId}/kitchen-ready`,
+    {
+      method: "PATCH",
+      fallBackMessage: "No se pudieron marcar los productos como listos",
+    },
+  );
+};

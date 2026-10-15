@@ -23,7 +23,7 @@ interface DashboardLayoutProps {
 }
 
 function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
- 
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [firstName, setFirstName] = useState(getStoredFirstName);
@@ -50,36 +50,57 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
     <main className="min-h-screen bg-white">
       {/* Barra lateral - COMPUTADORA */}
 
-            <aside className="fixed left-0 top-0 hidden h-screen overflow-y-auto w-64 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
-              <div className="flex justify-start">
+      <aside className="fixed left-0 top-0 hidden h-screen overflow-y-auto w-64 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
+        <div className="flex justify-start">
           <RestaurantLogo className="h-16 w-16 object-contain" />
         </div>
         <div className="mt-10 border-t border-neutral-300 "></div>
-  
 
-        <nav className=" flex flex-col gap-3">
+
+
+        <nav className=" flex flex-col gap-3 mt-5">
           <Link
             to="/dashboardWaiter"
-            className="flex items-center gap-4 pb-3 pt-10 text-left text-text-primary"
+            activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
           >
             <GoHome className="h-6 w-6 shrink-0" />
 
-            <span className="text-[15px] font-bold cursor-pointer">Inicio</span>
+            <span className="text-[15px] font-bold cursor-pointer ">Inicio</span>
           </Link>
 
           <Link
             to="/menuWaiter"
-            className="flex items-center gap-4 py-3 text-left text-text-primary"
+            activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
           >
             <IoRestaurantOutline className="h-6 w-6 shrink-0" />
-
-            <span className="text-[15px] font-bold cursor-pointer">Menú</span>
+            <span className="text-[15px] font-bold">Menú</span>
           </Link>
 
           <Link
             to="/waiterOrders"
             onClick={() => setIsMenuOpen(false)}
-            className="flex items-center gap-4 py-3 text-left text-text-primary"
+            activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
           >
             <LuShoppingBag className="h-6 w-6 shrink-0" />
 
@@ -88,40 +109,54 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
             </span>
           </Link>
 
-            <Link
-              to="/discountProducts"
-              className="flex w-full items-center gap-4 py-3 text-left text-text-primary"
-            >
-              <MdOutlineDiscount className="h-6 w-6 shrink-0" />
-              <span className="text-[15px] font-bold cursor-pointer">
-                Descuentos
-              </span>
-            </Link>
+          <Link
+            to="/discountProducts"
+            activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
+          >
+            <MdOutlineDiscount className="h-6 w-6 shrink-0" />
+            <span className="text-[15px] font-bold cursor-pointer">
+              Descuentos
+            </span>
+          </Link>
 
 
-            <Link
-              to="/tablesManagment"
-              onClick={() => setIsMenuOpen(false)}
-              className="flex w-full items-center gap-4 pt-3 text-left text-text-primary"
-            >
-              <MdOutlineTableBar className="h-6 w-6 shrink-0" />
-              <span className="text-[15px] font-bold cursor-pointer">
-                Mesas
-              </span>
-            </Link>
-          
+          <Link
+            to="/tablesManagment"
+            onClick={() => setIsMenuOpen(false)}
+            activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
+          >
+            <MdOutlineTableBar className="h-6 w-6 shrink-0" />
+            <span className="text-[15px] font-bold cursor-pointer">
+              Mesas
+            </span>
+          </Link>
+
         </nav>
 
-        <div className="mt-10 border-t border-neutral-300 pt-5">
-        
+        <div className="mt-10 border-t border-neutral-300 pt-5 ">
+
 
           {/* //cerrar sesion normal , regresa al registro inicio de sesion/ */}
           <Link
             to="/login"
             onClick={logout}
-            className="flex items-center gap-4 py-3 pb-8 text-left text-text-primary border-b border-neutral-300"
+            className="flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10"
           >
-            <LuLogOut className="h-6 w-6 shrink-0" />
+            <LuLogOut className="h-6 w-6 shrink-0 " />
 
             <span className="text-[15px] font-bold cursor-pointer ">
               Cerrar sesión
@@ -149,7 +184,7 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
       </aside>
 
 
-          
+
       <div className="lg:ml-64">
         {/* Barra superior - TELÉFONO Y TABLET */}
         <div className="px-6 pt-8 lg:hidden">
@@ -169,7 +204,7 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
               <GiHamburgerMenu className="h-8 w-8" />
             </button>
 
-           
+
           </div>
         </div>
 
@@ -177,102 +212,151 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
       </div>
 
       {isMenuOpen && (
-  <>
-    <button
-      type="button"
-      aria-label="Cerrar menú"
-      onClick={() => setIsMenuOpen(false)}
-      className={`fixed inset-0 z-40 cursor-default bg-transparent transition-opacity duration-300 lg:hidden ${
-        isMenuOpen
-          ? "pointer-events-auto opacity-100"
-          : "pointer-events-none opacity-0"
-      }`}
-    />
-
-    <div
-      className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col rounded-r-[30px] bg-mint-dark px-8 pt-10 transition-transform duration-300 ease-in-out lg:hidden ${
-        isMenuOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
-    >
-      <div className="mt-14 w-full">
-
-        <div className="flex flex-col gap-2">
-          <Link
-            to="/dashboardWaiter"
-            onClick={() => setIsMenuOpen(false)}
-            className="flex w-full items-center gap-4 py-4 text-left text-white"
-          >
-            <GoHome className="h-6 w-6 shrink-0" />
-            <span className="text-xl font-bold">Inicio</span>
-          </Link>
-
-          <Link
-            to="/menuWaiter"
-            onClick={() => setIsMenuOpen(false)}
-            className="flex w-full items-center gap-4 py-4 text-left text-white"
-          >
-            <IoRestaurantOutline className="h-6 w-6 shrink-0" />
-            <span className="text-xl font-bold">Menú</span>
-          </Link>
-
-          <Link
-            to="/waiterOrders"
-            onClick={() => setIsMenuOpen(false)}
-            className="flex w-full items-center gap-4 py-4 text-left text-white"
-          >
-            <LuShoppingBag className="h-6 w-6 shrink-0" />
-            <span className="text-xl font-bold">Pedidos</span>
-          </Link>
-        </div>
-
-        <div className="mt-10 flex flex-col gap-2">
-          <Link
-            to="/discountProducts"
-            onClick={() => setIsMenuOpen(false)}
-            className="flex w-full items-center gap-4 py-4 text-left text-white"
-                >
-                  <MdOutlineDiscount className="h-6 w-6 shrink-0" />
-            <span className="text-xl font-bold">Descuentos</span>
-          </Link>
-
-          <Link
-            to="/tablesManagment"
-            onClick={() => setIsMenuOpen(false)}
-            className="flex w-full items-center gap-4 py-4 text-left text-white"
-          >
-            <MdOutlineTableBar className="h-6 w-6 shrink-0" />
-            <span className="text-xl font-bold">Mesas</span>
-          </Link>
-        </div>
-
-       
-        <div className="mt-10 flex flex-col gap-2">
+        <>
           <button
             type="button"
-            className="flex w-full items-center gap-4 py-4 text-left text-white"
+            aria-label="Cerrar menú"
+            onClick={() => setIsMenuOpen(false)}
+            className={`fixed inset-0 z-40 cursor-default bg-transparent transition-opacity duration-300 lg:hidden ${isMenuOpen
+              ? "pointer-events-auto opacity-100"
+              : "pointer-events-none opacity-0"
+              }`}
+          />
+
+          <div
+            className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col rounded-r-[30px] bg-mint-dark px-8 pt-10 transition-transform duration-300 ease-in-out lg:hidden ${isMenuOpen ? "translate-x-0" : "-translate-x-full"
+              }`}
           >
-            <RiNotification2Line className="h-6 w-6 shrink-0" />
-            <span className="text-xl font-bold">Notificaciones</span>
-          </button>
-        
+            <div className="mt-14 w-full">
 
-        
-          <Link
-            to="/login"
-            onClick={logout}
-            className="flex w-full items-center gap-4 py-4 text-left text-white"
-          >
-            <LuLogOut className="h-6 w-6 shrink-0" />
-            <span className="text-xl font-bold">Cerrar sesión</span>
-          </Link>
-        </div>
+              <div className="flex flex-col gap-2">
+                <Link
+                  to="/dashboardWaiter"
+                  onClick={() => setIsMenuOpen(false)}
+                  activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
+                >
+                  <GoHome className="h-6 w-6 shrink-0" />
+                  <span className="text-xl font-bold">Inicio</span>
+                </Link>
 
-      </div>
-    </div>
-  </>
-)}
+                <Link
+                  to="/menuWaiter"
+                  activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <IoRestaurantOutline className="h-6 w-6 shrink-0" />
+                  <span className="text-xl font-bold">Menú</span>
+                </Link>
 
-      
+                <Link
+                  to="/waiterOrders"
+                  onClick={() => setIsMenuOpen(false)}
+                  activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
+                >
+                  <LuShoppingBag className="h-6 w-6 shrink-0" />
+                  <span className="text-xl font-bold">Pedidos</span>
+                </Link>
+              </div>
+
+              <div className="mt-10 flex flex-col gap-2">
+                <Link
+                  to="/discountProducts"
+                  onClick={() => setIsMenuOpen(false)}
+                  activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
+                >
+                  <MdOutlineDiscount className="h-6 w-6 shrink-0" />
+                  <span className="text-xl font-bold">Descuentos</span>
+                </Link>
+
+                <Link
+                  to="/tablesManagment"
+                  onClick={() => setIsMenuOpen(false)}
+                  activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
+                >
+                  <MdOutlineTableBar className="h-6 w-6 shrink-0" />
+                  <span className="text-xl font-bold">Mesas</span>
+                </Link>
+              </div>
+
+
+              <div className="mt-10 flex flex-col gap-2">
+                <Link
+                  to="/notifications"
+                  onClick={() => setIsMenuOpen(false)}
+                  type="button"
+                  activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
+                >
+                  <RiNotification2Line className="h-6 w-6 shrink-0" />
+                  <span className="text-xl font-bold">Notificaciones</span>
+                </Link>
+
+
+
+                <Link
+                  to="/login"
+                  onClick={logout}
+                  activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
+                >
+                  <LuLogOut className="h-6 w-6 shrink-0" />
+                  <span className="text-xl font-bold">Cerrar sesión</span>
+                </Link>
+              </div>
+
+            </div>
+          </div>
+        </>
+      )}
+
+
     </main>
   );
 }
