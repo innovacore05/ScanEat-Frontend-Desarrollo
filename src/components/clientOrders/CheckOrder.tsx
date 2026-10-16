@@ -15,6 +15,24 @@ import {
   type OrderQuote,
 } from "../../services/orderService";
 import { getPublicTableNumber } from "../../services/tableService";
+import { submitSharedCart } from "../../services/sharedCartService";
+
+function getDishName(
+  name: string,
+  selectedOptions?: Record<string, unknown>,
+) {
+  const values = Object.values(selectedOptions ?? {})
+    .filter(
+      (value): value is string =>
+        typeof value === "string" && value.trim() !== "",
+    );
+
+  if (values.length === 0) {
+    return name;
+  }
+
+  return `${name} (${values[0]})`;
+}
 
 function CheckOrder() {
   const {
@@ -176,13 +194,12 @@ function CheckOrder() {
       if (isAddingToOrder && orderId) {
         await addItemsToOrder(orderId, { items });
       } else {
-        const createdOrder = await createOrder({
-          tableId,
-          observation: specialInstructions.trim() || undefined,
-          items,
-        });
+       const createdOrder = await submitSharedCart(
+  tableId,
+  specialInstructions.trim() || undefined,
+);
 
-        resultingOrderId = createdOrder.order.orderId;
+resultingOrderId = createdOrder.order.orderId;
 
         localStorage.setItem(
           "currentOrderId",
@@ -460,7 +477,7 @@ function CheckOrder() {
 
                     <div className="flex min-w-0 flex-1 flex-col justify-center px-4 py-3">
                       <h3 className="line-clamp-2 text-base font-bold text-mint-darker">
-                        {item.name}
+                        {getDishName(item.name, item.selectedOptions)}
                       </h3>
 
                       <div className="flex flex-wrap items-center gap-2">
@@ -584,7 +601,7 @@ function CheckOrder() {
 
                         <div className="flex min-w-0 flex-1 flex-col justify-center px-6 py-4">
                           <h3 className="line-clamp-2 text-lg font-bold text-mint-darker">
-                            {item.name}
+                            {getDishName(item.name, item.selectedOptions)}
                           </h3>
 
                           <div className="flex flex-wrap items-center gap-2">

@@ -23,6 +23,8 @@ import type {
   SharedCartItem,
 } from "../../services/sharedCartService";
 
+import { useNavigate } from "@tanstack/react-router";
+
 export type CartItem = {
   cartItemId: string;
   clientId: string;
@@ -54,7 +56,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [mesaId, setMesaId] = useState<string | undefined>(undefined);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoadingSharedCart, setIsLoadingSharedCart] = useState(false);
-
+  const navigate = useNavigate();
   const sharedCartIdRef = useRef<string | null>(null);
 
   const saveSharedCartId = (id: string | null) => {
@@ -183,15 +185,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
       saveSharedCartId(null);
     };
 
-    const handleCartSubmitted = (data: {
-      tableId: string;
-      orderId: number;
-    }) => {
-      if (data.tableId !== mesaId) return;
+   const handleCartSubmitted = (data: {
+  tableId: string;
+  orderId: number;
+}) => {
+  if (data.tableId !== mesaId) return;
 
-      setCartItems([]);
-      saveSharedCartId(null);
-    };
+  setCartItems([]);
+  saveSharedCartId(null);
+
+  localStorage.setItem("currentOrderId", String(data.orderId));
+  localStorage.setItem("currentOrderTableId", data.tableId);
+
+  window.dispatchEvent(
+    new CustomEvent("scaneat:order-submitted", {
+      detail: {
+        tableId: data.tableId,
+        orderId: data.orderId,
+      },
+    }),
+  );
+};
 
     socket.on("connect", joinTable);
     socket.on("cart:updated", handleCartUpdated);

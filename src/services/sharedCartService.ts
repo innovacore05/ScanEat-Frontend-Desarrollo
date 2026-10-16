@@ -87,4 +87,22 @@ export const removeCartItem = (
       method: "DELETE",
       fallBackMessage: "No se pudo eliminar el producto",
     },
+    );
+  
+    export const submitSharedCart = (
+  tableId: string,
+  observation?: string,
+) =>
+  cookieSessionClient.request<{
+    order: {
+      orderId: number;
+      tableId: string;
+    };
+  }>(
+    `${SHARED_CARTS_BASE_URL}/${tableId}/submit`,
+    {
+      method: "POST",
+      body: JSON.stringify({ observation }),
+      fallBackMessage: "No se pudo enviar el pedido",
+    },
   );

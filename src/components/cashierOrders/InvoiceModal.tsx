@@ -141,7 +141,7 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
                             Detalle de pedido
                         </h1>
 
-                        <div className="mt-5 max-h-60  pr-0">
+                        <div className="mt-5  pr-0">
                             <div className="flex flex-col gap-4">
                                 <div className="grid grid-cols-[minmax(0,1fr)_38px_82px_88px] items-center gap-2 border-b border-border pb-3">
                                     <p className="text-xs font-semibold text-gray-700">

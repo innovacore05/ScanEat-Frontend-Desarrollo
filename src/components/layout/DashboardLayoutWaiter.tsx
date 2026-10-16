@@ -49,7 +49,7 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
     <main className="min-h-screen bg-white">
       {/* Barra lateral - COMPUTADORA */}
 
-      <aside className="fixed left-0 top-0 hidden h-screen overflow-y-auto w-64 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
+      <aside className="fixed left-0 top-0 hidden h-screen overflow-y-auto w-66 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
         <div className="flex justify-start">
           <RestaurantLogo className="h-16 w-16 object-contain" />
         </div>
@@ -57,7 +57,7 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
 
 
 
-        <nav className=" flex flex-col gap-3 mt-5">
+        <nav className=" flex flex-col gap-3 mt-6">
           <Link
             to="/dashboardWaiter"
             activeProps={{
@@ -146,7 +146,7 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
 
         </nav>
 
-        <div className="mt-10 border-t border-neutral-300 pt-5 ">
+        <div className="mt-5 border-t border-neutral-300 pt-5 ">
 
 
           {/* //cerrar sesion normal , regresa al registro inicio de sesion/ */}
@@ -162,10 +162,11 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
             </span>
           </Link>
 
+           <div className="mt-5 border-t border-neutral-300  "></div>
 
         </div>
 
-        <div className="mt-10  pt-5">
+        <div className="mt-8">
           <div className="flex items-center gap-3">
             <FaRegCircleUser className="h-9 w-9 shrink-0 text-mint-darker" />
 
