@@ -260,23 +260,28 @@ function ThemeCustomizer() {
       <div className="flex flex-col lg:flex-row">
 
 
-        <main className="w-full min-w-0 rounded-[30px] bg-white px-5 py-8 sm:px-8 sm:py-10 lg:w-1/2">
+        <main className="w-full min-w-0 rounded-[30px] bg-white px-6.5 sm:px-8 sm:py-10 lg:w-1/2">
+        <div className="flex w-full items-center gap-2">
+              <Link
+                to="/dashboardAdmin"
+                className="mb-1 flex items-center gap-2 text-mint-dark lg:hidden"
+              >
+                <HiArrowLeft className="h-6 w-6 lg:hidden" />
+
+                <span className="text-[32px] font-bold">
+                  Personalización
+                </span>
+              </Link>
+              
+               <h2 className="mx-auto hidden w-full text-center text-2xl font-bold text-mint-dark sm:text-[32px] lg:block">
+                  Personalización
+                </h2>
+            </div>
           <form
             onSubmit={handleSubmit}
             className="mx-auto flex w-full flex-col items-center gap-6"
           >
-            <div className="flex items-center gap-2">
-              <Link
-                to="/dashboardAdmin"
-                className="flex items-center gap-2 text-mint-dark"
-              >
-                <HiArrowLeft className="h-6 w-6 lg:hidden" />
-
-                <span className="text-2xl font-bold sm:text-[32px]">
-                  Personalización
-                </span>
-              </Link>
-            </div>
+            
 
             <section className="w-full">
               <h2 className="mb-4 text-center font-bold text-text-primary">

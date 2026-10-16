@@ -59,22 +59,37 @@ function CategoryFilter({
   onSelect,
   disabled,
   isLoading = false,
+  mobileFiveColumns = false,
 }: {
   categories: Category[];
   selected: number | null;
   onSelect: (id: number | null) => void;
   disabled: boolean;
   isLoading?: boolean;
+  mobileFiveColumns?: boolean;
 }) {
 
   return (
 
     <div>
       <p className="mb-3 text-base font-bold text-text-primary">Filtro</p>
-      <div className="flex items-center gap-5">
+      <div
+        className={
+          mobileFiveColumns
+            ? "flex max-w-full items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-5"
+            : "flex items-center gap-5"
+        }
+      >
         {isLoading ? (
           Array.from({ length: 5 }, (_, index) => (
-            <Skeleton key={index} className="h-14 w-14 rounded-2xl" />
+            <Skeleton
+              key={index}
+              className={
+                mobileFiveColumns
+                  ? "h-14 w-[22%] shrink-0 rounded-2xl sm:w-14"
+                  : "h-14 w-14 rounded-2xl"
+              }
+            />
           ))
         ) : categories.map(({ categoryId, name, icon }) => {
           const Icon =
@@ -88,7 +103,8 @@ function CategoryFilter({
               key={categoryId}
               type="button"
               onClick={() => onSelect(active ? null : categoryId)}
-              className={`cursor-pointer flex h-14 w-14 items-center justify-center rounded-2xl text-white transition
+              className={`flex h-14 cursor-pointer items-center justify-center rounded-2xl text-white transition
+        ${mobileFiveColumns ? "w-[22%] shrink-0 sm:w-14" : "w-14"}
         ${active ? "bg-mint-darker" : "bg-mint-dark"}`}
               aria-label={name}
               aria-pressed={active}

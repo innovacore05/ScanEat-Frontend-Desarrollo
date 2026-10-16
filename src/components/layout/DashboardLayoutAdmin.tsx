@@ -60,7 +60,7 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
         <div className="mt-10 border-t border-neutral-300 "></div>
 
-        <nav className="flex flex-col gap-3">
+        <nav className="flex flex-col gap-3 mt-5">
           <Link
             to="/dashboardAdmin"
            activeProps={{
@@ -474,7 +474,7 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
 
 
-            <div className="mt-14 w-48">
+            <div className="mt-14 w-58">
               <Link
                 to="/profileSettings"
                 activeProps={{
@@ -509,8 +509,17 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
               <Link
             to="/customization"
-                className="flex w-full items-center gap-4 py-4 text-left text-white"
+                activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
               >
+
+                
                 <RiSettingsLine className="h-6 w-6 shrink-0" />
 
                 <span className="text-xl font-bold">Negocio</span>
@@ -520,7 +529,7 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
               <Link
                 to="/login"
                 onClick={logout}
-                className="mt-10 flex w-full items-center gap-4 py-4 text-left text-white"
+                className="mt-10 flex w-full items-center gap-4 px-4 py-3 text-left text-white "
               >
                 <LuLogOut className="h-6 w-6 shrink-0" />
 

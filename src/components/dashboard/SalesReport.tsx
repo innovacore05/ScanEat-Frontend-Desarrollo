@@ -222,9 +222,9 @@ function SalesReport() {
   
   return (
     <DashboardLayoutAdmin>
-      <section className="px-6 py-8 lg:px-15 lg:py-15">
+      <section className="px-6 lg:px-15 lg:py-15">
         <div className="w-full">
-          <div className="mt-4 flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-2 md:hidden">
   <Link
     to={dashboardRoute}
     className="flex items-center gap-2 text-mint-dark"
@@ -237,7 +237,7 @@ function SalesReport() {
   </Link>
 </div>
 
-          <div className="mt-7 hidden flex-wrap items-end justify-between gap-4 md:flex">
+          <div className="hidden flex-wrap items-end justify-between gap-4 md:flex">
   <h2 className="text-3xl font-bold text-mint-dark">
     Reporte de ventas
   </h2>
