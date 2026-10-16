@@ -165,7 +165,7 @@ useEffect(() => {
     <DashboardLayoutWaiter>
       <main className="min-h-screen bg-brand-white  ">
         {/* Celular */}
-        <section className="lg:hidden px-8 ">
+        <section className="lg:hidden px-6.5 ">
           <div className="flex items-center gap-2">
             <Link
               to="/dashboardWaiter" 
@@ -195,6 +195,7 @@ useEffect(() => {
                 }}
                 disabled={!!searchTerm}
                 isLoading={isLoadingCategories}
+                mobileFiveColumns
               />
             </div>
 
@@ -250,6 +251,7 @@ useEffect(() => {
               }}
               disabled={!!searchTerm}
               isLoading={isLoadingCategories}
+              mobileFiveColumns
             />
           </div>
   

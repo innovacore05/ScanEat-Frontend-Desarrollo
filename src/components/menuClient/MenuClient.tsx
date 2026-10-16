@@ -341,6 +341,7 @@ function MenuClient() {
               }}
               disabled={!!searchTerm}
               isLoading={isLoadingCategories}
+              mobileFiveColumns
             />
           </div>
 
@@ -418,6 +419,7 @@ function MenuClient() {
             }}
             disabled={!!searchTerm}
             isLoading={isLoadingCategories}
+            mobileFiveColumns
           />
         </div>
 

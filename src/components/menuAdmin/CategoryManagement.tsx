@@ -226,7 +226,7 @@ function CategoryManagement() {
         </div>
     </div>
 )}
-            <main className="min-h-screen bg-white px-8 py-8 lg:px-15 lg:py-15">
+            <main className="min-h-screen bg-white px-6 lg:px-15 lg:py-15">
                 <div className="flex items-center gap-2">
                     <Link
                         to="/menuManagment"
@@ -234,10 +234,13 @@ function CategoryManagement() {
                     >
                         <HiArrowLeft className="h-6 w-6" />
 
-                        <span className="text-[32px] font-bold">
-                            Gestionar categorías
+                        <span className="whitespace-nowrap font-bold text-[32px] lg:hidden">
+                            Gestión categorías
                         </span>
                     </Link>
+                    <h2 className="hidden lg:block text-2xl font-bold text-mint-dark lg:text-3xl">
+            Gestionar categorías
+          </h2>
                 </div>
 
                 <div className="mt-8">

@@ -9,7 +9,6 @@ import {
 } from "../../services/authService";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaRegCircleUser } from "react-icons/fa6";
-import { RiNotification2Line } from "react-icons/ri";
 import { LuLogOut } from "react-icons/lu";
 import { GoHome } from "react-icons/go";
 import { IoRestaurantOutline } from "react-icons/io5";
@@ -315,25 +314,7 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
 
 
               <div className="mt-10 flex flex-col gap-2">
-                <Link
-                  to="/notifications"
-                  onClick={() => setIsMenuOpen(false)}
-                  type="button"
-                  activeProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
-                  }}
-                  inactiveProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
-                  }}
-                >
-                  <RiNotification2Line className="h-6 w-6 shrink-0" />
-                  <span className="text-xl font-bold">Notificaciones</span>
-                </Link>
-
-
-
+               
                 <Link
                   to="/login"
                   onClick={logout}
