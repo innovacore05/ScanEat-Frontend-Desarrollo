@@ -1,3 +1,4 @@
+
 import {
   Link,
   useNavigate,
@@ -7,9 +8,13 @@ import { useCart } from "./CartContext";
 import { HiArrowLeft } from "react-icons/hi";
 import { FiMinus, FiPlus, FiX } from "react-icons/fi";
 import { useEffect, useState } from "react";
-import { addItemsToOrder, createOrder, getOrderQuote, type OrderQuote } from "../../services/orderService";
+import {
+  addItemsToOrder,
+  createOrder,
+  getOrderQuote,
+  type OrderQuote,
+} from "../../services/orderService";
 import { getPublicTableNumber } from "../../services/tableService";
-
 
 function CheckOrder() {
   const {
@@ -19,6 +24,7 @@ function CheckOrder() {
     decreaseQuantity,
     removeFromCart,
     clearCart,
+    canModifyItem,
   } = useCart();
 
   const {
@@ -33,21 +39,25 @@ function CheckOrder() {
     mode === "add" && orderId !== undefined;
 
   const tableId = mesaId?.trim();
-  const [tableInfo, setTableInfo] = useState<{ tableId: string; tableNumber: number; } | null>(null);
+
+  const [tableInfo, setTableInfo] = useState<{
+    tableId: string;
+    tableNumber: number;
+  } | null>(null);
+
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState<number | null>(null);
 
-  // estado de la cotizacion recibida en servidor
   const [orderQuote, setOrderQuote] = useState<OrderQuote | null>(null);
   const [isQuoting, setIsQuoting] = useState(false);
   const [quoteError, setQuoteError] = useState("");
 
   const navigate = useNavigate();
 
-  //  vuelve a cotizar cuando cambia la mesa o el carrito
+  // Actualizar la cotización cuando cambie la mesa o el carrito.
   useEffect(() => {
     if (
       isAddingToOrder ||
@@ -78,16 +88,23 @@ function CheckOrder() {
     const timer = window.setTimeout(() => {
       void getOrderQuote(payload)
         .then((quote) => {
-          if (!cancelled) setOrderQuote(quote);
+          if (!cancelled) {
+            setOrderQuote(quote);
+          }
         })
         .catch((error) => {
           console.error("Error cotizando el pedido:", error);
+
           if (!cancelled) {
-            setQuoteError("No se pudo actualizar el total. Intenta de nuevo.");
+            setQuoteError(
+              "No se pudo actualizar el total. Intenta de nuevo.",
+            );
           }
         })
         .finally(() => {
-          if (!cancelled) setIsQuoting(false);
+          if (!cancelled) {
+            setIsQuoting(false);
+          }
         });
     }, 300);
 
@@ -97,20 +114,27 @@ function CheckOrder() {
     };
   }, [tableId, cartItems, isAddingToOrder]);
 
-  //_________________
-
+  // Obtener el número público de la mesa.
   useEffect(() => {
-    if (!tableId) return;
+    if (!tableId) {
+      setTableInfo(null);
+      return;
+    }
 
     let isCurrentRequest = true;
 
     void getPublicTableNumber(tableId)
       .then(({ tableNumber }) => {
-        if (isCurrentRequest) setTableInfo({ tableId, tableNumber });
+        if (isCurrentRequest) {
+          setTableInfo({ tableId, tableNumber });
+        }
       })
       .catch((error) => {
         console.error("Error loading table number:", error);
-        if (isCurrentRequest) setTableInfo(null);
+
+        if (isCurrentRequest) {
+          setTableInfo(null);
+        }
       });
 
     return () => {
@@ -118,12 +142,9 @@ function CheckOrder() {
     };
   }, [tableId]);
 
-  console.log("CHECK ORDER CART:", cartItems);
-  console.log("CHECK ORDER TABLE:", mesaId);
-
-
   const handleCreateOrder = async () => {
     if (
+      isSubmitting ||
       isQuoting ||
       quoteError ||
       (!isAddingToOrder && !orderQuote)
@@ -183,9 +204,9 @@ function CheckOrder() {
     } catch (error) {
       const message =
         typeof error === "object" &&
-          error !== null &&
-          "message" in error &&
-          typeof error.message === "string"
+        error !== null &&
+        "message" in error &&
+        typeof error.message === "string"
           ? error.message
           : "No se pudo enviar el pedido.";
 
@@ -198,9 +219,9 @@ function CheckOrder() {
   const canSubmit = isAddingToOrder
     ? cartItems.length > 0 && !isSubmitting
     : !isQuoting &&
-    !quoteError &&
-    Boolean(orderQuote) &&
-    !isSubmitting;
+      !quoteError &&
+      Boolean(orderQuote) &&
+      !isSubmitting;
 
   const handleSuccess = () => {
     if (createdOrderId === null) {
@@ -237,12 +258,156 @@ function CheckOrder() {
     });
   };
 
+  // Resumen de precios recibido desde el servidor.
+  const renderOrderTotals = () => {
+    if (isQuoting) {
+      return <p>Actualizando el total…</p>;
+    }
+
+    if (quoteError) {
+      return (
+        <p role="alert" className="text-red-600">
+          {quoteError}
+        </p>
+      );
+    }
+
+    if (!orderQuote) {
+      return null;
+    }
+
+    const subtotal = Number(orderQuote.totals.subtotal);
+    const subtotalBeforeDiscount = Number(
+      orderQuote.totals.subtotalBeforeDiscount,
+    );
+    const discount = Number(orderQuote.totals.discount);
+    const tax = Number(orderQuote.totals.tax);
+    const total = Number(orderQuote.totals.total);
+    const hasDiscount = discount > 0;
+
+    return (
+      <>
+        {hasDiscount ? (
+          <>
+            <div className="flex justify-between gap-4 text-base">
+              <span>Subtotal</span>
+              <span className="line-through text-gray-500">
+                ₡{subtotalBeforeDiscount.toLocaleString("es-CR")}
+              </span>
+            </div>
+
+            <div className="flex justify-between gap-4 text-base">
+              <span>Descuento</span>
+              <span>₡{discount.toLocaleString("es-CR")}</span>
+            </div>
+
+            <div className="flex justify-between gap-4 text-base font-medium">
+              <span>Subtotal con descuento aplicado</span>
+              <span>₡{subtotal.toLocaleString("es-CR")}</span>
+            </div>
+          </>
+        ) : (
+          <div className="flex justify-between gap-4 text-base">
+            <span>Subtotal</span>
+            <span>₡{subtotal.toLocaleString("es-CR")}</span>
+          </div>
+        )}
+
+        <div className="flex justify-between gap-4 text-base">
+          <span>IVA</span>
+          <span>₡{tax.toLocaleString("es-CR")}</span>
+        </div>
+
+        <div className="mt-2 flex justify-between gap-4 text-xl font-bold text-mint-darker">
+          <span>Total</span>
+          <span>₡{total.toLocaleString("es-CR")}</span>
+        </div>
+      </>
+    );
+  };
+
+  // Controles de cantidad: solo para los productos del cliente actual.
+  const renderItemQuantity = (
+    item: (typeof cartItems)[number],
+    isMobile: boolean,
+  ) => {
+    const editable = canModifyItem(item);
+
+    if (!editable) {
+      return (
+        <span className="mt-2 text-sm text-text-primary">
+          Cantidad: {item.quantity}
+        </span>
+      );
+    }
+
+    return (
+      <div
+        className={`flex items-center gap-2 ${
+          isMobile ? "mt-2" : "mt-3"
+        }`}
+      >
+        <button
+          type="button"
+          onClick={() => decreaseQuantity(item.cartItemId)}
+          className={`flex ${
+            isMobile ? "h-8 w-8" : "h-9 w-9"
+          } cursor-pointer items-center justify-center rounded-full border border-border bg-white`}
+          aria-label={`Disminuir cantidad de ${item.name}`}
+        >
+          <FiMinus className="h-4 w-4" />
+        </button>
+
+        <span
+          className={`${
+            isMobile ? "w-6" : "w-8"
+          } text-center font-bold`}
+        >
+          {item.quantity}
+        </span>
+
+        <button
+          type="button"
+          onClick={() => increaseQuantity(item.cartItemId)}
+          className={`flex ${
+            isMobile ? "h-8 w-8" : "h-9 w-9"
+          } cursor-pointer items-center justify-center rounded-full bg-mint-dark text-white`}
+          aria-label={`Aumentar cantidad de ${item.name}`}
+        >
+          <FiPlus className="h-4 w-4" />
+        </button>
+      </div>
+    );
+  };
+
+  // Botón de eliminar: solo para los productos del cliente actual.
+  const renderRemoveButton = (
+    item: (typeof cartItems)[number],
+    isMobile: boolean,
+  ) => {
+    if (!canModifyItem(item)) {
+      return null;
+    }
+
+    return (
+      <button
+        type="button"
+        onClick={() => removeFromCart(item.cartItemId)}
+        className={`${
+          isMobile ? "mr-4 h-8 w-8" : "mr-6 h-9 w-9"
+        } flex shrink-0 cursor-pointer items-center justify-center self-center rounded-full text-gray-500 hover:text-red-600`}
+        aria-label={`Eliminar ${item.name}`}
+      >
+        <FiX className="h-5 w-5" />
+      </button>
+    );
+  };
+
   return (
     <main className="min-h-screen bg-white">
       <div className="h-20 bg-mint-dark" />
 
       <section className="-mt-10 min-h-[calc(100vh-5rem)] w-full rounded-t-[40px] bg-white px-6 py-10 lg:px-10">
-
         {/* Celular */}
         <div className="lg:hidden">
           <div className="flex items-center gap-2">
@@ -272,7 +437,8 @@ function CheckOrder() {
           <h3 className="mt-5 text-xl font-bold text-text-primary">
             Resumen del pedido
           </h3>
-          <div className="mt-6 -mx-6 rounded-4xl bg-neutral-50 px-6 pb-8 pt-6">
+
+          <div className="-mx-6 mt-6 rounded-4xl bg-neutral-50 px-6 pb-8 pt-6">
             <div className="flex flex-col gap-4">
               {cartItems.length === 0 ? (
                 <p className="text-text-primary">
@@ -284,7 +450,7 @@ function CheckOrder() {
                     key={item.cartItemId}
                     className="flex min-h-32 overflow-hidden rounded-2xl bg-white shadow-sm"
                   >
-                    <div className="w-32 h-34 shrink-0">
+                    <div className="h-34 w-32 shrink-0">
                       <img
                         src={item.image}
                         alt={item.name}
@@ -319,43 +485,10 @@ function CheckOrder() {
                         )}
                       </div>
 
-                      <div className="mt-2 flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            decreaseQuantity(item.cartItemId)
-                          }
-                          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border bg-white"
-                        >
-                          <FiMinus className="h-4 w-4" />
-                        </button>
-
-                        <span className="w-6 text-center font-bold">
-                          {item.quantity}
-                        </span>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            increaseQuantity(item.cartItemId)
-                          }
-                          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-mint-dark text-white"
-                        >
-                          <FiPlus className="h-4 w-4" />
-                        </button>
-                      </div>
+                      {renderItemQuantity(item, true)}
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        removeFromCart(item.cartItemId)
-                      }
-                      className="mr-4 flex h-8 w-8 shrink-0 self-center cursor-pointer items-center justify-center rounded-full text-gray-500 hover:text-red-600"
-                      aria-label={`Eliminar ${item.name}`}
-                    >
-                      <FiX className="h-5 w-5" />
-                    </button>
+                    {renderRemoveButton(item, true)}
                   </div>
                 ))
               )}
@@ -365,69 +498,7 @@ function CheckOrder() {
           {cartItems.length > 0 && (
             <>
               <div className="mt-8 flex flex-col gap-2 border-t border-border pt-4">
-                {isQuoting && <p>Actualizando el total…</p>}
-
-                {quoteError && (
-                  <p role="alert" className="text-red-600">
-                    {quoteError}
-                  </p>
-                )}
-                {orderQuote && (() => {
-                  const subtotal = Number(orderQuote.totals.subtotal);
-                  const subtotalBeforeDiscount = Number(
-                    orderQuote.totals.subtotalBeforeDiscount,
-                  );
-                  const discount = Number(orderQuote.totals.discount);
-                  const hasDiscount = discount > 0;
-
-                  return (
-                    <>
-                      {hasDiscount ? (
-                        <>
-                          <div className="flex justify-between text-base">
-                            <span>Subtotal</span>
-                            <span className="line-through text-gray-500">
-                              ₡{subtotalBeforeDiscount.toLocaleString("es-CR")}
-                            </span>
-                          </div>
-
-                          <div className="flex justify-between text-base">
-                            <span>Descuento</span>
-                            <span>
-                              ₡{discount.toLocaleString("es-CR")}
-                            </span>
-                          </div>
-
-                          <div className="flex justify-between text-base font-medium">
-                            <span>Subtotal con descuento aplicado</span>
-                            <span>
-                              ₡{subtotal.toLocaleString("es-CR")}
-                            </span>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="flex justify-between text-base">
-                          <span>Subtotal</span>
-                          <span>₡{subtotal.toLocaleString("es-CR")}</span>
-                        </div>
-                      )}
-
-                      <div className="flex justify-between text-base">
-                        <span>IVA</span>
-                        <span>
-                          ₡{Number(orderQuote.totals.tax).toLocaleString("es-CR")}
-                        </span>
-                      </div>
-
-                      <div className="mt-2 flex justify-between text-xl font-bold text-mint-darker">
-                        <span>Total</span>
-                        <span>
-                          ₡{Number(orderQuote.totals.total).toLocaleString("es-CR")}
-                        </span>
-                      </div>
-                    </>
-                  );
-                })()}
+                {renderOrderTotals()}
               </div>
 
               <div className="mt-8">
@@ -463,7 +534,7 @@ function CheckOrder() {
           )}
         </div>
 
-        {/* Computadora - Tablet */}
+        {/* Computadora y tablet */}
         <div className="hidden lg:block">
           <div className="flex items-center gap-2">
             <Link
@@ -480,13 +551,12 @@ function CheckOrder() {
           </div>
 
           {tableInfo && tableInfo.tableId === tableId && (
-            <p className="mt-3 font-bold text-mint-dark text-xl">
+            <p className="mt-3 text-xl font-bold text-mint-dark">
               Mesa #{tableInfo.tableNumber}
             </p>
           )}
 
           <div className="mt-8 grid grid-cols-[minmax(0,1fr)_340px] gap-8 xl:grid-cols-[minmax(0,680px)_360px] xl:gap-10">
-
             <div className="min-w-0">
               <h2 className="text-2xl font-bold text-text-primary">
                 Platillos
@@ -504,7 +574,7 @@ function CheckOrder() {
                         key={item.cartItemId}
                         className="flex min-h-36 overflow-hidden rounded-2xl bg-white shadow-sm"
                       >
-                        <div className="w-40 h-40 shrink-0">
+                        <div className="h-40 w-40 shrink-0">
                           <img
                             src={item.image}
                             alt={item.name}
@@ -539,50 +609,16 @@ function CheckOrder() {
                             )}
                           </div>
 
-                          <div className="mt-3 flex items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                decreaseQuantity(item.cartItemId)
-                              }
-                              className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border bg-white"
-                            >
-                              <FiMinus className="h-4 w-4" />
-                            </button>
-
-                            <span className="w-8 text-center font-bold">
-                              {item.quantity}
-                            </span>
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                increaseQuantity(item.cartItemId)
-                              }
-                              className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-mint-dark text-white"
-                            >
-                              <FiPlus className="h-4 w-4" />
-                            </button>
-                          </div>
+                          {renderItemQuantity(item, false)}
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            removeFromCart(item.cartItemId)
-                          }
-                          className="mr-6 flex h-9 w-9 shrink-0 self-center cursor-pointer items-center justify-center rounded-full text-gray-500 hover:text-red-600"
-                          aria-label={`Eliminar ${item.name}`}
-                        >
-                          <FiX className="h-5 w-5" />
-                        </button>
+                        {renderRemoveButton(item, false)}
                       </div>
                     ))}
                   </div>
                 )}
               </div>
             </div>
-
 
             <div className="min-w-0">
               <h2 className="text-2xl font-bold text-text-primary">
@@ -592,70 +628,7 @@ function CheckOrder() {
               {cartItems.length > 0 && (
                 <>
                   <div className="mt-6 flex flex-col gap-2 border-t border-border pt-4">
-                    {isQuoting && <p>Actualizando el total…</p>}
-
-                    {quoteError && (
-                      <p role="alert" className="text-red-600">
-                        {quoteError}
-                      </p>
-                    )}
-
-                    {orderQuote && (() => {
-                      const subtotal = Number(orderQuote.totals.subtotal);
-                      const subtotalBeforeDiscount = Number(
-                        orderQuote.totals.subtotalBeforeDiscount,
-                      );
-                      const discount = Number(orderQuote.totals.discount);
-                      const hasDiscount = discount > 0;
-
-                      return (
-                        <>
-                          {hasDiscount ? (
-                            <>
-                              <div className="flex justify-between text-base">
-                                <span>Subtotal</span>
-                                <span className="line-through text-gray-500">
-                                  ₡{subtotalBeforeDiscount.toLocaleString("es-CR")}
-                                </span>
-                              </div>
-
-                              <div className="flex justify-between text-base">
-                                <span>Descuento</span>
-                                <span>
-                                  ₡{discount.toLocaleString("es-CR")}
-                                </span>
-                              </div>
-
-                              <div className="flex justify-between text-base font-medium">
-                                <span>Subtotal con descuento aplicado</span>
-                                <span>
-                                  ₡{subtotal.toLocaleString("es-CR")}
-                                </span>
-                              </div>
-                            </>
-                          ) : (
-                            <div className="flex justify-between text-base">
-                              <span>Subtotal</span>
-                              <span>₡{subtotal.toLocaleString("es-CR")}</span>
-                            </div>
-                          )}
-
-                          <div className="flex justify-between text-base">
-                            <span>IVA</span>
-                            <span>
-                              ₡{Number(orderQuote.totals.tax).toLocaleString("es-CR")}
-                            </span>
-                          </div>
-
-                          <div className="mt-2 flex justify-between text-xl font-bold text-mint-darker">
-                            <span>Total</span>
-                            <span>
-                              ₡{Number(orderQuote.totals.total).toLocaleString("es-CR")}
-                            </span>
-                          </div>
-                        </>
-                      );
-                    })()}
+                    {renderOrderTotals()}
                   </div>
 
                   <div className="mt-8">
@@ -694,6 +667,7 @@ function CheckOrder() {
         </div>
       </section>
 
+      {/* Modal de éxito */}
       {isSuccessDialogOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -708,9 +682,11 @@ function CheckOrder() {
             >
               ¡Listo!
             </h2>
+
             <p className="mt-2 text-sm text-text-primary">
               Tu pedido fue enviado correctamente.
             </p>
+
             <button
               type="button"
               onClick={handleSuccess}
@@ -721,7 +697,6 @@ function CheckOrder() {
           </div>
         </div>
       )}
-
 
       {/* Modal de confirmación */}
       {isConfirmDialogOpen && (
