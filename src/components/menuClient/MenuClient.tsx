@@ -1,5 +1,11 @@
+
 import { useEffect, useState } from "react";
-import { getProducts, getCategories, type Product, type Category } from "../../services/productService";
+import {
+  getProducts,
+  getCategories,
+  type Product,
+  type Category,
+} from "../../services/productService";
 import { LuShoppingBag } from "react-icons/lu";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
@@ -11,18 +17,18 @@ import {
   useNavigate,
 } from "@tanstack/react-router";
 import { useCart } from "../clientOrders/CartContext";
+import type { CartItem } from "../clientOrders/CartContext";
 import { getProductReviews } from "../../services/reviewService";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { getPublicTableNumber } from "../../services/tableService";
 import { HiArrowLeft } from "react-icons/hi";
 
-
-
-//limite de muestras
+// Límite de muestras
 const PAGE_SIZE = 10;
 
+type ProductToAdd = Omit<CartItem, "cartItemId" | "clientId">;
 
-//funcion de carga de datos de platillos/productos desde la bd:
+// Función para mostrar los productos
 function ProductList({
   initialLoading,
   isFiltering,
@@ -31,6 +37,8 @@ function ProductList({
   selectedProductId,
   onViewMore,
   onCloseDetails,
+  isAddingToOrder = false,
+  onAddProduct,
 }: {
   initialLoading: boolean;
   isFiltering: boolean;
@@ -40,29 +48,46 @@ function ProductList({
   selectedProductId: number | null;
   onViewMore: (productId: number) => void;
   onCloseDetails: () => void;
+  isAddingToOrder?: boolean;
+  onAddProduct?: (item: ProductToAdd) => void;
 }) {
-  const visibleProducts = selectedProductId === null
-    ? products
-    : products.filter((product) => product.productId === selectedProductId);
+  const visibleProducts =
+    selectedProductId === null
+      ? products
+      : products.filter(
+          (product) => product.productId === selectedProductId,
+        );
 
   return (
     <div
-      className={`contents transition-opacity duration-200 ${isFiltering ? "opacity-50" : "opacity-100"
-        }`}
+      className={`contents transition-opacity duration-200 ${
+        isFiltering ? "opacity-50" : "opacity-100"
+      }`}
     >
       {initialLoading && (
         <>
           {Array.from({ length: 6 }, (_, index) => (
-            <Skeleton key={index} className="h-80 w-full rounded-2xl lg:w-87.5" />
+            <Skeleton
+              key={index}
+              className="h-80 w-full rounded-2xl lg:w-87.5"
+            />
           ))}
         </>
       )}
+
       {!initialLoading && products.length === 0 && (
         <p className="text-text-primary">No hay platillos...</p>
       )}
 
       {visibleProducts.map((product) => (
-        <div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
+        <div
+          key={product.productId}
+          className={
+            selectedProductId === product.productId
+              ? "w-full lg:w-192.5"
+              : "w-full lg:w-87.5"
+          }
+        >
           <DishCard
             name={product.productName ?? ""}
             description={product.description ?? ""}
@@ -76,6 +101,8 @@ function ProductList({
             optionGroups={product.optionGroups}
             isDetailView={selectedProductId === product.productId}
             showReviews
+            isAddingToOrder={isAddingToOrder}
+            onAddProduct={onAddProduct}
             onViewMore={() => onViewMore(product.productId)}
             onCloseDetails={onCloseDetails}
           />
@@ -85,46 +112,45 @@ function ProductList({
   );
 }
 
-
-
 function MenuClient() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(
+    null,
+  );
   const [isFiltering, setIsFiltering] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
-  const [tableInfo, setTableInfo] = useState<{ mesaId: string; tableNumber: number; } | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(
+    null,
+  );
+  const [tableInfo, setTableInfo] = useState<{
+    mesaId: string;
+    tableNumber: number;
+  } | null>(null);
 
-  //nuevo
   const [currentOrderId, setCurrentOrderId] = useState<number | null>(null);
-
   const [currentOrderTableId, setCurrentOrderTableId] = useState<
     string | undefined
   >(undefined);
 
-
-  const { cartCount, setMesaId } = useCart();
-
-
-
   const {
-    mesaId,
-    orderId,
-    mode,
-    returnTo,
-  } = useSearch({
+    cartCount,
+    orderAddCount,
+    setMesaId,
+    addToOrderCart,
+  } = useCart();
+
+  const { mesaId, orderId, mode, returnTo } = useSearch({
     from: "/(menuClient)/menuClient",
   });
 
+  const isAddingToOrder = mode === "add" && orderId !== undefined;
 
-  const isAddingToOrder =
-    mode === "add" && orderId !== undefined;
-
+  // Recuperar la comanda actual de esta mesa
   useEffect(() => {
     const savedOrderId = localStorage.getItem("currentOrderId");
     const savedOrderTableId = localStorage.getItem("currentOrderTableId");
@@ -158,10 +184,12 @@ function MenuClient() {
     }
   }, [mesaId]);
 
+  // Mantener identificada la mesa del carrito compartido
   useEffect(() => {
     setMesaId(mesaId);
   }, [mesaId, setMesaId]);
 
+  // Obtener el número público de la mesa
   useEffect(() => {
     if (!mesaId) return;
 
@@ -169,11 +197,16 @@ function MenuClient() {
 
     void getPublicTableNumber(mesaId)
       .then(({ tableNumber: number }) => {
-        if (isCurrentRequest) setTableInfo({ mesaId, tableNumber: number });
+        if (isCurrentRequest) {
+          setTableInfo({ mesaId, tableNumber: number });
+        }
       })
       .catch((error) => {
         console.error("Error loading table number:", error);
-        if (isCurrentRequest) setTableInfo(null);
+
+        if (isCurrentRequest) {
+          setTableInfo(null);
+        }
       });
 
     return () => {
@@ -181,6 +214,7 @@ function MenuClient() {
     };
   }, [mesaId]);
 
+  // Cargar productos con sus calificaciones
   const loadProductsWithRatings = async (products: Product[]) => {
     return Promise.all(
       products.map(async (product) => {
@@ -200,57 +234,95 @@ function MenuClient() {
       }),
     );
   };
+
+  // Cargar categorías
   useEffect(() => {
     if (!mesaId) return;
 
+    let isCurrentRequest = true;
+
     const loadCategories = async () => {
+      setIsLoadingCategories(true);
+
       try {
         const data = await getCategories(mesaId);
-        setCategories(data);
+
+        if (isCurrentRequest) {
+          setCategories(data);
+        }
       } catch (error) {
         console.error("Error loading categories:", error);
       } finally {
-        setIsLoadingCategories(false);
+        if (isCurrentRequest) {
+          setIsLoadingCategories(false);
+        }
       }
     };
 
-    loadCategories();
+    void loadCategories();
+
+    return () => {
+      isCurrentRequest = false;
+    };
   }, [mesaId]);
 
-
-  //cargar los productos
+  // Cargar los productos
   useEffect(() => {
+    if (!mesaId) {
+      setInitialLoading(false);
+      return;
+    }
+
+    let isCurrentRequest = true;
+
     const loadProducts = async () => {
       setSelectedProductId(null);
       setIsFiltering(true);
+
       try {
         const data = await getProducts({
           mesaId,
           search: searchTerm,
-          //si hay texto en elbuscador se ignora categoria
           category: searchTerm ? undefined : selectedCategory ?? undefined,
           limit: PAGE_SIZE,
-          offset: 0
+          offset: 0,
         });
-        const productsWithRatings = await loadProductsWithRatings(data.products);
 
-        setProducts(productsWithRatings);
-        setHasMore(data.hasMore);
+        const productsWithRatings = await loadProductsWithRatings(
+          data.products,
+        );
+
+        if (isCurrentRequest) {
+          setProducts(productsWithRatings);
+          setHasMore(data.hasMore);
+        }
       } catch (error) {
         console.error("Error loading products:", error);
       } finally {
-        setInitialLoading(false);
-        setIsFiltering(false);
+        if (isCurrentRequest) {
+          setInitialLoading(false);
+          setIsFiltering(false);
+        }
       }
     };
-    //duracion de carga entre busqueda o filtro
-    const delay = searchTerm ? 400 : 0;
-    const timeoutId = setTimeout(loadProducts, delay);
-    return () => clearTimeout(timeoutId);
-  }, [searchTerm, selectedCategory, mesaId]);;
 
+    const delay = searchTerm ? 400 : 0;
+    const timeoutId = setTimeout(() => {
+      void loadProducts();
+    }, delay);
+
+    return () => {
+      isCurrentRequest = false;
+      clearTimeout(timeoutId);
+    };
+  }, [searchTerm, selectedCategory, mesaId]);
+
+  // Cargar más productos
   const handleLoadMore = async () => {
+    if (isLoadingMore || !mesaId) return;
+
     setIsLoadingMore(true);
+
     try {
       const data = await getProducts({
         mesaId,
@@ -259,10 +331,13 @@ function MenuClient() {
         limit: PAGE_SIZE,
         offset: products.length,
       });
-      const productsWithRatings = await loadProductsWithRatings(data.products);
+
+      const productsWithRatings = await loadProductsWithRatings(
+        data.products,
+      );
 
       setProducts((prev) => [...prev, ...productsWithRatings]);
-      setHasMore(data.hasMore)
+      setHasMore(data.hasMore);
     } catch (error) {
       console.error("Error loading more products:", error);
     } finally {
@@ -271,20 +346,23 @@ function MenuClient() {
   };
 
   const handleDeleteProduct = (productId: number) => {
-    setProducts((prev) => prev.filter((product) => product.productId !== productId));
-    setSelectedProductId((current) => current === productId ? null : current);
-  };
+    setProducts((prev) =>
+      prev.filter((product) => product.productId !== productId),
+    );
 
+    setSelectedProductId((current) =>
+      current === productId ? null : current,
+    );
+  };
 
   const navigate = useNavigate();
 
+  // Volver a la pantalla anterior al agregar productos
   const handleReturnFromAdd = () => {
     if (returnTo === "cashier" && orderId !== undefined) {
       void navigate({
         to: "/paymentMethod",
-        search: {
-          orderId,
-        },
+        search: { orderId },
       });
 
       return;
@@ -296,11 +374,9 @@ function MenuClient() {
   };
 
   return (
-
     <main className="min-h-screen bg-white px-8 pt-8 lg:bg-neutral-50">
       {/* Celular */}
       <section className="lg:hidden">
-
         <div className="mt-4 flex flex-col gap-5">
           {isAddingToOrder && (
             <button
@@ -314,17 +390,17 @@ function MenuClient() {
           )}
 
           <div className="flex items-center justify-between">
-            <RestaurantLogo
-              className="h-16 w-16 object-contain"
-            />
+            <RestaurantLogo className="h-16 w-16 object-contain" />
+
             <h2 className="text-2xl font-bold text-black">Menú</h2>
+
             {tableInfo && tableInfo.mesaId === mesaId && (
               <p className="font-bold text-mint-dark">
                 Mesa #{tableInfo.tableNumber}
               </p>
             )}
-
           </div>
+
           <SearchBar
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
@@ -345,7 +421,7 @@ function MenuClient() {
             />
           </div>
 
-          <div className="-mx-8  bg-neutral-50 px-8 pb-20 rounded-t-4xl ">
+          <div className="-mx-8 rounded-t-4xl bg-neutral-50 px-8 pb-20">
             <div className="mt-8 flex flex-col gap-4">
               <ProductList
                 initialLoading={initialLoading}
@@ -356,6 +432,8 @@ function MenuClient() {
                 selectedProductId={selectedProductId}
                 onViewMore={setSelectedProductId}
                 onCloseDetails={() => setSelectedProductId(null)}
+                isAddingToOrder={isAddingToOrder}
+                onAddProduct={addToOrderCart}
               />
             </div>
 
@@ -364,21 +442,17 @@ function MenuClient() {
                 type="button"
                 onClick={handleLoadMore}
                 disabled={isLoadingMore}
-                className="w-full mt-6  rounded-2xl bg-white border border-border py-3 text-base font-bold text-mint-dark disabled:opacity-50"
+                className="mt-6 w-full rounded-2xl border border-border bg-white py-3 text-base font-bold text-mint-dark disabled:opacity-50"
               >
                 {isLoadingMore ? "Cargando..." : "Cargar más"}
               </button>
             )}
-
           </div>
         </div>
       </section>
 
       {/* Computadora */}
-
-      <section className="hidden lg:block ml-44 pb-20">
-
-
+      <section className="ml-44 hidden pb-20 lg:block">
         <div className="mt-8 flex flex-col gap-1">
           <h2 className="text-2xl font-bold text-black">Menú</h2>
 
@@ -388,20 +462,16 @@ function MenuClient() {
               onClick={handleReturnFromAdd}
               className="flex items-center gap-2 text-mint-dark"
             >
-
               <span>Volver</span>
-              
             </button>
           )}
 
           {tableInfo && tableInfo.mesaId === mesaId && (
-            <p className="font-bold text-mint-dark text-xl">
+            <p className="text-xl font-bold text-mint-dark">
               Mesa #{tableInfo.tableNumber}
             </p>
           )}
         </div>
-
-
 
         <SearchBar
           searchTerm={searchTerm}
@@ -423,9 +493,10 @@ function MenuClient() {
           />
         </div>
 
-        <h2 className="mt-8 text-2xl font-bold text-black">Menú popular</h2>
+        <h2 className="mt-8 text-2xl font-bold text-black">
+          Menú popular
+        </h2>
 
-        {/* Platillos */}
         <div className="mt-6 flex flex-wrap gap-4">
           <ProductList
             initialLoading={initialLoading}
@@ -436,31 +507,29 @@ function MenuClient() {
             selectedProductId={selectedProductId}
             onViewMore={setSelectedProductId}
             onCloseDetails={() => setSelectedProductId(null)}
+            isAddingToOrder={isAddingToOrder}
+            onAddProduct={addToOrderCart}
           />
         </div>
 
         {hasMore && selectedProductId === null && (
-          <div className="mt-6 flex justify-center ">
+          <div className="mt-6 flex justify-center">
             <button
               type="button"
               onClick={handleLoadMore}
               disabled={isLoadingMore}
-              className="rounded-lg cursor-pointer bg-white border border-border px-8 py-3 text-base font-bold text-mint-dark disabled:opacity-50"
+              className="cursor-pointer rounded-lg border border-border bg-white px-8 py-3 text-base font-bold text-mint-dark disabled:opacity-50"
             >
               {isLoadingMore ? "Cargando..." : "Cargar más"}
             </button>
           </div>
-
         )}
       </section>
 
+      {/* Acceso al carrito o a la comanda actual */}
       <div className="fixed bottom-2 left-8 right-8 z-50 flex h-12 items-center justify-center rounded-2xl border border-border bg-white lg:bottom-8 lg:left-10 lg:right-auto lg:top-8 lg:h-[calc(100vh-4rem)] lg:w-20 lg:rounded-full lg:border-0">
+        <RestaurantLogo className="absolute top-6 hidden h-16 w-16 object-contain lg:block" />
 
-        <RestaurantLogo
-          className="absolute top-6 hidden h-16 w-16 object-contain lg:block"
-        />
-
-        {/* nuevo */}
         {!isAddingToOrder && currentOrderId !== null ? (
           <Link
             to="/orderStatus"
@@ -485,17 +554,15 @@ function MenuClient() {
           >
             <LuShoppingBag className="h-7 w-7 text-white" />
 
-            {cartCount > 0 && (
+            {(isAddingToOrder ? orderAddCount : cartCount) > 0 && (
               <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">
-                {cartCount}
+                {isAddingToOrder ? orderAddCount : cartCount}
               </span>
             )}
           </Link>
         )}
       </div>
-
     </main>
-
   );
 }
 

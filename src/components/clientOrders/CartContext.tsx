@@ -1,4 +1,3 @@
-
 import {
   createContext,
   useContext,
@@ -23,8 +22,6 @@ import type {
   SharedCartItem,
 } from "../../services/sharedCartService";
 
-import { useNavigate } from "@tanstack/react-router";
-
 export type CartItem = {
   cartItemId: string;
   clientId: string;
@@ -37,27 +34,44 @@ export type CartItem = {
   selectedOptions: Record<string, string>;
 };
 
+type NewCartItem = Omit<CartItem, "cartItemId" | "clientId">;
+
 type CartContextType = {
   mesaId: string | undefined;
   setMesaId: (mesaId: string | undefined) => void;
+
+  // Carrito compartido de los clientes
   cartItems: CartItem[];
-  addToCart: (item: Omit<CartItem, "cartItemId" | "clientId">) => void;
+  addToCart: (item: NewCartItem) => void;
   increaseQuantity: (cartItemId: string) => void;
   decreaseQuantity: (cartItemId: string) => void;
   removeFromCart: (cartItemId: string) => void;
   canModifyItem: (item: CartItem) => boolean;
   clearCart: () => void;
   cartCount: number;
+
+  // Carrito temporal para agregar productos a una comanda existente
+  orderAddItems: CartItem[];
+  addToOrderCart: (item: NewCartItem) => void;
+  increaseOrderItemQuantity: (cartItemId: string) => void;
+  decreaseOrderItemQuantity: (cartItemId: string) => void;
+  removeOrderItem: (cartItemId: string) => void;
+  clearOrderAddCart: () => void;
+  orderAddCount: number;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [mesaId, setMesaId] = useState<string | undefined>(undefined);
+
+  // Carrito compartido
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoadingSharedCart, setIsLoadingSharedCart] = useState(false);
-  const navigate = useNavigate();
   const sharedCartIdRef = useRef<string | null>(null);
+
+  // Carrito temporal para una comanda ya existente
+  const [orderAddItems, setOrderAddItems] = useState<CartItem[]>([]);
 
   const saveSharedCartId = (id: string | null) => {
     sharedCartIdRef.current = id;
@@ -102,7 +116,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCartItems(items);
   };
 
-  // Cargar el carrito de la mesa.
+  // Cargar el carrito compartido de la mesa
   useEffect(() => {
     if (!mesaId) {
       setCartItems([]);
@@ -185,27 +199,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
       saveSharedCartId(null);
     };
 
-   const handleCartSubmitted = (data: {
-  tableId: string;
-  orderId: number;
-}) => {
-  if (data.tableId !== mesaId) return;
+    const handleCartSubmitted = (data: {
+      tableId: string;
+      orderId: number;
+    }) => {
+      if (data.tableId !== mesaId) return;
 
-  setCartItems([]);
-  saveSharedCartId(null);
+      setCartItems([]);
+      saveSharedCartId(null);
 
-  localStorage.setItem("currentOrderId", String(data.orderId));
-  localStorage.setItem("currentOrderTableId", data.tableId);
+      localStorage.setItem("currentOrderId", String(data.orderId));
+      localStorage.setItem("currentOrderTableId", data.tableId);
 
-  window.dispatchEvent(
-    new CustomEvent("scaneat:order-submitted", {
-      detail: {
-        tableId: data.tableId,
-        orderId: data.orderId,
-      },
-    }),
-  );
-};
+      window.dispatchEvent(
+        new CustomEvent("scaneat:order-submitted", {
+          detail: {
+            tableId: data.tableId,
+            orderId: data.orderId,
+          },
+        }),
+      );
+    };
 
     socket.on("connect", joinTable);
     socket.on("cart:updated", handleCartUpdated);
@@ -227,9 +241,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
   }, [mesaId]);
 
-  const addToCart = async (
-    item: Omit<CartItem, "cartItemId" | "clientId">,
-  ) => {
+  // Agregar al carrito compartido.
+  const addToCart = async (item: NewCartItem) => {
     if (!mesaId || isLoadingSharedCart) {
       console.warn(
         "No se puede agregar el producto sin una mesa lista.",
@@ -328,12 +341,63 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Limpiar únicamente la vista local del carrito compartido
   const clearCart = () => {
-    // Solo limpia la vista local; no elimina el carrito del servidor.
     setCartItems([]);
   };
 
+  // Agregar un producto al carrito temporal de la comanda existente
+  const addToOrderCart = (item: NewCartItem) => {
+    const newItem: CartItem = {
+      ...item,
+      cartItemId: `order-add-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 9)}`,
+      clientId: getClientId(),
+      selectedOptions: { ...item.selectedOptions },
+    };
+
+    setOrderAddItems((currentItems) => [...currentItems, newItem]);
+  };
+
+  const increaseOrderItemQuantity = (cartItemId: string) => {
+    setOrderAddItems((items) =>
+      items.map((item) =>
+        item.cartItemId === cartItemId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item,
+      ),
+    );
+  };
+
+  const decreaseOrderItemQuantity = (cartItemId: string) => {
+    setOrderAddItems((items) =>
+      items
+        .map((item) =>
+          item.cartItemId === cartItemId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item,
+        )
+        .filter((item) => item.quantity > 0),
+    );
+  };
+
+  const removeOrderItem = (cartItemId: string) => {
+    setOrderAddItems((items) =>
+      items.filter((item) => item.cartItemId !== cartItemId),
+    );
+  };
+
+  const clearOrderAddCart = () => {
+    setOrderAddItems([]);
+  };
+
   const cartCount = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0,
+  );
+
+  const orderAddCount = orderAddItems.reduce(
     (total, item) => total + item.quantity,
     0,
   );
@@ -343,6 +407,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       value={{
         mesaId,
         setMesaId,
+
         cartItems,
         addToCart,
         increaseQuantity,
@@ -351,6 +416,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
         canModifyItem,
         clearCart,
         cartCount,
+
+        orderAddItems,
+        addToOrderCart,
+        increaseOrderItemQuantity,
+        decreaseOrderItemQuantity,
+        removeOrderItem,
+        clearOrderAddCart,
+        orderAddCount,
       }}
     >
       {children}
