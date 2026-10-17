@@ -89,7 +89,6 @@ function DishCard({
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoadingEdit, setIsLoadingEdit] = useState(false);
   const [detailOptionGroups, setDetailOptionGroups] = useState(optionGroups);
-  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [validationMessage, setValidationMessage] = useState("");
@@ -105,9 +104,7 @@ function DishCard({
     if (!isDetailView || !productId) {
       return;
     }
-
     let isCurrent = true;
-    setIsLoadingDetails(true);
 
     const loadProductDetails = async () => {
       try {
@@ -118,10 +115,6 @@ function DishCard({
         }
       } catch (error) {
         console.error("Error loading product details:", error);
-      } finally {
-        if (isCurrent) {
-          setIsLoadingDetails(false);
-        }
       }
     };
 
@@ -251,7 +244,9 @@ function DishCard({
 
         <div
           className={`flex min-h-0 min-w-0 flex-1 flex-col justify-center px-4 py-3 ${
-            isDetailView ? "lg:px-8 lg:py-8" : ""
+            isDetailView
+              ? "lg:justify-start lg:overflow-y-auto lg:px-8 lg:py-8"
+              : ""
           }`}
         >
           <h2 className="text-base font-bold text-mint-darker">{name}</h2>
@@ -283,31 +278,24 @@ function DishCard({
             )}
           </div>
 
-          {isDetailView &&
-            (isLoadingDetails || detailOptionGroups.length > 0) && (
+          {isDetailView && detailOptionGroups.length > 0 && (
               <div className="mt-4">
                 <h3 className="text-sm font-bold text-mint-darker">
                   Opciones de personalización
                 </h3>
 
-                {isLoadingDetails && detailOptionGroups.length === 0 ? (
-                  <p className="mt-1 text-sm text-text-primary">
-                    Cargando opciones...
-                  </p>
-                ) : (
-                  <div className="mt-2 space-y-2">
-                    {detailOptionGroups.map((group) => (
-                      <div key={group.id}>
-                        <p className="text-sm font-semibold text-text-primary">
-                          {group.name}
-                        </p>
-                        <p className="text-sm text-text-primary">
-                          {group.options.join(", ")}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <div className="mt-2 space-y-2">
+                  {detailOptionGroups.map((group) => (
+                    <div key={group.id}>
+                      <p className="text-sm font-semibold text-text-primary">
+                        {group.name}
+                      </p>
+                      <p className="text-sm text-text-primary">
+                        {group.options.join(", ")}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -392,13 +380,13 @@ function DishCard({
       </article>
 
       {isOptionsModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 pb-16 lg:pb-4">
+          <div className="flex max-h-[calc(100vh-6rem)] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white p-6 shadow-xl lg:max-h-[90vh]">
             <h3 className="text-xl font-bold text-mint-darker">
               Personaliza tu "{name}"
             </h3>
 
-            <div className="mt-6 space-y-6">
+            <div className="mt-6 min-h-0 flex-1 space-y-6 overflow-y-auto pr-1">
               {detailOptionGroups.map((group) => (
                 <div key={group.id}>
                   <h4 className="text-lg font-bold text-mint-darker">
