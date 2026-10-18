@@ -95,7 +95,15 @@ if (password !== confirmPassword) {
 
 	return (
 		<main className="min-h-screen bg-white">
-			<div className="h-38 bg-mint" />
+			<div className="relative h-38 bg-mint">
+	<a
+		href="https://scanneat.up.railway.app/"
+		aria-label="Volver a ScanEat"
+		className="absolute left-6 top-6"
+	>
+		<img src="/logoblanco.svg" alt="ScanEat" className="h-10 w-auto" />
+	</a>
+</div>
 			<section className="-mt-10 min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-10">
 				<form
 	onSubmit={handleSubmit}
