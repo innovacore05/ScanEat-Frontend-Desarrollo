@@ -200,6 +200,7 @@ function getTableIdFromUrl() {
         "/checkOrder",
         "/orderStatus",
         "/reviewPlate",
+        "/reviews",
     ].some((route) =>
         window.location.pathname.startsWith(route),
     );

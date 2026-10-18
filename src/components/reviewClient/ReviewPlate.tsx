@@ -83,18 +83,17 @@ function ReviewPlate({ orderId, tableId }: ReviewPlateProps) {
     event.preventDefault();
 
     const pendingProducts = products.filter((product) => !product.reviewed);
-
-    const hasMissingRating = pendingProducts.some(
-      (product) => !reviews[product.detailId]?.rating,
+    const selectedProducts = pendingProducts.filter(
+      (product) => reviews[product.detailId]?.rating > 0,
     );
-
-    if (hasMissingRating) {
-      setError("Debes calificar todos los productos con estrellas.");
-      return;
-    }
 
     if (pendingProducts.length === 0) {
       setMessage("Este pedido ya tiene todas sus reseñas registradas.");
+      return;
+    }
+
+    if (selectedProducts.length === 0) {
+      setError("Selecciona estrellas en al menos un producto para enviar la reseña.");
       return;
     }
 
@@ -105,7 +104,7 @@ function ReviewPlate({ orderId, tableId }: ReviewPlateProps) {
 
       await createOrderReviews(orderId, {
         tableId,
-        reviews: pendingProducts.map((product) => {
+        reviews: selectedProducts.map((product) => {
           const review = reviews[product.detailId];
           
           return {
@@ -121,7 +120,9 @@ function ReviewPlate({ orderId, tableId }: ReviewPlateProps) {
 
       setProducts((current) =>
         current.map((product) =>
-          product.reviewed ? product : { ...product, reviewed: true },
+          selectedProducts.some((selected) => selected.detailId === product.detailId)
+            ? { ...product, reviewed: true }
+            : product,
         ),
       );
 
