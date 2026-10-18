@@ -65,7 +65,7 @@ function HistorySales() {
                         >
                             <HiArrowLeft className="h-6 w-6" />
 
-                            <span className="text-[32px] font-bold mt-3">
+                            <span className="text-[32px] font-bold">
                                 Historial de ventas
                             </span>
                         </Link>
@@ -117,7 +117,7 @@ function HistorySales() {
                 <section className="hidden px-15 py-15 lg:block">
                    
 
-                    <h2 className=" text-2xl font-bold text-mint-dark">
+                    <h2 className="text-3xl font-bold text-mint-dark">
                         Historial de ventas
                     </h2>
 

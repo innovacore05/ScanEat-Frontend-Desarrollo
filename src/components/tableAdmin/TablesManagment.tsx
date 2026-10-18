@@ -149,11 +149,11 @@ const handleRequestDelete = () => {
 		<Layout>
 			<main className="flex min-h-screen flex-col bg-white ">
 				{/* Celular */}
-				<section className="flex flex-1 flex-col lg:hidden">
-					<div className="flex items-center gap-2">
+				<section className="flex flex-1 flex-col  lg:hidden">
+					<div className="flex  gap-2">
 						<Link
 							to={dashboardRoute}
-							className="flex items-center gap-2 px-8 text-mint-dark"
+							className="flex items-center gap-2 px-6.5 text-mint-dark"
 						>
 							<HiArrowLeft className="h-6 w-6" />
 
@@ -287,7 +287,7 @@ const handleRequestDelete = () => {
 					<div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
 						<div>
 							<div className="flex items-center justify-between flex-wrap gap-3">
-								<h2 className="text-2xl font-bold text-mint-dark">
+								<h2 className="text-3xl font-bold text-mint-dark">
 									Mesas
 								</h2>
 

@@ -35,7 +35,7 @@ function PaymentMethod() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const navigate = useNavigate();
-
+  const [loadError, setLoadError] = useState("");
   const [isPaying, setIsPaying] = useState(false);
   const [payError, setPayError] = useState("");
   const [receipt, setReceipt] = useState<PayOrderResponse | null>(null);
@@ -48,7 +48,18 @@ function PaymentMethod() {
         const data = await getPaymentPreview(orderId);
         setOrder(data);
       } catch (error) {
-        console.error("Error cargando la orden", error);
+        console.error("Error cargando la orden:", {
+          orderId,
+          error,
+        });
+
+        setLoadError(
+          error &&
+            typeof error === "object" &&
+            "message" in error
+            ? String((error as { message?: string }).message)
+            : "No se pudo cargar la orden.",
+        );
       } finally {
         setLoading(false);
       }
@@ -60,7 +71,6 @@ function PaymentMethod() {
       setLoading(false);
     }
   }, [orderId]);
-
   const openPaymentModal = (method: PaymentType) => {
     setPaymentMethod(method);
     setPayError("");
@@ -174,11 +184,17 @@ function PaymentMethod() {
     );
   }
 
-  if (!order) {
-    return <p>No se pudo cargar la orden.</p>;
-  }
+ if (!order) {
+    return (
+        <main className="p-6">
+            <p className="text-red-600">
+                {loadError || "No se pudo cargar la orden."}
+            </p>
+        </main>
+    );
+}
 
-  
+
 
 
   return (
@@ -208,7 +224,7 @@ function PaymentMethod() {
           </p>
 
           <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-           {/* ---- */}
+            {/* ---- */}
             <div className="rounded-xl border border-border p-6 lg:p-8">
               <h2 className="text-center text-2xl font-bold text-mint-dark lg:text-3xl">
                 Recibo
@@ -255,13 +271,13 @@ function PaymentMethod() {
               <div className="mt-6 border-t border-border pt-4">
                 <div className="flex items-center justify-between">
                   <p>Subtotal (sin IVA)</p>
-                                   <p className="tracking-wider">{formatCRC(order.totals.totalNetSale)}</p>
+                  <p className="tracking-wider">{formatCRC(order.totals.totalNetSale)}</p>
                 </div>
-<div className="flex items-center justify-between">
+                <div className="flex items-center justify-between">
                   <p>Descuento</p>
-                                   <p className="tracking-wider">{formatCRC(order.totals.totalDiscount)}</p>
+                  <p className="tracking-wider">{formatCRC(order.totals.totalDiscount)}</p>
                 </div>
-                  {order.taxSummary.map(({ rate, amount }) => (
+                {order.taxSummary.map(({ rate, amount }) => (
                   <div
                     key={rate}
                     className="mt-2 flex items-center justify-between"
@@ -280,9 +296,17 @@ function PaymentMethod() {
               </div>
 
               <div className="mt-6 flex justify-end">
-                <button type="button" className="cursor-pointer">
-                  <BsFillPlusCircleFill className="h-9 w-9 text-mint-dark" />
-                </button>
+                <Link
+                  to="/menuClient"
+                  search={{
+                    mesaId: order.tableId,
+                    orderId: order.orderId,
+                    mode: "add",
+                    returnTo: "cashier",
+                  }}
+                >
+                  <BsFillPlusCircleFill className="h-8 w-8 text-mint-dark" />
+                </Link>
               </div>
             </div>
 
@@ -292,11 +316,10 @@ function PaymentMethod() {
                   type="button"
                   onClick={() => openPaymentModal("sinpe")}
                   disabled={isPaying || receipt !== null}
-                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                    paymentMethod === "sinpe"
-                      ? "bg-mint-darker text-white"
-                      : "text-gray-700"
-                  }`}
+                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${paymentMethod === "sinpe"
+                    ? "bg-mint-darker text-white"
+                    : "text-gray-700"
+                    }`}
                 >
                   SINPE Móvil
                 </button>
@@ -305,11 +328,10 @@ function PaymentMethod() {
                   type="button"
                   onClick={() => openPaymentModal("tarjeta")}
                   disabled={isPaying || receipt !== null}
-                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                    paymentMethod === "tarjeta"
-                      ? "bg-mint-darker text-white"
-                      : "text-gray-700"
-                  }`}
+                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${paymentMethod === "tarjeta"
+                    ? "bg-mint-darker text-white"
+                    : "text-gray-700"
+                    }`}
                 >
                   Tarjeta
                 </button>
@@ -318,11 +340,10 @@ function PaymentMethod() {
                   type="button"
                   onClick={() => openPaymentModal("efectivo")}
                   disabled={isPaying || receipt !== null}
-                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                    paymentMethod === "efectivo"
-                      ? "bg-mint-darker text-white"
-                      : "text-gray-700"
-                  }`}
+                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${paymentMethod === "efectivo"
+                    ? "bg-mint-darker text-white"
+                    : "text-gray-700"
+                    }`}
                 >
                   Efectivo
                 </button>

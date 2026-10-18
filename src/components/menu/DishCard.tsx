@@ -1,460 +1,476 @@
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { HiStar } from "react-icons/hi";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
 import { useCart } from "../clientOrders/CartContext";
-import { Link } from "@tanstack/react-router";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
 
 import {
-	deleteProduct,
-	getProductById,
-	isCustomProduct,
-	productIsCustom,
+  deleteProduct,
+  getProductById,
+  isCustomProduct,
+  productIsCustom,
 } from "../../services/productService";
 
 const EMPTY_OPTION_GROUPS: { id: string; name: string; options: string[] }[] = [];
 
 interface DishCardProps {
-	name: string;
-	description: string;
-	price: number;
-	discount?: number;
-	image: string;
-	rating: number;
-	isAdmin: boolean;
-	productId?: number;
-	mesaId?: string;
-	showActions?: boolean;
-	showReviews?: boolean;
-	showRating?: boolean;
-	optionGroups?: { id: string; name: string; options: string[] }[];
-	onDelete?: (productId: number) => void;
-	isDetailView?: boolean;
-	onViewMore?: () => void;
-	onCloseDetails?: () => void;
-	onAddToCart?: () => void;
+  name: string;
+  description: string;
+  price: number;
+  discount?: number;
+  image: string;
+  rating: number;
+  isAdmin: boolean;
+  productId?: number;
+  mesaId?: string;
+  showActions?: boolean;
+  showReviews?: boolean;
+  showRating?: boolean;
+  optionGroups?: { id: string; name: string; options: string[] }[];
+  onDelete?: (productId: number) => void;
+  isDetailView?: boolean;
+  onViewMore?: () => void;
+  onCloseDetails?: () => void;
+  onAddToCart?: () => void;
+  isAddingToOrder?: boolean;
+  onAddProduct?: (item: {
+    productId: number;
+    name: string;
+    price: number;
+    discount?: number;
+    image: string;
+    quantity: number;
+    selectedOptions: Record<string, string>;
+  }) => void;
 }
 
 function Stars({ rating }: { rating: number }) {
-	return (
-		<div
-			className="flex gap-0.5"
-			aria-label={`${rating} estrellas`}
-		>
-			{[1, 2, 3, 4, 5].map((star) => (
-				<HiStar
-					key={star}
-					className={`h-4 w-4 ${star <= Math.round(rating)
-						? "fill-yellow text-yellow"
-						: "fill-gray-200 text-gray-300"
-						}`}
-				/>
-			))}
-		</div>
-	);
+  return (
+    <div className="flex gap-0.5" aria-label={`${rating} estrellas`}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <HiStar
+          key={star}
+          className={`h-4 w-4 ${
+            star <= Math.round(rating)
+              ? "fill-yellow text-yellow"
+              : "fill-gray-200 text-gray-300"
+          }`}
+        />
+      ))}
+    </div>
+  );
 }
 
 function DishCard({
-	name,
-	description,
-	price,
-	image,
-	discount,
-	rating,
-	isAdmin,
-	productId,
-	mesaId,
-	showActions = true,
-	showReviews = false,
-	showRating = true,
-	optionGroups = EMPTY_OPTION_GROUPS,
-	onDelete,
-	isDetailView = false,
-	onViewMore,
-	onCloseDetails,
-	onAddToCart,
+  name,
+  description,
+  price,
+  image,
+  discount,
+  rating,
+  isAdmin,
+  productId,
+  mesaId,
+  showActions = true,
+  showReviews = false,
+  showRating = true,
+  optionGroups = EMPTY_OPTION_GROUPS,
+  onDelete,
+  isDetailView = false,
+  onViewMore,
+  onCloseDetails,
+  onAddToCart,
+  isAddingToOrder = false,
+  onAddProduct,
 }: DishCardProps) {
-	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-	const [isDeleting, setIsDeleting] = useState(false);
-	const [isLoadingEdit, setIsLoadingEdit] = useState(false);
-	const [detailOptionGroups, setDetailOptionGroups] = useState(optionGroups);
-	const [isLoadingDetails, setIsLoadingDetails] = useState(false);
-	const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
-	const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
-	const [validationMessage, setValidationMessage] = useState("");
-	const navigate = useNavigate();
-	const { addToCart } = useCart();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoadingEdit, setIsLoadingEdit] = useState(false);
+  const [detailOptionGroups, setDetailOptionGroups] = useState(optionGroups);
+  const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
+  const [validationMessage, setValidationMessage] = useState("");
 
-	useEffect(() => {
-		setDetailOptionGroups(optionGroups);
-	}, [optionGroups]);
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
 
-	useEffect(() => {
-		if (!isDetailView || !productId) {
-			return;
-		}
+  useEffect(() => {
+    setDetailOptionGroups(optionGroups);
+  }, [optionGroups]);
 
-		let isCurrent = true;
-		setIsLoadingDetails(true);
+  useEffect(() => {
+    if (!isDetailView || !productId) {
+      return;
+    }
+    let isCurrent = true;
 
-		const loadProductDetails = async () => {
-			try {
-				const product = await getProductById(productId);
-				if (isCurrent) {
-					setDetailOptionGroups(product.optionGroups ?? optionGroups);
-				}
-			} catch (error) {
-				console.error("Error loading product details:", error);
-			} finally {
-				if (isCurrent) {
-					setIsLoadingDetails(false);
-				}
-			}
-		};
+    const loadProductDetails = async () => {
+      try {
+        const product = await getProductById(productId);
 
-		loadProductDetails();
+        if (isCurrent) {
+          setDetailOptionGroups(product.optionGroups ?? optionGroups);
+        }
+      } catch (error) {
+        console.error("Error loading product details:", error);
+      }
+    };
 
-		return () => {
-			isCurrent = false;
-		};
-	}, [isDetailView, productId, optionGroups]);
+    loadProductDetails();
 
-	const handleEdit = async () => {
-		if (!productId) return;
+    return () => {
+      isCurrent = false;
+    };
+  }, [isDetailView, productId, optionGroups]);
 
-		try {
-			setIsLoadingEdit(true);
-			const product = await getProductById(productId);
-			const isCustom = product.isCustom !== undefined
-				? product.isCustom === true || product.isCustom === 1
-				: productIsCustom(product) || await isCustomProduct(productId);
+  const handleAddProduct = (options: Record<string, string>) => {
+    if (!productId) return;
 
-			navigate({
-				to: isCustom ? "/customDishForm" : "/simpleDishForm",
-				search: { mode: "edit", productId },
-			});
-		} catch (error) {
-			console.error("Error loading product to edit:", error);
-			alert("No se pudo cargar la información del platillo");
-		} finally {
-			setIsLoadingEdit(false);
-		}
-	};
+    const item = {
+      productId,
+      name,
+      price,
+      discount,
+      image,
+      quantity: 1,
+      selectedOptions: options,
+    };
 
-	const handleDelete = async () => {
-		if (!productId) return;
+    if (isAddingToOrder) {
+      onAddProduct?.(item);
+    } else {
+      addToCart(item);
+    }
 
-		try {
-			setIsDeleting(true);
-			await deleteProduct(productId);
-			onDelete?.(productId);
-			setIsDeleteDialogOpen(false);
-		} catch (error) {
-			console.error("Error deleting product:", error);
-			const apiError = error as { message?: string };
-			alert(apiError.message ?? "No se pudo eliminar el platillo");
-		} finally {
-			setIsDeleting(false);
-		}
-	};
+    onAddToCart?.();
+  };
 
-	const groupsOptions = async () => {
-		if (!productId) return;
+  const handleEdit = async () => {
+    if (!productId) return;
 
-		try {
-			setIsLoadingEdit(true);
-			const product = await getProductById(productId);
-			
-			const isCustom = product.isCustom !== undefined
-				? product.isCustom === true || product.isCustom === 1
-				: productIsCustom(product) || await isCustomProduct(productId);
+    try {
+      setIsLoadingEdit(true);
 
-			if (isCustom) {
-				setDetailOptionGroups(product.optionGroups ?? []);
-				setSelectedOptions({});
-				setValidationMessage("");
-				setIsOptionsModalOpen(true);
-			} else {
-				
-				addToCart({
-					productId,
-					name,
-					price,
-					discount,
-					image,
-					quantity: 1,
-					selectedOptions: {},
-				});
+      const product = await getProductById(productId);
 
-				onAddToCart?.();
-			}
+      const isCustom =
+        product.isCustom !== undefined
+          ? product.isCustom === true || product.isCustom === 1
+          : productIsCustom(product) || (await isCustomProduct(productId));
 
-		} catch (error) {
-			console.error("Error loading product to edit:", error);
-			alert("No se pudo cargar la información del platillo");
-		} finally {
-			setIsLoadingEdit(false);
-		}
-	};
+      navigate({
+        to: isCustom ? "/customDishForm" : "/simpleDishForm",
+        search: { mode: "edit", productId },
+      });
+    } catch (error) {
+      console.error("Error loading product to edit:", error);
+      alert("No se pudo cargar la información del platillo");
+    } finally {
+      setIsLoadingEdit(false);
+    }
+  };
 
+  const handleDelete = async () => {
+    if (!productId) return;
 
-	return (
-		<>
-			<article
-				className={`flex w-full overflow-hidden rounded-2xl bg-white shadow-sm ${isDetailView ? "flex-col lg:h-107.5 lg:flex-row" : "flex-row lg:h-105 lg:flex-col"
-					}`}
-			>
+    try {
+      setIsDeleting(true);
+      await deleteProduct(productId);
+      onDelete?.(productId);
+      setIsDeleteDialogOpen(false);
+    } catch (error) {
+      console.error("Error deleting product:", error);
 
-				<div className={isDetailView ? "h-82 w-full shrink-0 lg:h-full lg:w-[59%]" : "w-32 shrink-0 self-stretch lg:h-48 lg:w-full"}>
-					<img
-						src={image}
-						alt={name}
-						className="h-full w-full rounded-2xl object-cover"
-					/>
-				</div>
+      const apiError = error as { message?: string };
+      alert(apiError.message ?? "No se pudo eliminar el platillo");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
-				<div className={`flex min-h-0 min-w-0 flex-1 flex-col justify-center px-4 py-3 ${isDetailView ? "lg:px-8 lg:py-8" : ""}`}>
-					<h2 className="text-base font-bold text-mint-darker">
-						{name}
-					</h2>
+  const groupsOptions = async () => {
+    if (!productId) return;
 
-					<p
-						className={`mt-1 text-sm text-text-primary" ${
-							isDetailView ? "" : "line-clamp-2"
-						}`}>
-						{description}
-					</p>
+    try {
+      setIsLoadingEdit(true);
 
-					<div className="mt-2 flex items-center gap-2">
-						
-						{discount ? (
-							<>
-								<span className="relative text-sm font-bold text-mint-darker">
-									₡{price.toLocaleString("es-CR")}
-									<span className="absolute left-0 top-1/2 h-0.5 w-full -rotate-12 bg-red-600" />
-								</span>
-								
-								<span className="text-base font-bold text-mint-darker">
-									₡{(price * (1 - discount / 100)).toLocaleString("es-CR")}
-								</span>
-							</>
-						) : (
-								<span className="text-base font-bold text-mint-darker">
-									₡{price.toLocaleString("es-CR")}
-							</span>
-						)}
-					</div>
+      const product = await getProductById(productId);
 
-					{isDetailView && (isLoadingDetails || detailOptionGroups.length > 0) && (
-						<div className="mt-4">
-							<h3 className="text-sm font-bold text-mint-darker">
-								Opciones de personalización
-							</h3>
-							{isLoadingDetails && detailOptionGroups.length === 0 ? (
-								<p className="mt-1 text-sm text-text-primary">Cargando opciones...</p>
-							) : (
-								<div className="mt-2 space-y-2">
-									{detailOptionGroups.map((group) => (
-										<div key={group.id}>
-											<p className="text-sm font-semibold text-text-primary">{group.name}</p>
-											<p className="text-sm text-text-primary">
-												{group.options.join(", ")}
-											</p>
-										</div>
-									))}
-								</div>
-							)}
-						</div>
-					)}
+      const isCustom =
+        product.isCustom !== undefined
+          ? product.isCustom === true || product.isCustom === 1
+          : productIsCustom(product) || (await isCustomProduct(productId));
 
-					<div className="mt-1 flex items-center justify-between">
-						{showRating ? (
-							<div className="flex items-center gap-2">
-								<Stars rating={rating} />
+      if (isCustom) {
+        setDetailOptionGroups(product.optionGroups ?? []);
+        setSelectedOptions({});
+        setValidationMessage("");
+        setIsOptionsModalOpen(true);
+      } else {
+        handleAddProduct({});
+      }
+    } catch (error) {
+      console.error("Error loading product options:", error);
+      alert("No se pudo cargar la información del platillo");
+    } finally {
+      setIsLoadingEdit(false);
+    }
+  };
 
-								<span className="text-sm font-semibold text-text-primary">
-									{rating.toFixed(1)}
-								</span>
-							</div>
-						) : <span />}
+  return (
+    <>
+      <article
+        className={`flex w-full overflow-hidden rounded-2xl bg-white shadow-sm ${
+          isDetailView
+            ? "flex-col lg:h-107.5 lg:flex-row"
+            : "flex-row lg:h-105 lg:flex-col"
+        }`}
+      >
+        <div
+          className={
+            isDetailView
+              ? "h-82 w-full shrink-0 lg:h-full lg:w-[59%]"
+              : "w-32 shrink-0 self-stretch lg:h-48 lg:w-full"
+          }
+        >
+          <img
+            src={image}
+            alt={name}
+            className="h-full w-full rounded-2xl object-cover"
+          />
+        </div>
 
+        <div
+          className={`flex min-h-0 min-w-0 flex-1 flex-col justify-center px-4 py-3 ${
+            isDetailView
+              ? "lg:justify-start lg:overflow-y-auto lg:px-8 lg:py-8"
+              : ""
+          }`}
+        >
+          <h2 className="text-base font-bold text-mint-darker">{name}</h2>
 
-						{showActions && (
-							<div className="flex items-center gap-2">
-								{isAdmin ? (
-									<>
-										{productId ? (
-											<button
-												type="button"
-												onClick={handleEdit}
-												disabled={isLoadingEdit}
-												className="cursor-pointer text-mint-dark  hover:text-mint-darker"
-												aria-label={`Editar ${name}`}
-											>
-												<MdOutlineEdit className="h-6 w-6" />
-											</button>
-										) : (
-											<button
-												type="button"
-												className="cursor-pointer text-mint-dark hover:text-mint-darker"
-												aria-label={`Editar ${name}`}
-											>
-												<MdOutlineEdit className="h-6 w-6" />
-											</button>
-										)}
+          <p
+            className={`mt-1 text-sm text-text-primary ${
+              isDetailView ? "" : "line-clamp-2"
+            }`}
+          >
+            {description}
+          </p>
 
-										<button
-											type="button"
-											onClick={() => setIsDeleteDialogOpen(true)}
-											className="cursor-pointer text-red-600 hover:text-red-700"
-											aria-label={`Eliminar ${name}`}
-										>
-											<MdDeleteOutline className="h-6 w-6" />
-										</button>
-									</>
-								) : (
-									<button
-										type="button"
-										onClick={groupsOptions}
-										className="cursor-pointer text-mint-dark"
-										aria-label={`Agregar ${name}`}
-									>
-										<BsFillPlusCircleFill className="h-10 w-10" />
-									</button>
-								)}
-							</div>
-						)}
-					</div>
-					{showReviews && productId && (
-						<Link
-							to="/reviews"
-							search={{ productId, mesaId, isAdmin }}
-							className="mt-3 self-start text-sm font-medium text-text-primary hover:underline"
-						>
-							Reseñas
-						</Link>
-					)}
-					<button
-						type="button"
-						onClick={isDetailView ? onCloseDetails : onViewMore}
-						className="mt-2 cursor-pointer self-start text-sm font-bold text-brown hover:underline"
-					>
-						{isDetailView ? "Ver menos" : "Ver más"}
-					</button>
-				</div>
-			</article>
+          <div className="mt-2 flex items-center gap-2">
+            {discount ? (
+              <>
+                <span className="relative text-sm font-bold text-mint-darker">
+                  ₡{price.toLocaleString("es-CR")}
+                  <span className="absolute left-0 top-1/2 h-0.5 w-full -rotate-12 bg-red-600" />
+                </span>
 
-			{isOptionsModalOpen && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-					<div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-						<h3 className="text-xl font-bold text-mint-darker">
-							Personaliza tu "{name}"
-						</h3>
+                <span className="text-base font-bold text-mint-darker">
+                  ₡{(price * (1 - discount / 100)).toLocaleString("es-CR")}
+                </span>
+              </>
+            ) : (
+              <span className="text-base font-bold text-mint-darker">
+                ₡{price.toLocaleString("es-CR")}
+              </span>
+            )}
+          </div>
 
-						<div className="mt-6 space-y-6">
-							{detailOptionGroups.map((group) => (
-								<div key={group.id}>
-									<h4 className="text-lg font-bold text-mint-darker">
-										{group.name}
-									</h4>
+          {isDetailView && detailOptionGroups.length > 0 && (
+              <div className="mt-4">
+                <h3 className="text-sm font-bold text-mint-darker">
+                  Opciones de personalización
+                </h3>
 
-									<div className="mt-2 space-y-2">
-										{group.options.map((option) => (
-											<label
-												key={option}
-												className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 p-3 "
-											>
-												<input
-													type="radio"
-													name={group.id}
-													value={option}
-													checked={selectedOptions[group.id] === option}
-													onChange={() =>
-														setSelectedOptions((prev) => ({
-															...prev,
-															[group.id]: option,
-														}))
-													}
-												/>
+                <div className="mt-2 space-y-2">
+                  {detailOptionGroups.map((group) => (
+                    <div key={group.id}>
+                      <p className="text-sm font-semibold text-text-primary">
+                        {group.name}
+                      </p>
+                      <p className="text-sm text-text-primary">
+                        {group.options.join(", ")}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-												<span className="text-base text-text-primary">
-													{option}
-												</span>
-											</label>
-										))}
-									</div>
-								</div>
-							))}
-						</div>
+          <div className="mt-1 flex items-center justify-between">
+            {showRating ? (
+              <div className="flex items-center gap-2">
+                <Stars rating={rating} />
+                <span className="text-sm font-semibold text-text-primary">
+                  {rating.toFixed(1)}
+                </span>
+              </div>
+            ) : (
+              <span />
+            )}
 
-						{validationMessage && (
-							<p className="mt-4 text-sm text-red-600">
-								{validationMessage}
-							</p>
-						)}
+            {showActions && (
+              <div className="flex items-center gap-2">
+                {isAdmin ? (
+                  <>
+                    {productId ? (
+                      <button
+                        type="button"
+                        onClick={handleEdit}
+                        disabled={isLoadingEdit}
+                        className="cursor-pointer text-mint-dark hover:text-mint-darker"
+                        aria-label={`Editar ${name}`}
+                      >
+                        <MdOutlineEdit className="h-6 w-6" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="cursor-pointer text-mint-dark hover:text-mint-darker"
+                        aria-label={`Editar ${name}`}
+                      >
+                        <MdOutlineEdit className="h-6 w-6" />
+                      </button>
+                    )}
 
-						<div className="mt-6 flex justify-end gap-3">
-							<button
-								type="button"
-								onClick={() => setIsOptionsModalOpen(false)}
-								className="cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold text-text-primary hover:bg-gray-100"
-							>
-								Cancelar
-							</button>
+                    <button
+                      type="button"
+                      onClick={() => setIsDeleteDialogOpen(true)}
+                      className="cursor-pointer text-red-600 hover:text-red-700"
+                      aria-label={`Eliminar ${name}`}
+                    >
+                      <MdDeleteOutline className="h-6 w-6" />
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={groupsOptions}
+                    disabled={isLoadingEdit}
+                    className="cursor-pointer text-mint-dark disabled:opacity-50"
+                    aria-label={`Agregar ${name}`}
+                  >
+                    <BsFillPlusCircleFill className="h-10 w-10" />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
 
-							<button
-								type="button"
-								onClick={() => {
-									const missingGroups = detailOptionGroups.filter(
-										(group) => !selectedOptions[group.id]
-									);
+          {showReviews && productId && (
+            <Link
+              to="/reviews"
+              search={{ productId, mesaId, isAdmin }}
+              className="mt-3 self-start text-sm font-medium text-text-primary hover:underline"
+            >
+              Reseñas
+            </Link>
+          )}
 
-									if (missingGroups.length > 0) {
-										setValidationMessage(
-											"Tienes que seleccionar una opción por cada grupo."
-										);
-										return;
-									}
+          <button
+            type="button"
+            onClick={isDetailView ? onCloseDetails : onViewMore}
+            className="mt-2 cursor-pointer self-start text-sm font-bold text-brown hover:underline"
+          >
+            {isDetailView ? "Ver menos" : "Ver más"}
+          </button>
+        </div>
+      </article>
 
-									addToCart({
-										productId: productId!,
-										name,
-										price,
-										discount,
-										image,
-										quantity: 1,
-										selectedOptions,
-									});
+      {isOptionsModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 pb-16 lg:pb-4">
+          <div className="flex max-h-[calc(100vh-6rem)] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white p-6 shadow-xl lg:max-h-[90vh]">
+            <h3 className="text-xl font-bold text-mint-darker">
+              Personaliza tu "{name}"
+            </h3>
 
-									onAddToCart?.();
+            <div className="mt-6 min-h-0 flex-1 space-y-6 overflow-y-auto pr-1">
+              {detailOptionGroups.map((group) => (
+                <div key={group.id}>
+                  <h4 className="text-lg font-bold text-mint-darker">
+                    {group.name}
+                  </h4>
 
-									setIsOptionsModalOpen(false);
-								}}
-								className="cursor-pointer rounded-lg bg-mint-dark px-4 py-2 text-sm font-semibold text-white hover:bg-mint-darker"
-							>
-								Agregar a la orden
-							</button>
+                  <div className="mt-2 space-y-2">
+                    {group.options.map((option) => (
+                      <label
+                        key={option}
+                        className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 p-3"
+                      >
+                        <input
+                          type="radio"
+                          name={group.id}
+                          value={option}
+                          checked={selectedOptions[group.id] === option}
+                          onChange={() =>
+                            setSelectedOptions((prev) => ({
+                              ...prev,
+                              [group.id]: option,
+                            }))
+                          }
+                        />
 
-						</div>
-					</div>
-				</div>
-			)}
+                        <span className="text-base text-text-primary">
+                          {option}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
 
-			
-<ConfirmDeleteModal
-	isOpen={isDeleteDialogOpen}
-	title="¿Eliminar producto?"
-	message={`¿Deseas eliminar "${name}"? Esta acción no se puede deshacer.`}
-	isLoading={isDeleting}
-	onConfirm={handleDelete}
-	onCancel={() => setIsDeleteDialogOpen(false)}
-/>
+            {validationMessage && (
+              <p className="mt-4 text-sm text-red-600">{validationMessage}</p>
+            )}
 
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setIsOptionsModalOpen(false)}
+                className="cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold text-text-primary hover:bg-gray-100"
+              >
+                Cancelar
+              </button>
 
-		</>
-	);
+              <button
+                type="button"
+                onClick={() => {
+                  const missingGroups = detailOptionGroups.filter(
+                    (group) => !selectedOptions[group.id]
+                  );
+
+                  if (missingGroups.length > 0) {
+                    setValidationMessage(
+                      "Tienes que seleccionar una opción por cada grupo."
+                    );
+                    return;
+                  }
+
+                  handleAddProduct(selectedOptions);
+                  setIsOptionsModalOpen(false);
+                }}
+                className="cursor-pointer rounded-lg bg-mint-dark px-4 py-2 text-sm font-semibold text-white hover:bg-mint-darker"
+              >
+                Agregar a la orden
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteDialogOpen}
+        title="¿Eliminar producto?"
+        message={`¿Deseas eliminar "${name}"? Esta acción no se puede deshacer.`}
+        isLoading={isDeleting}
+        onConfirm={handleDelete}
+        onCancel={() => setIsDeleteDialogOpen(false)}
+      />
+    </>
+  );
 }
 
 export default DishCard;

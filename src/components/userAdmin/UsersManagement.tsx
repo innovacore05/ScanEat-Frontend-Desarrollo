@@ -131,16 +131,16 @@ function UsersManagement() {
   return (
     <DashboardLayoutAdmin>
       
-      <main className="min-h-screen bg-white px-8 py-8 sm:px-6 sm:py-8 lg:px-15 lg:pt-15 lg:pb-15">
+      <main className="min-h-screen bg-white px-6.5 sm:px-6 lg:px-15 lg:pt-15 lg:pb-15">
         <div className="w-full">
           <Link
             to="/dashboardAdmin"
-            className="mb-1 flex items-center gap-2 text-mint-dark lg:hidden"
+            className="flex items-center gap-2 text-mint-dark lg:hidden"
           >
             <HiArrowLeft className="h-6 w-6" />
-            <span className="text-[32px] font-bold">Gestión de personal</span>
+            <span className="text-[32px] font-bold">Personal</span>
           </Link>
-          <h2 className="hidden lg:block text-2xl font-bold text-mint-darker lg:text-3xl">
+          <h2 className="hidden lg:block text-2xl font-bold text-mint-dark lg:text-3xl">
             Gestión de personal
           </h2>
           {error && (

@@ -188,7 +188,7 @@ function MenuManagment() {
     <DashboardLayoutAdmin>
       <main className="min-h-screen bg-white  ">
         {/* Celular */}
-        <section className="lg:hidden px-8 ">
+        <section className="lg:hidden px-6.5 ">
           <div className="flex items-center gap-2">
             <Link
               to="/dashboardAdmin"
@@ -252,6 +252,7 @@ function MenuManagment() {
                 }}
                 disabled={!!searchTerm}
                 isLoading={isLoadingCategories}
+                mobileFiveColumns
               />
             </div>
 
@@ -340,6 +341,7 @@ function MenuManagment() {
               }}
               disabled={!!searchTerm}
               isLoading={isLoadingCategories}
+              mobileFiveColumns
             />
           </div>
 

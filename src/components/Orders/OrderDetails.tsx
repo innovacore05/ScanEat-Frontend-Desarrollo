@@ -14,6 +14,7 @@ type OrderDetailsProps = {
   mobileBackRoute?: string;
   showMobileBack?: boolean;
   Layout?: ComponentType<{ children: ReactNode }>;
+  canAddProducts?: boolean;
 };
 
 function OrderDetailsContent({
@@ -22,12 +23,14 @@ function OrderDetailsContent({
   mobileBackRoute,
   showMobileBack,
   onStatusChanged,
+  canAddProducts,
 }: {
   order: Order;
   showConfirmButton: boolean;
   mobileBackRoute: string;
   showMobileBack: boolean;
   onStatusChanged?: () => void | Promise<void>;
+  canAddProducts?: boolean;
 }) {
   const [isUpdating, setIsUpdating] = useState(false);
   const subtotal = order.subtotal ?? 0;
@@ -163,12 +166,12 @@ function OrderDetailsContent({
                         ₡{(item.price * item.quantity).toLocaleString("es-CR")}
                       </p>
                     )}
-                    
+
                     <p className="text-base font-semibold text-text-primary">
                       ₡{Number(item.subtotal ?? item.price * item.quantity).toLocaleString("es-CR")}
                     </p>
                   </div>
-                  
+
                 </div>
               ))}
             </div>
@@ -200,13 +203,29 @@ function OrderDetailsContent({
             </div>
           </div>
 
-          {canChangeStatus && (
-            <div className="mt-8 flex justify-end">
+          {(canAddProducts && order.status === "Pendiente") || canChangeStatus ? (
+            <div className="mt-6 flex w-full flex-col gap-3">
+              {canAddProducts && order.status === "Pendiente" && (
+                <Link
+                  to="/menuClient"
+                  search={{
+                    mesaId: order.tableUuid,
+                    orderId: order.orderId,
+                    mode: "add",
+                    returnTo: "waiter",
+                  }}
+                  className="flex min-h-12 w-full items-center justify-center rounded-lg bg-mint-dark px-4 py-3 text-center font-semibold text-white"
+                >
+                  Agregar productos
+                </Link>
+              )}
+
+              {canChangeStatus && (
               <button
                 type="button"
                 onClick={() => void handleStatusChange()}
                 disabled={isUpdating}
-                className="cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-lg font-bold text-white"
+                className="flex min-h-12 w-full items-center justify-center cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-lg font-bold text-white"
               >
                 {isUpdating
                   ? "Actualizando..."
@@ -214,8 +233,9 @@ function OrderDetailsContent({
                     ? "Entregar"
                     : "Confirmar"}
               </button>
+              )}
             </div>
-          )}
+          ) : null}
         </div>
       </section>
 
@@ -305,12 +325,12 @@ function OrderDetailsContent({
                         ₡{(item.price * item.quantity).toLocaleString("es-CR")}
                       </p>
                     )}
-                    
+
                     <p className="text-lg font-semibold text-text-primary">
                       ₡{Number(item.subtotal ?? item.price * item.quantity).toLocaleString("es-CR")}
                     </p>
                   </div>
-                  
+
                 </div>
               ))}
             </div>
@@ -342,8 +362,25 @@ function OrderDetailsContent({
             </div>
           </div>
 
+
           {canChangeStatus && (
-            <div className="mt-8 flex justify-end">
+            <div className="mt-8 flex justify-end gap-3">
+
+              {canAddProducts && order.status === "Pendiente" && (
+            <Link
+              to="/menuClient"
+              search={{
+                mesaId: order.tableUuid,
+                orderId: order.orderId,
+                mode: "add",
+                returnTo: "waiter",
+              }}
+              className="rounded-lg bg-mint-dark px-4 py-2 font-semibold text-white"
+            >
+              Agregar productos
+            </Link>
+          )}
+
               <button
                 type="button"
                 onClick={() => void handleStatusChange()}
@@ -356,6 +393,8 @@ function OrderDetailsContent({
                     ? "Entregar"
                     : "Confirmar"}
               </button>
+
+              
             </div>
           )}
         </div>
@@ -372,6 +411,7 @@ function OrderDetails({
   showMobileBack = true,
   Layout = DashboardLayoutWaiter,
   onStatusChanged,
+  canAddProducts = false,
 }: OrderDetailsProps) {
   if (embedded) {
     return (
@@ -381,6 +421,7 @@ function OrderDetails({
         mobileBackRoute={mobileBackRoute}
         showMobileBack={showMobileBack}
         onStatusChanged={onStatusChanged}
+        canAddProducts={canAddProducts}
       />
     );
   }
@@ -394,6 +435,7 @@ function OrderDetails({
           mobileBackRoute={mobileBackRoute}
           showMobileBack={showMobileBack}
           onStatusChanged={onStatusChanged}
+          canAddProducts={canAddProducts}
         />
       </main>
     </Layout>

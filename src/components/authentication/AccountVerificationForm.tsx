@@ -174,7 +174,7 @@ function AccountVerificationForm() {
 						</p>
 					</div>
 
-					<div className="mt-14 flex justify-center gap-2">
+					<div className="mt-14 w-full flex justify-center gap-2">
 						{code.map((digit, index) => (
 							<input
 								key={index}
@@ -234,6 +234,12 @@ function AccountVerificationForm() {
 					>
 						<BsFillArrowLeftCircleFill className="h-10 w-10" />
 					</Link>
+					<div className="flex mt-8 w-full items-center gap-1.5 rounded-md border border-mint bg-mint-light/40 px-2.5 py-1.5 text-[5px] text-mint-darker">
+              <AiOutlineExclamationCircle className="h-4 w-4 shrink-0" />
+              <p>
+                ¿No recibiste el código? Revisa spam o correo no deseado.
+              </p>
+            </div>
 				</form>
 			</section>
 

@@ -29,8 +29,9 @@ export type ReceiptTotals={
 };
 
 export type PaymentPreview={
-    orderId:number;
-    tableNumber:number;
+    orderId: number;
+    tableId: string;
+    tableNumber: number;
 lines:Array<ReceiptLine & {detailId:number}>;
 totals:ReceiptTotals;
 taxSummary: { rate: number; amount: string }[];
