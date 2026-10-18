@@ -104,6 +104,7 @@ if (password !== confirmPassword) {
 			<img src="/logoblanco.svg" alt="ScanEat" className="h-8 w-auto" />
 		</a>
 	</div>
+</div>
 			<section className="-mt-10 min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-10">
 				<form
 	onSubmit={handleSubmit}
