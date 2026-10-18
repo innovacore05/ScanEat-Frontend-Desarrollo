@@ -260,7 +260,7 @@ function SalesReport() {
                       onClick={() => handlePeriodChange(option)}
                       className={`rounded border px-3 py-1 text-sm transition ${period === option
                         ? "border-mint-dark bg-mint-dark font-semibold text-white"
-                        : "border-mint-dark text-mint-darker hover:bg-mint-light"
+                        : "border-mint-dark text-mint-darker hover:bg-mint-dark"
                         }`}
                     >
                       {option}
@@ -361,7 +361,7 @@ function SalesReport() {
 
               {isGeneratingAI ? (
                 <div className="flex min-h-48 flex-col items-center justify-center text-center">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-mint-light">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-mint-darker">
                     <FiCpu className="h-7 w-7 animate-pulse text-mint-dark" />
                   </div>
 
