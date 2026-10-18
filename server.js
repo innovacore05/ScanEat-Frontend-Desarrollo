@@ -16,14 +16,25 @@ app.use(
   })
 );
 
+// Socket.IO 
+const socketProxy = createProxyMiddleware({
+  target: process.env.BACKEND_INTERNAL_URL,
+  changeOrigin: true,
+  ws: true,
+  pathFilter: "/socket.io",
+});
+app.use(socketProxy);
+
 app.use(express.static(path.join(__dirname, "dist")));
 
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
-// ESTO FALTABA:
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
 });
+
+//para que el upgrade a WebSocket pase por el proxy
+server.on("upgrade", socketProxy.upgrade);
