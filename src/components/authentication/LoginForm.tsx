@@ -57,17 +57,18 @@ function LoginForm() {
 
 	return (
 		<main className="min-h-screen bg-white">
-			<div className="relative h-38 bg-mint">
-	<a
-		href="https://scanneat.up.railway.app/"
-		aria-label="Volver a ScanEat"
-		className="absolute left-6 top-6"
-	>
-		<img src="/logoblanco.svg" alt="ScanEat" className="h-10 w-auto" />
-	</a>
+			<div className="h-38 bg-mint">
+	<div className="mx-auto flex max-w-7xl items-center px-6 py-10">
+		<a
+			href="https://scanneat.up.railway.app/"
+			aria-label="Volver a ScanEat"
+		>
+			<img src="/logoblanco.svg" alt="ScanEat" className="h-8 w-auto" />
+		</a>
+	</div>
 </div>
 
-			<section className="-mt-10 min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-10">
+			<section className="-mt-10 min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-20">
 				<form
 					onSubmit={handleSubmit}
 					className="mx-auto flex w-full max-w-sm flex-col gap-5"
