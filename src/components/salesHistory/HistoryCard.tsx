@@ -1,4 +1,5 @@
 import type { Order } from "../Orders/OrderCard";
+import { Link } from "@tanstack/react-router";
 
 type HistoryCardProps = {
     order: Order;
@@ -31,9 +32,17 @@ function HistoryCard({ order, onDetails }: HistoryCardProps) {
 
 
                     <div className="w-full min-w-0 h-full bg-neutral-100 rounded-2xl flex items-center justify-between gap-6">
+                        <Link
+                            to="/historySalesDetails"
+                            search={{ orderId: order.orderId }}
+                            className="py-2 px-2 rounded-lg text-base font-semibold border border-mint-dark text-mint-dark hover:bg-mint-dark hover:text-white transition-colors lg:hidden"
+                        >
+                            Detalles
+                        </Link>
+
                         <button
                             onClick={onDetails}
-                            className="py-2 px-2 rounded-lg text-base font-semibold border border-mint-dark text-mint-dark hover:bg-mint-dark hover:text-white transition-colors"
+                            className="hidden py-2 px-2 rounded-lg text-base font-semibold border border-mint-dark text-mint-dark hover:bg-mint-dark hover:text-white transition-colors lg:block"
                         >
                             Detalles
                         </button>
