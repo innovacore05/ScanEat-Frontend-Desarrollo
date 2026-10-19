@@ -101,15 +101,22 @@ function CheckOrder() {
         .then((quote) => {
           if (!cancelled) setOrderQuote(quote);
         })
-        .catch((error) => {
-          console.error("Error cotizando el pedido:", error);
+       .catch((error) => {
+  console.error("Error cotizando el pedido:", error);
 
-          if (!cancelled) {
-            setQuoteError(
-              "No se pudo actualizar el total. Intenta de nuevo.",
-            );
-          }
-        })
+  if (!cancelled) {
+    const message =
+      typeof error === "object" &&
+      error !== null &&
+      "message" in error &&
+      typeof error.message === "string" &&
+      error.message.trim() !== ""
+        ? error.message
+        : "No se pudo actualizar el total. Intenta de nuevo.";
+
+    setQuoteError(message);
+  }
+})
         .finally(() => {
           if (!cancelled) setIsQuoting(false);
         });
