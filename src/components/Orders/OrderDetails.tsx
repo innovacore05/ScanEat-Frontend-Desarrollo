@@ -121,7 +121,7 @@ function OrderDetailsContent({
               </p>
 
               <div className="mt-2 rounded-lg border border-border p-4">
-                <p className="text-base text-text-primary">
+                <p className="text-base text-text-primary whitespace-pre-line">
                   {order.specialInstructions}
                 </p>
               </div>
@@ -280,7 +280,7 @@ function OrderDetailsContent({
               </p>
 
               <div className="mt-3 rounded-lg border border-border p-5">
-                <p className="text-base text-text-primary">
+                 <p className="text-base text-text-primary whitespace-pre-line">
                   {order.specialInstructions}
                 </p>
               </div>

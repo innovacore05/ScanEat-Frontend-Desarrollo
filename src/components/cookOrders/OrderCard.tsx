@@ -30,7 +30,7 @@ function OrderCard({ order, onReady, isUpdating = false }: OrderCardProps) {
             Instrucciones especiales:
           </p>
 
-          <p className="text-2xl text-gray-600">
+          <p className="text-2xl text-gray-600 whitespace-pre-line">
             {order.specialInstructions}
           </p>
         </>
