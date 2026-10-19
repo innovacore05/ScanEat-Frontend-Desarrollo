@@ -73,7 +73,7 @@ function HistorySales() {
                     <div className="mt-6">
                     </div>
 
-                    <div className="mt-8 grid grid-cols-1 gap-6">
+                    <div className="mt-8">
                         <div className="flex min-w-0 flex-col gap-4">
                             {isLoading ? (
                                 Array.from({ length: 4 }, (_, index) => (
@@ -86,28 +86,6 @@ function HistorySales() {
                                     onDetails={() => setSelectedOrder(order)}
                                 />
                             ))}
-                        </div>
-
-                        <div className="min-w-0">
-                            <p className="pb-4 text-xl font-bold text-text-primary">
-                                Orden actual
-                            </p>
-
-                            {isLoading ? (
-                                <Skeleton className="min-h-80 w-full rounded-4xl" />
-                            ) : selectedOrder ? (
-                                <OrderDetails
-                                    order={selectedOrder}
-                                    embedded
-                                    onStatusChanged={loadOrders}
-                                />
-                            ) : (
-                                <div className="flex min-h-80 items-center justify-center rounded-4xl bg-neutral-100 px-4">
-                                    <p className="text-center text-base font-semibold text-text-primary">
-                                        Selecciona un pedido para ver sus detalles
-                                    </p>
-                                </div>
-                            )}
                         </div>
                     </div>
                 </section>
