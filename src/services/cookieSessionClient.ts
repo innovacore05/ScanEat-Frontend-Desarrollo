@@ -61,16 +61,27 @@ class CookieSessionClient{
            ...(options.headers??{}),
                 },
         });
-        const data = await response.json().catch(()=>({}));
-if(!response.ok){
+       
+const contentType = response.headers.get("content-type") ?? "";
+
+if (!response.ok) {
+    const data = contentType.includes("application/json")
+        ? await response.json().catch(() => ({}))
+        : {};
+
     throw {
         ...data,
-        message:data.message ?? fallBackMessage,
-        status:response.status,
+        message: data.message ?? fallBackMessage,
+        status: response.status,
     } as ApiError;
 }
 
-return data as T;
+if (contentType.includes("application/pdf")) {
+    return await response.blob() as T;
+}
+
+return await response.json() as T;
+
     }
 }
 

@@ -25,6 +25,7 @@ import { Route as clientOrdersReviewPlateRouteImport } from './routes/(clientOrd
 import { Route as cookOrdersCookOrdersRouteImport } from './routes/(cookOrders)/cookOrders'
 import { Route as dashboardDashboardAdminRouteImport } from './routes/(dashboard)/dashboardAdmin'
 import { Route as dashboardDashboardWaiterRouteImport } from './routes/(dashboard)/dashboardWaiter'
+import { Route as dashboardExpensesRouteImport } from './routes/(dashboard)/expenses'
 import { Route as dashboardSalesReportRouteImport } from './routes/(dashboard)/salesReport'
 import { Route as historySalesHistorySalesRouteImport } from './routes/(historySales)/historySales'
 import { Route as historySalesHistorySalesDetailsRouteImport } from './routes/(historySales)/historySalesDetails'
@@ -139,6 +140,11 @@ const dashboardDashboardWaiterRoute =
     path: '/dashboardWaiter',
     getParentRoute: () => rootRouteImport,
   } as any)
+const dashboardExpensesRoute = dashboardExpensesRouteImport.update({
+  id: '/(dashboard)/expenses',
+  path: '/expenses',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const dashboardSalesReportRoute = dashboardSalesReportRouteImport.update({
   id: '/(dashboard)/salesReport',
   path: '/salesReport',
@@ -291,6 +297,7 @@ export interface FileRoutesByFullPath {
   '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/expenses': typeof dashboardExpensesRoute
   '/salesReport': typeof dashboardSalesReportRoute
   '/historySales': typeof historySalesHistorySalesRoute
   '/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
@@ -334,6 +341,7 @@ export interface FileRoutesByTo {
   '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/expenses': typeof dashboardExpensesRoute
   '/salesReport': typeof dashboardSalesReportRoute
   '/historySales': typeof historySalesHistorySalesRoute
   '/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
@@ -378,6 +386,7 @@ export interface FileRoutesById {
   '/(cookOrders)/cookOrders': typeof cookOrdersCookOrdersRoute
   '/(dashboard)/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/(dashboard)/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/(dashboard)/expenses': typeof dashboardExpensesRoute
   '/(dashboard)/salesReport': typeof dashboardSalesReportRoute
   '/(historySales)/historySales': typeof historySalesHistorySalesRoute
   '/(historySales)/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
@@ -423,6 +432,7 @@ export interface FileRouteTypes {
     | '/cookOrders'
     | '/dashboardAdmin'
     | '/dashboardWaiter'
+    | '/expenses'
     | '/salesReport'
     | '/historySales'
     | '/historySalesDetails'
@@ -466,6 +476,7 @@ export interface FileRouteTypes {
     | '/cookOrders'
     | '/dashboardAdmin'
     | '/dashboardWaiter'
+    | '/expenses'
     | '/salesReport'
     | '/historySales'
     | '/historySalesDetails'
@@ -509,6 +520,7 @@ export interface FileRouteTypes {
     | '/(cookOrders)/cookOrders'
     | '/(dashboard)/dashboardAdmin'
     | '/(dashboard)/dashboardWaiter'
+    | '/(dashboard)/expenses'
     | '/(dashboard)/salesReport'
     | '/(historySales)/historySales'
     | '/(historySales)/historySalesDetails'
@@ -553,6 +565,7 @@ export interface RootRouteChildren {
   cookOrdersCookOrdersRoute: typeof cookOrdersCookOrdersRoute
   dashboardDashboardAdminRoute: typeof dashboardDashboardAdminRoute
   dashboardDashboardWaiterRoute: typeof dashboardDashboardWaiterRoute
+  dashboardExpensesRoute: typeof dashboardExpensesRoute
   dashboardSalesReportRoute: typeof dashboardSalesReportRoute
   historySalesHistorySalesRoute: typeof historySalesHistorySalesRoute
   historySalesHistorySalesDetailsRoute: typeof historySalesHistorySalesDetailsRoute
@@ -692,6 +705,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboardWaiter'
       fullPath: '/dashboardWaiter'
       preLoaderRoute: typeof dashboardDashboardWaiterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(dashboard)/expenses': {
+      id: '/(dashboard)/expenses'
+      path: '/expenses'
+      fullPath: '/expenses'
+      preLoaderRoute: typeof dashboardExpensesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(dashboard)/salesReport': {
@@ -890,6 +910,7 @@ const rootRouteChildren: RootRouteChildren = {
   cookOrdersCookOrdersRoute: cookOrdersCookOrdersRoute,
   dashboardDashboardAdminRoute: dashboardDashboardAdminRoute,
   dashboardDashboardWaiterRoute: dashboardDashboardWaiterRoute,
+  dashboardExpensesRoute: dashboardExpensesRoute,
   dashboardSalesReportRoute: dashboardSalesReportRoute,
   historySalesHistorySalesRoute: historySalesHistorySalesRoute,
   historySalesHistorySalesDetailsRoute: historySalesHistorySalesDetailsRoute,

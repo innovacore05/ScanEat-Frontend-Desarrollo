@@ -7,6 +7,7 @@ import { RiSettingsLine } from "react-icons/ri";
 import { LuLogOut } from "react-icons/lu";
 import { GoHome } from "react-icons/go";
 import { IoRestaurantOutline } from "react-icons/io5";
+import { LuCalculator } from "react-icons/lu";
 import { FiUsers } from "react-icons/fi";
 import { MdOutlineDiscount } from "react-icons/md";
 import { MdOutlineTableBar } from "react-icons/md";
@@ -124,6 +125,23 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
               <HiOutlineDocumentReport className="h-6 w-6 shrink-0" />
               <span className="text-[15px] font-bold cursor-pointer">
                 Reporte de ventas
+              </span>
+            </Link>
+
+            <Link
+              to="/expenses"
+              activeProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            }}
+            inactiveProps={{
+              className:
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+            }}
+            >
+              <LuCalculator className="h-6 w-6 shrink-0" />
+              <span className="text-[15px] font-bold cursor-pointer">
+                Egresos
               </span>
             </Link>
 
@@ -398,6 +416,23 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
                   <span className="text-xl font-bold">Reporte de ventas</span>
                 </Link>
 
+                <Link
+                  to="/expenses"
+                  onClick={() => setIsMenuOpen(false)}
+                  activeProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                  }}
+                  inactiveProps={{
+                    className:
+                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                  }}
+                >
+                  <LuCalculator className="h-6 w-6 shrink-0" />
+                  <span className="text-xl font-bold">Egresos</span>
+                </Link>
+
+                  
                 <Link
                   to="/tablesManagment"
                   onClick={() => setIsMenuOpen(false)}
