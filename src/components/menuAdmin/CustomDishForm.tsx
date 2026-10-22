@@ -15,6 +15,7 @@ import {
 import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus, GoTag } from "react-icons/go";
 import { FiCamera } from "react-icons/fi";
+import { AiOutlineDelete } from "react-icons/ai";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 
 interface CustomDishFormProps {
@@ -607,7 +608,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                 <input
                   id="discount"
                   type="number"
-                  placeholder="Descuento del platillo"
+                  placeholder="Descuento del platillo (opcional)"
                   value={discount}
                   onChange={(event) =>
                     setDiscount(event.target.value ? Number(event.target.value) : "")
@@ -642,7 +643,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
 
                 {optionGroups.map((group) => (
                   <div key={group.id} className="mt-3">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mt-5">
                       <input
                         type="text"
                         placeholder="Nombre del grupo (ej. Guarnición)"
@@ -655,7 +656,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                             ),
                           );
                         }}
-                        className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
+                        className=" w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
                       />
                       <button
                         type="button"
@@ -664,10 +665,11 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                             prev.filter((g) => g.id !== group.id),
                           );
                         }}
-                        className="shrink-0 text-red-400"
+                        className="shrink-0"
                         aria-label="Eliminar grupo"
                       >
-                        ✕
+                        <AiOutlineDelete className="h-6 w-6 text-red-400" />
+                        
                       </button>
                     </div>
 
@@ -680,7 +682,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                         {group.options.map((option, index) => (
                           <div
                             key={index}
-                            className="mt-2 flex items-center gap-2"
+                            className="mt-7 flex items-center gap-2"
                           >
                             <input
                               type="text"
@@ -701,7 +703,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                                   ),
                                 );
                               }}
-                              className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
+                              className=" w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
                             />
                             <button
                               type="button"
@@ -719,10 +721,10 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                                   ),
                                 );
                               }}
-                              className="shrink-0 text-red-400"
+                              className="shrink-0  "
                               aria-label="Eliminar opción"
                             >
-                              ✕
+                              <AiOutlineDelete className="h-6 w-6 text-red-400" />
                             </button>
                           </div>
                         ))}
@@ -908,7 +910,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                 <input
                   id="discount"
                   type="number"
-                  placeholder="Descuento del platillo"
+                  placeholder="Descuento del platillo (opcional)"
                   value={discount}
                   onChange={(event) =>
                     setDiscount(event.target.value ? Number(event.target.value) : "")
@@ -968,10 +970,10 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                               prev.filter((g) => g.id !== group.id),
                             );
                           }}
-                          className="shrink-0  text-red-400 "
+                          className="shrink-0 cursor-pointer"
                           aria-label="Eliminar grupo"
                         >
-                          ✕
+                          <AiOutlineDelete className="h-5 w-5 text-red-400" />
                         </button>
                       </div>
 
@@ -984,7 +986,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                           {group.options.map((option, index) => (
                             <div
                               key={index}
-                              className="mt-5 flex items-center gap-50"
+                              className="mt-5 flex items-center gap-2"
                             >
                               <input
                                 type="text"
@@ -1005,7 +1007,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                                     ),
                                   );
                                 }}
-                                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
+                                className="w-100 font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
                               />
 
                               <button
@@ -1024,10 +1026,10 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                                     ),
                                   );
                                 }}
-                                className="shrink-0 text-red-400 "
+                                className="shrink-0 cursor-pointer "
                                 aria-label="Eliminar opción"
                               >
-                                ✕
+                                <AiOutlineDelete className="h-5 w-5 text-red-400" />
                               </button>
 
                             </div>

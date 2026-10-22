@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { HiArrowLeft } from "react-icons/hi";
+import { HiArrowUp, HiArrowDown } from "react-icons/hi";
 import type { Order } from "./OrderCard";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import type { ReactNode, ComponentType } from "react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { confirmOrder, deliverOrder } from "../../services/orderService";
 
 type OrderDetailsProps = {
@@ -63,11 +64,45 @@ function OrderDetailsContent({
     }
   };
 
+  //Flecha para subir o bajar para celular
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  
+  useEffect(() => {
+    
+    const handleScroll = () => {
+      const maxScroll =
+        document.documentElement.scrollHeight - window.innerHeight;
+      setShowScrollUp(window.scrollY > maxScroll / 2);
+    };
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  //Flecha para subir o bajar para computadora
+  const orderScrollRef = useRef<HTMLDivElement>(null);
+  
+  const scrollToOrder = (position: "top" | "bottom") => {
+    
+    const container = orderScrollRef.current;
+    if (!container) return;
+    container.scrollTo({
+      top: position === "top" ? 0 : container.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+  
+
+
   return (
     <div className="w-full">
       {/* Celular */}
-      <section className="lg:hidden">
-        <div className="flex items-center gap-2">
+      <section className="lg:hidden ">
+        <div className="flex items-center gap-2  ">
           {showMobileBack ? (
             <Link
               to={mobileBackRoute}
@@ -86,8 +121,8 @@ function OrderDetailsContent({
           )}
         </div>
 
-        <div className="mt-2 rounded-4xl bg-neutral-100 px-6 py-6">
-          <div className="flex flex-col gap-4">
+        <div className="mt-2 rounded-4xl bg-neutral-100 px-6 py-6 ">
+          <div className="flex flex-col gap-4 ">
             <h2 className="text-2xl font-bold text-mint-dark">
               Mesa #{order.tableId}
             </h2>
@@ -235,13 +270,36 @@ function OrderDetailsContent({
               </button>
               )}
             </div>
+            
           ) : null}
+          
         </div>
+        <button
+          type="button"
+          onClick={() =>
+            window.scrollTo({
+              top: showScrollUp
+                ? 0
+                : document.documentElement.scrollHeight,
+              behavior: "smooth",
+            })}
+          className="fixed bottom-5 right-5 flex h-12 w-12 items-center justify-center rounded-full bg-mint-dark/70 text-white lg:hidden"
+        >
+          {showScrollUp ? (
+            <HiArrowUp className="h-6 w-6" />
+          ) : (
+            <HiArrowDown className="h-6 w-6" />
+          )}
+        </button>
+        
+        
       </section>
 
       {/* Computadora */}
-      <section className="hidden lg:block">
-        <div className="w-full min-w-0 rounded-4xl bg-neutral-100 px-8 py-8">
+      <section className="hidden lg:flex items-center gap-3">
+        <div
+          ref={orderScrollRef}
+          className="relative w-full min-w-0 h-150 overflow-y-auto rounded-4xl bg-neutral-100 px-8 py-8">
           <div className="flex flex-col gap-4">
             <p className="text-2xl font-bold text-mint-dark">
               Orden #{order.orderId}
@@ -398,6 +456,25 @@ function OrderDetailsContent({
             </div>
           )}
         </div>
+
+        <div className="flex flex-col gap-10">
+          <button
+            type="button"
+            onClick={() => scrollToOrder("top")}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-mint-dark text-white shadow-lg transition hover:bg-mint-darker"
+          >
+            <HiArrowUp className="h-6 w-6" />
+          </button>
+          
+          <button
+          type="button"
+          onClick={() => scrollToOrder("bottom")}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-mint-dark text-white shadow-lg transition hover:bg-mint-darker"
+          >
+            <HiArrowDown className="h-6 w-6" />
+          </button>
+        </div>
+        
       </section>
     </div>
   );

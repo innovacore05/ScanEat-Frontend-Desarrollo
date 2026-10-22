@@ -218,7 +218,7 @@ const handleRequestDelete = () => {
 								</p>
 							)}
 
-							<div className="mt-5 rounded-lg bg-neutral-100 px-4 py-4">
+							<div className="mt-5 rounded-lg  px-4 py-4">
 								{tableOrders.length === 0 ? (
 									<div className=" rounded-lg bg-neutral-100 px-4 py-4">
 										<p className="text-lg font-bold text-text-primary">
@@ -376,7 +376,7 @@ const handleRequestDelete = () => {
 								<p className="mt-2 text-text-primary">Selecciona una mesa para ver sus detalles.</p>
 							)}
 
-							<div className="mt-5 rounded-lg bg-neutral-100 px-4 py-4">
+							<div className="mt-5 rounded-lg px-4 py-4">
 								{tableOrders.length === 0 ? (
 									<div className="rounded-lg bg-neutral-100 px-4 py-4">
 										<p className="text-lg font-bold text-text-primary">

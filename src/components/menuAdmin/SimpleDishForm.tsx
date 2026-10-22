@@ -599,7 +599,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 <input
                 id="discount"
                 type="number"
-                placeholder="Descuento del platillo"
+                placeholder="Descuento del platillo (opcional)"
                 value={discount}
                   onChange={(event) =>
                     setDiscount(
@@ -772,7 +772,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
               <input
                 id="discount"
                 type="number"
-                placeholder="Descuento del platillo"
+                placeholder="Descuento del platillo (opcional)"
                 value={discount}
                   onChange={(event) =>
                     setDiscount(

@@ -324,7 +324,7 @@ if (isSuccess) {
                           htmlFor={`name-${product.detailId}`}
                           className="text-xs font-semibold sm:text-sm"
                         >
-                          Nombre
+                          Nombre 
                         </label>
 
                         <textarea
