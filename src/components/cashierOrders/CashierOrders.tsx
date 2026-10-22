@@ -7,10 +7,12 @@ import { LuLogOut } from "react-icons/lu";
 import { Link } from "@tanstack/react-router";
 import Skeleton from "../shared/Skeleton";
 import { socket } from "../../services/socketClient";
+import SearchOrders from "../Orders/SearchOrders";
 
 function CashierOrders (){
 const [orders,setOrders]=useState<Order[]>([]);
-const [isLoading,setIsLoading]=useState(true);
+    const [isLoading, setIsLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
     //Consulta las órdenes que están pendientes de pago
@@ -52,8 +54,23 @@ const [isLoading,setIsLoading]=useState(true);
         socket.off("connect", handleConnect);
      };
     
-},[]);
+    }, []);
+    
+    
 
+
+  const filteredOrders = orders.filter((order) => {
+    if (order.status !== "Entregado") {
+        return false;
+    }
+    return (
+        order.tableId.toString().includes(searchTerm.trim()) ||
+      order.orderId.toString().includes(searchTerm.trim())
+    );
+});
+
+    
+    
     return (
         <main className="min-h-screen bg-white">
             <div className="flex h-30 items-center justify-between gap-4 bg-neutral-50 border-b-4 border-mint-dark px-4 py-4 sm:px-8">
@@ -74,6 +91,16 @@ const [isLoading,setIsLoading]=useState(true);
                         Próximos pagos
                     </h1>
 
+
+                    <div className="my-6 flex flex-col gap-5 bg-white">
+                        <SearchOrders
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                            className="w-full"
+                        />
+                    </div>
+                    
+
                     <p className="mt-4 text-gray-600 text-2xl">
                         Órdenes
                     </p>
@@ -83,7 +110,7 @@ const [isLoading,setIsLoading]=useState(true);
                             Array.from({ length: 4 }, (_, index) => (
                                 <Skeleton key={index} className="h-56 w-full rounded-2xl" />
                             ))
-                        ) : orders.map((order) => (
+                        ) : filteredOrders.map((order) => (
                             <OrderCard
                                 key={order.orderId}
                                 order={order}

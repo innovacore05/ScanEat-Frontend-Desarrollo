@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
 import FilterOrders from "../waiterOrders/FilterOrders";
-import SearchOrders from "../waiterOrders/SearchOrders";
+import SearchOrders from "../Orders/SearchOrders";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import OrderCard from "../Orders/OrderCard";
 import type { Order } from "../Orders/OrderCard";
@@ -66,7 +66,7 @@ function WaiterOrders() {
   }, [loadOrders]);
 
 
-  const filteredOrders = orders.filter((order) => {
+  const filteredOrders = orders.filter( (order) => {
     if (order.status === "Pagado") {
       return false;
     }
