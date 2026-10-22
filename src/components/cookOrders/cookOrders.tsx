@@ -5,6 +5,7 @@ import { logout } from "../../services/authService";
 import OrderCard from "./OrderCard";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { LuLogOut } from "react-icons/lu";
+import { socket } from "../../services/socketClient";
 
 function CookOrders() {
   const [orders, setOrders] = useState<Array<{
@@ -35,20 +36,33 @@ function CookOrders() {
     }
   };
 
-  useEffect(() => {
-    const initialLoadId = window.setTimeout(() => {
-      void loadOrders();
-    }, 0);
+  useEffect(() => {   
 
-    const intervalId = window.setInterval(() => {
+    const handleKitchenOrdersUpdated = () => {
       void loadOrders();
-    }, 2000);
-
-    return () => {
-      window.clearTimeout(initialLoadId);
-      window.clearInterval(intervalId);
     };
+
+    const handleConnect = () => {
+      void loadOrders();
+    };
+
+    socket.on("kitchen_orders_updated", handleKitchenOrdersUpdated);
+    socket.on("connect", handleConnect);
+
+    if (socket.connected) {
+      void loadOrders();
+    } else {
+      socket.connect();
+    }
+    
+    return () => {
+      socket.off("kitchen_orders_updated", handleKitchenOrdersUpdated);
+      socket.off("connect", handleConnect);
+    };
+
+    
   }, []);
+  
 
   const handleReadyOrder = async (orderId: number) => {
     try {

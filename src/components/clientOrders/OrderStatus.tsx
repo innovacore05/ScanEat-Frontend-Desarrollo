@@ -14,6 +14,8 @@ import {
   type FrontendOrderStatus,
 } from "../../services/orderService";
 import { getPublicTableNumber } from "../../services/tableService";
+import { socket } from "../../services/socketClient";
+
 
 type OrderStatusProps = {
   orderId: number;
@@ -90,6 +92,8 @@ function OrderStatus({ orderId, tableId }: OrderStatusProps) {
     };
   }, [tableId]);
 
+
+
   useEffect(() => {
     let isMounted = true;
 
@@ -134,16 +138,48 @@ const newStatus: VisibleStatus =
   }
 };
 
-    void loadOrderStatus();
-    const intervalId = window.setInterval(() => {
-      void loadOrderStatus();
-    }, 2000);
+    const handleOrderStatusUpdated = (data: {
+    orderId: number;
+    state: string;
+  }) => {
+    if (!isMounted || data.orderId !== orderId) return;
 
-    return () => {
-      isMounted = false;
-      window.clearInterval(intervalId);
-    };
+    const mappedStatus =
+      stateToLabel[data.state as keyof typeof stateToLabel];
+
+    if (!mappedStatus) return;
+
+    const newStatus: VisibleStatus =
+      mappedStatus === "Pagado" ? "Entregado" : mappedStatus;
+
+    setStatus(newStatus);
+    setError("");
+
+    if (newStatus === "Entregado") {
+      localStorage.removeItem("currentOrderId");
+      localStorage.removeItem("currentOrderTableId");
+    }
+  };
+
+  socket.on("order_status_updated", handleOrderStatusUpdated);
+
+socket.on("connect", loadOrderStatus);
+
+if (socket.connected) {
+  void loadOrderStatus();
+} else {
+  socket.connect();
+}
+
+return () => {
+  isMounted = false;
+
+  socket.off("order_status_updated", handleOrderStatusUpdated);
+  socket.off("connect", loadOrderStatus);
+};
   }, [orderId]);
+
+
 
   const currentContent = statusContent[status];
   const currentStatusIndex = statusOrder.indexOf(status);
