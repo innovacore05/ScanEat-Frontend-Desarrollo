@@ -297,7 +297,7 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
                 </button>
             </div>
 
-            <div className="hidden shrink-0 flex-col gap-3 lg:flex">
+            <div className=" flex shrink-0 flex-col gap-3">
                 <button
                     type="button"
                     onClick={() => scrollInvoice("top")}

@@ -8,6 +8,7 @@ import { getOrders } from "../../services/orderService";
 import HistoryCard from "../salesHistory/HistoryCard";
 import type { Order } from "../Orders/OrderCard";
 import Skeleton from "../shared/Skeleton";
+import { socket } from "../../services/socketClient";
 
 function HistorySales() {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -40,16 +41,30 @@ function HistorySales() {
     }, []);
 
     useEffect(() => {
-        void loadOrders(true);
+ 
+    const handleCashierOrdersUpdated = () => {
+        void loadOrders();
+    };
 
-        const intervalId = window.setInterval(() => {
-            void loadOrders();
-        }, 2000);
+    const handleConnect = () => {
+        void loadOrders();
+    };
 
-        return () => {
-            window.clearInterval(intervalId);
-        };
-    }, [loadOrders]);
+    socket.on("cashier_orders_updated", handleCashierOrdersUpdated);
+    socket.on("connect", handleConnect);
+
+    if (socket.connected) {
+        void loadOrders();
+    } else {
+        socket.connect();
+    }
+
+     return () => {
+        socket.off("cashier_orders_updated", handleCashierOrdersUpdated);
+        socket.off("connect", handleConnect);
+     };
+    
+},[loadOrders]);
 
 
 

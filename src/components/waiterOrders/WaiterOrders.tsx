@@ -9,6 +9,7 @@ import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
 import Skeleton from "../shared/Skeleton";
+import { socket } from "../../services/socketClient";
 
 function WaiterOrders() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,17 +40,31 @@ function WaiterOrders() {
     }
   }, []);
 
-  useEffect(() => {
-    void loadOrders(true);
 
-    const intervalId = window.setInterval(() => {
+  useEffect(() => {
+    const handleWaiterOrdersUpdated = () => {
       void loadOrders();
-    }, 2000);
+    };
+    const handleConnect = () => {
+      void loadOrders(true);
+    };
+
+    socket.on("waiter_orders_updated", handleWaiterOrdersUpdated);
+    socket.on("connect", handleConnect);
+    
+    if (socket.connected) {
+      void loadOrders(true);
+    } else {
+      socket.connect();
+    }
 
     return () => {
-      window.clearInterval(intervalId);
+      socket.off("waiter_orders_updated", handleWaiterOrdersUpdated);
+      socket.off("connect", handleConnect);
     };
+    
   }, [loadOrders]);
+
 
   const filteredOrders = orders.filter((order) => {
     if (order.status === "Pagado") {

@@ -6,24 +6,52 @@ import { logout } from "../../services/authService";
 import { LuLogOut } from "react-icons/lu";
 import { Link } from "@tanstack/react-router";
 import Skeleton from "../shared/Skeleton";
+import { socket } from "../../services/socketClient";
 
 function CashierOrders (){
 const [orders,setOrders]=useState<Order[]>([]);
 const [isLoading,setIsLoading]=useState(true);
 
-useEffect(()=>{
+    useEffect(() => {
+    //Consulta las órdenes que están pendientes de pago
     const loadOrders =async ()=>{
         try{
        const data = await getOrders("delivered",true);
        setOrders(data);
         }catch(error){
-        console.error("Error caragdno órdenes:", error);
+        console.error("Error cargando órdenes:", error);
         } finally {
         setIsLoading(false);
         }
     };
-    loadOrders();
 
+    //Se actualiza las órdenes cuando el backend notifica un cqambio
+    const handleCashierOrdersUpdated = () => {
+        void loadOrders();
+    };
+
+    //Vuelve a consultar las órdenes al conectarse o reconectarse
+    const handleConnect = () => {
+        void loadOrders();
+    };
+
+        //Escucha las notificaciones que están destinadas a la pantalla del cajero
+    socket.on("cashier_orders_updated", handleCashierOrdersUpdated);
+    socket.on("connect", handleConnect);
+
+    //Carga las órdenes iniciales y establece conexión si hace falta (como por ejemplo si se pierde la conexión a internet)
+    if (socket.connected) {
+        void loadOrders();
+    } else {
+        socket.connect();
+    }
+
+    //Elimina los listeners cuando sale de la pantalla
+     return () => {
+        socket.off("cashier_orders_updated", handleCashierOrdersUpdated);
+        socket.off("connect", handleConnect);
+     };
+    
 },[]);
 
     return (
