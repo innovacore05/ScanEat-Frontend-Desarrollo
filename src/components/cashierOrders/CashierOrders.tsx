@@ -110,13 +110,19 @@ const [orders,setOrders]=useState<Order[]>([]);
                             Array.from({ length: 4 }, (_, index) => (
                                 <Skeleton key={index} className="h-56 w-full rounded-2xl" />
                             ))
-                        ) : filteredOrders.map((order) => (
+                        ) : filteredOrders.length > 0 ? (
+                            filteredOrders.map((order) => (
                             <OrderCard
                                 key={order.orderId}
                                 order={order}
                                 isCashier
                             />
-                        ))}
+                            ))
+                            ) : (
+                                    <p className="py-8  text-gray-500">
+                                        No hay resultados para esta búsqueda.
+                            </p>
+                        )}
                     </div>
                 </div>
             </section>

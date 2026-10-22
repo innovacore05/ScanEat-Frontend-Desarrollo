@@ -136,13 +136,19 @@ function WaiterOrders() {
             <div className="flex flex-col gap-8 pb-20">
               {isLoadingOrders ? Array.from({ length: 3 }, (_, index) => (
                 <Skeleton key={index} className="h-44 w-full rounded-2xl" />
-              )) : filteredOrders.map((order) => (
+              )) : filteredOrders.length > 0 ? (
+                    filteredOrders.map((order) => (
                 <OrderCard
                   key={order.orderId}
                   order={order}
                   onDetails={() => setSelectedOrder(order)}
                 />
-              ))}
+             ))
+                ) : (
+                      <p className="py-8 text-center text-gray-500">
+                        No hay resultados para esta búsqueda.
+                </p>
+                    )}
             </div>
           </div>
         </section>
@@ -179,13 +185,19 @@ function WaiterOrders() {
             <div className="flex flex-col gap-12">
               {isLoadingOrders ? Array.from({ length: 4 }, (_, index) => (
                 <Skeleton key={index} className="h-44 w-full rounded-2xl" />
-              )) : filteredOrders.map((order) => (
+              )) : filteredOrders.length > 0 ? (
+                    filteredOrders.map((order) => (
                 <OrderCard
                   key={order.orderId}
                   order={order}
                   onDetails={() => setSelectedOrder(order)}
                 />
-              ))}
+             ))
+                ) : (
+                      <p className="py-8 text-center text-gray-500">
+                        No hay resultados para esta búsqueda.
+                </p>
+                    )}
             </div>
 
             {/* Detalles */}
