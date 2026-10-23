@@ -29,6 +29,7 @@ credentials: "include"
 
 
 type ApiError={
+    code?: string;
     message?:string;
     status?:number
     [key:string]:unknown;
@@ -68,6 +69,13 @@ if (!response.ok) {
     const data = contentType.includes("application/json")
         ? await response.json().catch(() => ({}))
         : {};
+
+if (
+  response.status === 401 &&
+  data.code === "SESSION_EXPIRED"
+) {
+  window.dispatchEvent(new Event("auth:session-expired"));
+}
 
     throw {
         ...data,
