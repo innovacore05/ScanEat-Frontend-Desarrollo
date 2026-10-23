@@ -10,6 +10,7 @@ import { GiCampCookingPot } from "react-icons/gi";
 import { IoBagCheck } from "react-icons/io5";
 import {
   getOrderStatus,
+  getClientId,
   stateToLabel,
   type FrontendOrderStatus,
 } from "../../services/orderService";
@@ -159,13 +160,36 @@ const newStatus: VisibleStatus =
       localStorage.removeItem("currentOrderId");
       localStorage.removeItem("currentOrderTableId");
     }
-  };
+    };
+    
+    const joinTable = () => {
+  if (!tableId) return;
+
+  socket.emit(
+    "join_table",
+    {
+      tableId,
+      clientId: getClientId(),
+    },
+    (response: { ok: boolean; message?: string }) => {
+      if (!response.ok) {
+        console.error("No se pudo unir a la sala de la mesa:", response.message);
+      }
+    }
+  );
+};
+
+const handleConnect = () => {
+  joinTable();
+  void loadOrderStatus();
+};
 
   socket.on("order_status_updated", handleOrderStatusUpdated);
 
-socket.on("connect", loadOrderStatus);
+socket.on("connect", handleConnect);
 
-if (socket.connected) {
+    if (socket.connected) {
+  joinTable();
   void loadOrderStatus();
 } else {
   socket.connect();
@@ -175,9 +199,9 @@ return () => {
   isMounted = false;
 
   socket.off("order_status_updated", handleOrderStatusUpdated);
-  socket.off("connect", loadOrderStatus);
+  socket.off("connect", handleConnect);
 };
-  }, [orderId]);
+  }, [orderId, tableId]);
 
 
 
