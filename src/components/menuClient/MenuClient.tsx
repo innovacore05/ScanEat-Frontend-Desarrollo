@@ -22,6 +22,7 @@ import { getProductReviews } from "../../services/reviewService";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { getPublicTableNumber } from "../../services/tableService";
 import { HiArrowLeft } from "react-icons/hi";
+import MenuAssistant from "./MenuAssistant";
 
 // Límite de muestras
 const PAGE_SIZE = 10;
@@ -141,6 +142,7 @@ function MenuClient() {
     cartCount,
     orderAddCount,
     setMesaId,
+    addToCart,
     addToOrderCart,
   } = useCart();
 
@@ -562,6 +564,13 @@ function MenuClient() {
           </Link>
         )}
       </div>
+
+      <MenuAssistant
+        mesaId={mesaId}
+        isAddingToOrder={isAddingToOrder}
+        onAddToCart={addToCart}
+        onAddToOrderCart={addToOrderCart}
+      />
     </main>
   );
 }
