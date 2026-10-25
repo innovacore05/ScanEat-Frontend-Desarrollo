@@ -101,7 +101,7 @@ const [orders,setOrders]=useState<Order[]>([]);
                     </div>
                     
 
-                    <p className="mt-4 text-gray-600 text-2xl">
+                    <p className="mt-4 text-mint-darker text-2xl">
                         Órdenes
                     </p>
 

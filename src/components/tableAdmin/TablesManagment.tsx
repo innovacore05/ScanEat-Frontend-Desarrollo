@@ -203,7 +203,7 @@ const handleRequestDelete = () => {
 							</p>
 
 							{selectedTable ? (
-								<div className="mt-2 rounded-lg bg-mint-dark px-4 py-3 text-white">
+								<div className="mt-2 rounded-lg bg-mint-darker px-4 py-3 text-white">
 									<p className="text-lg font-bold">
 										Mesa #{selectedTable.tableNumber}
 									</p>
@@ -368,7 +368,7 @@ const handleRequestDelete = () => {
 							</p>
 
 							{selectedTable ? (
-								<div className="mt-2 rounded-lg bg-mint-dark px-4 py-3 text-white">
+								<div className="mt-2 rounded-lg bg-mint-darker px-4 py-3 text-white">
 									<p className="text-lg font-bold">Mesa #{selectedTable.tableNumber}</p>
 									<p className="mt-2 text-s">Asientos: {selectedTable.chairNumber}</p>
 								</div>

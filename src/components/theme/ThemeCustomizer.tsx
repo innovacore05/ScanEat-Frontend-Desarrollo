@@ -368,7 +368,7 @@ function ThemeCustomizer() {
               <button
                 type="button"
                 onClick={restoreDefaults}
-                className="w-full rounded-lg border border-mint-dark px-4 py-3 text-mint-dark sm:w-auto sm:min-w-48 hover:bg-mint-dark/10"
+                className="w-full rounded-lg border border-mint-dark px-4 py-3 text-mint-dark sm:w-auto sm:min-w-48 hover:bg-mint-darker hover:text-white"
               >
                 Restaurar valores originales
               </button>

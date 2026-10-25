@@ -394,10 +394,10 @@ function MenuClient() {
           <div className="flex items-center justify-between">
             <RestaurantLogo className="h-16 w-16 object-contain" />
 
-            <h2 className="text-2xl font-bold text-black">Menú</h2>
+            <h2 className="text-2xl font-bold text-mint-dark">Menú</h2>
 
             {tableInfo && tableInfo.mesaId === mesaId && (
-              <p className="font-bold text-mint-dark">
+              <p className="font-bold text-white py-1 px-3 rounded-2xl bg-mint-dark">
                 Mesa #{tableInfo.tableNumber}
               </p>
             )}

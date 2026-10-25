@@ -135,7 +135,7 @@ setOriginalEmail(data.user.email);
                     <div className="mt-5">
 						<Link
 							to="/changePassword"
-							className="mt-2 block w-full cursor-pointer rounded-lg border border-mint-dark px-4 py-3 text-center text-base font-bold text-mint-dark hover:bg-mint-dark/10"
+							className="mt-2 block w-full cursor-pointer rounded-lg border border-mint-dark px-4 py-3 text-center text-base font-bold text-mint-dark hover:bg-mint-darker hover:text-white"
 						>
 							Cambiar contraseña
 						</Link>
@@ -146,7 +146,7 @@ setOriginalEmail(data.user.email);
 
 						<Link
 							to="/dashboardAdmin"
-							className="mt-16 block w-full cursor-pointer rounded-lg border border-mint-dark px-4 py-3 text-center text-base font-bold text-mint-dark hover:bg-mint-dark/10"
+							className="mt-16 block w-full cursor-pointer rounded-lg border border-mint-dark px-4 py-3 text-center text-base font-bold text-mint-dark hover:bg-mint-darker hover:text-white"
 						>
 							Cancelar cambios
 						</Link>

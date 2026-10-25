@@ -278,9 +278,9 @@ function Expenses() {
 
                     {/* Resumen */}
                     <div className="mb-6 grid gap-4 sm:grid-cols-2">
-                        <article className="rounded-xl border border-border bg-mint-dark p-5">
+                        <article className="rounded-xl border border-border bg-mint-darker p-5">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-mint-dark border border-white">
+                                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-mint-darker border border-white">
                                     <FiDollarSign className="h-6 w-6 text-white" />
                                 </div>
                                 <div>
@@ -294,9 +294,9 @@ function Expenses() {
                             </div>
                         </article>
 
-                        <article className="rounded-xl border border-border bg-mint-dark p-5">
+                        <article className="rounded-xl border border-border bg-mint-darker p-5">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-mint-dark border border-white">
+                                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-mint-darker border border-white">
                                     <FiClipboard className="h-6 w-6 text-white" />
                                 </div>
                                 <div>
@@ -496,7 +496,7 @@ function Expenses() {
                                 <button
                                     type="button"
                                     onClick={openNewForm}
-                                    className="flex shrink-0 cursor-pointer items-center gap-2 rounded-lg bg-mint-dark px-3 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 sm:px-4"
+                                    className="flex shrink-0 cursor-pointer items-center gap-2 rounded-lg bg-mint-dark hover:bg-mint-darker px-3 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 sm:px-4"
                                 >
                                     <span className="hidden sm:inline">Registrar egreso</span>
                                     <span className="sm:hidden">Registrar</span>

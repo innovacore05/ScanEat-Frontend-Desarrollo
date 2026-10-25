@@ -10,7 +10,7 @@ function IssuerInformation() {
       <main className="min-h-screen bg-brand-white p-15">
         <div className="mx-auto w-full max-w-6xl">
           <div className="mb-10">
-            <h1 className="text-3xl font-bold text-black">
+            <h1 className="text-3xl font-bold text-mint-dark">
               Datos del emisor
             </h1>
           </div>
@@ -314,14 +314,14 @@ function IssuerInformation() {
             <Link
               to="/dashboardAdmin"
               type="button"
-              className="text-center rounded-lg border border-border px-6 py-2 font-semibold"
+              className="text-center rounded-lg border border-border px-6 py-2 font-semibold text-mint-dark hover:bg-mint-darker hover:text-white"
             >
               Cancelar
             </Link>
 
             <button
               type="button"
-              className=" rounded-lg border border-border bg-mint-dark px-6 py-2 font-semibold text-white"
+              className=" rounded-lg border border-border bg-mint-dark px-6 py-2 font-semibold text-white hover:bg-mint-darker"
             >
               Guardar
             </button>

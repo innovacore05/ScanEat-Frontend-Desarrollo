@@ -234,7 +234,7 @@ function MenuAssistant({
           <div className="flex-1 space-y-3 overflow-y-auto bg-neutral-50 p-3">
             {messages.length === 0 && (
               <p className="max-w-[90%] rounded-2xl bg-white p-3 text-sm shadow-sm">
-                Dime qué quieres comer (desayuno, almuerzo o cena) y cuánto deseas gastar.
+                ¡Hola! ¿Qué te gustaría comer y cuál es tu presupuesto? Te recomiendo platillos para cada ocasión.
               </p>
             )}
 

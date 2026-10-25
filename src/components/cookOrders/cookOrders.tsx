@@ -84,7 +84,7 @@ function CookOrders() {
         <Link
           to="/login"
           onClick={logout}
-          className="flex items-center justify-center gap-2 rounded-2xl bg-mint-dark px-3 py-3 text-base font-bold text-white sm:gap-3 sm:px-8 sm:py-4 sm:text-xl"
+          className="flex items-center justify-center gap-2 rounded-2xl bg-mint-dark hover:bg-mint-darker px-3 py-3 text-base font-bold text-white sm:gap-3 sm:px-8 sm:py-4 sm:text-xl"
         >
           <LuLogOut className="h-4 w-4 sm:h-5 sm:w-5" />
           <span>Cerrar sesión</span>
