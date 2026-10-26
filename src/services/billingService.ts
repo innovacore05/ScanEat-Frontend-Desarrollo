@@ -4,19 +4,24 @@ const BILLING_BASE_URL= "/api/billing";
 
 export type PaymentMethodType= "cash" | "card" | "sinpe";
 
+
 export type ReceiptLine = {
+  detailId: number;
   detail: string;
   quantity: number;
+  originalQuantity: number;
+  paidQuantity: number;
+  pendingQuantity: number;
   unitPrice: string;
   gross: string;
   discount: string;
   subtotal: string;
   tax: string;
   total: string;
-  //  el backend devuelve estas tarifas
   ivaRate: string;
   ivaRateCode: string;
 };
+
 
 export type ReceiptTotals={
     totalSale:string;
@@ -28,21 +33,29 @@ export type ReceiptTotals={
     totalVoucher:string;
 };
 
-export type PaymentPreview={
-    orderId: number;
-    tableId: string;
-    tableNumber: number;
-lines:Array<ReceiptLine & {detailId:number}>;
-totals:ReceiptTotals;
-taxSummary: { rate: number; amount: string }[];
-//producto sin codigo cabys
-missingCabys:string[];
+
+export type PaymentPreview = {
+  orderId: number;
+  tableId: string;
+  tableNumber: number;
+  lines: ReceiptLine[];
+  totals: ReceiptTotals;
+  taxSummary: { rate: number; amount: string }[];
+  missingCabys: string[];
 };
 
-export type PayOrderPayload=
-| {method:"cash"; amountTendered:number}
-|{method: "card"|"sinpe"; reference:string};
- 
+
+
+export type PayOrderPayload = {
+  items: {
+    detailId: number;
+    quantity: number;
+  }[];
+} & (
+  | { method: "cash"; amountTendered: number }
+  | { method: "card" | "sinpe"; reference: string }
+);
+
 
 
 export type PayOrderResponse={

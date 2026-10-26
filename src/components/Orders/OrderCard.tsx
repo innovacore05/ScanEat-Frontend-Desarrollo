@@ -61,9 +61,9 @@ function OrderCard({ order, onDetails, isCashier = false }: OrderCardProps) {
 
   {/* Celular */}
   <Link
-    to={isCashier ? "/paymentMethod" : "/waiterOrderDetails"}
+    to={isCashier ? "/selectOrderProducts" : "/waiterOrderDetails"}
     search={{ orderId: order.orderId }}
-    className="text-center w-20 rounded-lg border border-mint-dark py-2 text-sm font-bold text-mint-darker cursor-pointer hover:bg-mint/10 lg:hidden"
+    className="text-center w-20 rounded-lg border border-mint-dark py-2 text-sm font-bold text-mint-darker cursor-pointer hover:bg-mint-dark/10 lg:hidden"
   >
     {isCashier ? "Pagar" : "Detalles"}
   </Link>
@@ -71,9 +71,9 @@ function OrderCard({ order, onDetails, isCashier = false }: OrderCardProps) {
   {/* Computadora */}
   {isCashier ? (
   <Link
-    to="/paymentMethod"
+    to="/selectOrderProducts"
     search={{ orderId: order.orderId }}
-    className="hidden w-20 cursor-pointer rounded-lg border border-mint-dark py-2 text-center text-sm font-bold text-mint-darker hover:bg-mint/10 lg:block"
+    className="hidden w-20 cursor-pointer rounded-lg border border-mint-dark py-2 text-center text-sm font-bold text-mint-darker hover:bg-mint-dark/10 lg:block"
   >
     Pagar
   </Link>
