@@ -71,7 +71,17 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
         }
     };
 
+    const { issuer } = receipt;
 
+    const statusLabels: Record<string, string> = {
+        not_sent: "Pendiente de envío",
+        queued: "Pendiente de confirmación",
+        accepted: "Aceptado por Hacienda",
+        rejected: "Rechazado por Hacienda",
+    };
+
+    const formatPhone = (phone: string | null) =>
+        phone && phone.length === 8 ? `${phone.slice(0, 4)}-${phone.slice(4)}` : (phone ?? "");
 
     const issueDate = new Date(receipt.issueDate).toLocaleString("es-CR", {
         day: "2-digit",
@@ -95,20 +105,22 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
 
 
                 {/* Emisor */}
+                               {/* Emisor */}
                 <div className="mt-4 mb-4 flex flex-col items-center gap-2 text-center">
                     <RestaurantLogo className="h-16 w-16 mb-2" />
 
                     <p className="text-sm font-semibold text-gray-700">
-                        {businessName || "Nombre del negocio"}
+                        {issuer.tradeName || issuer.legalName}
                     </p>
+                    {issuer.tradeName && (
+                        <p className="text-sm text-gray-700">{issuer.legalName}</p>
+                    )}
                     <p className="text-sm font-semibold text-gray-700">
-                        Cédula jurídica x-xxx-xxxxx
+                        Cédula {issuer.legalId}
                     </p>
+                    <p className="text-sm font-semibold text-gray-700">{issuer.address}</p>
                     <p className="text-sm font-semibold text-gray-700">
-                        Dirección,
-                    </p>
-                    <p className="text-sm font-semibold text-gray-700">
-                        Tel 8888-8888
+                        Tel {formatPhone(issuer.phone)}
                     </p>
                 </div>
 
@@ -119,14 +131,22 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
                         Tiquete Electrónico
                     </h1>
                     {/* Datos del comprobante */}
-                    <div className="mt-3 flex flex-col gap-2">
-                        <Row label="Consecutivo" value="Pendiente" />
+                                       <div className="mt-3 flex flex-col gap-2">
+                        <Row label="Consecutivo" value={receipt.consecutiveNumber ?? "Pendiente"} />
                         <Row label="Fecha de emisión" value={issueDate} />
-                        <Row label="Clave numérica" value="Pendiente" />
+                        <Row label="Clave numérica" value={receipt.clave ?? "Pendiente"} />
                         <Row label="Condición de venta" value="Contado" />
-
-
+                        <Row
+                            label="Estado"
+                            value={statusLabels[receipt.haciendaStatus] ?? receipt.haciendaStatus}
+                        />
                     </div>
+
+                    {receipt.environment === "sandbox" && (
+                        <p className="mt-3 text-center text-xs font-semibold text-red-600">
+                            AMBIENTE DE PRUEBAS: este comprobante no tiene valor fiscal
+                        </p>
+                    )}
 
                     <div className="mt-4 border border-border"></div>
                     {/* Receptor */}

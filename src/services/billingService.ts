@@ -51,6 +51,17 @@ receiptId: number;
     documentType:string;
     issueDate:string;
     haciendaStatus:string;
+     clave: string | null;
+  consecutiveNumber: string | null;
+  environment: string;
+  issuer: {
+    legalName: string;
+    tradeName: string | null;
+    legalId: string;
+    legalIdType: string;
+    phone: string | null;
+    address: string | null;
+  };
     lines:ReceiptLine[];
     totals:ReceiptTotals;
     taxSummary: { rate: number; amount: string }[];
