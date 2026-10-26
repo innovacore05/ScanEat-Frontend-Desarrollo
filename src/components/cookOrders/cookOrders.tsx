@@ -5,6 +5,7 @@ import { logout } from "../../services/authService";
 import OrderCard from "./OrderCard";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { LuLogOut } from "react-icons/lu";
+import { socket } from "../../services/socketClient";
 
 function CookOrders() {
   const [orders, setOrders] = useState<Array<{
@@ -35,20 +36,33 @@ function CookOrders() {
     }
   };
 
-  useEffect(() => {
-    const initialLoadId = window.setTimeout(() => {
-      void loadOrders();
-    }, 0);
+  useEffect(() => {   
 
-    const intervalId = window.setInterval(() => {
+    const handleKitchenOrdersUpdated = () => {
       void loadOrders();
-    }, 2000);
-
-    return () => {
-      window.clearTimeout(initialLoadId);
-      window.clearInterval(intervalId);
     };
+
+    const handleConnect = () => {
+      void loadOrders();
+    };
+
+    socket.on("kitchen_orders_updated", handleKitchenOrdersUpdated);
+    socket.on("connect", handleConnect);
+
+    if (socket.connected) {
+      void loadOrders();
+    } else {
+      socket.connect();
+    }
+    
+    return () => {
+      socket.off("kitchen_orders_updated", handleKitchenOrdersUpdated);
+      socket.off("connect", handleConnect);
+    };
+
+    
   }, []);
+  
 
   const handleReadyOrder = async (orderId: number) => {
     try {
@@ -70,7 +84,7 @@ function CookOrders() {
         <Link
           to="/login"
           onClick={logout}
-          className="flex items-center justify-center gap-2 rounded-2xl bg-mint-dark px-3 py-3 text-base font-bold text-white sm:gap-3 sm:px-8 sm:py-4 sm:text-xl"
+          className="flex items-center justify-center gap-2 rounded-2xl bg-mint-dark hover:bg-mint-darker px-3 py-3 text-base font-bold text-white sm:gap-3 sm:px-8 sm:py-4 sm:text-xl"
         >
           <LuLogOut className="h-4 w-4 sm:h-5 sm:w-5" />
           <span>Cerrar sesión</span>

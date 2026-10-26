@@ -59,7 +59,7 @@ function FavoritesToday() {
           {topProducts.slice(0, 3).map((product, index) => (
             <div
               key={product.productId}
-              className={`${barWidths[index]} flex min-w-0 items-center justify-between gap-3 rounded-lg bg-mint-dark px-4 py-2 text-white`}
+              className={`${barWidths[index]} flex min-w-0 items-center justify-between gap-3 rounded-lg bg-mint-darker px-4 py-2 text-white`}
             >
               <span className="truncate">{product.name}</span>
               <span className="shrink-0 text-sm font-semibold">

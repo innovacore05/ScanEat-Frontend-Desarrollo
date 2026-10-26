@@ -2,13 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
 import FilterOrders from "../waiterOrders/FilterOrders";
-import SearchOrders from "../waiterOrders/SearchOrders";
+import SearchOrders from "../Orders/SearchOrders";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import OrderCard from "../Orders/OrderCard";
 import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
 import Skeleton from "../shared/Skeleton";
+import { socket } from "../../services/socketClient";
 
 function WaiterOrders() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,19 +40,33 @@ function WaiterOrders() {
     }
   }, []);
 
-  useEffect(() => {
-    void loadOrders(true);
 
-    const intervalId = window.setInterval(() => {
+  useEffect(() => {
+    const handleWaiterOrdersUpdated = () => {
       void loadOrders();
-    }, 2000);
+    };
+    const handleConnect = () => {
+      void loadOrders(true);
+    };
+
+    socket.on("waiter_orders_updated", handleWaiterOrdersUpdated);
+    socket.on("connect", handleConnect);
+    
+    if (socket.connected) {
+      void loadOrders(true);
+    } else {
+      socket.connect();
+    }
 
     return () => {
-      window.clearInterval(intervalId);
+      socket.off("waiter_orders_updated", handleWaiterOrdersUpdated);
+      socket.off("connect", handleConnect);
     };
+    
   }, [loadOrders]);
 
-  const filteredOrders = orders.filter((order) => {
+
+  const filteredOrders = orders.filter( (order) => {
     if (order.status === "Pagado") {
       return false;
     }
@@ -121,13 +136,19 @@ function WaiterOrders() {
             <div className="flex flex-col gap-8 pb-20">
               {isLoadingOrders ? Array.from({ length: 3 }, (_, index) => (
                 <Skeleton key={index} className="h-44 w-full rounded-2xl" />
-              )) : filteredOrders.map((order) => (
+              )) : filteredOrders.length > 0 ? (
+                    filteredOrders.map((order) => (
                 <OrderCard
                   key={order.orderId}
                   order={order}
                   onDetails={() => setSelectedOrder(order)}
                 />
-              ))}
+             ))
+                ) : (
+                      <p className="py-8 text-center text-gray-500">
+                        No hay resultados para esta búsqueda.
+                </p>
+                    )}
             </div>
           </div>
         </section>
@@ -164,13 +185,19 @@ function WaiterOrders() {
             <div className="flex flex-col gap-12">
               {isLoadingOrders ? Array.from({ length: 4 }, (_, index) => (
                 <Skeleton key={index} className="h-44 w-full rounded-2xl" />
-              )) : filteredOrders.map((order) => (
+              )) : filteredOrders.length > 0 ? (
+                    filteredOrders.map((order) => (
                 <OrderCard
                   key={order.orderId}
                   order={order}
                   onDetails={() => setSelectedOrder(order)}
                 />
-              ))}
+             ))
+                ) : (
+                      <p className="py-8 text-center text-gray-500">
+                        No hay resultados para esta búsqueda.
+                </p>
+                    )}
             </div>
 
             {/* Detalles */}

@@ -1,10 +1,11 @@
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { IoCloseOutline } from "react-icons/io5";
+import { HiArrowUp, HiArrowDown } from "react-icons/hi";
 import type { PayOrderResponse } from "../../services/billingService";
 import { printReceipt } from "../../services/printService";
 import { useTheme } from "../../contexts/ThemeContext";
 import { getProfile } from "../../services/authService";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 type InvoiceModalProps = {
     isOpen: boolean;
@@ -55,6 +56,16 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
         loadProfile();
     }, []);
 
+    const invoiceScrollRef = useRef<HTMLDivElement>(null);
+    const scrollInvoice = (position: "top" | "bottom") => {
+        const container = invoiceScrollRef.current;
+        if (!container) return;
+        container.scrollTo({
+            top: position === "top" ? 0 : container.scrollHeight,
+            behavior: "smooth",
+        });
+    };
+
     if (!isOpen || !receipt) return null;
 
     const formatRate = (rate: number) =>
@@ -82,8 +93,12 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
     });
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="relative flex h-148 w-full max-w-md flex-col overflow-y-auto rounded-2xl bg-white px-6 py-10">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="flex items-center gap-4">
+            <div
+                ref={invoiceScrollRef}
+                className="relative flex h-148 w-full max-w-md flex-col overflow-y-auto rounded-2xl bg-white px-6 py-10"
+            >
                 <button
                     type="button"
                     onClick={onClose}
@@ -92,7 +107,6 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
                 >
                     <IoCloseOutline className="h-6 w-6" />
                 </button>
-
 
                 {/* Emisor */}
                 <div className="mt-4 mb-4 flex flex-col items-center gap-2 text-center">
@@ -124,166 +138,185 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
                         <Row label="Fecha de emisión" value={issueDate} />
                         <Row label="Clave numérica" value="Pendiente" />
                         <Row label="Condición de venta" value="Contado" />
-
-
                     </div>
+                </div>
 
-                    <div className="mt-4 border border-border"></div>
-                    {/* Receptor */}
-                    <div className="mt-4">
-                        <Row label="Cliente" value="Cliente de contado" />
-                    </div>
+                <div className="mt-4 border border-border"></div>
+                {/* Receptor */}
+                <div className="mt-4">
+                    <Row label="Cliente" value="Cliente de contado" />
+                </div>
 
-                    <div className="mt-4 border border-border"></div>
-                    {/* Detalle */}
-                    <div className="mt-4">
-                        <h1 className="text-xl font-bold text-mint-dark">
-                            Detalle de pedido
-                        </h1>
+                <div className="mt-4 border border-border"></div>
+                {/* Detalle */}
+                <div className="mt-4">
+                    <h1 className="text-xl font-bold text-mint-dark">
+                        Detalle de pedido
+                    </h1>
 
-                        <div className="mt-5  pr-0">
-                            <div className="flex flex-col gap-4">
-                                <div className="grid grid-cols-[minmax(0,1fr)_38px_82px_88px] items-center gap-2 border-b border-border pb-3">
-                                    <p className="text-xs font-semibold text-gray-700">
-                                        Producto
-                                    </p>
-                                    <p className="text-center text-xs font-semibold text-gray-700">
-                                        Cant.
-                                    </p>
-                                    <p className="text-right text-xs font-semibold text-gray-700">
-                                        Precio unitario
-                                    </p>
-                                    <p className="text-right text-xs font-semibold text-gray-700">
-                                        Total (con IVA)
-                                    </p>
-                                </div>
+                    <div className="mt-5 pr-0">
+                        <div className="flex flex-col gap-4">
+                            <div className="grid grid-cols-[minmax(0,1fr)_38px_82px_88px] items-center gap-2 border-b border-border pb-3">
+                                <p className="text-xs font-semibold text-gray-700">
+                                    Producto
+                                </p>
+                                <p className="text-center text-xs font-semibold text-gray-700">
+                                    Cant.
+                                </p>
+                                <p className="text-right text-xs font-semibold text-gray-700">
+                                    Precio unitario
+                                </p>
+                                <p className="text-right text-xs font-semibold text-gray-700">
+                                    Total (con IVA)
+                                </p>
+                            </div>
 
-                                {receipt.lines.map((line, index) => (
-
-                                    <div
-                                        key={index}
-                                        className={`grid grid-cols-[minmax(0,1fr)_38px_82px_88px] gap-2 py-2 ${index !== receipt.lines.length - 1
+                            {receipt.lines.map((line, index) => (
+                                <div
+                                    key={index}
+                                    className={`grid grid-cols-[minmax(0,1fr)_38px_82px_88px] gap-2 py-2 ${
+                                        index !== receipt.lines.length - 1
                                             ? "border-b border-border"
                                             : ""
-                                            }`}
-                                    >
-                                        <div className="min-w-0">
-                                            <p className="text-sm text-gray-700">{line.detail}</p>
-                                            <p className="text-xs text-gray-500">
-                                                IVA {formatRate(Number(line.ivaRate))}
-                                            </p>
-                                        </div>
-
-                                        <p className="text-center text-sm text-gray-700">
-                                            {line.quantity}
+                                    }`}
+                                >
+                                    <div className="min-w-0">
+                                        <p className="text-sm text-gray-700">
+                                            {line.detail}
                                         </p>
-
-                                        {/* precio unitario: con descuento tacha el original y muestra el nuevo debajo */}
-                                        <div className="text-right text-sm text-gray-700">
-                                            {Number(line.discount) > 0 ? (
-                                                <>
-                                                    <p className="text-xs text-gray-500 line-through">
-                                                        {formatCRC(line.unitPrice)}
-                                                    </p>
-                                                    <p>
-                                                        {formatCRC(Number(line.subtotal) / line.quantity)}
-                                                    </p>
-                                                </>
-                                            ) : (
-                                                <p>{formatCRC(line.unitPrice)}</p>
-                                            )}
-                                        </div>
-
-                                        {/* monto de la linea despues del descuento y con IVA */}
-                                        <p className="text-right text-sm text-gray-700">
-                                            {formatCRC(line.total)}
+                                        <p className="text-xs text-gray-500">
+                                            IVA {formatRate(Number(line.ivaRate))}
                                         </p>
                                     </div>
-                                ))}
-                            </div>
+
+                                    <p className="text-center text-sm text-gray-700">
+                                        {line.quantity}
+                                    </p>
+
+                                    {/* precio unitario: con descuento tacha el original y muestra el nuevo debajo */}
+                                    <div className="text-right text-sm text-gray-700">
+                                        {Number(line.discount) > 0 ? (
+                                            <>
+                                                <p className="text-xs text-gray-500 line-through">
+                                                    {formatCRC(line.unitPrice)}
+                                                </p>
+                                                <p>
+                                                    {formatCRC(
+                                                        Number(line.subtotal) / line.quantity
+                                                    )}
+                                                </p>
+                                            </>
+                                        ) : (
+                                            <p>{formatCRC(line.unitPrice)}</p>
+                                        )}
+                                    </div>
+
+                                    {/* monto de la linea despues del descuento y con IVA */}
+                                    <p className="text-right text-sm text-gray-700">
+                                        {formatCRC(line.total)}
+                                    </p>
+                                </div>
+                            ))}
                         </div>
+                    </div>
+                </div>
+
+                <div className="mt-4 border border-border"></div>
+
+                {/* Resumen */}
+                <div className="mt-4 flex flex-col gap-2">
+                    <Row
+                        label="Subtotal (sin IVA)"
+                        value={formatCRC(receipt.totals.totalNetSale)}
+                    />
+                    {/* si hay descuento  */}
+                    <Row
+                        label="Descuento"
+                        value={formatCRC(receipt.totals.totalDiscount)}
+                    />
+
+                    {/*  mostrar las tarifas que realmente aparecen en las LINEAS */}
+                    {receipt.taxSummary.map(({ rate, amount }) => (
+                        <Row
+                            key={rate}
+                            label={`IVA ${formatRate(Number(rate))}`}
+                            value={formatCRC(amount)}
+                        />
+                    ))}
+
+                    {receipt.payment.method === "cash" && (
+                        <>
+                            <Row
+                                label="Su pago"
+                                value={formatCRC(receipt.payment.amountTendered ?? 0)}
+                            />
+                            <Row
+                                label="Su vuelto"
+                                value={formatCRC(receipt.payment.change ?? 0)}
+                            />
+                        </>
+                    )}
+                </div>
+
+                <div className="mt-4 border border-border"></div>
+
+                <div className="mt-4">
+                    <div className="flex justify-between">
+                        <h1 className="text-xl font-bold text-mint-dark">
+                            Total
+                        </h1>
+
+                        <p className="text-2xl font-bold text-mint-dark">
+                            {formatCRC(receipt.totals.totalSale)}
+                        </p>
                     </div>
 
                     <div className="mt-4 border border-border"></div>
 
-                    {/* Resumen */}
                     <div className="mt-4 flex flex-col gap-2">
                         <Row
-                            label="Subtotal (sin IVA)"
-                            value={formatCRC(receipt.totals.totalNetSale)}
-                        />
-                        {/* si hay descuento  */}
-                        <Row
-                            label="Descuento"
-                            value={formatCRC(receipt.totals.totalDiscount)}
+                            label="Medio de pago"
+                            value={methodLabels[receipt.payment.method]}
                         />
 
-                        {/*  mostrar las tarifas que realmente aparecen en las LINEAS */}
-                        {receipt.taxSummary.map(({ rate, amount }) => (
+                        {receipt.payment.reference && (
                             <Row
-                                key={rate}
-                                label={`IVA ${formatRate(Number(rate))}`}
-                                value={formatCRC(amount)}
+                                label="Comprobante"
+                                value={receipt.payment.reference}
                             />
-                        ))}
-                        {receipt.payment.method === "cash" && (
-                            <>
-                                <Row
-                                    label="Su pago"
-                                    value={formatCRC(receipt.payment.amountTendered ?? 0)}
-                                />
-                                <Row
-                                    label="Su vuelto"
-                                    value={formatCRC(receipt.payment.change ?? 0)}
-                                />
-                            </>
                         )}
                     </div>
-
-                    <div className="mt-4 border border-border"></div>
-
-                    <div className="mt-4">
-                        <div className="flex justify-between">
-                            <h1 className="text-xl font-bold text-mint-dark">
-                                Total
-                            </h1>
-
-                            <p className="text-2xl font-bold text-mint-dark">
-                                {formatCRC(receipt.totals.totalSale)}
-                            </p>
-                        </div>
-
-                        <div className="mt-4 border border-border"></div>
-
-                        <div className="mt-4 flex flex-col gap-2">
-                            <Row
-                                label="Medio de pago"
-                                value={methodLabels[receipt.payment.method]}
-                            />
-
-                            {receipt.payment.reference && (
-                                <Row
-                                    label="Comprobante"
-                                    value={receipt.payment.reference}
-                                />
-                            )}
-
-                         
-                          
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        onClick={handlePrint}
-                        className="mt-6 w-full cursor-pointer rounded-xl bg-mint-dark py-3 text-lg font-semibold text-white"
-                    >
-                        Imprimir
-                    </button>
                 </div>
+
+                <button
+                    type="button"
+                    onClick={handlePrint}
+                    className="mt-6 w-full cursor-pointer rounded-xl bg-mint-dark py-3 text-lg font-semibold text-white"
+                >
+                    Imprimir
+                </button>
+            </div>
+
+            <div className=" flex shrink-0 flex-col gap-3">
+                <button
+                    type="button"
+                    onClick={() => scrollInvoice("top")}
+                    className="flex h-11 w-11 items-center justify-center rounded-full bg-mint-dark text-white shadow-lg transition hover:bg-mint-darker"
+                >
+                    <HiArrowUp className="h-6 w-6" />
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => scrollInvoice("bottom")}
+                    className="flex h-11 w-11 items-center justify-center rounded-full bg-mint-dark text-white shadow-lg transition hover:bg-mint-darker"
+                >
+                    <HiArrowDown className="h-6 w-6" />
+                </button>
             </div>
         </div>
-    );
+    </div>
+);
 }
 
 export default InvoiceModal;

@@ -1,19 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import {
-  HiArrowLeft,
-  HiCheckCircle,
-  HiClock,
-  HiStar,
-} from "react-icons/hi";
+import { HiArrowLeft, HiCheckCircle, HiClock, HiStar } from "react-icons/hi";
 import { GiCampCookingPot } from "react-icons/gi";
 import { IoBagCheck } from "react-icons/io5";
 import {
   getOrderStatus,
+  getClientId,
   stateToLabel,
   type FrontendOrderStatus,
 } from "../../services/orderService";
 import { getPublicTableNumber } from "../../services/tableService";
+import { socket } from "../../services/socketClient";
+import OrderPaid from "./OrderPaid";
 
 type OrderStatusProps = {
   orderId: number;
@@ -69,7 +67,11 @@ const statusIcons = {
 function OrderStatus({ orderId, tableId }: OrderStatusProps) {
   const [status, setStatus] = useState<VisibleStatus>("Pendiente");
   const [error, setError] = useState("");
-  const [tableInfo, setTableInfo] = useState<{tableId: string; tableNumber: number;} | null>(null);
+  const [tableInfo, setTableInfo] = useState<{
+    tableId: string;
+    tableNumber: number;
+  } | null>(null);
+  const [isPaid, setIsPaid] = useState(false);
 
   useEffect(() => {
     if (!tableId) return;
@@ -93,60 +95,127 @@ function OrderStatus({ orderId, tableId }: OrderStatusProps) {
   useEffect(() => {
     let isMounted = true;
 
- const loadOrderStatus = async () => {
-  try {
-    const order = await getOrderStatus(orderId);
+    const loadOrderStatus = async () => {
+      try {
+        const order = await getOrderStatus(orderId);
 
-    console.log("ESTADO DE LA ORDEN:", order);
+        console.log("ESTADO DE LA ORDEN:", order);
 
-    if (isMounted) {
-  const mappedStatus = stateToLabel[order.state];
-if (!mappedStatus) return;
-const newStatus: VisibleStatus =
-  mappedStatus === "Pagado" ? "Entregado" : mappedStatus;
+        if (isMounted) {
+          const mappedStatus = stateToLabel[order.state];
+          if (!mappedStatus) return;
 
-  setStatus(newStatus);
-  setError("");
+          if (mappedStatus === "Pagado") {
+            setIsPaid(true);
+            localStorage.removeItem("currentOrderId");
+            localStorage.removeItem("currentOrderTableId");
+            return;
+          }
 
-  if (newStatus === "Entregado") {
-    localStorage.removeItem("currentOrderId");
-    localStorage.removeItem("currentOrderTableId");
-  }
-}
-  } catch (loadError) {
-    console.error("No se pudo consultar el estado del pedido:", loadError);
+          const newStatus: VisibleStatus = mappedStatus;
 
-    if (isMounted) {
-  const errorMessage =
-    loadError && typeof loadError === "object" && "message" in loadError
-      ? String(loadError.message)
-      : "";
+          setStatus(newStatus);
+          setError("");
 
-  if (errorMessage === "Orden no encontrada") {
-    localStorage.removeItem("currentOrderId");
-    localStorage.removeItem("currentOrderTableId");
-    setError("");
-    return;
-  }
+          if (newStatus === "Entregado") {
+            localStorage.removeItem("currentOrderId");
+            localStorage.removeItem("currentOrderTableId");
+          }
+        }
+      } catch (loadError) {
+        console.error("No se pudo consultar el estado del pedido:", loadError);
 
-  setError("No se pudo actualizar el estado del pedido.");
-}
-  }
+        if (isMounted) {
+          const errorMessage =
+            loadError && typeof loadError === "object" && "message" in loadError
+              ? String(loadError.message)
+              : "";
+
+          if (errorMessage === "Orden no encontrada") {
+            localStorage.removeItem("currentOrderId");
+            localStorage.removeItem("currentOrderTableId");
+            setError("");
+            return;
+          }
+
+          setError("No se pudo actualizar el estado del pedido.");
+        }
+      }
+    };
+
+    const handleOrderStatusUpdated = (data: {
+      orderId: number;
+      state: string;
+    }) => {
+      if (!isMounted || data.orderId !== orderId) return;
+
+      const mappedStatus =
+        stateToLabel[data.state as keyof typeof stateToLabel];
+      if (!mappedStatus) return;
+
+      if (mappedStatus === "Pagado") {
+        setIsPaid(true);
+        localStorage.removeItem("currentOrderId");
+        localStorage.removeItem("currentOrderTableId");
+        return;
+      }
+
+      const newStatus: VisibleStatus = mappedStatus;
+      setStatus(newStatus);
+      setError("");
+
+    if (newStatus === "Entregado") {
+      localStorage.removeItem("currentOrderId");
+      localStorage.removeItem("currentOrderTableId");
+    }
+    };
+    
+    const joinTable = () => {
+  if (!tableId) return;
+
+  socket.emit(
+    "join_table",
+    {
+      tableId,
+      clientId: getClientId(),
+    },
+    (response: { ok: boolean; message?: string }) => {
+      if (!response.ok) {
+        console.error("No se pudo unir a la sala de la mesa:", response.message);
+      }
+    }
+  );
 };
 
-    void loadOrderStatus();
-    const intervalId = window.setInterval(() => {
-      void loadOrderStatus();
-    }, 2000);
+const handleConnect = () => {
+  joinTable();
+  void loadOrderStatus();
+};
+
+    socket.on("order_status_updated", handleOrderStatusUpdated);
+
+socket.on("connect", handleConnect);
+
+    if (socket.connected) {
+  joinTable();
+  void loadOrderStatus();
+} else {
+  socket.connect();
+}
 
     return () => {
       isMounted = false;
-      window.clearInterval(intervalId);
-    };
-  }, [orderId]);
+
+  socket.off("order_status_updated", handleOrderStatusUpdated);
+  socket.off("connect", handleConnect);
+};
+  }, [orderId, tableId]);
+
+
 
   const currentContent = statusContent[status];
   const currentStatusIndex = statusOrder.indexOf(status);
+  if (isPaid) return <OrderPaid />;
 
   return (
     <main className="min-h-screen bg-white">
@@ -187,25 +256,30 @@ const newStatus: VisibleStatus =
 
           <div className="mt-8 grid w-full grid-cols-4 gap-2">
             {statusOrder.map((orderStatus, index) => (
-              <div key={orderStatus} className="flex flex-col items-center gap-2">
+              <div
+                key={orderStatus}
+                className="flex flex-col items-center gap-2"
+              >
                 {(() => {
                   const StatusIcon = statusIcons[orderStatus];
 
                   return (
                     <StatusIcon
-                      className={`h-6 w-6 ${index <= currentStatusIndex
+                      className={`h-6 w-6 ${
+                        index <= currentStatusIndex
                           ? "text-mint-dark"
                           : "text-gray-300"
-                        }`}
+                      }`}
                       aria-hidden="true"
                     />
                   );
                 })()}
                 <span
-                  className={`text-xs ${index <= currentStatusIndex
+                  className={`text-xs ${
+                    index <= currentStatusIndex
                       ? "font-semibold text-mint-darker"
                       : "text-gray-400"
-                    }`}
+                  }`}
                 >
                   {orderStatus}
                 </span>

@@ -43,6 +43,9 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
   const isEditMode = mode === "edit" && Boolean(productId);
   const [error, setError] = useState("");
 
+
+const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
+
   //obtener categorias elegidas y familia 
  const selectedCategory = categories.find(
   (cat) => String(cat.categoryId) === category,
@@ -535,15 +538,23 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
               <input
                 id="image"
                 type="file"
-                accept="image/*"
+                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                 className="sr-only"
                 onChange={(event) => {
-                  const file = event.target.files?.[0];
+  const file = event.target.files?.[0];
+  if (!file) return;
 
-                  if (file) {
-                    setImage(file);
-                  }
-                }}
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+  if (!allowedTypes.includes(file.type)) {
+   setIsImageFormatModalOpen(true);
+    event.target.value = "";
+    setImage(null);
+    return;
+  }
+
+  setImage(file);
+}}
               />
               {/* Input name*/}
               <input
@@ -599,7 +610,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 <input
                 id="discount"
                 type="number"
-                placeholder="Descuento del platillo"
+                placeholder="Descuento del platillo (opcional)"
                 value={discount}
                   onChange={(event) =>
                     setDiscount(
@@ -712,16 +723,26 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
                 )}
               </label>
               <input
-                id="image"
-                type="file"
-                accept="image/*"
-                className="sr-only"
-                onChange={(event) => {
-                  const file = event.target.files?.[0];
+  id="image"
+  type="file"
+  accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+  className="sr-only"
+  onChange={(event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-                  if (file) setImage(file);
-                }}
-              />
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+    if (!allowedTypes.includes(file.type)) {
+      setIsImageFormatModalOpen(true);
+      event.target.value = "";
+      setImage(null);
+      return;
+    }
+
+    setImage(file);
+  }}
+/>
             </div>
 
             <div className="flex flex-col gap-4">
@@ -772,7 +793,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
               <input
                 id="discount"
                 type="number"
-                placeholder="Descuento del platillo"
+                placeholder="Descuento del platillo (opcional)"
                 value={discount}
                   onChange={(event) =>
                     setDiscount(
@@ -815,6 +836,37 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
           </form>
         </section>
       </main>
+      {isImageFormatModalOpen && (
+  <div
+    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="image-format-title"
+  >
+    <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+      <h2
+        id="image-format-title"
+        className="text-lg font-bold text-mint-darker"
+      >
+        Formato de imagen no válido
+      </h2>
+
+      <p className="mt-2 text-sm text-text-primary">
+        Selecciona una imagen en formato JPG, PNG o WEBP.
+      </p>
+
+      <div className="mt-6 flex justify-center">
+        <button
+          type="button"
+          onClick={() => setIsImageFormatModalOpen(false)}
+          className="rounded-lg bg-mint-dark px-4 py-2 text-sm font-semibold text-white hover:bg-mint-darker"
+        >
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </DashboardLayoutAdmin>
   );
 }

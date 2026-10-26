@@ -16,7 +16,6 @@ type ReviewPlateProps = {
 
 type ReviewValues = {
   rating: number;
-  name: string;
   comment: string;
 };
 
@@ -30,7 +29,7 @@ function ReviewPlate({ orderId, tableId }: ReviewPlateProps) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
-  
+  const [reviewerName, setReviewerName] = useState("");
 
   useEffect(() => {
     const loadReviewableOrder = async () => {
@@ -47,7 +46,6 @@ function ReviewPlate({ orderId, tableId }: ReviewPlateProps) {
         data.products.forEach((product) => {
           initialReviews[product.detailId] = {
             rating: 0,
-            name: "",
             comment: "",
           };
         });
@@ -110,7 +108,9 @@ function ReviewPlate({ orderId, tableId }: ReviewPlateProps) {
           return {
             detailId: product.detailId,
             rating: review.rating,
-            ...(review.name.trim() ? { name: review.name.trim() } : {}),
+           ...(reviewerName.trim()
+  ? { name: reviewerName.trim() }
+  : {}),
             ...(review.comment.trim()
               ? { comment: review.comment.trim() }
               : {}),
@@ -264,6 +264,27 @@ if (isSuccess) {
         )}
 
         <form onSubmit={handleSubmit}>
+          {products.some((product) => !product.reviewed) && (
+            <div className="mt-6 rounded-md border border-gray-200 bg-white p-3 sm:p-4">
+              <label
+                htmlFor="reviewer-name"
+                className="text-sm font-semibold"
+              >
+                Nombre <span className="font-normal">(opcional)</span>
+              </label>
+
+              <input
+                id="reviewer-name"
+                type="text"
+                value={reviewerName}
+                maxLength={80}
+                onChange={(event) => setReviewerName(event.target.value)}
+                placeholder="Escribe tu nombre"
+                className="mt-2 w-full rounded-md border border-gray-200 px-3 py-2 text-sm outline-none focus:border-mint-dark"
+              />
+            </div>
+          )}
+
           <section className="mt-6 grid grid-cols-1 gap-4 sm:mt-8 sm:gap-6 md:grid-cols-2">
             {products.map((product) => {
               const review = reviews[product.detailId];
@@ -286,7 +307,7 @@ if (isSuccess) {
                     )}
                   </div>
 
-                  {!isReviewed && (
+                  {!isReviewed && review && (
                     <>
                       <div
                         className="mt-3 flex gap-1"
@@ -316,31 +337,10 @@ if (isSuccess) {
                       </div>
 
                       <p className="mt-2 text-[10px] text-gray-500 sm:text-xs">
-                        El nombre y el comentario son opcionales.
+                        El comentario es opcional.
                       </p>
 
-                      <div className="mt-5 rounded-md border border-gray-200 p-2 sm:p-4">
-                        <label
-                          htmlFor={`name-${product.detailId}`}
-                          className="text-xs font-semibold sm:text-sm"
-                        >
-                          Nombre
-                        </label>
-
-                        <textarea
-                          id={`name-${product.detailId}`}
-                          value={review.name}
-                          maxLength={80}
-                          onChange={(event) =>
-                            updateReview(product.detailId, {
-                              name: event.target.value,
-                            })
-                          }
-                          placeholder="Escribe tu nombre"
-                          className="mt-2 min-h-16 w-full resize-none text-xs leading-relaxed outline-none placeholder:text-gray-500 sm:text-sm"
-                        />
-                      </div>
-
+                   
                       <div className="mt-5 rounded-md border border-gray-200 p-3 sm:p-4">
                         <label
                           htmlFor={`comment-${product.detailId}`}
@@ -367,6 +367,7 @@ if (isSuccess) {
               );
             })}
           </section>
+
 
           {products.some((product) => !product.reviewed) && (
             <button

@@ -15,6 +15,7 @@ import {
 import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus, GoTag } from "react-icons/go";
 import { FiCamera } from "react-icons/fi";
+import { AiOutlineDelete } from "react-icons/ai";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 
 interface CustomDishFormProps {
@@ -48,6 +49,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [error, setError] = useState("");
 
+const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
 
   const [optionGroups, setOptionGroups] = useState<
     { id: string; name: string; options: string[] }[]
@@ -544,12 +546,23 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
               <input
                 id="image"
                 type="file"
-                accept="image/*"
+                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                 className="sr-only"
                 onChange={(event) => {
-                  const file = event.target.files?.[0];
-                  if (file) setImage(file);
-                }}
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+  if (!allowedTypes.includes(file.type)) {
+   setIsImageFormatModalOpen(true);
+    event.target.value = "";
+    setImage(null);
+    return;
+  }
+
+  setImage(file);
+}}
               />
 
               {/* Input name*/}
@@ -607,7 +620,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                 <input
                   id="discount"
                   type="number"
-                  placeholder="Descuento del platillo"
+                  placeholder="Descuento del platillo (opcional)"
                   value={discount}
                   onChange={(event) =>
                     setDiscount(event.target.value ? Number(event.target.value) : "")
@@ -642,7 +655,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
 
                 {optionGroups.map((group) => (
                   <div key={group.id} className="mt-3">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mt-5">
                       <input
                         type="text"
                         placeholder="Nombre del grupo (ej. Guarnición)"
@@ -655,7 +668,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                             ),
                           );
                         }}
-                        className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
+                        className=" w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
                       />
                       <button
                         type="button"
@@ -664,10 +677,11 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                             prev.filter((g) => g.id !== group.id),
                           );
                         }}
-                        className="shrink-0 text-red-400"
+                        className="shrink-0"
                         aria-label="Eliminar grupo"
                       >
-                        ✕
+                        <AiOutlineDelete className="h-6 w-6 text-red-400" />
+                        
                       </button>
                     </div>
 
@@ -680,7 +694,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                         {group.options.map((option, index) => (
                           <div
                             key={index}
-                            className="mt-2 flex items-center gap-2"
+                            className="mt-7 flex items-center gap-2"
                           >
                             <input
                               type="text"
@@ -701,7 +715,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                                   ),
                                 );
                               }}
-                              className="mt-5 w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
+                              className=" w-full font-normal text-black text-base rounded-lg border border-border focus:border-2 focus:border-brown focus:outline-none px-4 py-1.5"
                             />
                             <button
                               type="button"
@@ -719,10 +733,10 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                                   ),
                                 );
                               }}
-                              className="shrink-0 text-red-400"
+                              className="shrink-0  "
                               aria-label="Eliminar opción"
                             >
-                              ✕
+                              <AiOutlineDelete className="h-6 w-6 text-red-400" />
                             </button>
                           </div>
                         ))}
@@ -841,17 +855,27 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                   </div>
                 )}
               </label>
-              <input
-                id="image"
-                type="file"
-                accept="image/*"
-                className="sr-only"
-                onChange={(event) => {
-                  const file = event.target.files?.[0];
+             <input
+  id="image"
+  type="file"
+  accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+  className="sr-only"
+  onChange={(event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-                  if (file) setImage(file);
-                }}
-              />
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+    if (!allowedTypes.includes(file.type)) {
+      setIsImageFormatModalOpen(true);
+      event.target.value = "";
+      setImage(null);
+      return;
+    }
+
+    setImage(file);
+  }}
+/>
             </div>
 
 
@@ -908,7 +932,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                 <input
                   id="discount"
                   type="number"
-                  placeholder="Descuento del platillo"
+                  placeholder="Descuento del platillo (opcional)"
                   value={discount}
                   onChange={(event) =>
                     setDiscount(event.target.value ? Number(event.target.value) : "")
@@ -968,10 +992,10 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                               prev.filter((g) => g.id !== group.id),
                             );
                           }}
-                          className="shrink-0  text-red-400 "
+                          className="shrink-0 cursor-pointer"
                           aria-label="Eliminar grupo"
                         >
-                          ✕
+                          <AiOutlineDelete className="h-5 w-5 text-red-400" />
                         </button>
                       </div>
 
@@ -984,7 +1008,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                           {group.options.map((option, index) => (
                             <div
                               key={index}
-                              className="mt-5 flex items-center gap-50"
+                              className="mt-5 flex items-center gap-2"
                             >
                               <input
                                 type="text"
@@ -1005,7 +1029,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                                     ),
                                   );
                                 }}
-                                className="w-full font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
+                                className="w-100 font-normal text-black text-base rounded-lg border border-border px-4 py-1.5 focus:border-2 focus:border-brown focus:outline-none"
                               />
 
                               <button
@@ -1024,10 +1048,10 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
                                     ),
                                   );
                                 }}
-                                className="shrink-0 text-red-400 "
+                                className="shrink-0 cursor-pointer "
                                 aria-label="Eliminar opción"
                               >
-                                ✕
+                                <AiOutlineDelete className="h-5 w-5 text-red-400" />
                               </button>
 
                             </div>
@@ -1080,6 +1104,37 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
           </form>
         </section>
       </main>
+      {isImageFormatModalOpen && (
+  <div
+    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="image-format-title"
+  >
+    <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+      <h2
+        id="image-format-title"
+        className="text-lg font-bold text-mint-darker"
+      >
+        Formato de imagen no válido
+      </h2>
+
+      <p className="mt-2 text-sm text-text-primary">
+        Selecciona una imagen en formato JPG, PNG o WEBP.
+      </p>
+
+      <div className="mt-6 flex justify-center">
+        <button
+          type="button"
+          onClick={() => setIsImageFormatModalOpen(false)}
+          className="rounded-lg bg-mint-dark px-4 py-2 text-sm font-semibold text-white hover:bg-mint-darker"
+        >
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </DashboardLayoutAdmin >
   );
 }

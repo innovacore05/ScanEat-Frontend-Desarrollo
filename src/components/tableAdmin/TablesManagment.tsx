@@ -203,7 +203,7 @@ const handleRequestDelete = () => {
 							</p>
 
 							{selectedTable ? (
-								<div className="mt-2 rounded-lg bg-mint-dark px-4 py-3 text-white">
+								<div className="mt-2 rounded-lg bg-mint-darker px-4 py-3 text-white">
 									<p className="text-lg font-bold">
 										Mesa #{selectedTable.tableNumber}
 									</p>
@@ -218,7 +218,7 @@ const handleRequestDelete = () => {
 								</p>
 							)}
 
-							<div className="mt-5 rounded-lg bg-neutral-100 px-4 py-4">
+							<div className="mt-5 rounded-lg  px-4 py-4">
 								{tableOrders.length === 0 ? (
 									<div className=" rounded-lg bg-neutral-100 px-4 py-4">
 										<p className="text-lg font-bold text-text-primary">
@@ -368,7 +368,7 @@ const handleRequestDelete = () => {
 							</p>
 
 							{selectedTable ? (
-								<div className="mt-2 rounded-lg bg-mint-dark px-4 py-3 text-white">
+								<div className="mt-2 rounded-lg bg-mint-darker px-4 py-3 text-white">
 									<p className="text-lg font-bold">Mesa #{selectedTable.tableNumber}</p>
 									<p className="mt-2 text-s">Asientos: {selectedTable.chairNumber}</p>
 								</div>
@@ -376,7 +376,7 @@ const handleRequestDelete = () => {
 								<p className="mt-2 text-text-primary">Selecciona una mesa para ver sus detalles.</p>
 							)}
 
-							<div className="mt-5 rounded-lg bg-neutral-100 px-4 py-4">
+							<div className="mt-5 rounded-lg px-4 py-4">
 								{tableOrders.length === 0 ? (
 									<div className="rounded-lg bg-neutral-100 px-4 py-4">
 										<p className="text-lg font-bold text-text-primary">

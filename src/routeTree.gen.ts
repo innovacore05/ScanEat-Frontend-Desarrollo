@@ -19,12 +19,14 @@ import { Route as authenticationResetPasswordRouteImport } from './routes/(authe
 import { Route as authenticationVerificationCodeRouteImport } from './routes/(authentication)/verificationCode'
 import { Route as cashierOrdersCashierOrdersRouteImport } from './routes/(cashierOrders)/cashierOrders'
 import { Route as cashierOrdersPaymentMethodRouteImport } from './routes/(cashierOrders)/paymentMethod'
+import { Route as cashierOrdersSelectOrderProductsRouteImport } from './routes/(cashierOrders)/selectOrderProducts'
 import { Route as clientOrdersCheckOrderRouteImport } from './routes/(clientOrders)/checkOrder'
 import { Route as clientOrdersOrderStatusRouteImport } from './routes/(clientOrders)/orderStatus'
 import { Route as clientOrdersReviewPlateRouteImport } from './routes/(clientOrders)/reviewPlate'
 import { Route as cookOrdersCookOrdersRouteImport } from './routes/(cookOrders)/cookOrders'
 import { Route as dashboardDashboardAdminRouteImport } from './routes/(dashboard)/dashboardAdmin'
 import { Route as dashboardDashboardWaiterRouteImport } from './routes/(dashboard)/dashboardWaiter'
+import { Route as dashboardExpensesRouteImport } from './routes/(dashboard)/expenses'
 import { Route as dashboardSalesReportRouteImport } from './routes/(dashboard)/salesReport'
 import { Route as historySalesHistorySalesRouteImport } from './routes/(historySales)/historySales'
 import { Route as historySalesHistorySalesDetailsRouteImport } from './routes/(historySales)/historySalesDetails'
@@ -108,6 +110,12 @@ const cashierOrdersPaymentMethodRoute =
     path: '/paymentMethod',
     getParentRoute: () => rootRouteImport,
   } as any)
+const cashierOrdersSelectOrderProductsRoute =
+  cashierOrdersSelectOrderProductsRouteImport.update({
+    id: '/(cashierOrders)/selectOrderProducts',
+    path: '/selectOrderProducts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const clientOrdersCheckOrderRoute = clientOrdersCheckOrderRouteImport.update({
   id: '/(clientOrders)/checkOrder',
   path: '/checkOrder',
@@ -139,6 +147,11 @@ const dashboardDashboardWaiterRoute =
     path: '/dashboardWaiter',
     getParentRoute: () => rootRouteImport,
   } as any)
+const dashboardExpensesRoute = dashboardExpensesRouteImport.update({
+  id: '/(dashboard)/expenses',
+  path: '/expenses',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const dashboardSalesReportRoute = dashboardSalesReportRouteImport.update({
   id: '/(dashboard)/salesReport',
   path: '/salesReport',
@@ -285,12 +298,14 @@ export interface FileRoutesByFullPath {
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/cashierOrders': typeof cashierOrdersCashierOrdersRoute
   '/paymentMethod': typeof cashierOrdersPaymentMethodRoute
+  '/selectOrderProducts': typeof cashierOrdersSelectOrderProductsRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
   '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/expenses': typeof dashboardExpensesRoute
   '/salesReport': typeof dashboardSalesReportRoute
   '/historySales': typeof historySalesHistorySalesRoute
   '/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
@@ -328,12 +343,14 @@ export interface FileRoutesByTo {
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/cashierOrders': typeof cashierOrdersCashierOrdersRoute
   '/paymentMethod': typeof cashierOrdersPaymentMethodRoute
+  '/selectOrderProducts': typeof cashierOrdersSelectOrderProductsRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
   '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/expenses': typeof dashboardExpensesRoute
   '/salesReport': typeof dashboardSalesReportRoute
   '/historySales': typeof historySalesHistorySalesRoute
   '/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
@@ -372,12 +389,14 @@ export interface FileRoutesById {
   '/(authentication)/verificationCode': typeof authenticationVerificationCodeRoute
   '/(cashierOrders)/cashierOrders': typeof cashierOrdersCashierOrdersRoute
   '/(cashierOrders)/paymentMethod': typeof cashierOrdersPaymentMethodRoute
+  '/(cashierOrders)/selectOrderProducts': typeof cashierOrdersSelectOrderProductsRoute
   '/(clientOrders)/checkOrder': typeof clientOrdersCheckOrderRoute
   '/(clientOrders)/orderStatus': typeof clientOrdersOrderStatusRoute
   '/(clientOrders)/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/(cookOrders)/cookOrders': typeof cookOrdersCookOrdersRoute
   '/(dashboard)/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/(dashboard)/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/(dashboard)/expenses': typeof dashboardExpensesRoute
   '/(dashboard)/salesReport': typeof dashboardSalesReportRoute
   '/(historySales)/historySales': typeof historySalesHistorySalesRoute
   '/(historySales)/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
@@ -417,12 +436,14 @@ export interface FileRouteTypes {
     | '/verificationCode'
     | '/cashierOrders'
     | '/paymentMethod'
+    | '/selectOrderProducts'
     | '/checkOrder'
     | '/orderStatus'
     | '/reviewPlate'
     | '/cookOrders'
     | '/dashboardAdmin'
     | '/dashboardWaiter'
+    | '/expenses'
     | '/salesReport'
     | '/historySales'
     | '/historySalesDetails'
@@ -460,12 +481,14 @@ export interface FileRouteTypes {
     | '/verificationCode'
     | '/cashierOrders'
     | '/paymentMethod'
+    | '/selectOrderProducts'
     | '/checkOrder'
     | '/orderStatus'
     | '/reviewPlate'
     | '/cookOrders'
     | '/dashboardAdmin'
     | '/dashboardWaiter'
+    | '/expenses'
     | '/salesReport'
     | '/historySales'
     | '/historySalesDetails'
@@ -503,12 +526,14 @@ export interface FileRouteTypes {
     | '/(authentication)/verificationCode'
     | '/(cashierOrders)/cashierOrders'
     | '/(cashierOrders)/paymentMethod'
+    | '/(cashierOrders)/selectOrderProducts'
     | '/(clientOrders)/checkOrder'
     | '/(clientOrders)/orderStatus'
     | '/(clientOrders)/reviewPlate'
     | '/(cookOrders)/cookOrders'
     | '/(dashboard)/dashboardAdmin'
     | '/(dashboard)/dashboardWaiter'
+    | '/(dashboard)/expenses'
     | '/(dashboard)/salesReport'
     | '/(historySales)/historySales'
     | '/(historySales)/historySalesDetails'
@@ -547,12 +572,14 @@ export interface RootRouteChildren {
   authenticationVerificationCodeRoute: typeof authenticationVerificationCodeRoute
   cashierOrdersCashierOrdersRoute: typeof cashierOrdersCashierOrdersRoute
   cashierOrdersPaymentMethodRoute: typeof cashierOrdersPaymentMethodRoute
+  cashierOrdersSelectOrderProductsRoute: typeof cashierOrdersSelectOrderProductsRoute
   clientOrdersCheckOrderRoute: typeof clientOrdersCheckOrderRoute
   clientOrdersOrderStatusRoute: typeof clientOrdersOrderStatusRoute
   clientOrdersReviewPlateRoute: typeof clientOrdersReviewPlateRoute
   cookOrdersCookOrdersRoute: typeof cookOrdersCookOrdersRoute
   dashboardDashboardAdminRoute: typeof dashboardDashboardAdminRoute
   dashboardDashboardWaiterRoute: typeof dashboardDashboardWaiterRoute
+  dashboardExpensesRoute: typeof dashboardExpensesRoute
   dashboardSalesReportRoute: typeof dashboardSalesReportRoute
   historySalesHistorySalesRoute: typeof historySalesHistorySalesRoute
   historySalesHistorySalesDetailsRoute: typeof historySalesHistorySalesDetailsRoute
@@ -652,6 +679,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof cashierOrdersPaymentMethodRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(cashierOrders)/selectOrderProducts': {
+      id: '/(cashierOrders)/selectOrderProducts'
+      path: '/selectOrderProducts'
+      fullPath: '/selectOrderProducts'
+      preLoaderRoute: typeof cashierOrdersSelectOrderProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(clientOrders)/checkOrder': {
       id: '/(clientOrders)/checkOrder'
       path: '/checkOrder'
@@ -692,6 +726,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboardWaiter'
       fullPath: '/dashboardWaiter'
       preLoaderRoute: typeof dashboardDashboardWaiterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(dashboard)/expenses': {
+      id: '/(dashboard)/expenses'
+      path: '/expenses'
+      fullPath: '/expenses'
+      preLoaderRoute: typeof dashboardExpensesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(dashboard)/salesReport': {
@@ -884,12 +925,14 @@ const rootRouteChildren: RootRouteChildren = {
   authenticationVerificationCodeRoute: authenticationVerificationCodeRoute,
   cashierOrdersCashierOrdersRoute: cashierOrdersCashierOrdersRoute,
   cashierOrdersPaymentMethodRoute: cashierOrdersPaymentMethodRoute,
+  cashierOrdersSelectOrderProductsRoute: cashierOrdersSelectOrderProductsRoute,
   clientOrdersCheckOrderRoute: clientOrdersCheckOrderRoute,
   clientOrdersOrderStatusRoute: clientOrdersOrderStatusRoute,
   clientOrdersReviewPlateRoute: clientOrdersReviewPlateRoute,
   cookOrdersCookOrdersRoute: cookOrdersCookOrdersRoute,
   dashboardDashboardAdminRoute: dashboardDashboardAdminRoute,
   dashboardDashboardWaiterRoute: dashboardDashboardWaiterRoute,
+  dashboardExpensesRoute: dashboardExpensesRoute,
   dashboardSalesReportRoute: dashboardSalesReportRoute,
   historySalesHistorySalesRoute: historySalesHistorySalesRoute,
   historySalesHistorySalesDetailsRoute: historySalesHistorySalesDetailsRoute,
