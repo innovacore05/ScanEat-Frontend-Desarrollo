@@ -116,6 +116,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCartItems(items);
   };
 
+  const notifyTableCartChanged = () => {
+    if (!mesaId) return;
+
+    socket.emit("table:cart-changed", {
+      tableId: mesaId,
+      clientId: getClientId(),
+    });
+  };
+
   // Cargar el carrito compartido de la mesa
   useEffect(() => {
     if (!mesaId) {
@@ -237,7 +246,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       socket.off("cart:updated", handleCartUpdated);
       socket.off("cart:expired", handleCartExpired);
       socket.off("cart:submitted", handleCartSubmitted);
-      socket.disconnect();
     };
   }, [mesaId]);
 
@@ -259,6 +267,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       });
 
       await applySharedCart(updatedCart);
+      notifyTableCartChanged();
     } catch (error) {
       console.error(
         "No se pudo agregar el producto al carrito:",
@@ -300,6 +309,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       );
 
       await applySharedCart(updatedCart);
+      notifyTableCartChanged();
     } catch (error) {
       console.error(
         "No se pudo actualizar la cantidad:",
@@ -333,6 +343,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       );
 
       await applySharedCart(updatedCart);
+      notifyTableCartChanged();
     } catch (error) {
       console.error(
         "No se pudo eliminar el producto:",

@@ -1,19 +1,12 @@
 
-import {
-  Link,
-  useNavigate,
-  useSearch,
-} from "@tanstack/react-router";
+import {Link,useNavigate,useSearch,} from "@tanstack/react-router";
 import { useCart } from "./CartContext";
 import { HiArrowLeft } from "react-icons/hi";
 import { FiMinus, FiPlus, FiX } from "react-icons/fi";
 import { useEffect, useState } from "react";
-import {
-  addItemsToOrder,
-  getOrderQuote,
-  type OrderQuote,
-} from "../../services/orderService";
+import {addItemsToOrder,getClientId,getOrderQuote,type OrderQuote,} from "../../services/orderService";
 import { getPublicTableNumber } from "../../services/tableService";
+import { socket } from "../../services/socketClient";
 import { submitSharedCart } from "../../services/sharedCartService";
 
 function getDishName(
@@ -69,6 +62,12 @@ function CheckOrder() {
   const [orderQuote, setOrderQuote] = useState<OrderQuote | null>(null);
   const [isQuoting, setIsQuoting] = useState(false);
   const [quoteError, setQuoteError] = useState("");
+  const [readyState, setReadyState] = useState({
+    connectedCount: 0,
+    readyCount: 0,
+    allReady: false,
+    isReady: false,
+  });
 
   const navigate = useNavigate();
 
@@ -147,6 +146,45 @@ function CheckOrder() {
     };
   }, [tableId]);
 
+  useEffect(() => {
+    if (!tableId) {
+      setReadyState({
+        connectedCount: 0,
+        readyCount: 0,
+        allReady: false,
+        isReady: false,
+      });
+      return;
+    }
+
+    const handleTableState = (payload: {
+      tableId: string;
+      connectedCount: number;
+      readyCount: number;
+      allReady: boolean;
+      connected: string[];
+      ready: string[];
+    }) => {
+      if (payload.tableId !== tableId) return;
+
+      const clientId = getClientId();
+
+      setReadyState({
+        connectedCount: payload.connectedCount,
+        readyCount: payload.readyCount,
+        allReady: payload.allReady,
+        isReady: payload.ready.includes(clientId),
+      });
+    };
+
+    socket.on("table:state", handleTableState);
+    socket.emit("table:get-state", { tableId });
+
+    return () => {
+      socket.off("table:state", handleTableState);
+    };
+  }, [tableId]);
+
   const handleCreateOrder = async () => {
     if (isSubmitting) return;
 
@@ -160,6 +198,11 @@ function CheckOrder() {
 
       if (cartItems.length === 0) {
         alert("Agrega al menos un producto al pedido.");
+        return;
+      }
+
+      if (!readyState.allReady) {
+        alert("Todos los clientes de la mesa deben marcar que están listos antes de confirmar.");
         return;
       }
     }
@@ -234,7 +277,17 @@ function CheckOrder() {
       !isQuoting &&
       !quoteError &&
       Boolean(orderQuote) &&
+      readyState.allReady &&
       !isSubmitting;
+
+  const toggleReady = () => {
+    if (!tableId) return;
+
+    socket.emit("table:toggle-ready", {
+      tableId,
+      clientId: getClientId(),
+    });
+  };
 
   const handleSuccess = () => {
     if (createdOrderId === null) return;
@@ -526,16 +579,61 @@ function CheckOrder() {
     </div>
   );
 
-  const renderSubmitButton = () => (
-    <button
-      type="button"
-      onClick={() => setIsConfirmDialogOpen(true)}
-      disabled={!canSubmit}
-      className="mt-6 w-full cursor-pointer rounded-2xl bg-mint-dark py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
-    >
-      {isAddingToOrder ? "Agregar productos a la orden" : "Realizar pedido"}
-    </button>
-  );
+  const readyCounterText = `${readyState.readyCount}/${readyState.connectedCount} personas listas`;
+
+  const renderSubmitButton = () => {
+    const buttonContent = (() => {
+      if (isAddingToOrder) {
+        return (
+          <button
+            type="button"
+            onClick={() => setIsConfirmDialogOpen(true)}
+            disabled={!canSubmit}
+            className="mt-6 w-full cursor-pointer rounded-2xl bg-mint-dark py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Agregar productos a la orden
+          </button>
+        );
+      }
+
+      if (!readyState.allReady) {
+        return (
+          <button
+            type="button"
+            onClick={toggleReady}
+            disabled={isSubmitting}
+            className="mt-6 w-full cursor-pointer rounded-2xl bg-mint-dark py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {readyState.isReady ? "Quitar listo" : "Estoy listo"}
+          </button>
+        );
+      }
+
+      return (
+        <button
+          type="button"
+          onClick={() => setIsConfirmDialogOpen(true)}
+          disabled={!canSubmit}
+          className="mt-6 w-full cursor-pointer rounded-2xl bg-mint-dark py-4 text-lg font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          Realizar pedido
+        </button>
+      );
+    })();
+
+    if (isAddingToOrder) {
+      return buttonContent;
+    }
+
+    return (
+      <>
+        <p className="mt-4 text-center text-sm font-semibold text-mint-darker">
+          {readyCounterText}
+        </p>
+        {buttonContent}
+      </>
+    );
+  };
 
   return (
     <main className="min-h-screen bg-white">
