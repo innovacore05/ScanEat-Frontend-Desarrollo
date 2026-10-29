@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { getKitchenOrders, markKitchenOrderReady } from "../../services/orderService";
 import { logout } from "../../services/authService";
-import OrderCard from "./OrderCard";
+import OrderCardCook from "./OrderCardCook";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { LuLogOut } from "react-icons/lu";
 import { socket } from "../../services/socketClient";
@@ -11,6 +11,8 @@ function CookOrders() {
   const [orders, setOrders] = useState<Array<{
     orderId: number;
     tableId: number;
+    time: string;
+    date: string,
     status: string;
     items: Array<{ name: string; quantity: number; options?: Record<string, string> }>;
     specialInstructions?: string;
@@ -25,6 +27,8 @@ function CookOrders() {
         backendOrders.map((order) => ({
           orderId: order.orderId,
           tableId: order.tableId,
+          time: order.time,
+          date: order.date,
           status: order.status,
           items: order.items,
           specialInstructions: order.specialInstructions,
@@ -99,7 +103,7 @@ function CookOrders() {
 
           <div className="mt-8 grid grid-cols-3 gap-6 pb-16">
             {orders.map((order) => (
-              <OrderCard
+              <OrderCardCook
                 key={order.orderId}
                 order={order}
                 onReady={() => void handleReadyOrder(order.orderId)}

@@ -1,29 +1,73 @@
-type OrderItem = {
+
+
+type OrderCookItem = {
   name: string;
   quantity: number;
   options?: Record<string, string>;
 };
 
-type Order = {
+type OrderCook = {
   orderId: number;
   tableId: number;
+  time: string;
+  date: string;
   specialInstructions?: string;
-  items: OrderItem[];
+  items: OrderCookItem[];
 };
 
-type OrderCardProps = {
-  order: Order;
+type OrderCardCookProps = {
+  order: OrderCook;
   onReady?: () => void;
   isUpdating?: boolean;
 };
 
-function OrderCard({ order, onReady, isUpdating = false }: OrderCardProps) {
+function getElapsedTime(date: string) {
+  const orderDate = new Date(date);
+  const now = new Date();
+
+  const elapsedMinutes = Math.max(
+    0,
+    Math.floor((now.getTime() - orderDate.getTime()) / 60000)
+  );
+
+  if (elapsedMinutes < 1) {
+    return "menos de un minuto";
+  }
+
+  if (elapsedMinutes === 1) {
+    return "1 minuto";
+  }
+
+  if (elapsedMinutes < 60) {
+    return `${elapsedMinutes} minutos`;
+  }
+
+  const hours = Math.floor(elapsedMinutes / 60);
+  const minutes = elapsedMinutes % 60;
+
+  if (hours === 1 && minutes === 0) {
+    return "1 hora";
+  }
+
+  if (minutes === 0) {
+    return `${hours} horas`;
+  }
+
+  return `${hours} h ${minutes} min`;
+}
+
+function OrderCardCook({ order, onReady, isUpdating = false }: OrderCardCookProps) {
   return (
     <div className="w-full h-120 overflow-y-auto bg-white border border-border py-8 px-8 rounded-2xl flex flex-col gap-4 ">
+      
       <h2 className="text-4xl font-bold text-mint-dark">
         Mesa #{order.tableId}
       </h2>
 
+      <div className="flex flex-col gap-1">
+      <p className="text-lg text-gray-500">Hora del pedido: {order.time}</p>
+      <p className="text-lg text-gray-500">Pedido hace {getElapsedTime(order.date)}</p>
+      </div>
       {order.specialInstructions && (
         <>
           <p className="text-2xl font-bold text-red-600">
@@ -74,4 +118,4 @@ function OrderCard({ order, onReady, isUpdating = false }: OrderCardProps) {
   );
 }
 
-export default OrderCard;
+export default OrderCardCook;
