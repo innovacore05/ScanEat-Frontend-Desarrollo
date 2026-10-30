@@ -4,19 +4,24 @@ const BILLING_BASE_URL= "/api/billing";
 
 export type PaymentMethodType= "cash" | "card" | "sinpe";
 
+
 export type ReceiptLine = {
+  detailId: number;
   detail: string;
   quantity: number;
+  originalQuantity: number;
+  paidQuantity: number;
+  pendingQuantity: number;
   unitPrice: string;
   gross: string;
   discount: string;
   subtotal: string;
   tax: string;
   total: string;
-  //  el backend devuelve estas tarifas
   ivaRate: string;
   ivaRateCode: string;
 };
+
 
 export type ReceiptTotals={
     totalSale:string;
@@ -46,6 +51,8 @@ chargesVat: boolean | null;
 //producto sin codigo cabys
 missingCabys:string[];
 };
+
+
 
 type SelectedPaymentItem = {
   detailId: number;

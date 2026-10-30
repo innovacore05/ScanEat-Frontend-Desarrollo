@@ -26,7 +26,7 @@ function DashboardWaiter() {
         <DashboardLayoutWaiter>
             <main className="min-h-screen bg-brand-white px-4 py-5 sm:px-6 sm:py-8 lg:px-15 lg:py-15">
 
-					<div className="rounded-2xl bg-mint-dark px-5 py-5 sm:px-8 sm:py-6">
+					<div className="rounded-2xl bg-mint-darker px-5 py-5 sm:px-8 sm:py-6">
 						<h1 className="text-3xl font-bold text-white sm:text-3xl">
 							¡Hola, {firstName || "Usuario"}!
 						</h1>

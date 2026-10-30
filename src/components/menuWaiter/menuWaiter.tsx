@@ -235,7 +235,7 @@ useEffect(() => {
         <section className="hidden px-15 py-15 lg:block">
           
 
-          <h2 className=" text-2xl font-bold text-black">Menú</h2>
+          <h2 className=" text-2xl font-bold text-mint-dark">Menú</h2>
 
 
           <SearchBar
@@ -258,7 +258,7 @@ useEffect(() => {
             />
           </div>
   
-          <h2 className="mt-8 text-2xl font-bold text-black">Menú popular</h2>
+          <h2 className="mt-8 text-2xl font-bold text-mint-dark">Menú popular</h2>
 
           {/* Platillos */}
           <div className="mt-6 flex flex-wrap gap-4">

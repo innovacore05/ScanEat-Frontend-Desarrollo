@@ -30,3 +30,23 @@ export const generateAISalesReport = async (
     },
   );
 };
+
+export const sendMenuChatMessage = async (
+  mesaId: string,
+  message: string,
+) => {
+  return cookieSessionClient.request<{
+    reply: string;
+    recommendations: {
+      productId: number;
+      productName: string;
+      price: number;
+      reason: string;
+      role: "meal" | "drink" | "dessert";
+    }[];
+  }>("/api/ai/menu-chat", {
+    method: "POST",
+    body: JSON.stringify({ mesaId, message }),
+    fallBackMessage: "No se pudo consultar el asistente",
+  });
+};

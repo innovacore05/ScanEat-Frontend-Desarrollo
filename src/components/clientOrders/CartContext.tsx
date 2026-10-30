@@ -134,6 +134,15 @@ const discount = Number(
     setCartItems(items);
   };
 
+  const notifyTableCartChanged = () => {
+    if (!mesaId) return;
+
+    socket.emit("table:cart-changed", {
+      tableId: mesaId,
+      clientId: getClientId(),
+    });
+  };
+
   // Cargar el carrito compartido de la mesa
   useEffect(() => {
     if (!mesaId) {
@@ -255,7 +264,6 @@ const discount = Number(
       socket.off("cart:updated", handleCartUpdated);
       socket.off("cart:expired", handleCartExpired);
       socket.off("cart:submitted", handleCartSubmitted);
-      socket.disconnect();
     };
   }, [mesaId]);
 
@@ -277,6 +285,7 @@ const discount = Number(
       });
 
       await applySharedCart(updatedCart);
+      notifyTableCartChanged();
     } catch (error) {
       console.error(
         "No se pudo agregar el producto al carrito:",
@@ -318,6 +327,7 @@ const discount = Number(
       );
 
       await applySharedCart(updatedCart);
+      notifyTableCartChanged();
     } catch (error) {
       console.error(
         "No se pudo actualizar la cantidad:",
@@ -351,6 +361,7 @@ const discount = Number(
       );
 
       await applySharedCart(updatedCart);
+      notifyTableCartChanged();
     } catch (error) {
       console.error(
         "No se pudo eliminar el producto:",

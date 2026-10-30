@@ -79,7 +79,7 @@ function OrdersList({
               type="button"
               onClick={handleExport}
               disabled={isLoading || orders.length === 0}
-              className="flex items-center gap-2 rounded-xl border border-mint-dark px-3 py-2 text-sm font-semibold text-mint-darker transition hover:bg-mint-light disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex items-center gap-2 rounded-xl border border-mint-dark px-3 py-2 text-sm font-semibold text-mint-darker transition hover:bg-mint-darker/10 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiDownload />
               Exportar

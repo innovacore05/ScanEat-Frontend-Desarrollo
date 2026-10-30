@@ -93,7 +93,7 @@ function DashboardForm() {
   return (
     <DashboardLayoutAdmin>
       <section className="px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
-        <div className="mb-6 rounded-2xl bg-mint-dark px-5 py-5 sm:px-8 sm:py-6">
+        <div className="mb-6 rounded-2xl bg-mint-darker px-5 py-5 sm:px-8 sm:py-6">
           <h1 className="text-2xl font-bold text-white sm:text-3xl">
             ¡Hola, {firstName || "Usuario"}!
           </h1>

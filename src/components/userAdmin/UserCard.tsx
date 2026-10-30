@@ -13,7 +13,7 @@ function UserCard({ user, onEdit, onDelete }: UserCardProps) {
 	return ( 
 		<article className="flex w-full items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm sm:gap-4 sm:p-5">
 			<div className="flex min-w-0 items-center gap-3 sm:gap-4">
-				<div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-lg font-bold text-mint-darker sm:h-12 sm:w-12">
+				<div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-mint-dark/20 text-lg font-bold text-mint-darker sm:h-12 sm:w-12">
 					{user.firstName.charAt(0).toUpperCase()}
 				</div>
 				<div className="min-w-0">

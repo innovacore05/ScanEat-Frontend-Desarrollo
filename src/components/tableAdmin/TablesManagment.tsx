@@ -5,8 +5,7 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "../layout/DashboardLayoutAdmin";
 import { IoIosAdd } from "react-icons/io";
 import { MdOutlineModeEditOutline } from "react-icons/md";
-import { AiOutlineDelete } from "react-icons/ai";
-import { getTables, deleteTable } from "../../services/tableService";
+import { getTables, deleteTable, activateTable } from "../../services/tableService";
 import QrCodeModal from "./QRCodeModal";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import { ROLE_IDS } from "../../config/roles";
@@ -15,6 +14,11 @@ import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
 import Skeleton from "../shared/Skeleton";
+import { FaToggleOn } from "react-icons/fa";
+import { FaToggleOff } from "react-icons/fa";
+
+
+
 
 export type TableItem = {
 	id: string;
@@ -100,23 +104,46 @@ const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	try {
 		setIsDeleting(true);
 		await deleteTable(selectedTable.id);
+		const updatedTable = { ...selectedTable, active: false };
 		setTables((currentTables) =>
-			currentTables.filter((table) => table.id !== selectedTable.id),
+			currentTables.map((table) => table.id == selectedTable.id ? updatedTable : table),
 		);
-		setSelectedTable(null);
+		setSelectedTable(updatedTable);
 		setIsDeleteDialogOpen(false);
 	} catch (error) {
-		console.error("Error eliminando mesa:", error);
+		console.error("Error desactivando mesa:", error);
 		setIsDeleteDialogOpen(false);
 		setErrorMessage(
 			error && typeof error === "object" && "message" in error
 				? String((error as { message?: string }).message)
-				: "No se pudo eliminar la mesa.",
+				: "No se pudo desactivar la mesa.",
 		);
 	} finally {
 		setIsDeleting(false);
 	}
-};
+	};
+
+	const handleActivateTable = async () => {
+		if (!selectedTable) return;
+		
+		try {
+			await activateTable(selectedTable.id);
+
+			const updatedTable = { ...selectedTable, active: true };
+			setTables((currentTables) =>
+				currentTables.map((table) =>
+					table.id === selectedTable.id ? updatedTable : table,
+				),
+			);
+			
+			setSelectedTable(updatedTable);
+		} catch (error) {
+			console.error("Error activando mesa:", error);
+			setErrorMessage("No se pudo activar la mesa.");
+		}
+	};
+	
+
 
 	// Keep the admin layout as the visual fallback, but wait for the role
 	// before displaying owner-only table actions.
@@ -176,10 +203,16 @@ const handleRequestDelete = () => {
 									<div
 										key={table.id}
 										onClick={() => setSelectedTable(table)}
-										className={`flex cursor-pointer items-center justify-between gap-3 rounded border px-3 py-2 text-left text-s font-bold text-text-primary ${selectedTable?.id === table.id
-											? "border-mint-dark border-2 bg-mint-dark/10"
-											: "border-border hover:border-mint-dark"
-											}`}
+										className={`flex cursor-pointer items-center justify-between gap-3 rounded border px-3 py-2 text-left text-s font-bold text-text-primary
+											${table.active === false
+												? `border-gray-300 bg-gray-200 text-gray-400! hover:border-gray-600"
+												${selectedTable?.id === table.id ? "border-2 border-gray-600" : ""
+											
+												}`
+											:selectedTable?.id === table.id
+													? "border-mint-dark border-2 bg-mint-dark/10"
+													: "border-border hover:border-mint-dark"
+												}`}
 									>
 										<span>Mesa #{table.tableNumber}</span>
 										{isOwner && <button
@@ -188,7 +221,7 @@ const handleRequestDelete = () => {
 												event.stopPropagation();
 												handleShowQr(table.id, table.tableNumber);
 											}}
-											className="rounded bg-mint-dark px-3 py-1 text-xs text-white hover:bg-mint-dark/90"
+											className={`rounded px-3 py-1 text-xs text-white ${table.active === false ? "bg-gray-300" : "bg-mint-dark hover:bg-mint-dark/90"}`}
 										>
 											Ver QR
 										</button>}
@@ -203,7 +236,7 @@ const handleRequestDelete = () => {
 							</p>
 
 							{selectedTable ? (
-								<div className="mt-2 rounded-lg bg-mint-dark px-4 py-3 text-white">
+								<div className="mt-2 rounded-lg bg-mint-darker px-4 py-3 text-white">
 									<p className="text-lg font-bold">
 										Mesa #{selectedTable.tableNumber}
 									</p>
@@ -270,11 +303,19 @@ const handleRequestDelete = () => {
 							</Link>
 
 							<button className="w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-mint-dark/90"
-								onClick={handleRequestDelete}>
+								onClick={() =>
+									selectedTable?.active === false
+										? handleActivateTable()
+										: handleRequestDelete()
+								}
+							>
 								<span className="font-bold text-white justify-center flex">
-									Eliminar mesa
+									{selectedTable?.active === false
+										? "Activar mesa"
+										: "Desactivar mesa"}
 								</span>
 							</button>
+						
 						</div>}
 					</div>
 				</section>
@@ -311,10 +352,23 @@ const handleRequestDelete = () => {
 									</Link>
 
 									<button className="cursor-pointer flex items-center justify-between rounded border min-h-8.5 whitespace-nowrap gap-2 shrink-0 border-border px-3 py-2 text-s font-bold text-text-primary hover:bg-mint-dark/10"
-										onClick={handleRequestDelete}>
-										<span>Eliminar mesa</span>
-										<AiOutlineDelete className="text-mint-dark w-5 h-5" />
-
+										onClick={() =>
+											selectedTable?.active === false
+											? handleActivateTable()
+												: handleRequestDelete()
+										}
+									>
+										<span>
+											{selectedTable?.active === false
+											? "Activar mesa"
+												: "Desactivar mesa"}
+										</span>
+										{selectedTable?.active === false ? (
+											<FaToggleOn className="text-mint-dark w-5 h-5" />
+										):(
+										    <FaToggleOff className="text-mint-dark w-5 h-5" />
+										)}
+										
 									</button>
 								</div>}
 							</div>
@@ -333,7 +387,13 @@ const handleRequestDelete = () => {
 										<div
 											key={table.id}
 											onClick={() => setSelectedTable(table)}
-											className={`flex cursor-pointer items-center justify-between gap-3 rounded border px-3 py-2 text-left text-s font-bold text-text-primary ${selectedTable?.id === table.id
+											className={`flex cursor-pointer items-center justify-between gap-3 rounded border px-3 py-2 text-left text-s font-bold text-text-primary 
+												${table.active === false
+												? `border-gray-300 bg-gray-200 text-gray-400! hover:border-gray-600"
+												${selectedTable?.id === table.id ? "border-2 border-gray-600" : ""
+											
+												}`
+											:selectedTable?.id === table.id
 													? "border-mint-dark border-2 bg-mint-dark/10"
 													: "border-border hover:border-mint-dark"
 												}`}
@@ -345,7 +405,7 @@ const handleRequestDelete = () => {
 													event.stopPropagation();
 													handleShowQr(table.id, table.tableNumber);
 												}}
-												className=" cursor-pointer rounded bg-mint-dark px-3 py-1 text-xs text-white hover:bg-mint-darker"
+												className={`rounded px-3 py-1 text-xs text-white ${table.active === false ? "bg-gray-300" : "bg-mint-dark hover:bg-mint-dark/90"}`}
 											>
 												Ver QR
 											</button>}
@@ -368,7 +428,7 @@ const handleRequestDelete = () => {
 							</p>
 
 							{selectedTable ? (
-								<div className="mt-2 rounded-lg bg-mint-dark px-4 py-3 text-white">
+								<div className="mt-2 rounded-lg bg-mint-darker px-4 py-3 text-white">
 									<p className="text-lg font-bold">Mesa #{selectedTable.tableNumber}</p>
 									<p className="mt-2 text-s">Asientos: {selectedTable.chairNumber}</p>
 								</div>
@@ -403,12 +463,14 @@ const handleRequestDelete = () => {
 			</main>
 
 			<ConfirmDeleteModal
-	isOpen={isDeleteDialogOpen && !!selectedTable}
-	title="¿Eliminar mesa?"
-	message={`¿Deseas eliminar la mesa #${selectedTable?.tableNumber}? Esta acción no se puede deshacer.`}
-	isLoading={isDeleting}
-	onConfirm={handleDeleteTable}
-	onCancel={() => setIsDeleteDialogOpen(false)}
+			isOpen={isDeleteDialogOpen && !!selectedTable}
+			title="Desactivar mesa?"
+			message={`¿Deseas desactivar la mesa #${selectedTable?.tableNumber}?`}
+			confirmText="Desactivar"
+			loadingText="Desactivando..."
+			isLoading={isDeleting}
+			onConfirm={handleDeleteTable}
+			onCancel={() => setIsDeleteDialogOpen(false)}
 />
 
 
@@ -420,9 +482,9 @@ const handleRequestDelete = () => {
         aria-modal="true"
     >
         <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl text-center">
-            <h3 className="text-lg font-bold text-mint-darker align-middle">
-   No se puede eliminar la mesa
-</h3>
+						<h3 className="text-lg font-bold text-mint-darker align-middle">
+							No se puede desactivar la mesa
+						</h3>
             <p className="mt-2 text-sm text-text-primary">{errorMessage}</p>
             <div className="mt-6 flex justify-center">
                 <button

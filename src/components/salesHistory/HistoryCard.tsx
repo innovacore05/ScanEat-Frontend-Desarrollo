@@ -12,6 +12,10 @@ function HistoryCard({ order, onDetails }: HistoryCardProps) {
             <div className="flex w-full items-center rounded-2xl bg-neutral-100 px-6 py-6">
                 <div className="flex w-full min-w-0 flex-col gap-4">
 
+                    <h2 className="text-xl font-bold text-mint-dark">
+                        Mesa #{order.tableId}
+                    </h2>
+
                     <h2 className="w-fit text-lg font-bold text-text-primary bg-neutral-300 py-2 px-7 rounded-lg">
                         Orden #{order.orderId}
                     </h2>

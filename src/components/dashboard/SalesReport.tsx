@@ -260,7 +260,7 @@ function SalesReport() {
                       onClick={() => handlePeriodChange(option)}
                       className={`rounded border px-3 py-1 text-sm transition ${period === option
                         ? "border-mint-dark bg-mint-dark font-semibold text-white"
-                        : "border-mint-dark text-mint-darker hover:bg-mint-dark"
+                        : "border-mint-dark text-mint-darker hover:bg-mint-dark hover:text-white"
                         }`}
                     >
                       {option}
@@ -458,7 +458,7 @@ function SalesReport() {
                     </article>
                   </div>
 
-                  <div className="mt-4 rounded-xl bg-mint-dark px-5 py-4 text-white">
+                  <div className="mt-4 rounded-xl bg-mint-darker px-5 py-4 text-white">
                     <div className="flex items-center gap-2">
                       <FiCpu className="h-4 w-4" />
 
