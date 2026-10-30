@@ -73,9 +73,13 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
 
     const { issuer } = receipt;
 
-    const statusLabels: Record<string, string> = {
-        not_sent: "Pendiente de envío",
+     const statusLabels: Record<string, string> = {
+        not_sent: "Pendiente de emisión",
+        pending: "Pendiente de confirmación",
         queued: "Pendiente de confirmación",
+        signing: "Pendiente de confirmación",
+        sent: "Enviado a Hacienda",
+        polling: "Enviado a Hacienda",
         accepted: "Aceptado por Hacienda",
         rejected: "Rechazado por Hacienda",
     };
@@ -145,6 +149,12 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
                     {receipt.environment === "sandbox" && (
                         <p className="mt-3 text-center text-xs font-semibold text-red-600">
                             AMBIENTE DE PRUEBAS: este comprobante no tiene valor fiscal
+                        </p>
+                    )}
+
+                    {receipt.haciendaStatus === "rejected" && receipt.haciendaMessage && (
+                        <p className="mt-3 text-center text-xs font-semibold text-red-600">
+                            {receipt.haciendaMessage}
                         </p>
                     )}
 
@@ -239,25 +249,22 @@ function InvoiceModal({ isOpen, receipt, onClose }: InvoiceModalProps) {
                         />
 
                         {/*  mostrar las tarifas que realmente aparecen en las LINEAS */}
-                        {receipt.taxSummary.map(({ rate, amount }) => (
-                            <Row
-                                key={rate}
-                                label={`IVA ${formatRate(Number(rate))}`}
-                                value={formatCRC(amount)}
-                            />
-                        ))}
-                        {receipt.payment.method === "cash" && (
-                            <>
-                                <Row
-                                    label="Su pago"
-                                    value={formatCRC(receipt.payment.amountTendered ?? 0)}
-                                />
-                                <Row
-                                    label="Su vuelto"
-                                    value={formatCRC(receipt.payment.change ?? 0)}
-                                />
-                            </>
-                        )}
+                       {receipt.taxSummary
+  .filter(({ amount }) => Number(amount) > 0)
+  .map(({ rate, amount }) => (
+    <Row
+      key={rate}
+      label={`IVA ${formatRate(Number(rate))}`}
+      value={formatCRC(amount)}
+    />
+  ))}
+
+{Number(receipt.totals.serviceCharge) > 0 && (
+  <Row
+    label="Servicio 10 %"
+    value={formatCRC(receipt.totals.serviceCharge)}
+  />
+)}
                     </div>
 
                     <div className="mt-4 border border-border"></div>

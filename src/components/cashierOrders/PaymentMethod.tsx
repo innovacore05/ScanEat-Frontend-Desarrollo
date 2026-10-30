@@ -8,6 +8,7 @@ import { HiArrowLeft } from "react-icons/hi";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import {
   getPaymentPreview,
+  getReceiptStatus,
   payOrder,
   type PayOrderPayload,
   type PayOrderResponse,
@@ -25,6 +26,8 @@ const formatCRC = (value: string | number) =>
     maximumFractionDigits: 2,
   })}`;
 
+const IN_FLIGHT = new Set(["queued", "signing", "sent", "polling", "pending"]);
+
 function PaymentMethod() {
   const search = useSearch({ strict: false });
   const orderId = Number(search.orderId);
@@ -41,11 +44,12 @@ function PaymentMethod() {
   const [receipt, setReceipt] = useState<PayOrderResponse | null>(null);
   const [isPaymentStatusOpen, setIsPaymentStatusOpen] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<StatusType | "">("");
+  const [includeService, setIncludeService] = useState(true);
 
   useEffect(() => {
     const loadOrder = async () => {
       try {
-        const data = await getPaymentPreview(orderId);
+        const data = await getPaymentPreview(orderId, includeService);
         setOrder(data);
       } catch (error) {
         console.error("Error cargando la orden", error);
@@ -59,7 +63,41 @@ function PaymentMethod() {
     } else {
       setLoading(false);
     }
-  }, [orderId]);
+  }, [orderId, includeService]);
+
+  const [pollTick, setPollTick] = useState(0);
+  const receiptId = receipt?.receiptId;
+  const fiscalStatus = receipt?.haciendaStatus;
+
+  useEffect(() => {
+    if (!receiptId || !fiscalStatus || !IN_FLIGHT.has(fiscalStatus)) return;
+
+    // espera progresiva: 5 s, 10 s, 20 s, 40 s (tope)
+    const delay = Math.min(5000 * 2 ** Math.min(pollTick, 3), 40000);
+
+    const timer = setTimeout(async () => {
+      try {
+        const next = await getReceiptStatus(receiptId);
+        setReceipt((prev) =>
+          prev && prev.receiptId === next.receiptId
+            ? {
+                ...prev,
+                haciendaStatus: next.haciendaStatus,
+                haciendaMessage: next.haciendaMessage,
+                clave: next.clave,
+                consecutiveNumber: next.consecutiveNumber,
+              }
+            : prev,
+        );
+      } catch (error) {
+        console.error("Error consultando el estado del tiquete", error);
+      } finally {
+        setPollTick((tick) => tick + 1);
+      }
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [receiptId, fiscalStatus, pollTick]);
 
   const openPaymentModal = (method: PaymentType) => {
     setPaymentMethod(method);
@@ -80,13 +118,18 @@ function PaymentMethod() {
   ): PayOrderPayload | null => {
     if (method === "efectivo") {
       if (details.amountTendered === undefined) return null;
-      return { method: "cash", amountTendered: details.amountTendered };
+      return {
+        method: "cash",
+        amountTendered: details.amountTendered,
+        includeServiceCharge: includeService,
+      };
     }
 
     if (!details.reference) return null;
     return {
       method: method === "tarjeta" ? "card" : "sinpe",
       reference: details.reference,
+      includeServiceCharge: includeService,
     };
   };
 
@@ -137,7 +180,10 @@ function PaymentMethod() {
 
                 <div className="mt-6 space-y-5">
                   {Array.from({ length: 4 }, (_, index) => (
-                    <div key={index} className="flex items-center justify-between gap-4">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between gap-4"
+                    >
                       <div className="flex flex-1 flex-col gap-2">
                         <Skeleton className="h-4 w-40" />
                         <Skeleton className="h-3 w-20" />
@@ -178,9 +224,6 @@ function PaymentMethod() {
     return <p>No se pudo cargar la orden.</p>;
   }
 
-  
-
-
   return (
     <main className="min-h-screen bg-white">
       <div className="flex h-30 items-center justify-between gap-4 bg-neutral-50 border-b-4 border-mint-dark px-4 py-4 sm:px-8">
@@ -208,11 +251,21 @@ function PaymentMethod() {
           </p>
 
           <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-           {/* ---- */}
             <div className="rounded-xl border border-border p-6 lg:p-8">
               <h2 className="text-center text-2xl font-bold text-mint-dark lg:text-3xl">
                 Recibo
               </h2>
+
+              <label className="mt-4 flex cursor-pointer items-center justify-between rounded-lg border border-border px-4 py-3">
+                <span className="font-semibold">Servicio de mesa (10 %)</span>
+                <input
+                  type="checkbox"
+                  checked={includeService}
+                  disabled={isPaying || receipt !== null}
+                  onChange={(e) => setIncludeService(e.target.checked)}
+                  className="h-5 w-5 accent-mint-dark"
+                />
+              </label>
 
               <h3 className="mt-7 text-lg font-bold text-mint-dark lg:text-xl">
                 Total de pedido
@@ -229,16 +282,19 @@ function PaymentMethod() {
                         <p>
                           {line.detail} x {line.quantity}
                         </p>
-                        <p className="text-xs text-gray-500">
-                          IVA {Number(line.ivaRate)} %
-                        </p>
+                        {order.chargesVat !== false && (
+                          <p className="text-xs text-gray-500">
+                            IVA {Number(line.ivaRate)} %
+                          </p>
+                        )}
                       </div>
 
                       <div className="flex shrink-0 items-center justify-end gap-2">
                         {Number(line.discount) > 0 && (
                           <p className="text-sm text-gray-500 line-through">
                             {formatCRC(
-                              Number(line.gross) * (1 + Number(line.ivaRate) / 100),
+                              Number(line.gross) *
+                                (1 + Number(line.ivaRate) / 100),
                             )}
                           </p>
                         )}
@@ -255,26 +311,44 @@ function PaymentMethod() {
               <div className="mt-6 border-t border-border pt-4">
                 <div className="flex items-center justify-between">
                   <p>Subtotal (sin IVA)</p>
-                                   <p className="tracking-wider">{formatCRC(order.totals.totalNetSale)}</p>
+                  <p className="tracking-wider">
+                    {formatCRC(order.totals.totalNetSale)}
+                  </p>
                 </div>
-<div className="flex items-center justify-between">
+
+                <div className="flex items-center justify-between">
                   <p>Descuento</p>
-                                   <p className="tracking-wider">{formatCRC(order.totals.totalDiscount)}</p>
+                  <p className="tracking-wider">
+                    {formatCRC(order.totals.totalDiscount)}
+                  </p>
                 </div>
-                  {order.taxSummary.map(({ rate, amount }) => (
-                  <div
-                    key={rate}
-                    className="mt-2 flex items-center justify-between"
-                  >
-                    <p>IVA </p>
-                    <p className="tracking-wider">{formatCRC(amount)}</p>
+
+                {order.chargesVat !== false &&
+                  order.taxSummary
+                    .filter(({ amount }) => Number(amount) > 0)
+                    .map(({ rate, amount }) => (
+                      <div
+                        key={rate}
+                        className="mt-2 flex items-center justify-between"
+                      >
+                        <p>IVA {rate} %</p>
+                        <p className="tracking-wider">{formatCRC(amount)}</p>
+                      </div>
+                    ))}
+
+                {Number(order.totals.serviceCharge) > 0 && (
+                  <div className="mt-2 flex items-center justify-between">
+                    <p>Servicio 10 %</p>
+                    <p className="tracking-wider">
+                      {formatCRC(order.totals.serviceCharge)}
+                    </p>
                   </div>
-                ))}
+                )}
+
                 <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
                   <p className="text-xl font-bold text-mint-dark">Total</p>
-                  {/* total */}
                   <p className="text-xl font-bold tracking-wider text-mint-dark">
-                    {formatCRC(order.totals.totalSale)}
+                    {formatCRC(order.totals.totalVoucher)}
                   </p>
                 </div>
               </div>
@@ -335,7 +409,7 @@ function PaymentMethod() {
       <PaymentModal
         isOpen={isPaymentModalOpen}
         paymentMethod={paymentMethod}
-        total={order.totals.totalSale}
+        total={order.totals.totalVoucher}
         isSubmitting={isPaying}
         errorMessage={payError}
         onClose={closePaymentModal}

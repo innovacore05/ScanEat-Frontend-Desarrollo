@@ -105,11 +105,10 @@ for (const { rate, amount } of receipt.taxSummary) {
   ivaByRate.set(key, (ivaByRate.get(key) ?? 0) + Number(amount));
 }
 const ivaRows = [...ivaByRate.entries()]
+  .filter(([, amount]) => amount > 0)
   .sort(([a], [b]) => a - b)
   .map(([rate, amount]) => totalRow(`IVA ${formatRate(rate)}`, num(amount)))
   .join("");
-
-
 
   return `<!doctype html>
 <html>
@@ -264,21 +263,22 @@ const ivaRows = [...ivaByRate.entries()]
 <body>
 
   <!-- Emisor -->
-  <div class="header">
+    <div class="header">
     ${logoUrl ? `<img src="${esc(logoUrl)}" class="logo" alt="Logo" />` : ""}
-    <div class="name">${esc(businessName || "Nombre del negocio")}</div>
-    <div>Cédula jurídica x-xxx-xxxxx</div>
-    <div>Dirección,</div>
-    <div>Tel 8888-8888</div>
+    <div class="name">${esc(businessName || receipt.issuer.tradeName || receipt.issuer.legalName)}</div>
+    <div>${esc(receipt.issuer.legalName)}</div>
+    <div>Céd. ${esc(receipt.issuer.legalId)}</div>
+    ${receipt.issuer.address ? `<div>${esc(receipt.issuer.address)}</div>` : ""}
+    ${receipt.issuer.phone ? `<div>Tel ${esc(receipt.issuer.phone)}</div>` : ""}
   </div>
 
   ${divider}
 
   <!-- Datos del comprobante -->
   <div class="title">Tiquete Electrónico</div>
-  ${row("Consecutivo", "Pendiente")}
+    ${row("Consecutivo", receipt.consecutiveNumber ?? "Pendiente")}
   ${row("Fecha", date)}
-  ${row("Clave numérica", "Pendiente")}
+  ${row("Clave numérica", receipt.clave ?? "Pendiente")}
   ${row("Condición de venta", "Contado")}
   ${row("Cliente", "Cliente de contado")}
 
@@ -294,13 +294,13 @@ const ivaRows = [...ivaByRate.entries()]
   ${totalRow("Subtotal:", num(receipt.totals.totalNetSale))}
   ${totalRow("Descuento:", num(receipt.totals.totalDiscount))}
   ${ivaRows}
-  ${totalRow("Total:", num(receipt.totals.totalSale), "big")}
-
+    ${Number(receipt.totals.serviceCharge) > 0 ? totalRow("Servicio 10%:", num(receipt.totals.serviceCharge)) : ""}
+  ${totalRow("Total:", num(receipt.totals.totalVoucher), "big")}
   <!-- Pago -->
   ${section("Su pago :")}
   ${totalRow(
     METHOD_LABELS[payment.method],
-    num(isCash ? (payment.amountTendered ?? 0) : receipt.totals.totalSale),
+    num(isCash ? (payment.amountTendered ?? 0) : receipt.totals.totalVoucher),
   )}
   ${payment.reference ? row("Comprobante", payment.reference) : ""}
 
