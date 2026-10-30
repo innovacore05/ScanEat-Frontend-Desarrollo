@@ -15,6 +15,7 @@ import {
     FiDollarSign,
     FiClipboard,
     FiFileText,
+    FiDownload,
 } from "react-icons/fi";
 import { Link } from "@tanstack/react-router";
 import { HiArrowLeft } from "react-icons/hi";
@@ -72,6 +73,7 @@ function Expenses() {
     const [isSaving, setIsSaving] = useState(false);
     const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [isPrinting, setIsPrinting] = useState(false);
 
     const [loading, setLoading] = useState(true);
 
@@ -120,6 +122,30 @@ function Expenses() {
         (sum, expense) => sum + expense.amount,
         0,
     );
+
+    useEffect(() => {
+        if (!isPrinting) {
+            return;
+        }
+
+        const handleAfterPrint = () => setIsPrinting(false);
+
+        window.addEventListener("afterprint", handleAfterPrint);
+        window.setTimeout(() => window.print(), 0);
+
+        return () => {
+            window.removeEventListener("afterprint", handleAfterPrint);
+        };
+    }, [isPrinting]);
+
+    const exportFilteredExpenses = () => {
+        if (filteredExpenses.length === 0) {
+            setError("No hay egresos filtrados para exportar.");
+            return;
+        }
+
+        setIsPrinting(true);
+    };
 
     const openInvoice = async (expenseId: number) => {
         try {
@@ -257,6 +283,115 @@ function Expenses() {
                 }
             }}
             />
+            {/* Esta parte es para definir como se ve la tabla en el pdf*/}
+            <style>{`
+                .print-export {
+                    display: none;
+                }
+
+                @media print {
+                    body * {
+                        visibility: hidden;
+                    }
+
+                    .print-export,
+                    .print-export * {
+                        visibility: visible;
+                    }
+
+                    .print-export {
+                        display: block;
+                        position: absolute;
+                        inset: 0;
+                        width: 100%;
+                        padding: 24px;
+                        color: #111827;
+                        background: white;
+                    }
+                }
+            `}</style>
+
+            <div className="print-export">
+                <h1 style={{ fontSize: "22px", fontWeight: 700 }}>
+                    Reporte de egresos
+                </h1>
+                <table
+                    style={{
+                        width: "100%",
+                        marginTop: "20px",
+                        borderCollapse: "collapse",
+                        fontSize: "12px",
+                    }}
+                >
+                    <thead>
+                        <tr>
+                            {["Fecha", "Motivo", "Proveedor", "Observaciones", "Monto"].map(
+                                (heading) => (
+                                    <th
+                                        key={heading}
+                                        style={{
+                                            border: "1px solid #9ca3af",
+                                            padding: "8px",
+                                            textAlign: "left",
+                                            background: "#f3f4f6",
+                                        }}
+                                    >
+                                        {heading}
+                                    </th>
+                                ),
+                            )}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredExpenses.map((expense) => (
+                            <tr key={expense.id}>
+                                <td style={{ border: "1px solid #9ca3af", padding: "8px" }}>
+                                    {expense.date}
+                                </td>
+                                <td style={{ border: "1px solid #9ca3af", padding: "8px" }}>
+                                    {expense.motive}
+                                </td>
+                                <td style={{ border: "1px solid #9ca3af", padding: "8px" }}>
+                                    {expense.supplier}
+                                </td>
+                                <td style={{ border: "1px solid #9ca3af", padding: "8px" }}>
+                                    {expense.observations || "—"}
+                                </td>
+                                <td style={{ border: "1px solid #9ca3af", padding: "8px", textAlign: "right" }}>
+                                    {formatMoney(expense.amount)}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td
+                                colSpan={4}
+                                style={{
+                                    border: "1px solid #9ca3af",
+                                    padding: "8px",
+                                    textAlign: "right",
+                                    fontWeight: 700,
+                                }}
+                            >
+                                Total
+                            </td>
+                            <td
+                                style={{
+                                    border: "1px solid #9ca3af",
+                                    padding: "8px",
+                                    textAlign: "right",
+                                    fontWeight: 700,
+                                }}
+                            >
+                                {formatMoney(total)}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            {/*Aquí termina*/}
+            
             <section className="px-4 py-6 sm:px-6 lg:px-15 lg:py-15">
                 <div className="mx-auto w-full max-w-7xl">
                     <div className="mb-6">
@@ -493,14 +628,25 @@ function Expenses() {
                                     Historial de egresos
                                 </h2>
 
-                                <button
-                                    type="button"
-                                    onClick={openNewForm}
-                                    className="flex shrink-0 cursor-pointer items-center gap-2 rounded-lg bg-mint-dark hover:bg-mint-darker px-3 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 sm:px-4"
-                                >
-                                    <span className="hidden sm:inline">Registrar egreso</span>
-                                    <span className="sm:hidden">Registrar</span>
-                                </button>
+                                <div className="flex w-full gap-2 sm:w-auto">
+                                    <button
+                                        type="button"
+                                        onClick={openNewForm}
+                                        className="flex shrink-0 cursor-pointer items-center gap-2 rounded-lg bg-mint-dark px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-mint-darker hover:opacity-90 sm:px-4"
+                                    >
+                                        <span className="hidden sm:inline">Registrar egreso</span>
+                                        <span className="sm:hidden">Registrar</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={exportFilteredExpenses}
+                                        disabled={loading || filteredExpenses.length === 0 || isPrinting}
+                                        className="flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-mint-dark px-3 py-2 text-sm font-semibold text-mint-darker transition hover:bg-mint-darker/10 disabled:cursor-not-allowed disabled:opacity-50 sm:px-4"
+                                    >
+                                        <FiDownload />
+                                        Exportar
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">

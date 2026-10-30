@@ -4,22 +4,62 @@ import OrderCard, { type Order } from "../Orders/OrderCard";
 import { getOrders } from "../../services/orderService";
 import { logout } from "../../services/authService";
 import { LuLogOut } from "react-icons/lu";
-import { Link } from "@tanstack/react-router";
+import { Link, useSearch } from "@tanstack/react-router";
 import Skeleton from "../shared/Skeleton";
 import { socket } from "../../services/socketClient";
 import SearchOrders from "../Orders/SearchOrders";
+import { getPaymentPreview } from "../../services/billingService";
+
+const formatCRC = (value: number) =>
+    `₡${value.toLocaleString("es-CR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    })}`;
+
+const getPendingTotal = (lines: Awaited<ReturnType<typeof getPaymentPreview>>["lines"]) =>
+    lines.reduce((total, line) => {
+        if (line.pendingQuantity <= 0 || line.originalQuantity <= 0) {
+            return total;
+        }
+
+        return total +
+            (Number(line.total) * line.pendingQuantity) / line.originalQuantity;
+    }, 0);
 
 function CashierOrders (){
 const [orders,setOrders]=useState<Order[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const { refresh } = useSearch({
+        from: "/(cashierOrders)/cashierOrders",
+    });
 
     useEffect(() => {
     //Consulta las órdenes que están pendientes de pago
     const loadOrders =async ()=>{
         try{
+       setIsLoading(true);
        const data = await getOrders("delivered",true);
-       setOrders(data);
+       const ordersWithPendingTotals = await Promise.all(
+        data.map(async (order) => {
+            try {
+                const paymentPreview = await getPaymentPreview(order.orderId);
+
+                return {
+                    ...order,
+                    price: formatCRC(getPendingTotal(paymentPreview.lines)),
+                };
+            } catch (error) {
+                console.error(
+                    `No se pudo actualizar el saldo pendiente de la orden ${order.orderId}:`,
+                    error,
+                );
+                return order;
+            }
+        }),
+       );
+
+       setOrders(ordersWithPendingTotals);
         }catch(error){
         console.error("Error cargando órdenes:", error);
         } finally {
@@ -54,7 +94,7 @@ const [orders,setOrders]=useState<Order[]>([]);
         socket.off("connect", handleConnect);
      };
     
-    }, []);
+    }, [refresh]);
     
     
 

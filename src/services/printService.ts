@@ -69,6 +69,19 @@ function buildHtml(
 
   const payment = receipt.payment;
   const isCash = payment.method === "cash";
+  const receiptSubtotal = receipt.lines.reduce(
+    (subtotal, line) => subtotal + Number(line.subtotal),
+    0,
+  );
+  const receiptDiscount = receipt.lines.reduce(
+    (discount, line) => discount + Number(line.discount),
+    0,
+  );
+  const receiptTaxByRate = receipt.lines.reduce((taxes, line) => {
+    const rate = Number(line.ivaRate);
+    taxes.set(rate, (taxes.get(rate) ?? 0) + Number(line.tax));
+    return taxes;
+  }, new Map<number, number>());
 
   const formatRate = (rate: number) =>
     `${new Intl.NumberFormat("es-CR", { maximumFractionDigits: 2 }).format(rate)}%`;
@@ -99,12 +112,7 @@ function buildHtml(
     })
     .join("");
 
-const ivaByRate = new Map<number, number>();
-for (const { rate, amount } of receipt.taxSummary) {
-  const key = Number(rate);
-  ivaByRate.set(key, (ivaByRate.get(key) ?? 0) + Number(amount));
-}
-const ivaRows = [...ivaByRate.entries()]
+const ivaRows = [...receiptTaxByRate.entries()]
   .sort(([a], [b]) => a - b)
   .map(([rate, amount]) => totalRow(`IVA ${formatRate(rate)}`, num(amount)))
   .join("");
@@ -291,8 +299,8 @@ const ivaRows = [...ivaByRate.entries()]
   ${divider}
 
   <!-- Totales -->
-  ${totalRow("Subtotal:", num(receipt.totals.totalNetSale))}
-  ${totalRow("Descuento:", num(receipt.totals.totalDiscount))}
+  ${totalRow("Subtotal:", num(receiptSubtotal))}
+  ${totalRow("Descuento:", num(receiptDiscount))}
   ${ivaRows}
   ${totalRow("Total:", num(receipt.totals.totalSale), "big")}
 

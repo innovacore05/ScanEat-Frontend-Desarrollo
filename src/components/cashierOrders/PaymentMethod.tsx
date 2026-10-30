@@ -74,6 +74,48 @@ function PaymentMethod() {
 
     return total + (Number(line.total) / line.quantity) * quantity;
   }, 0);
+  const selectedSubtotal = selectedLines.reduce((subtotal, line) => {
+    const selectedItem = selectedItems.find(
+      (item) => item.detailId === line.detailId,
+    );
+
+    if (!selectedItem || line.quantity <= 0) {
+      return subtotal;
+    }
+
+    const quantity = Math.min(selectedItem.quantity, line.quantity);
+
+    return subtotal + (Number(line.subtotal) / line.quantity) * quantity;
+  }, 0);
+  const selectedDiscount = selectedLines.reduce((discount, line) => {
+    const selectedItem = selectedItems.find(
+      (item) => item.detailId === line.detailId,
+    );
+
+    if (!selectedItem || line.quantity <= 0) {
+      return discount;
+    }
+
+    const quantity = Math.min(selectedItem.quantity, line.quantity);
+
+    return discount + (Number(line.discount) / line.quantity) * quantity;
+  }, 0);
+  const selectedTaxByRate = selectedLines.reduce((taxes, line) => {
+    const selectedItem = selectedItems.find(
+      (item) => item.detailId === line.detailId,
+    );
+
+    if (!selectedItem || line.quantity <= 0) {
+      return taxes;
+    }
+
+    const quantity = Math.min(selectedItem.quantity, line.quantity);
+    const rate = Number(line.ivaRate);
+    const tax = (Number(line.tax) / line.quantity) * quantity;
+
+    taxes.set(rate, (taxes.get(rate) ?? 0) + tax);
+    return taxes;
+  }, new Map<number, number>());
   const [loading, setLoading] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState<PaymentType | "">("");
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -347,18 +389,18 @@ function PaymentMethod() {
               <div className="mt-6 border-t border-border pt-4">
                 <div className="flex items-center justify-between">
                   <p>Subtotal (sin IVA)</p>
-                  <p className="tracking-wider">{formatCRC(order.totals.totalNetSale)}</p>
+                  <p className="tracking-wider">{formatCRC(selectedSubtotal)}</p>
                 </div>
                 <div className="flex items-center justify-between">
                   <p>Descuento</p>
-                  <p className="tracking-wider">{formatCRC(order.totals.totalDiscount)}</p>
+                  <p className="tracking-wider">{formatCRC(selectedDiscount)}</p>
                 </div>
-                {order.taxSummary.map(({ rate, amount }) => (
+                {[...selectedTaxByRate.entries()].map(([rate, amount]) => (
                   <div
                     key={rate}
                     className="mt-2 flex items-center justify-between"
                   >
-                    <p>IVA </p>
+                    <p>IVA {rate}%</p>
                     <p className="tracking-wider">{formatCRC(amount)}</p>
                   </div>
                 ))}
