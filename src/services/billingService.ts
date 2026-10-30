@@ -32,17 +32,31 @@ export type PaymentPreview={
     orderId: number;
     tableId: string;
     tableNumber: number;
-lines:Array<ReceiptLine & {detailId:number}>;
+lines:Array<
+ReceiptLine & {
+    detailId:number;
+originalQuantity: number;
+      paidQuantity: number;
+      pendingQuantity: number;
+
+}>;
 totals:ReceiptTotals;
 taxSummary: { rate: number; amount: string }[];
+chargesVat: boolean | null;
 //producto sin codigo cabys
 missingCabys:string[];
 };
 
-export type PayOrderPayload=
-| {method:"cash"; amountTendered:number}
-|{method: "card"|"sinpe"; reference:string};
- 
+type SelectedPaymentItem = {
+  detailId: number;
+  quantity: number;
+};
+
+export type PayOrderPayload = (
+  | { method: "cash"; amountTendered: number }
+  | { method: "card" | "sinpe"; reference: string }
+) & { includeServiceCharge: boolean ;
+items: SelectedPaymentItem[];};
 
 
 export type PayOrderResponse={
@@ -52,6 +66,18 @@ receiptId: number;
     documentType:string;
     issueDate:string;
     haciendaStatus:string;
+    haciendaMessage?: string | null;
+     clave: string | null;
+  consecutiveNumber: string | null;
+  environment: string;
+  issuer: {
+    legalName: string;
+    tradeName: string | null;
+    legalId: string;
+    legalIdType: string;
+    phone: string | null;
+    address: string | null;
+  };
     lines:ReceiptLine[];
     totals:ReceiptTotals;
     taxSummary: { rate: number; amount: string }[];
@@ -64,26 +90,87 @@ receiptId: number;
     };
 };
 
+export type ReplaceRejectedReceiptResponse = {
+  receiptId: number;
+  replacesReceiptId: number;
+  haciendaStatus: string;
+  clave: string | null;
+  consecutiveNumber: string | null;
+  emissionError?: string;
+};
+
+export type ReceiptUpdateResponse =
+  | RetryReceiptEmissionResponse
+  | ReplaceRejectedReceiptResponse;
+
+export const replaceRejectedReceipt = (receiptId: number) =>
+  cookieSessionClient.request<ReplaceRejectedReceiptResponse>(
+    `${BILLING_BASE_URL}/receipts/${receiptId}/replace-rejected`,
+    {
+      method: "POST",
+      fallBackMessage: "No se pudo crear el comprobante sustituto",
+    },
+  );
+
 //lo que va al cajero antes de cobrar
 
-export const getPaymentPreview=(orderId:number)=>
-    cookieSessionClient.request<PaymentPreview>(
-     `${BILLING_BASE_URL}/orders/${orderId}`,  
-     {
-        method:"GET",
-        fallBackMessage:"No se puede cargar la orden",
-     },
-    );
-
-    //registro de cobro y creacion de tiquete
-    export const payOrder =(orderId : number, payload : PayOrderPayload)=>
-        cookieSessionClient.request<PayOrderResponse>
-    (
-        `${BILLING_BASE_URL}/orders/${orderId}/payments`,
-    
+export const getPaymentPreview = (
+  orderId: number,
+  includeService = true,
+) =>
+  cookieSessionClient.request<PaymentPreview>(
+    `${BILLING_BASE_URL}/orders/${orderId}?service=${includeService}`,
     {
-        method:"POST",
-        body:JSON.stringify(payload),
-        fallBackMessage:"No se pudo registrar el cobro",
+      method: "GET",
+      fallBackMessage: "No se puede cargar la orden",
     },
-);
+  );
+
+export const payOrder = (
+  orderId: number,
+  payload: PayOrderPayload,
+) =>
+  cookieSessionClient.request<PayOrderResponse>(
+    `${BILLING_BASE_URL}/orders/${orderId}/payments`,
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+      fallBackMessage: "No se pudo registrar el cobro",
+    },
+  );
+
+export type ReceiptStatus = {
+  receiptId: number;
+  haciendaStatus: string;
+  haciendaMessage: string | null;
+  clave: string | null;
+  consecutiveNumber: string | null;
+};
+
+// consulta el estado del tiquete ante Hacienda
+export const getReceiptStatus = (receiptId: number) =>
+  cookieSessionClient.request<ReceiptStatus>(
+    `${BILLING_BASE_URL}/receipts/${receiptId}/status`,
+    {
+      method: "GET",
+      fallBackMessage: "No se pudo consultar el estado del tiquete",
+    },
+  );
+
+  export type RetryReceiptEmissionResponse = {
+  receiptId: number;
+  haciendaStatus: string;
+  clave: string | null;
+  consecutiveNumber: string | null;
+};
+
+export const retryReceiptEmission = (receiptId: number) =>
+  cookieSessionClient.request<RetryReceiptEmissionResponse>(
+    `${BILLING_BASE_URL}/receipts/${receiptId}/retry-emission`,
+    {
+      method: "POST",
+      fallBackMessage: "No se pudo reintentar la emisión del tiquete",
+    },
+  );
+
+  

@@ -11,13 +11,16 @@ const getImageUrl = (image: string | null) => {
 };
 
 export type Product={
-productId:number;
-productName:string;
-description:string|null;
-price:number;
-image:string|null;
-rating:number;
-categoryId:number;
+  productId: number;
+  productName: string;
+  description: string | null;
+  price: number;
+  priceWithTax?: number;
+  discountedPriceWithTax?: number;
+  displayIvaRate?: number;
+  image: string | null;
+  rating: number;
+  categoryId: number;
 
 cabysCode?: string | null;
 

@@ -28,6 +28,9 @@ export type CartItem = {
   productId: number;
   name: string;
   price: number;
+  priceWithTax?: number;
+discountedPriceWithTax?: number;
+displayIvaRate?: number;
   discount?: number;
   image: string;
   quantity: number;
@@ -84,18 +87,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
       items.map(async (item) => {
         const product = await getProductById(item.productId);
 
+const price = Number(item.unitPrice);
+const discount = Number(
+  product.discountPercentage ??
+    product.discount_percent ??
+    product.discount ??
+    0,
+);
+
+
         return {
           cartItemId: String(item.id),
           clientId: item.clientId,
           productId: item.productId,
           name: item.productName,
-          price: Number(item.unitPrice),
-          discount: Number(
-            product.discountPercentage ??
-              product.discount_percent ??
-              product.discount ??
-              0,
-          ),
+
+          price,
+
+           priceWithTax: Number(product.priceWithTax ?? price),
+  discountedPriceWithTax: Number(
+    product.discountedPriceWithTax ??
+      price * (1 - discount / 100),
+  ),
+  displayIvaRate: Number(product.displayIvaRate ?? 0),
+
+
+          discount,
+          
           image: product.image ?? "",
           quantity: item.quantity,
           selectedOptions: item.selectedOptions ?? {},

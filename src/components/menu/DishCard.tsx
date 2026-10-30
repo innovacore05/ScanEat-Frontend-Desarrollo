@@ -19,6 +19,9 @@ interface DishCardProps {
   name: string;
   description: string;
   price: number;
+  priceWithTax?: number;
+discountedPriceWithTax?: number;
+displayIvaRate?: number;
   discount?: number;
   image: string;
   rating: number;
@@ -67,6 +70,9 @@ function DishCard({
   name,
   description,
   price,
+  priceWithTax,
+  discountedPriceWithTax,
+  displayIvaRate,
   image,
   discount,
   rating,
@@ -95,6 +101,11 @@ function DishCard({
 
   const navigate = useNavigate();
   const { addToCart } = useCart();
+
+const originalDisplayPrice = priceWithTax ?? price;
+const discountedDisplayPrice =
+  discountedPriceWithTax ??
+  originalDisplayPrice * (1 - (discount ?? 0) / 100);
 
   useEffect(() => {
     setDetailOptionGroups(optionGroups);
@@ -259,24 +270,30 @@ function DishCard({
             {description}
           </p>
 
-          <div className="mt-2 flex items-center gap-2">
-            {discount ? (
-              <>
-                <span className="relative text-sm font-bold text-mint-darker">
-                  ₡{price.toLocaleString("es-CR")}
-                  <span className="absolute left-0 top-1/2 h-0.5 w-full -rotate-12 bg-red-600" />
-                </span>
+         <div className="mt-2 flex flex-wrap items-center gap-2">
+  {discount ? (
+    <>
+      <span className="relative text-sm font-bold text-mint-darker">
+        ₡{originalDisplayPrice.toLocaleString("es-CR")}
+        <span className="absolute left-0 top-1/2 h-0.5 w-full -rotate-12 bg-red-600" />
+      </span>
 
-                <span className="text-base font-bold text-mint-darker">
-                  ₡{(price * (1 - discount / 100)).toLocaleString("es-CR")}
-                </span>
-              </>
-            ) : (
-              <span className="text-base font-bold text-mint-darker">
-                ₡{price.toLocaleString("es-CR")}
-              </span>
-            )}
-          </div>
+      <span className="text-base font-bold text-mint-darker">
+        ₡{discountedDisplayPrice.toLocaleString("es-CR")}
+      </span>
+    </>
+  ) : (
+    <span className="text-base font-bold text-mint-darker">
+      ₡{originalDisplayPrice.toLocaleString("es-CR")}
+    </span>
+  )}
+
+  {Number(displayIvaRate ?? 0) > 0 && (
+    <span className="text-xs text-text-primary">
+      IVA {displayIvaRate}% incluido
+    </span>
+  )}
+</div>
 
           {isDetailView && detailOptionGroups.length > 0 && (
               <div className="mt-4">

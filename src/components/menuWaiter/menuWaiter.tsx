@@ -57,6 +57,9 @@ function ProductList({
             name={product.productName ?? ""}
             description={product.description ?? ""}
             price={product.price}
+            priceWithTax={product.priceWithTax}
+discountedPriceWithTax={product.discountedPriceWithTax}
+displayIvaRate={product.displayIvaRate}
             discount={ Number(product.discount ?? 0) }
             image={product.image ?? ""}
             rating={product.rating}

@@ -66,6 +66,7 @@ useEffect(() => {
         paymentMethod === "sinpe" || paymentMethod === "tarjeta";
 
     const handleConfirm = () => {
+        if (isSubmitting) return;
   if (isCash) {
     if (!isCashConfirmed) {
       if (receivedAmount < totalAmount) return;
@@ -81,7 +82,8 @@ useEffect(() => {
   if (!trimmed) return;
   onConfirm({ reference: trimmed });
 };
-const isDisabled=
+const isDisabled =
+  isSubmitting ||
     (isCash &&
     !isCashConfirmed &&
     (!cashReceived || receivedAmount<totalAmount))
@@ -105,6 +107,16 @@ const isDisabled=
                     <h2 className="text-center text-2xl font-bold text-mint-dark">
                         {paymentLabels[paymentMethod]}
                     </h2>
+
+{isCash && (
+  <div className="mt-4 text-center">
+    <p className="text-sm text-gray-500">Total a cobrar</p>
+    <p className="text-3xl font-bold text-mint-dark">
+      {formatMoney(totalAmount)}
+    </p>
+  </div>
+)}
+
 
                     {requiresReceipt && (
                         <div className="mt-6 flex flex-col items-center">

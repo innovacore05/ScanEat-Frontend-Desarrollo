@@ -479,27 +479,33 @@ function CheckOrder() {
             {getDishName(item.name, item.selectedOptions)}
           </h3>
 
-          <div className="flex flex-wrap items-center gap-2">
-            {Number(item.discount ?? 0) > 0 ? (
-              <>
-                <span className="relative text-sm font-bold text-mint-darker">
-                  ₡{item.price.toLocaleString("es-CR")}
-                  <span className="absolute left-0 top-1/2 h-0.5 w-full -rotate-12 bg-red-600" />
-                </span>
+       <div className="flex flex-wrap items-center gap-2">
+  {Number(item.discount ?? 0) > 0 ? (
+    <>
+      <span className="relative text-sm font-bold text-mint-darker">
+        ₡{(item.priceWithTax ?? item.price).toLocaleString("es-CR")}
+        <span className="absolute left-0 top-1/2 h-0.5 w-full -rotate-12 bg-red-600" />
+      </span>
 
-                <span className="text-base font-bold text-mint-darker">
-                  ₡{(
-                    item.price *
-                    (1 - Number(item.discount) / 100)
-                  ).toLocaleString("es-CR")}
-                </span>
-              </>
-            ) : (
-              <span className="text-base font-bold text-mint-darker">
-                ₡{item.price.toLocaleString("es-CR")}
-              </span>
-            )}
-          </div>
+      <span className="text-base font-bold text-mint-darker">
+        ₡{(
+          item.discountedPriceWithTax ??
+          item.price * (1 - Number(item.discount) / 100)
+        ).toLocaleString("es-CR")}
+      </span>
+    </>
+  ) : (
+    <span className="text-base font-bold text-mint-darker">
+      ₡{(item.priceWithTax ?? item.price).toLocaleString("es-CR")}
+    </span>
+  )}
+
+  {Number(item.displayIvaRate ?? 0) > 0 && (
+    <span className="text-xs text-text-primary">
+      IVA {item.displayIvaRate}% incluido
+    </span>
+  )}
+</div>
 
           {renderItemQuantity(item, isMobile)}
         </div>

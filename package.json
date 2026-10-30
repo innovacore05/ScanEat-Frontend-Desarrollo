@@ -14,6 +14,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-router": "^1.170.28",
     "firebase": "^12.17.1",
+    "nstall": "^0.2.0",
     "qz-tray": "^2.3.0",
     "react": "^19.2.8",
     "react-colorful": "^5.8.1",
