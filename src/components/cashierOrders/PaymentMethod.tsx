@@ -12,7 +12,6 @@ import {
   type PayOrderPayload,
   type PayOrderResponse,
   type PaymentPreview,
-   type RetryReceiptEmissionResponse,
 } from "../../services/billingService";
 import PaymentModal, {
   type PaymentDetails,
@@ -20,10 +19,7 @@ import PaymentModal, {
 } from "./PaymentModal";
 import InvoiceModal from "./InvoiceModal";
 
-type SelectedItem = {
-  detailId: number;
-  quantity: number;
-};
+
 const formatCRC = (value: string | number) =>
   `₡${Number(value).toLocaleString("es-CR", {
     minimumFractionDigits: 2,
@@ -170,90 +166,11 @@ function getSelectedTotals(
 function PaymentMethod() {
   const search = useSearch({ strict: false });
   const orderId = Number(search.orderId);
-  const selectedItems: SelectedItem[] = (() => {
-    try {
-      const raw = search.selectedItems;
+  const navigate = useNavigate();
 
-      if (typeof raw !== "string") return [];
-
-      const parsed: unknown = JSON.parse(raw);
-
-      if (!Array.isArray(parsed)) return [];
-
-      return parsed.filter(
-        (item): item is SelectedItem =>
-          item !== null &&
-          typeof item === "object" &&
-          "detailId" in item &&
-          "quantity" in item &&
-          Number.isInteger(item.detailId) &&
-          Number.isInteger(item.quantity) &&
-          Number(item.detailId) > 0 &&
-          Number(item.quantity) > 0,
-      );
-    } catch {
-      return [];
-    }
-  })();
 
   const [order, setOrder] = useState<PaymentPreview | null>(null);
-  const selectedLines = order?.lines.filter((line) =>
-    selectedItems.some((item) => item.detailId === line.detailId),
-  ) ?? [];
 
-  const selectedTotal = selectedLines.reduce((total, line) => {
-    const selectedItem = selectedItems.find(
-      (item) => item.detailId === line.detailId,
-    );
-
-    if (!selectedItem) return total;
-
-    const quantity = Math.min(selectedItem.quantity, line.quantity);
-
-    return total + (Number(line.total) / line.quantity) * quantity;
-  }, 0);
-  const selectedSubtotal = selectedLines.reduce((subtotal, line) => {
-    const selectedItem = selectedItems.find(
-      (item) => item.detailId === line.detailId,
-    );
-
-    if (!selectedItem || line.quantity <= 0) {
-      return subtotal;
-    }
-
-    const quantity = Math.min(selectedItem.quantity, line.quantity);
-
-    return subtotal + (Number(line.subtotal) / line.quantity) * quantity;
-  }, 0);
-  const selectedDiscount = selectedLines.reduce((discount, line) => {
-    const selectedItem = selectedItems.find(
-      (item) => item.detailId === line.detailId,
-    );
-
-    if (!selectedItem || line.quantity <= 0) {
-      return discount;
-    }
-
-    const quantity = Math.min(selectedItem.quantity, line.quantity);
-
-    return discount + (Number(line.discount) / line.quantity) * quantity;
-  }, 0);
-  const selectedTaxByRate = selectedLines.reduce((taxes, line) => {
-    const selectedItem = selectedItems.find(
-      (item) => item.detailId === line.detailId,
-    );
-
-    if (!selectedItem || line.quantity <= 0) {
-      return taxes;
-    }
-
-    const quantity = Math.min(selectedItem.quantity, line.quantity);
-    const rate = Number(line.ivaRate);
-    const tax = (Number(line.tax) / line.quantity) * quantity;
-
-    taxes.set(rate, (taxes.get(rate) ?? 0) + tax);
-    return taxes;
-  }, new Map<number, number>());
   const [loading, setLoading] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState<PaymentType | "">("");
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -382,32 +299,31 @@ function PaymentMethod() {
     if (selectedItems.length === 0) {
       setPayError("No hay productos seleccionados para cobrar.");
       return null;
-    }
-
-    const items = selectedItems.map((item) => ({
-      detailId: item.detailId,
-      quantity: item.quantity,
-    }));
-
-    if (method === "efectivo") {
-      if (details.amountTendered === undefined) return null;
-
-      return {
-        items,
-        method: "cash",
-        amountTendered: details.amountTendered,
-      };
-    }
-
-    if (!details.reference) return null;
-
-    return {
-      items,
-      method: method === "tarjeta" ? "card" : "sinpe",
-      reference: details.reference,
     };
-  };
 
+  const common = {
+  includeServiceCharge: includeService,
+  items: selectedItems,
+};
+
+if (method === "efectivo") {
+  if (details.amountTendered === undefined) return null;
+
+  return {
+    ...common,
+    method: "cash",
+    amountTendered: details.amountTendered,
+  };
+}
+
+if (!details.reference) return null;
+
+return {
+  ...common,
+  method: method === "tarjeta" ? "card" : "sinpe",
+  reference: details.reference,
+};
+  }
   const handleCharge = async (details: PaymentDetails) => {
     if (!paymentMethod || isPaying || receipt) return;
 
@@ -560,79 +476,102 @@ function PaymentMethod() {
 
               <div className="mt-5 max-h-80 overflow-y-auto pr-2">
                 <div className="flex flex-col gap-4">
-                  {selectedLines.map((line) => {
-                    const selectedItem = selectedItems.find(
-                      (item) => item.detailId === line.detailId,
-                    );
+                 {order.lines.map((line) => {
+  const quantity =
+    selectedQuantities[line.detailId] ?? line.pendingQuantity;
+  const amounts = getSelectedLineAmounts(line, quantity);
 
-                    const quantity = Math.min(
-                      selectedItem?.quantity ?? 0,
-                      line.quantity,
-                    );
+  return (
+    <div
+      key={line.detailId}
+      className="flex items-center justify-between gap-4 border-b border-border pb-4"
+    >
+      <div className="min-w-0 flex-1">
+        <p className="font-medium">{line.detail}</p>
+        <p className="text-xs text-gray-500">
+          Pendientes: {line.pendingQuantity} ·{" "}
+          {order.chargesVat === false || line.ivaRateCode === "10"
+            ? "Exento de IVA"
+            : `IVA ${Number(line.ivaRate)} %`}
+        </p>
 
-                    return (
-                      <div
-                        key={line.detailId}
-                        className="flex items-center justify-between gap-4"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p>
-                            {line.detail} x {quantity}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            IVA {Number(line.ivaRate)} %
-                          </p>
-                        </div>
+        <label className="mt-2 flex items-center gap-2 text-sm">
+          Cantidad a cobrar
+          <input
+            type="number"
+            min={0}
+            max={line.pendingQuantity}
+            step={1}
+            value={quantity}
+            disabled={isPaying || receipt !== null}
+            onChange={(event) => {
+              const parsed = Number.parseInt(event.target.value, 10);
+              const nextQuantity = Number.isNaN(parsed)
+                ? 0
+                : Math.max(0, Math.min(parsed, line.pendingQuantity));
 
-                        <div className="flex shrink-0 items-center justify-end gap-2">
-                          {Number(line.discount) > 0 && (
-                            <p className="text-sm text-gray-500 line-through">
-                              {formatCRC(
-                                Number(line.gross) * (1 + Number(line.ivaRate) / 100),
-                              )}
-                            </p>
-                          )}
+              setSelectedQuantities((previous) => ({
+                ...previous,
+                [line.detailId]: nextQuantity,
+              }));
+            }}
+            className="w-20 rounded-md border border-gray-300 p-1 text-center"
+          />
+        </label>
+      </div>
 
-                          <p className="tracking-wider">
-                            {formatCRC(
-                              line.quantity > 0
-                                ? (Number(line.total) / line.quantity) * quantity
-                                : 0,
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
+      <p className="shrink-0 tracking-wider">
+        {formatCRC(amounts.total)}
+      </p>
+    </div>
+  );
+})}
                 </div>
               </div>
 
-              <div className="mt-6 border-t border-border pt-4">
-                <div className="flex items-center justify-between">
-                  <p>Subtotal (sin IVA)</p>
-                  <p className="tracking-wider">{formatCRC(selectedSubtotal)}</p>
-                </div>
-                <div className="flex items-center justify-between">
-                  <p>Descuento</p>
-                  <p className="tracking-wider">{formatCRC(selectedDiscount)}</p>
-                </div>
-                {[...selectedTaxByRate.entries()].map(([rate, amount]) => (
-                  <div
-                    key={rate}
-                    className="mt-2 flex items-center justify-between"
-                  >
-                    <p>IVA {rate}%</p>
-                    <p className="tracking-wider">{formatCRC(amount)}</p>
-                  </div>
-                ))}
-                <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-                  <p className="text-xl font-bold text-mint-dark">Total</p>
-                  {/* total */}
-                  <p className="text-xl font-bold tracking-wider text-mint-dark">
-                    {formatCRC(selectedTotal)}
-                  </p>
-                </div>
-              </div>
+              {selectedTotals && (
+  <div className="mt-6 border-t border-border pt-4">
+    <div className="flex justify-between">
+      <p>Venta antes del descuento (sin IVA)</p>
+      <p>{formatCRC(selectedTotals.totalSale)}</p>
+    </div>
+
+    <div className="mt-2 flex justify-between">
+      <p>Descuento</p>
+      <p>{formatCRC(selectedTotals.totalDiscount)}</p>
+    </div>
+
+    <div className="mt-2 flex justify-between">
+      <p>Neto después del descuento (sin IVA)</p>
+      <p>{formatCRC(selectedTotals.totalNetSale)}</p>
+    </div>
+
+    {selectedTotals.taxSummary.map(({ rate, amount }) => (
+      <div key={rate} className="mt-2 flex justify-between">
+        <p>
+          {order.chargesVat === false
+            ? "Exento de IVA"
+            : `IVA ${rate} %`}
+        </p>
+        <p>{formatCRC(amount)}</p>
+      </div>
+    ))}
+
+    {includeService && Number(selectedTotals.serviceCharge) > 0 && (
+      <div className="mt-2 flex justify-between">
+        <p>Servicio 10 %</p>
+        <p>{formatCRC(selectedTotals.serviceCharge)}</p>
+      </div>
+    )}
+
+    <div className="mt-3 flex justify-between border-t border-border pt-3">
+      <p className="text-xl font-bold text-mint-dark">Total</p>
+      <p className="text-xl font-bold text-mint-dark">
+        {formatCRC(selectedTotals.totalVoucher)}
+      </p>
+    </div>
+  </div>
+)}
 
               <div className="mt-6 flex justify-end">
                 <Link
@@ -702,7 +641,7 @@ function PaymentMethod() {
       <PaymentModal
         isOpen={isPaymentModalOpen}
         paymentMethod={paymentMethod}
-        total={selectedTotal.toString()}
+        total={selectedTotals?.totalVoucher ?? "0.00"}
         isSubmitting={isPaying}
         errorMessage={payError}
         onClose={closePaymentModal}
@@ -754,6 +693,7 @@ function PaymentMethod() {
   onClose={() => {
     setIsInvoiceModalOpen(false);
     setReceipt(null);
+    void navigate({ to: "/cashierOrders" });
   }}
 />
     </main>

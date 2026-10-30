@@ -163,20 +163,6 @@ function InvoiceModal({ isOpen, receipt, onClose,
         hour: "2-digit",
         minute: "2-digit",
     });
-    const receiptSubtotal = receipt.lines.reduce(
-        (subtotal, line) => subtotal + Number(line.subtotal),
-        0,
-    );
-    const receiptDiscount = receipt.lines.reduce(
-        (discount, line) => discount + Number(line.discount),
-        0,
-    );
-    const receiptTaxByRate = receipt.lines.reduce((taxes, line) => {
-        const rate = Number(line.ivaRate);
-        taxes.set(rate, (taxes.get(rate) ?? 0) + Number(line.tax));
-        return taxes;
-    }, new Map<number, number>());
-
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div className="flex items-center gap-4">
@@ -368,26 +354,30 @@ function InvoiceModal({ isOpen, receipt, onClose,
 
                         <div className="mt-4 border border-border"></div>
 
-                {/* Resumen */}
-                <div className="mt-4 flex flex-col gap-2">
-                    <Row
-                        label="Subtotal (sin IVA)"
-                        value={formatCRC(receiptSubtotal)}
-                    />
-                    {/* si hay descuento  */}
-                    <Row
-                        label="Descuento"
-                        value={formatCRC(receiptDiscount)}
-                    />
+                        {/* Resumen */}
+                        <div className="mt-4 flex flex-col gap-2">
+                            <Row
+                                label="Neto después del descuento (sin IVA)"
+                                value={formatCRC(receipt.totals.totalNetSale)}
+                            />
+                            {/* si hay descuento  */}
+                            <Row
+                                label="Descuento"
+                                value={formatCRC(receipt.totals.totalDiscount)}
+                            />
 
-                    {/*  mostrar las tarifas que realmente aparecen en las LINEAS */}
-                    {[...receiptTaxByRate.entries()].map(([rate, amount]) => (
-                        <Row
-                            key={rate}
-                            label={`IVA ${formatRate(Number(rate))}`}
-                            value={formatCRC(amount)}
-                        />
-                    ))}
+                            {/* mostrar las tarifas que realmente aparecen en las líneas */}
+                            {receipt.taxSummary.map(({ rate, amount }) => (
+                                <Row
+                                    key={rate}
+                                    label={
+                                        receipt.lines.every((line) => line.ivaRateCode === "10")
+                                            ? "Exento de IVA"
+                                            : `IVA ${formatRate(Number(rate))}`
+                                    }
+                                    value={formatCRC(amount)}
+                                />
+                            ))}
 
                             {Number(receipt.totals.serviceCharge) > 0 && (
                                 <Row
