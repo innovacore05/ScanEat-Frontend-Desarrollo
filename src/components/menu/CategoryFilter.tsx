@@ -76,7 +76,7 @@ function CategoryFilter({
       <div
         className={
           mobileFiveColumns
-            ? "flex max-w-full items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-5"
+            ? "flex max-w-full items-center gap-2 overflow-x-auto pb-1 scrollbar-none [&::-webkit-scrollbar]:hidden sm:gap-5"
             : "flex items-center gap-5"
         }
       >
@@ -103,7 +103,7 @@ function CategoryFilter({
               key={categoryId}
               type="button"
               onClick={() => onSelect(active ? null : categoryId)}
-              className={`flex h-14 cursor-pointer items-center justify-center rounded-2xl text-white transition
+              className={`flex h-14 cursor-pointer items-center justify-center rounded-2xl text-white transition hover:translate-y-1
         ${mobileFiveColumns ? "w-[22%] shrink-0 sm:w-14" : "w-14"}
         ${active ? "bg-mint-darker" : "bg-mint-dark"}`}
               aria-label={name}

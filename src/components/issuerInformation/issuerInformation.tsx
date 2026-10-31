@@ -1,4 +1,4 @@
-import { useEffect,useState, type ChangeEvent} from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 
 import { IoSearch } from "react-icons/io5";
@@ -7,9 +7,10 @@ import { Link } from "@tanstack/react-router";
 import CertificateUploader from "./CertificateUploader";
 import { issuerService, getErrorMessage, type IssuerConfig } from "../../services/issuerService";
 import { useGeography } from "../../hooks/useGeography";
+import { ArrowLeftIcon } from "@animateicons/react/lucide";
 
 
-const emptyForm: IssuerConfig=
+const emptyForm: IssuerConfig =
 {
   legalIdType: "",
   legalId: "",
@@ -30,113 +31,113 @@ const emptyForm: IssuerConfig=
 
 function IssuerInformation() {
 
-const [form,setForm]=useState<IssuerConfig>(emptyForm);
-const [hasConfig,setHasConfig]= useState(false);
-const [certificateUploadedAt,setCertificateUploadedAt]=useState<string |null>(null);
- const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState<IssuerConfig>(emptyForm);
+  const [hasConfig, setHasConfig] = useState(false);
+  const [certificateUploadedAt, setCertificateUploadedAt] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<{
     type: "ok" | "error";
     text: string;
   } | null>(null);
-const [lookingUp, setLookingUp] = useState(false);
-const [activityOptions, setActivityOptions] = useState<
-  { code: string; description: string }[]
->([]);
-const [chargesVat, setChargesVat] = useState<boolean | null>(null);
-//hook de datos de provincia canton distrito
-const {
-  provinces,
-  cantons: allCantons,
-  districts: allDistricts,
-  loading: loadingGeo,
-  error: geoError,
-} = useGeography();
+  const [lookingUp, setLookingUp] = useState(false);
+  const [activityOptions, setActivityOptions] = useState<
+    { code: string; description: string }[]
+  >([]);
+  const [chargesVat, setChargesVat] = useState<boolean | null>(null);
+  //hook de datos de provincia canton distrito
+  const {
+    provinces,
+    cantons: allCantons,
+    districts: allDistricts,
+    loading: loadingGeo,
+    error: geoError,
+  } = useGeography();
 
 
-const cantons = allCantons.filter((c) => c.parent_id === `CR${form.province}`);
-const districts = allDistricts.filter(
-  (d) => d.parent_id === `CR${form.province}${form.canton}`,
-);
+  const cantons = allCantons.filter((c) => c.parent_id === `CR${form.province}`);
+  const districts = allDistricts.filter(
+    (d) => d.parent_id === `CR${form.province}${form.canton}`,
+  );
 
-const load = async () => {
-  try {
-    const data = await issuerService.get();
-    if (data) {
-      setForm({
-        legalIdType: data.legalIdType ?? "",
-        legalId: data.legalId ?? "",
-        legalName: data.legalName ?? "",
-        tradeName: data.tradeName ?? "",
-        activityCode: data.activityCode ?? "",
-        email: data.email ?? "",
-        phone: data.phone ?? "",
-        province: data.province ?? "",
-        canton: data.canton ?? "",
-        district: data.district ?? "",
-        neighborhood: data.neighborhood ?? "",
-        address: data.address ?? "",
-        environment: data.environment ?? "sandbox",
-      });
-      setHasConfig(true);
-      setCertificateUploadedAt(data.certificateUploadedAt);
+  const load = async () => {
+    try {
+      const data = await issuerService.get();
+      if (data) {
+        setForm({
+          legalIdType: data.legalIdType ?? "",
+          legalId: data.legalId ?? "",
+          legalName: data.legalName ?? "",
+          tradeName: data.tradeName ?? "",
+          activityCode: data.activityCode ?? "",
+          email: data.email ?? "",
+          phone: data.phone ?? "",
+          province: data.province ?? "",
+          canton: data.canton ?? "",
+          district: data.district ?? "",
+          neighborhood: data.neighborhood ?? "",
+          address: data.address ?? "",
+          environment: data.environment ?? "sandbox",
+        });
+        setHasConfig(true);
+        setCertificateUploadedAt(data.certificateUploadedAt);
+      }
+    } catch (error) {
+      console.error("Error cargando datos del emisor", error);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Error cargando datos del emisor", error);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
-useEffect(() => {
-  void load();
-}, []);
+  useEffect(() => {
+    void load();
+  }, []);
 
- const handleChange = async (
+  const handleChange = async (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
-  if (name === "province") {
-    // al cambiar provincia se limpian canton y distrito
-    setForm((prev) => ({ ...prev, province: value, canton: "", district: "" }));
-  } else if (name === "canton") {
-    // al cambiar canton se limpia el distrito
-    setForm((prev) => ({ ...prev, canton: value, district: "" }));
-  } else {
-    setForm((prev) => ({ ...prev, [name]: value }));
-  }
-};
-
-const handleSave = async () => {
-  setSaving(true);
-  setFeedback(null);
-  try {
-    const result = await issuerService.save(form);
-    await load();
-
-    if (result.certificateInvalidated) {
-      setFeedback({
-        type: "error",
-        text: "Guardado. Cambió la cédula o el ambiente: volvé a subir el certificado.",
-      });
-    } else if (!result.regimeVerified) {
-      setFeedback({
-        type: "error",
-        text: "Guardado, pero no se pudo verificar el régimen en Hacienda. Intentá guardar de nuevo.",
-      });
+    if (name === "province") {
+      // al cambiar provincia se limpian canton y distrito
+      setForm((prev) => ({ ...prev, province: value, canton: "", district: "" }));
+    } else if (name === "canton") {
+      // al cambiar canton se limpia el distrito
+      setForm((prev) => ({ ...prev, canton: value, district: "" }));
     } else {
-      setFeedback({ type: "ok", text: "Datos guardados correctamente" });
+      setForm((prev) => ({ ...prev, [name]: value }));
     }
-  } catch (error) {
-    setFeedback({
-      type: "error",
-      text: getErrorMessage(error, "No se pudieron guardar los datos"),
-    });
-  } finally {
-    setSaving(false);
-  }
-};
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    setFeedback(null);
+    try {
+      const result = await issuerService.save(form);
+      await load();
+
+      if (result.certificateInvalidated) {
+        setFeedback({
+          type: "error",
+          text: "Guardado. Cambió la cédula o el ambiente: volvé a subir el certificado.",
+        });
+      } else if (!result.regimeVerified) {
+        setFeedback({
+          type: "error",
+          text: "Guardado, pero no se pudo verificar el régimen en Hacienda. Intentá guardar de nuevo.",
+        });
+      } else {
+        setFeedback({ type: "ok", text: "Datos guardados correctamente" });
+      }
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        text: getErrorMessage(error, "No se pudieron guardar los datos"),
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
   if (loading) {
     return (
       <DashboardLayoutAdmin>
@@ -147,57 +148,69 @@ const handleSave = async () => {
 
   //para busacr el contribuyente:
   const handleLookup = async () => {
-  const id = form.legalId.trim();
-  if (!id) return;
-  setLookingUp(true);
-  setFeedback(null);
-  setActivityOptions([]);
-  try {
-    const result = await issuerService.lookupTaxpayer(id);
-    setForm((prev) => ({
-      ...prev,
-      legalName: result.legalName ?? prev.legalName,
-      tradeName: result.tradeName ?? prev.tradeName,
-      legalIdType: result.legalIdType,
-      // la principal viene primero
-      activityCode: result.activities[0]?.code ?? prev.activityCode,
-    }));
-    if (result.activities.length > 1) setActivityOptions(result.activities);
+    const id = form.legalId.trim();
+    if (!id) return;
+    setLookingUp(true);
+    setFeedback(null);
+    setActivityOptions([]);
+    try {
+      const result = await issuerService.lookupTaxpayer(id);
+      setForm((prev) => ({
+        ...prev,
+        legalName: result.legalName ?? prev.legalName,
+        tradeName: result.tradeName ?? prev.tradeName,
+        legalIdType: result.legalIdType,
+        // la principal viene primero
+        activityCode: result.activities[0]?.code ?? prev.activityCode,
+      }));
+      if (result.activities.length > 1) setActivityOptions(result.activities);
 
-    if (result.registered === false || result.canIssue === false) {
+      if (result.registered === false || result.canIssue === false) {
+        setFeedback({
+          type: "error",
+          text: "Hacienda indica que este contribuyente no puede emitir comprobantes. Revisá su situación en TRIBU-CR.",
+        });
+      } else if (!result.hasCommercialActivity) {
+        setFeedback({
+          type: "error",
+          text: "Esta cédula no tiene una actividad económica comercial inscrita en Hacienda. El negocio debe registrar su actividad en TRIBU-CR antes de poder emitir comprobantes.",
+        });
+      } else if (result.chargesVat === false) {
+        setFeedback({
+          type: "ok",
+          text: " 0",
+        });
+      }
+    } catch (error) {
       setFeedback({
         type: "error",
-        text: "Hacienda indica que este contribuyente no puede emitir comprobantes. Revisá su situación en TRIBU-CR.",
+        text: getErrorMessage(error, "No se pudo consultar la cédula"),
       });
-    } else if (!result.hasCommercialActivity) {
-      setFeedback({
-        type: "error",
-        text: "Esta cédula no tiene una actividad económica comercial inscrita en Hacienda. El negocio debe registrar su actividad en TRIBU-CR antes de poder emitir comprobantes.",
-      });
-   } else if (result.chargesVat === false) {
-  setFeedback({
-    type: "ok",
-    text: " 0",
-  });
-}
-  } catch (error) {
-    setFeedback({
-      type: "error",
-      text: getErrorMessage(error, "No se pudo consultar la cédula"),
-    });
-  } finally {
-    setLookingUp(false);
-  }
-};
+    } finally {
+      setLookingUp(false);
+    }
+  };
 
   return (
     <DashboardLayoutAdmin>
       <main className="min-h-screen bg-brand-white p-4 sm:p-6 lg:p-15">
         <div className="mx-auto w-full max-w-6xl">
-          <div className="mb-10">
-            <h1 className="text-2xl font-bold text-black sm:text-3xl">
-  Datos del emisor
-</h1>
+          <div>
+            <Link
+              to="/dashboardAdmin"
+              className="mb-2 flex items-center gap-1 text-sm text-mint-dark md:hidden"
+            >
+              <ArrowLeftIcon
+                size={28}
+                duration={1}
+              />
+              <span className="text-[32px] font-bold text-mint-dark sm:text-3xl">Datos del emisor</span>
+
+            </Link>
+
+            <h1 className="hidden text-2xl font-bold text-mint-dark md:block sm:text-3xl">
+              Datos del emisor
+            </h1>
           </div>
 
           <div className="mb-8">
@@ -207,12 +220,12 @@ const handleSave = async () => {
                   Tipo identificación
                 </h2>
 
-               <select
-  name="legalIdType"
-  value={form.legalIdType}
-  onChange={handleChange}
-  className="w-full rounded-lg border border-border bg-white px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brown"
->
+                <select
+                  name="legalIdType"
+                  value={form.legalIdType}
+                  onChange={handleChange}
+                  className="w-full rounded-lg border border-border bg-white px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brown"
+                >
                   <option value="" disabled>
                     Seleccioná un tipo
                   </option>
@@ -230,7 +243,7 @@ const handleSave = async () => {
 
                 <div className="flex gap-2">
                   <input
-                   type="text"
+                    type="text"
                     name="legalId"
                     maxLength={12}
                     value={form.legalId}
@@ -240,14 +253,14 @@ const handleSave = async () => {
                   />
 
                   <button
-  type="button"
-  onClick={() => void handleLookup()}
-  disabled={lookingUp || !form.legalId.trim()}
-  aria-label="Consultar cédula en Hacienda"
-  className="flex w-15 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border p-3 text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
->
-  <IoSearch className="h-6 w-6" />
-</button>
+                    type="button"
+                    onClick={() => void handleLookup()}
+                    disabled={lookingUp || !form.legalId.trim()}
+                    aria-label="Consultar cédula en Hacienda"
+                    className="flex w-15 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border p-3 text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <IoSearch className="h-6 w-6" />
+                  </button>
 
                 </div>
               </div>
@@ -261,12 +274,12 @@ const handleSave = async () => {
               </h2>
 
               <input
-  type="text"
-  name="legalName"
-  value={form.legalName}
-  onChange={handleChange}
-  className="w-full rounded-lg border border-border px-4 py-3 pr-12 text-text-primary outline-none focus:border-2 focus:border-brown"
-/>
+                type="text"
+                name="legalName"
+                value={form.legalName}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-border px-4 py-3 pr-12 text-text-primary outline-none focus:border-2 focus:border-brown"
+              />
             </div>
 
             <div>
@@ -299,32 +312,32 @@ const handleSave = async () => {
               />
 
               {activityOptions.length > 1 && (
-  <select
-    value={form.activityCode}
-    onChange={(e) =>
-      setForm((prev) => ({ ...prev, activityCode: e.target.value }))
-    }
-    className="mt-2 w-full rounded-lg border border-border bg-white px-4 py-3 text-text-primary"
-  >
-    <option value="">Elegí una actividad</option>
-    {activityOptions.map((a) => (
-      <option key={a.code} value={a.code}>
-        {a.code} — {a.description}
-      </option>
-    ))}
-  </select>
+                <select
+                  value={form.activityCode}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, activityCode: e.target.value }))
+                  }
+                  className="mt-2 w-full rounded-lg border border-border bg-white px-4 py-3 text-text-primary"
+                >
+                  <option value="">Elegí una actividad</option>
+                  {activityOptions.map((a) => (
+                    <option key={a.code} value={a.code}>
+                      {a.code} — {a.description}
+                    </option>
+                  ))}
+                </select>
 
-  
-)}
 
-<p className="mt-3 text-sm font-semibold">
-  Régimen:{" "}
-  {chargesVat === null
-    ? "sin verificar"
-    : chargesVat
-      ? "Tradicional (traslada IVA)"
-      : "Simplificado (IVA en 0)"}
-</p>
+              )}
+
+              <p className="mt-3 text-sm font-semibold">
+                Régimen:{" "}
+                {chargesVat === null
+                  ? "sin verificar"
+                  : chargesVat
+                    ? "Tradicional (traslada IVA)"
+                    : "Simplificado (IVA en 0)"}
+              </p>
             </div>
           </div>
 
@@ -355,29 +368,29 @@ const handleSave = async () => {
                   </p>
 
                   <input
-                     type="text"
+                    type="text"
                     name="phone"
                     maxLength={8}
                     value={form.phone}
                     onChange={handleChange}
                     className="w-full rounded-lg border border-border px-4 py-3 pr-12 text-text-primary outline-none focus:border-2 focus:border-brown"
-                   />
+                  />
                 </div>
               </div>
             </div>
           </div>
 
-{/* UBICACION */}
+          {/* UBICACION */}
 
-<div className="mb-8 flex flex-col gap-5">
-  <h2 className="text-xl font-bold text-black">Ubicación</h2> 
+          <div className="mb-8 flex flex-col gap-5">
+            <h2 className="text-xl font-bold text-black">Ubicación</h2>
 
-<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-<div>
-   <h3 className="mb-2 font-semibold">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div>
+                <h3 className="mb-2 font-semibold">
                   Provincia
                 </h3>
- <select
+                <select
                   name="province"
                   value={form.province}
                   onChange={handleChange}
@@ -385,10 +398,10 @@ const handleSave = async () => {
                 >
                   <option value="">Seleccione Provincia</option>
                   {provinces.map((p) => (
-  <option key={p.id} value={p.id.slice(2)}>{p.name_local}</option>
-))}
+                    <option key={p.id} value={p.id.slice(2)}>{p.name_local}</option>
+                  ))}
                 </select>
-</div>
+              </div>
 
               <div>
                 <h3 className="mb-2 font-semibold">
@@ -406,13 +419,13 @@ const handleSave = async () => {
                     {loadingGeo ? "Cargando..." : !form.province ? "Primero provincia" : "Seleccione Cantón"}
                   </option>
                   {cantons.map((c) => (
-  <option key={c.id} value={c.id.slice(3)}>{c.name_local}</option>
-))}
+                    <option key={c.id} value={c.id.slice(3)}>{c.name_local}</option>
+                  ))}
                 </select>
               </div>
 
-              <div>          
-                 <h3 className="mb-2 font-semibold">Distrito</h3>
+              <div>
+                <h3 className="mb-2 font-semibold">Distrito</h3>
                 <select
                   name="district"
                   value={form.district}
@@ -424,17 +437,17 @@ const handleSave = async () => {
                     {loadingGeo ? "Cargando..." : !form.canton ? "Primero cantón" : "Seleccione Distrito"}
                   </option>
                   {districts.map((d) => (
-  <option key={d.id} value={d.id.slice(5)}>{d.name_local}</option>
-))}
+                    <option key={d.id} value={d.id.slice(5)}>{d.name_local}</option>
+                  ))}
                 </select>
               </div>
             </div>
 
-{geoError && (
-  <p className="text-sm font-semibold text-red-600">
-    No se pudieron cargar las ubicaciones. Recargá la página.
-  </p>
-)}
+            {geoError && (
+              <p className="text-sm font-semibold text-red-600">
+                No se pudieron cargar las ubicaciones. Recargá la página.
+              </p>
+            )}
 
             <div>
               <h3 className="mb-2 font-semibold">
@@ -442,7 +455,7 @@ const handleSave = async () => {
               </h3>
 
               <input
-                 type="text"
+                type="text"
                 name="neighborhood"
                 maxLength={50}
                 placeholder="San Francisco"
@@ -465,7 +478,7 @@ const handleSave = async () => {
                 value={form.address}
                 onChange={handleChange}
                 className="w-full rounded-lg border border-border px-4 py-3 pr-12 text-text-primary outline-none focus:border-2 focus:border-brown"
-             />
+              />
 
               <p className="mt-2 text-sm font-semibold text-red-600">
                 Obligatorio: el XML del emisor lleva la dirección exacta.
@@ -479,7 +492,7 @@ const handleSave = async () => {
                 Ambiente
               </h2>
 
-  <select
+              <select
                 name="environment"
                 value={form.environment}
                 onChange={handleChange}
@@ -500,9 +513,8 @@ const handleSave = async () => {
 
           {feedback && (
             <p
-              className={`mt-6 text-sm font-semibold ${
-                feedback.type === "ok" ? "text-mint-dark" : "text-red-600"
-              }`}
+              className={`mt-6 text-sm font-semibold ${feedback.type === "ok" ? "text-mint-dark" : "text-red-600"
+                }`}
             >
               {feedback.text}
             </p>
@@ -529,7 +541,7 @@ const handleSave = async () => {
       </main>
     </DashboardLayoutAdmin>
   );
- }
+}
 
 
 export default IssuerInformation;

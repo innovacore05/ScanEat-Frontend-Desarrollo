@@ -6,7 +6,6 @@ import {
   type Product,
   type Category,
 } from "../../services/productService";
-import { LuShoppingBag } from "react-icons/lu";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
@@ -23,6 +22,8 @@ import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { getPublicTableNumber } from "../../services/tableService";
 import { HiArrowLeft } from "react-icons/hi";
 import MenuAssistant from "./MenuAssistant";
+import UseAnimations from 'react-useanimations';
+import shoppingBag from 'react-useanimations/lib/shoppingBag';
 
 // Límite de muestras
 const PAGE_SIZE = 10;
@@ -397,7 +398,7 @@ function MenuClient() {
           <div className="flex items-center justify-between">
             <RestaurantLogo className="h-16 w-16 object-contain" />
 
-            <h2 className="text-2xl font-bold text-mint-dark">Menú</h2>
+            <h2 className="text-2xl font-bold text-mint-darker">Menú</h2>
 
             {tableInfo && tableInfo.mesaId === mesaId && (
               <p className="font-bold text-white py-1 px-3 rounded-2xl bg-mint-dark">
@@ -459,7 +460,7 @@ function MenuClient() {
       {/* Computadora */}
       <section className="ml-44 hidden pb-20 lg:block">
         <div className="mt-8 flex flex-col gap-1">
-          <h2 className="text-2xl font-bold text-black">Menú</h2>
+          <h2 className="text-2xl font-bold text-mint-darker">Menú</h2>
 
           {isAddingToOrder && (
             <button
@@ -498,7 +499,7 @@ function MenuClient() {
           />
         </div>
 
-        <h2 className="mt-8 text-2xl font-bold text-black">
+        <h2 className="mt-8 text-2xl font-bold text-mint-darker">
           Menú popular
         </h2>
 
@@ -544,7 +545,7 @@ function MenuClient() {
             }}
             className="absolute flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
           >
-            <LuShoppingBag className="h-7 w-7 text-white" />
+            <UseAnimations animation={shoppingBag} size={32} strokeColor="#ffff"  />
           </Link>
         ) : (
           <Link
@@ -557,7 +558,7 @@ function MenuClient() {
             }}
             className="absolute flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
           >
-            <LuShoppingBag className="h-7 w-7 text-white" />
+            <UseAnimations animation={shoppingBag} size={32} strokeColor="#ffff" />
 
             {(isAddingToOrder ? orderAddCount : cartCount) > 0 && (
               <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">

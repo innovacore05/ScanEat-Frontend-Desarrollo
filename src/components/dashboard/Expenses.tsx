@@ -14,14 +14,15 @@ import {
     FiX,
     FiDollarSign,
     FiClipboard,
-    FiFileText,
     FiDownload,
 } from "react-icons/fi";
 import { Link } from "@tanstack/react-router";
-import { HiArrowLeft } from "react-icons/hi";
-import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
+import { ArrowLeftIcon } from "@animateicons/react/lucide";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
+import trash from "react-useanimations/lib/trash";
+import { UseAnimations } from "react-useanimations";
+import { FileDownIcon, Pen01Icon } from "@animateicons/react/huge";
 
 type Expense = {
     id: number;
@@ -268,20 +269,20 @@ function Expenses() {
     return (
         <DashboardLayoutAdmin>
             <ConfirmDeleteModal
-            isOpen={expenseToDelete !== null}
-            title="¿Eliminar factura?"
-            message={
-                expenseToDelete
-                    ? `¿Deseas eliminar la factura de "${expenseToDelete.motive}"? Esta acción no se puede deshacer.`
-                    : ""
-            }
-            isLoading={deletingId !== null}
-            onCancel={() => setExpenseToDelete(null)}
-            onConfirm={() => {
-                if (expenseToDelete) {
-                    void handleDelete(expenseToDelete.id);
+                isOpen={expenseToDelete !== null}
+                title="¿Eliminar factura?"
+                message={
+                    expenseToDelete
+                        ? `¿Deseas eliminar la factura de "${expenseToDelete.motive}"? Esta acción no se puede deshacer.`
+                        : ""
                 }
-            }}
+                isLoading={deletingId !== null}
+                onCancel={() => setExpenseToDelete(null)}
+                onConfirm={() => {
+                    if (expenseToDelete) {
+                        void handleDelete(expenseToDelete.id);
+                    }
+                }}
             />
             {/* Esta parte es para definir como se ve la tabla en el pdf*/}
             <style>{`
@@ -391,7 +392,7 @@ function Expenses() {
                 </table>
             </div>
             {/*Aquí termina*/}
-            
+
             <section className="px-4 py-6 sm:px-6 lg:px-15 lg:py-15">
                 <div className="mx-auto w-full max-w-7xl">
                     <div className="mb-6">
@@ -400,11 +401,15 @@ function Expenses() {
                                 to="/dashboardAdmin"
                                 className="mb-2 flex items-center gap-1 text-sm text-mint-dark md:hidden"
                             >
-                                <HiArrowLeft className="h-5 w-5" />
-                                Volver al panel
+                                <ArrowLeftIcon
+                                    size={28}
+                                    duration={1}
+                                />
+                                <span className="text-[32px] font-bold text-mint-dark sm:text-3xl">Reporte de egresos</span>
+
                             </Link>
 
-                            <h1 className="text-2xl font-bold text-mint-dark sm:text-3xl">
+                            <h1 className="hidden text-2xl font-bold text-mint-dark md:block sm:text-3xl">
                                 Reporte de egresos
                             </h1>
                         </div>
@@ -748,7 +753,11 @@ function Expenses() {
                                                     }
                                                     className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-mint-dark disabled:cursor-not-allowed disabled:text-gray-300"
                                                 >
-                                                    <FiFileText className="h-5 w-5" />
+                                                    <FileDownIcon
+                                                        size={25}
+                                                        duration={1}
+
+                                                    />
                                                 </button>
                                                 <button
                                                     type="button"
@@ -757,7 +766,10 @@ function Expenses() {
                                                     title="Editar egreso"
                                                     className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-mint-dark transition hover:text-mint-darker"
                                                 >
-                                                    <MdOutlineEdit className="h-6 w-6" />
+                                                    <Pen01Icon
+                                                        size={25}
+                                                        duration={1}
+                                                    />
                                                 </button>
                                                 <button
                                                     type="button"
@@ -766,7 +778,11 @@ function Expenses() {
                                                     title="Eliminar egreso"
                                                     className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-red-500 transition hover:text-red-700"
                                                 >
-                                                    <MdDeleteOutline className="h-6 w-6" />
+                                                    <UseAnimations
+                                                        animation={trash}
+                                                        size={25}
+                                                        interaction="hover"
+                                                    />
                                                 </button>
                                             </div>
                                         </article>
@@ -827,7 +843,11 @@ function Expenses() {
                                                                 }
                                                                 className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-mint-dark disabled:cursor-not-allowed disabled:text-gray-300"
                                                             >
-                                                                <FiFileText className="h-5 w-5" />
+                                                                <FileDownIcon
+                                                                    size={25}
+                                                                    duration={1}
+
+                                                                />
                                                             </button>
                                                             <button
                                                                 type="button"
@@ -836,7 +856,10 @@ function Expenses() {
                                                                 title="Editar egreso"
                                                                 className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-mint-dark transition hover:text-mint-darker"
                                                             >
-                                                                <MdOutlineEdit className="h-6 w-6" />
+                                                                <Pen01Icon
+                                                                    size={25}
+                                                                    duration={1}
+                                                                />
                                                             </button>
                                                             <button
                                                                 type="button"
@@ -845,7 +868,11 @@ function Expenses() {
                                                                 title="Eliminar egreso"
                                                                 className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-red-500 transition hover:text-red-700"
                                                             >
-                                                                <MdDeleteOutline className="h-6 w-6" />
+                                                                <UseAnimations
+                                                                    animation={trash}
+                                                                    size={25}
+                                                                    interaction="hover"
+                                                                />
                                                             </button>
                                                         </div>
                                                     </td>

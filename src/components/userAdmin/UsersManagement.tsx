@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { HiArrowLeft } from "react-icons/hi";
 import { Link } from "@tanstack/react-router";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import { ROLE_IDS } from "../../config/roles";
@@ -12,6 +11,7 @@ import {
 import UserCard from "./UserCard";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
 import Skeleton from "../shared/Skeleton";
+import { ArrowLeftIcon } from "@animateicons/react/lucide";
 
 function UsersManagement() {
   const [users, setUsers] = useState<ManagedUser[]>([]);
@@ -34,7 +34,7 @@ function UsersManagement() {
   });
 
   useEffect(() => {
-    
+
 
     const loadUsers = async () => {
       try {
@@ -92,12 +92,12 @@ function UsersManagement() {
         current.map((user) =>
           user.userId === selectedUser.userId
             ? {
-                ...user,
-                ...form,
-                firstName: form.firstName.trim(),
-                lastName: form.lastName.trim(),
-                email: form.email.trim(),
-              }
+              ...user,
+              ...form,
+              firstName: form.firstName.trim(),
+              lastName: form.lastName.trim(),
+              email: form.email.trim(),
+            }
             : user,
         ),
       );
@@ -130,14 +130,17 @@ function UsersManagement() {
 
   return (
     <DashboardLayoutAdmin>
-      
+
       <main className="min-h-screen bg-white px-6.5 sm:px-6 lg:px-15 lg:pt-15 lg:pb-15">
         <div className="w-full">
           <Link
             to="/dashboardAdmin"
             className="flex items-center gap-2 text-mint-dark lg:hidden"
           >
-            <HiArrowLeft className="h-6 w-6" />
+            <ArrowLeftIcon
+              size={28}
+              duration={1}
+            />
             <span className="text-[32px] font-bold">Personal</span>
           </Link>
           <h2 className="hidden lg:block text-2xl font-bold text-mint-dark lg:text-3xl">

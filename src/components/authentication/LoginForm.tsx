@@ -117,7 +117,7 @@ function LoginForm() {
 					<button
 						type="submit"
 						disabled={isSubmitting}
-						className="w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-white hover:bg-mint-dark/90 disabled:cursor-not-allowed disabled:opacity-70"
+						className="w-full cursor-pointer rounded-lg bg-mint-dark  px-4 py-3 text-white hover:bg-mint-dark/90 disabled:cursor-not-allowed disabled:opacity-70"
 					>
 						{isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
 					</button>

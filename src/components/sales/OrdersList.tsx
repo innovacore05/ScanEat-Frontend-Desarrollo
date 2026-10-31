@@ -74,7 +74,7 @@ function OrdersList({
         </div>
 
         {showExportButton && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 ">
             <button
               type="button"
               onClick={handleExport}
@@ -88,9 +88,9 @@ function OrdersList({
         )}
       </div>
 
-      <div className="mt-5 overflow-x-auto rounded-xl border border-border">
+      <div className="mt-5 overflow-x-auto rounded-xl border border-border scrollbar-thin scrollbar-thumb-mint-darker/75 scrollbar-track-mint-dark/20">
         <div className="min-w-145">
-          <div className="grid grid-cols-[1fr_1fr_1fr_1fr] items-center bg-neutral-100 px-4 py-3 text-sm font-semibold text-text-primary">
+          <div className="grid grid-cols-[1fr_1fr_1fr_1fr] items-center  bg-neutral-100 px-4 py-3 text-sm font-semibold text-text-primary">
             <span>Orden</span>
             <span>Mesa</span>
             <span>Total</span>

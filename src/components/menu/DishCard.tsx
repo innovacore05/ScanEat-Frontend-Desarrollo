@@ -1,11 +1,12 @@
 import { useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { HiStar } from "react-icons/hi";
-import { BsFillPlusCircleFill } from "react-icons/bs";
-import { MdOutlineEdit, MdDeleteOutline } from "react-icons/md";
+import { CirclePlusIcon } from "@animateicons/react/lucide";
+import { Pen01Icon } from "@animateicons/react/huge";
 import { useCart } from "../clientOrders/CartContext";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
-
+import UseAnimations from 'react-useanimations';
+import trash from 'react-useanimations/lib/trash';
 import {
   deleteProduct,
   getProductById,
@@ -20,8 +21,8 @@ interface DishCardProps {
   description: string;
   price: number;
   priceWithTax?: number;
-discountedPriceWithTax?: number;
-displayIvaRate?: number;
+  discountedPriceWithTax?: number;
+  displayIvaRate?: number;
   discount?: number;
   image: string;
   rating: number;
@@ -55,11 +56,10 @@ function Stars({ rating }: { rating: number }) {
       {[1, 2, 3, 4, 5].map((star) => (
         <HiStar
           key={star}
-          className={`h-4 w-4 ${
-            star <= Math.round(rating)
-              ? "fill-yellow text-yellow"
-              : "fill-gray-200 text-gray-300"
-          }`}
+          className={`h-4 w-4 ${star <= Math.round(rating)
+            ? "fill-yellow text-yellow"
+            : "fill-gray-200 text-gray-300"
+            }`}
         />
       ))}
     </div>
@@ -102,10 +102,10 @@ function DishCard({
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-const originalDisplayPrice = priceWithTax ?? price;
-const discountedDisplayPrice =
-  discountedPriceWithTax ??
-  originalDisplayPrice * (1 - (discount ?? 0) / 100);
+  const originalDisplayPrice = priceWithTax ?? price;
+  const discountedDisplayPrice =
+    discountedPriceWithTax ??
+    originalDisplayPrice * (1 - (discount ?? 0) / 100);
 
   useEffect(() => {
     setDetailOptionGroups(optionGroups);
@@ -233,11 +233,10 @@ const discountedDisplayPrice =
   return (
     <>
       <article
-        className={`flex w-full overflow-hidden rounded-2xl bg-white shadow-sm ${
-          isDetailView
-            ? "flex-col lg:h-107.5 lg:flex-row"
-            : "flex-row lg:h-105 lg:flex-col"
-        }`}
+        className={`flex w-full overflow-hidden rounded-2xl bg-white shadow-sm ${isDetailView
+          ? "flex-col lg:h-107.5 lg:flex-row"
+          : "flex-row lg:h-105 lg:flex-col"
+          }`}
       >
         <div
           className={
@@ -254,67 +253,65 @@ const discountedDisplayPrice =
         </div>
 
         <div
-          className={`flex min-h-0 min-w-0 flex-1 flex-col justify-center px-4 py-3 ${
-            isDetailView
-              ? "lg:justify-start lg:overflow-y-auto lg:px-8 lg:py-8"
-              : ""
-          }`}
+          className={`flex min-h-0 min-w-0 flex-1 flex-col justify-center px-4 py-3 ${isDetailView
+            ? "lg:justify-start lg:overflow-y-auto lg:px-8 lg:py-8"
+            : ""
+            }`}
         >
           <h2 className="text-base font-bold text-mint-darker">{name}</h2>
 
           <p
-            className={`mt-1 text-sm text-text-primary ${
-              isDetailView ? "" : "line-clamp-2"
-            }`}
+            className={`mt-1 text-sm text-text-primary ${isDetailView ? "" : "line-clamp-2"
+              }`}
           >
             {description}
           </p>
 
-         <div className="mt-2 flex flex-wrap items-center gap-2">
-  {discount ? (
-    <>
-      <span className="relative text-sm font-bold text-mint-darker">
-        ₡{originalDisplayPrice.toLocaleString("es-CR")}
-        <span className="absolute left-0 top-1/2 h-0.5 w-full -rotate-12 bg-red-600" />
-      </span>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {discount ? (
+              <>
+                <span className="relative text-sm font-bold text-mint-darker">
+                  ₡{originalDisplayPrice.toLocaleString("es-CR")}
+                  <span className="absolute left-0 top-1/2 h-0.5 w-full -rotate-12 bg-red-600" />
+                </span>
 
-      <span className="text-base font-bold text-mint-darker">
-        ₡{discountedDisplayPrice.toLocaleString("es-CR")}
-      </span>
-    </>
-  ) : (
-    <span className="text-base font-bold text-mint-darker">
-      ₡{originalDisplayPrice.toLocaleString("es-CR")}
-    </span>
-  )}
+                <span className="text-base font-bold text-mint-darker">
+                  ₡{discountedDisplayPrice.toLocaleString("es-CR")}
+                </span>
+              </>
+            ) : (
+              <span className="text-base font-bold text-mint-darker">
+                ₡{originalDisplayPrice.toLocaleString("es-CR")}
+              </span>
+            )}
 
-  {Number(displayIvaRate ?? 0) > 0 && (
-    <span className="text-xs text-text-primary">
-      IVA {displayIvaRate}% incluido
-    </span>
-  )}
-</div>
+            {Number(displayIvaRate ?? 0) > 0 && (
+              <span className="text-xs text-text-primary">
+                IVA {displayIvaRate}% incluido
+              </span>
+            )}
+          </div>
 
           {isDetailView && detailOptionGroups.length > 0 && (
-              <div className="mt-4">
-                <h3 className="text-sm font-bold text-mint-darker">
-                  Opciones de personalización
-                </h3>
+            <div className="mt-4">
+              <h3 className="text-sm font-bold text-mint-darker">
+                Opciones de personalización
+              </h3>
 
-                <div className="mt-2 space-y-2">
-                  {detailOptionGroups.map((group) => (
-                    <div key={group.id}>
-                      <p className="text-sm font-semibold text-text-primary">
-                        {group.name}
-                      </p>
-                      <p className="text-sm text-text-primary">
-                        {group.options.join(", ")}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+              <div className="mt-2 space-y-2">
+                {detailOptionGroups.map((group) => (
+                  <div key={group.id}>
+                    <p className="text-sm font-semibold text-text-primary">
+                      {group.name}
+                    </p>
+                    <p className="text-sm text-text-primary">
+                      {group.options.join(", ")}
+                    </p>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
+          )}
 
           <div className="mt-1 flex items-center justify-between">
             {showRating ? (
@@ -340,7 +337,11 @@ const discountedDisplayPrice =
                         className="cursor-pointer text-mint-dark hover:text-mint-darker"
                         aria-label={`Editar ${name}`}
                       >
-                        <MdOutlineEdit className="h-6 w-6" />
+                        <Pen01Icon
+                          size={25}
+                          duration={1}
+
+                        />
                       </button>
                     ) : (
                       <button
@@ -348,7 +349,10 @@ const discountedDisplayPrice =
                         className="cursor-pointer text-mint-dark hover:text-mint-darker"
                         aria-label={`Editar ${name}`}
                       >
-                        <MdOutlineEdit className="h-6 w-6" />
+                        <Pen01Icon
+                          size={25}
+                          duration={1}
+                        />
                       </button>
                     )}
 
@@ -358,7 +362,11 @@ const discountedDisplayPrice =
                       className="cursor-pointer text-red-600 hover:text-red-700"
                       aria-label={`Eliminar ${name}`}
                     >
-                      <MdDeleteOutline className="h-6 w-6" />
+                      <UseAnimations
+                        animation={trash}
+                        size={25}
+                        interaction="hover"
+                      />
                     </button>
                   </>
                 ) : (
@@ -369,7 +377,11 @@ const discountedDisplayPrice =
                     className="cursor-pointer text-mint-dark disabled:opacity-50"
                     aria-label={`Agregar ${name}`}
                   >
-                    <BsFillPlusCircleFill className="h-10 w-10" />
+                    <CirclePlusIcon
+                      size={40}
+                      duration={1}
+
+                    />
                   </button>
                 )}
               </div>

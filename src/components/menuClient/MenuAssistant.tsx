@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent, type PointerEvent as ReactPointerEven
 import { LuBot, LuLoaderCircle, LuSend, LuX } from "react-icons/lu";
 import { sendMenuChatMessage } from "../../services/aiService";
 import { getProductById, type Product } from "../../services/productService";
+import { Bot } from '@/components/animate-ui/icons/bot';
 
 type Role = "meal" | "drink" | "dessert";
 
@@ -223,7 +224,8 @@ function MenuAssistant({
         >
           <header className="flex items-center justify-between bg-mint-darker p-3 text-white">
             <div className="flex items-center gap-2">
-              <LuBot className="h-6 w-6" />
+
+              <Bot animateOnHover />
               <span className="font-bold">Asistente del menú</span>
             </div>
             <button type="button" onClick={() => setIsOpen(false)} aria-label="Cerrar chat">
@@ -241,11 +243,10 @@ function MenuAssistant({
             {messages.map((message, index) => (
               <div
                 key={`${message.from}-${index}`}
-                className={`max-w-[92%] rounded-2xl p-3 text-sm ${
-                  message.from === "client"
+                className={`max-w-[92%] rounded-2xl p-3 text-sm ${message.from === "client"
                     ? "ml-auto bg-mint-dark text-white"
                     : "bg-white text-text-primary shadow-sm"
-                }`}
+                  }`}
               >
                 <p>{message.text}</p>
 
@@ -345,7 +346,7 @@ function MenuAssistant({
         style={buttonPosition ? { left: buttonPosition.left, top: buttonPosition.top } : undefined}
         className={`fixed z-60 flex h-14 w-14 touch-none cursor-grab items-center justify-center rounded-full bg-mint-darker text-white shadow-xl ring-4 ring-white active:cursor-grabbing ${buttonPosition ? "" : "bottom-24 right-5"}`}
       >
-        {isOpen ? <LuX className="h-6 w-6" /> : <LuBot className="h-7 w-7" />}
+        {isOpen ? <LuX className="h-6 w-6" /> : <Bot animation="blink" animate loop />}
       </button>
     </>
   );

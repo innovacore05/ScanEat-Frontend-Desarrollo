@@ -1,5 +1,6 @@
-import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
+
 import type { ManagedUser } from "../../services/userService";
+import { Pen01Icon, UserRemove01Icon } from "@animateicons/react/huge";
 
 type UserCardProps = {
 	user: ManagedUser;
@@ -8,9 +9,9 @@ type UserCardProps = {
 };
 
 function UserCard({ user, onEdit, onDelete }: UserCardProps) {
-	const roleName =user.roleId === 2? "Cocinero": user.roleId === 3? "Mesero": "Cajero";
+	const roleName = user.roleId === 2 ? "Cocinero" : user.roleId === 3 ? "Mesero" : "Cajero";
 
-	return ( 
+	return (
 		<article className="flex w-full items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-sm sm:gap-4 sm:p-5">
 			<div className="flex min-w-0 items-center gap-3 sm:gap-4">
 				<div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-mint-dark/20 text-lg font-bold text-mint-darker sm:h-12 sm:w-12">
@@ -34,7 +35,10 @@ function UserCard({ user, onEdit, onDelete }: UserCardProps) {
 					className="cursor-pointer text-mint-dark hover:text-mint-darker"
 					aria-label={`Editar a ${user.firstName} ${user.lastName}`}
 				>
-					<MdOutlineEdit className="h-6 w-6" />
+					<Pen01Icon
+						size={22}
+						duration={1}
+					/>
 				</button>
 				<button
 					type="button"
@@ -42,7 +46,11 @@ function UserCard({ user, onEdit, onDelete }: UserCardProps) {
 					className="cursor-pointer text-red-600 hover:text-red-700"
 					aria-label={`Eliminar a ${user.firstName} ${user.lastName}`}
 				>
-					<MdDeleteOutline className="h-6 w-6" />
+					<UserRemove01Icon
+						size={22}
+						duration={1}
+
+					/>
 				</button>
 			</div>
 		</article>

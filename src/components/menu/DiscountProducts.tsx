@@ -2,13 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getStoredRoleId } from "../../services/authService";
 import { getProducts,getCategories, type Product, type Category } from "../../services/productService";
-import { HiArrowLeft } from "react-icons/hi";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import DashboardLayoutWaiter from "../../components/layout/DashboardLayoutWaiter";
 import Skeleton from "../shared/Skeleton";
+import { ArrowLeftIcon } from "@animateicons/react/lucide";
 
 
 //limite de muestras
@@ -188,7 +188,10 @@ useEffect(() => {
               to={dashboardPath}
               className="flex items-center gap-2 text-mint-dark"
             >
-              <HiArrowLeft className="h-6 w-6" />
+              <ArrowLeftIcon
+            size={28}
+            duration={1}
+          />
 
               <span className="text-[32px] font-bold">Descuentos</span>
             </Link>

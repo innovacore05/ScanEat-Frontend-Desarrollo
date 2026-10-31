@@ -27,7 +27,7 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
   const [firstName, setFirstName] = useState(getStoredFirstName);
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  {/*const [businessName, setBusinessName] = useState("");*/}
+  {/*const [businessName, setBusinessName] = useState("");*/ }
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -37,7 +37,7 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
         setFirstName(data.user.firstName);
         setLastName(data.user.lastName);
         setEmail(data.user.email);
-        {/*setBusinessName(data.business?.name || "");*/}
+        {/*setBusinessName(data.business?.name || "");*/ }
         console.log("Negocio:", data.business);
       } catch (error) {
         console.error("Error loading profile:", error);
@@ -51,11 +51,11 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
     <main className="min-h-screen bg-white">
       {/* Barra lateral - COMPUTADORA */}
 
-      <aside className="fixed left-0 top-0 hidden h-screen overflow-y-auto w-66 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
+      <aside className="fixed left-0 top-0 hidden scrollbar-thin scrollbar-thumb-mint-darker/75 scrollbar-track-mint-dark/20 h-screen overflow-y-auto w-66 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
         <div className="flex justify-start">
           <RestaurantLogo className="h-16 w-16 object-contain" />
           <span className="font-bold text-mint-darker">
-           {/*{businessName || "Mi negocio"}*/}
+            {/*{businessName || "Mi negocio"}*/}
           </span>
         </div>
 
@@ -64,29 +64,58 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
         <nav className="flex flex-col gap-3 mt-5">
           <Link
             to="/dashboardAdmin"
-           activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+            activeProps={{
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
           >
-            <GoHome className="h-6 w-6 shrink-0" />
-
-            <span className="text-[15px] font-bold cursor-pointer">Inicio</span>
+            <GoHome className="h-6 w-6 shrink-0" aria-hidden="true" />
+            <span className="text-[15px] font-bold">Inicio</span>
           </Link>
 
           <Link
             to="/menuManagment"
             activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-700
+    `,
             }}
           >
             <IoRestaurantOutline className="h-6 w-6 shrink-0" />
@@ -94,106 +123,196 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
             <span className="text-[15px] font-bold cursor-pointer">Menú</span>
           </Link>
 
-            <Link
-              to="/discountProducts"
-              activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+          <Link
+            to="/discountProducts"
+            activeProps={{
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
-            >
-              <MdOutlineDiscount className="h-6 w-6 shrink-0" />
-              <span className="text-[15px] font-bold cursor-pointer">
-                Descuentos
-              </span>
-            </Link>
+          >
+            <MdOutlineDiscount className="h-6 w-6 shrink-0" />
+            <span className="text-[15px] font-bold cursor-pointer">
+              Descuentos
+            </span>
+          </Link>
 
-            <Link
-              to="/salesReport"
-              activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+          <Link
+            to="/salesReport"
+            activeProps={{
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
-            >
-              <HiOutlineDocumentReport className="h-6 w-6 shrink-0" />
-              <span className="text-[15px] font-bold cursor-pointer">
-                Reporte de ventas
-              </span>
-            </Link>
+          >
+            <HiOutlineDocumentReport className="h-6 w-6 shrink-0" />
+            <span className="text-[15px] font-bold cursor-pointer">
+              Reporte de ventas
+            </span>
+          </Link>
 
-            <Link
-              to="/expenses"
-              activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+          <Link
+            to="/expenses"
+            activeProps={{
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
-            >
-              <LuCalculator className="h-6 w-6 shrink-0" />
-              <span className="text-[15px] font-bold cursor-pointer">
-                Egresos
-              </span>
-            </Link>
+          >
+            <LuCalculator className="h-6 w-6 shrink-0" />
+            <span className="text-[15px] font-bold cursor-pointer">
+              Egresos
+            </span>
+          </Link>
 
-            <Link
-              to="/tablesManagment"
-              onClick={() => setIsMenuOpen(false)}
-              activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+          <Link
+            to="/tablesManagment"
+            onClick={() => setIsMenuOpen(false)}
+            activeProps={{
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
-            >
-              <MdOutlineTableBar className="h-6 w-6 shrink-0" />
-              <span className="text-[15px] font-bold cursor-pointer">
-                Mesas
-              </span>
-            </Link>
-          
+          >
+            <MdOutlineTableBar className="h-6 w-6 shrink-0" />
+            <span className="text-[15px] font-bold cursor-pointer">
+              Mesas
+            </span>
+          </Link>
+
         </nav>
 
         <div className="mt-5 flex flex-col gap-3  border-t border-neutral-300 pt-5">
 
-           <Link
-              to="/issuerInformation"
-              activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+          <Link
+            to="/issuerInformation"
+            activeProps={{
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
-            >
-              <IoReceiptOutline className="h-6 w-6 shrink-0" />
-              <span className="text-[15px] font-bold cursor-pointer ">
-                Datos de hacienda
-              </span>
+          >
+            <IoReceiptOutline className="h-6 w-6 shrink-0" />
+            <span className="text-[15px] font-bold cursor-pointer ">
+              Datos de hacienda
+            </span>
           </Link>
-          
-          
+
+
           <Link
             to="/profileSettings"
             activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
           >
             <RiSettingsLine className="h-6 w-6 shrink-0" />
@@ -204,12 +323,27 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
           <Link
             to="/usersManagment"
             activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
           >
             <FiUsers className="h-6 w-6 shrink-0" />
@@ -221,12 +355,27 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
           <Link
             to="/customization"
             activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
           >
             <RiSettingsLine className="h-6 w-6 shrink-0" />
@@ -237,14 +386,29 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
           </Link>
 
           <Link
-            to= "/historySales"
+            to="/historySales"
             activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
           >
             <LuHistory className="h-6 w-6 shrink-0" />
@@ -254,20 +418,27 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
             </span>
           </Link>
 
-            <div className="mt-2 border-t border-neutral-300 pt-5">
+          <div className="mt-2 border-t border-neutral-300 pt-5">
 
-          {/* //cerrar sesion normal , regresa al registro inicio de sesion/ */}
-          <Link
-            to="/login"
-            onClick={logout}
-            className="flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10"
-          >
-            <LuLogOut className="h-6 w-6 shrink-0" />
+            {/* //cerrar sesion normal , regresa al registro inicio de sesion/ */}
+            <Link
+              to="/login"
+              onClick={logout}
+              className="relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500"
+            >
+              <LuLogOut className="h-6 w-6 shrink-0" />
 
-            <span className="text-[15px] font-bold cursor-pointer ">
-              Cerrar sesión
-            </span>
-          </Link>
+              <span className="text-[15px] font-bold cursor-pointer ">
+                Cerrar sesión
+              </span>
+            </Link>
           </div>
           <div className="mt-2 border-t border-neutral-300 "></div>
 
@@ -335,8 +506,8 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
             aria-label="Cerrar menú"
             onClick={() => setIsMenuOpen(false)}
             className={`fixed inset-0 z-40 cursor-default bg-transparent transition-opacity duration-300 lg:hidden ${isMenuOpen
-                ? "pointer-events-auto opacity-100"
-                : "pointer-events-none opacity-0"
+              ? "pointer-events-auto opacity-100"
+              : "pointer-events-none opacity-0"
               }`}
           />
           <div
@@ -383,106 +554,106 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
               </div>
 
-             
-                <Link
-                  to="/discountProducts"
-                  onClick={() => setIsMenuOpen(false)}
-                  activeProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
-                  }}
-                  inactiveProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
-                  }}
-                >
-                  <MdOutlineDiscount className="h-6 w-6 shrink-0" />
-                  <span className="text-xl font-bold">Descuentos</span>
-                </Link>
 
-                <Link
-                  to="/salesReport"
-                  onClick={() => setIsMenuOpen(false)}
-                  activeProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
-                  }}
-                  inactiveProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
-                  }}
-                >
-                  <HiOutlineDocumentReport className="h-6 w-6 shrink-0" />
-                  <span className="text-xl font-bold">Reporte de ventas</span>
-                </Link>
+              <Link
+                to="/discountProducts"
+                onClick={() => setIsMenuOpen(false)}
+                activeProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                }}
+                inactiveProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                }}
+              >
+                <MdOutlineDiscount className="h-6 w-6 shrink-0" />
+                <span className="text-xl font-bold">Descuentos</span>
+              </Link>
 
-                <Link
-                  to="/expenses"
-                  onClick={() => setIsMenuOpen(false)}
-                  activeProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
-                  }}
-                  inactiveProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
-                  }}
-                >
-                  <LuCalculator className="h-6 w-6 shrink-0" />
-                  <span className="text-xl font-bold">Egresos</span>
-                </Link>
+              <Link
+                to="/salesReport"
+                onClick={() => setIsMenuOpen(false)}
+                activeProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                }}
+                inactiveProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                }}
+              >
+                <HiOutlineDocumentReport className="h-6 w-6 shrink-0" />
+                <span className="text-xl font-bold">Reporte de ventas</span>
+              </Link>
 
-                  
-                <Link
-                  to="/tablesManagment"
-                  onClick={() => setIsMenuOpen(false)}
-                  activeProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
-                  }}
-                  inactiveProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
-                  }}
-                >
-                  <MdOutlineTableBar className="h-6 w-6 shrink-0" />
-                  <span className="text-xl font-bold">Mesas</span>
-                </Link>
+              <Link
+                to="/expenses"
+                onClick={() => setIsMenuOpen(false)}
+                activeProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                }}
+                inactiveProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                }}
+              >
+                <LuCalculator className="h-6 w-6 shrink-0" />
+                <span className="text-xl font-bold">Egresos</span>
+              </Link>
 
-                <Link
-              to="/issuerInformation"
-              activeProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
-                  }}
-                  inactiveProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
-                  }}
-                >
-              <IoReceiptOutline className="h-6 w-6 shrink-0" />
-              <span className="text-xl font-bold">
-                Datos de hacienda
-              </span>
-            </Link>
 
-            <Link
-            to= "/historySales"
-            activeProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
-                  }}
-                  inactiveProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
-                  }}
-          >
-            <LuHistory className="h-6 w-6 shrink-0" />
+              <Link
+                to="/tablesManagment"
+                onClick={() => setIsMenuOpen(false)}
+                activeProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                }}
+                inactiveProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                }}
+              >
+                <MdOutlineTableBar className="h-6 w-6 shrink-0" />
+                <span className="text-xl font-bold">Mesas</span>
+              </Link>
 
-            <span className="text-xl font-bold">
-              Historial de ventas
-            </span>
-          </Link>
+              <Link
+                to="/issuerInformation"
+                activeProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                }}
+                inactiveProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                }}
+              >
+                <IoReceiptOutline className="h-6 w-6 shrink-0" />
+                <span className="text-xl font-bold">
+                  Datos de hacienda
+                </span>
+              </Link>
+
+              <Link
+                to="/historySales"
+                activeProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                }}
+                inactiveProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                }}
+              >
+                <LuHistory className="h-6 w-6 shrink-0" />
+
+                <span className="text-xl font-bold">
+                  Historial de ventas
+                </span>
+              </Link>
 
 
             </div>
@@ -498,8 +669,8 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
             aria-label="Cerrar menú"
             onClick={() => setIsProfileMenuOpen(false)}
             className={`fixed inset-0 z-40 cursor-default bg-transparent transition-opacity duration-300 lg:hidden ${isProfileMenuOpen
-                ? "pointer-events-auto opacity-100"
-                : "pointer-events-none opacity-0"
+              ? "pointer-events-auto opacity-100"
+              : "pointer-events-none opacity-0"
               }`}
           />
 
@@ -514,13 +685,13 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
               <Link
                 to="/profileSettings"
                 activeProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
-                  }}
-                  inactiveProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
-                  }}
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                }}
+                inactiveProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                }}
               >
                 <RiSettingsLine className="h-6 w-6 shrink-0" />
 
@@ -531,31 +702,31 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
                 to="/usersManagment"
                 onClick={() => setIsMenuOpen(false)}
                 activeProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
-                  }}
-                  inactiveProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
-                  }}
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                }}
+                inactiveProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                }}
               >
                 <FiUsers className="h-6 w-6 shrink-0" />
                 <span className="text-xl font-bold">Gestión de personal</span>
               </Link>
 
               <Link
-            to="/customization"
+                to="/customization"
                 activeProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
-                  }}
-                  inactiveProps={{
-                    className:
-                      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
-                  }}
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
+                }}
+                inactiveProps={{
+                  className:
+                    "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+                }}
               >
 
-                
+
                 <RiSettingsLine className="h-6 w-6 shrink-0" />
 
                 <span className="text-xl font-bold">Negocio</span>

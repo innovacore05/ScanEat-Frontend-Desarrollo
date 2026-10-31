@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import QRCode from "react-qr-code";
-import { IoCloseOutline } from "react-icons/io5";
-import { LuSend } from "react-icons/lu";
+import { Cancel01Icon } from "@animateicons/react/huge";
+import { SendIcon } from "@animateicons/react/lucide";
 
 type QrCodeModalProps = {
     isOpen: boolean;
@@ -133,7 +133,10 @@ function QrCodeModal({ isOpen, value, numeroMesa, onClose }: QrCodeModalProps) {
                         title="Cerrar"
                         className="cursor-pointer w-12 h-12 items-center justify-center flex rounded-full bg-mint-dark text-base font-bold text-white hover:opacity-90 transition-opacity"
                     >
-                        <IoCloseOutline className="w-8 h-8" />
+                        <Cancel01Icon
+                            size={25}
+                            duration={1}
+                        />
                     </button>
 
                     {/* Botón Descargar JPG */}
@@ -143,7 +146,10 @@ function QrCodeModal({ isOpen, value, numeroMesa, onClose }: QrCodeModalProps) {
                         title="Guardar como JPG"
                         className="cursor-pointer w-12 h-12 items-center justify-center flex rounded-full bg-mint-dark text-base font-bold text-white hover:opacity-90 transition-opacity"
                     >
-                        <LuSend className="w-6 h-6" />
+                        <SendIcon
+                            size={25}
+                            duration={1}
+                        />
                     </button>
                 </div>
             </div>

@@ -61,12 +61,27 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
           <Link
             to="/dashboardWaiter"
             activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
           >
             <GoHome className="h-6 w-6 shrink-0" />
@@ -77,12 +92,27 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
           <Link
             to="/menuWaiter"
             activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
           >
             <IoRestaurantOutline className="h-6 w-6 shrink-0" />
@@ -93,12 +123,27 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
             to="/waiterOrders"
             onClick={() => setIsMenuOpen(false)}
             activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
           >
             <LuShoppingBag className="h-6 w-6 shrink-0" />
@@ -111,12 +156,27 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
           <Link
             to="/discountProducts"
             activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
           >
             <MdOutlineDiscount className="h-6 w-6 shrink-0" />
@@ -130,12 +190,27 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
             to="/tablesManagment"
             onClick={() => setIsMenuOpen(false)}
             activeProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 bg-mint-darker text-white shadow-md",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-darker after:transition-all after:duration-700
+      hover:after:scale-[300]
+      transition-all duration-700
+    `,
             }}
             inactiveProps={{
-              className:
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10",
+              className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500
+    `,
             }}
           >
             <MdOutlineTableBar className="h-6 w-6 shrink-0" />
@@ -153,7 +228,14 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
           <Link
             to="/login"
             onClick={logout}
-            className="flex items-center gap-4 rounded-xl px-4 py-3 text-text-primary hover:bg-mint-dark/10"
+            className="relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10
+      after:absolute after:bottom-0 after:left-5 after:z-[-1]
+      after:h-1 after:w-1 after:translate-y-full after:rounded-md
+      after:bg-mint-dark after:transition-all after:duration-1500
+      hover:after:scale-[300]
+      hover:text-white
+      transition-all duration-1500"
           >
             <LuLogOut className="h-6 w-6 shrink-0 " />
 
@@ -162,7 +244,7 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
             </span>
           </Link>
 
-           <div className="mt-5 border-t border-neutral-300  "></div>
+          <div className="mt-5 border-t border-neutral-300  "></div>
 
         </div>
 
@@ -315,7 +397,7 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
 
 
               <div className="mt-10 flex flex-col gap-2">
-               
+
                 <Link
                   to="/login"
                   onClick={logout}
