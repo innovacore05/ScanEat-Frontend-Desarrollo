@@ -616,20 +616,20 @@ const createdOrder = await submitSharedCart(
 
           {renderItemQuantity(item, isMobile)}
 
-          // Muestra las opciones de personalización por unidad
+          {/*Muestra las opciones de personalización por unidad*/}
           {!isAddingToOrder && canModifyItem(item) && (
             <div className="mt-3 flex flex-col gap-3">
 
-              //Genera un campo de personalización por cada unidad
+              {/*Genera un campo de personalización por cada unidad */}
     {Array.from({ length: item.quantity }, (_, index) => index + 1).map(
       (unit) => {
 
-// Comprueba si la unidad tiene activada la personalización
+{/*Comprueba si la unidad tiene activada la personalización */}
 const isSelected = (item.specialInstructions ?? []).some(
   (instruction) => instruction.unit === unit,
 );
 
-// Obtiene la instrucción guardada para esta unidad
+{/*Obtiene la instrucción guardada para esta unidad */}
 const currentInstruction = (item.specialInstructions ?? []).find(
   (instruction) => instruction.unit === unit,
 )?.instruction ?? "";
@@ -643,7 +643,7 @@ return (
         onChange={(event) => {
           const currentInstructions = item.specialInstructions ?? [];
 
-           // Agrega o elimina la personalización de la unidad
+          {/* Agrega o elimina la personalización de la unidad*/ }
           const updatedInstructions = event.target.checked
             ? [...currentInstructions, { unit, instruction: "" }]
             : currentInstructions.filter(
@@ -666,7 +666,7 @@ return (
   onChange={(event) => {
     const value = event.target.value;
 
-     // Guarda temporalmente el texto mientras el cliente escribe
+    {/*Guarda temporalmente el texto mientras el cliente escribe*/ }
     setLocalInstructions((prev) => ({
       ...prev,
       [item.cartItemId]: {
@@ -676,7 +676,7 @@ return (
     }));
   }}
   onBlur={() => {
-    // Guarda la instrucción en el carrito al salir del campo
+    {/*Guarda la instrucción en el carrito al salir del campo*/ }
     const value =
       localInstructions[item.cartItemId]?.[unit] ?? currentInstruction;
 
