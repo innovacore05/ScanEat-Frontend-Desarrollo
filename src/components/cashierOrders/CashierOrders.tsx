@@ -145,7 +145,7 @@ const [orders,setOrders]=useState<Order[]>([]);
                         Órdenes
                     </p>
 
-                    <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    <div className="mt-8 mb-20 grid grid-cols-1 gap-6 lg:grid-cols-2">
                         {isLoading ? (
                             Array.from({ length: 4 }, (_, index) => (
                                 <Skeleton key={index} className="h-56 w-full rounded-2xl" />

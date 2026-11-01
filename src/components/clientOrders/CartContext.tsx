@@ -35,6 +35,10 @@ displayIvaRate?: number;
   image: string;
   quantity: number;
   selectedOptions: Record<string, string>;
+  specialInstructions?: {
+  unit: number;
+  instruction: string;
+}[];
 };
 
 type NewCartItem = Omit<CartItem, "cartItemId" | "clientId">;
@@ -50,6 +54,10 @@ type CartContextType = {
   decreaseQuantity: (cartItemId: string) => void;
   removeFromCart: (cartItemId: string) => void;
   canModifyItem: (item: CartItem) => boolean;
+  updateSpecialInstructions: (
+  cartItemId: string,
+  specialInstructions: { unit: number; instruction: string }[],
+) => Promise<void>;
   clearCart: () => void;
   cartCount: number;
 
@@ -117,6 +125,7 @@ const discount = Number(
           image: product.image ?? "",
           quantity: item.quantity,
           selectedOptions: item.selectedOptions ?? {},
+          specialInstructions: item.specialInstructions ?? [],
         };
       }),
     );
@@ -297,6 +306,36 @@ const discount = Number(
   const canModifyItem = (item: CartItem) =>
     item.clientId === getClientId();
 
+  const updateSpecialInstructions = async (
+  cartItemId: string,
+  specialInstructions: { unit: number; instruction: string }[],
+) => {
+  if (!mesaId || isLoadingSharedCart) return;
+
+  const item = cartItems.find(
+    (currentItem) => currentItem.cartItemId === cartItemId,
+  );
+
+  if (!item || !canModifyItem(item)) return;
+
+  try {
+    const updatedCart = await updateCartItem(
+      mesaId,
+      Number(cartItemId),
+      {
+        clientId: getClientId(),
+        quantity: item.quantity,
+        specialInstructions,
+      },
+    );
+
+    await applySharedCart(updatedCart);
+    notifyTableCartChanged();
+  } catch (error) {
+    console.error("No se pudieron guardar las instrucciones:", error);
+  }
+};
+
   const changeQuantity = async (
     cartItemId: string,
     amount: number,
@@ -443,6 +482,7 @@ const discount = Number(
         decreaseQuantity,
         removeFromCart,
         canModifyItem,
+        updateSpecialInstructions,
         clearCart,
         cartCount,
 

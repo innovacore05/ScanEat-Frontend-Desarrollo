@@ -8,6 +8,10 @@ type OrderItem = {
   discountAmount?: number;
   subtotal?: number;
   options?: Record<string, string>;
+  specialInstructions?: {
+    unit: number;
+    instruction: string;
+  }[];
 };
 
 export type Order = {

@@ -378,7 +378,7 @@ function DishCard({
                     aria-label={`Agregar ${name}`}
                   >
                     <CirclePlusIcon
-                      size={40}
+                      size={34}
                       duration={1}
 
                     />

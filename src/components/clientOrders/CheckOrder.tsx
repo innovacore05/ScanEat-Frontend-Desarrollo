@@ -32,6 +32,7 @@ function CheckOrder() {
     removeFromCart,
     clearCart,
     canModifyItem,
+    updateSpecialInstructions,
 
     orderAddItems,
     increaseOrderItemQuantity,
@@ -54,6 +55,9 @@ function CheckOrder() {
   } | null>(null);
 
   const [specialInstructions, setSpecialInstructions] = useState("");
+  const [localInstructions, setLocalInstructions] = useState<
+    Record<string, Record<number, string>>
+  >({});
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
@@ -71,6 +75,15 @@ function CheckOrder() {
 
   const navigate = useNavigate();
 
+  //Detecta cambios en los productos que afectan el precio
+  const cartItemsForQuote = JSON.stringify(
+  cartItems.map((item) => ({
+    productId: item.productId,
+    quantity: item.quantity,
+    selectedOptions: item.selectedOptions ?? {},
+  })),
+  );
+  
   // Cotizar solamente los pedidos nuevos.
   useEffect(() => {
     if (isAddingToOrder || !tableId || cartItems.length === 0) {
@@ -90,7 +103,6 @@ function CheckOrder() {
         selectedOptions: item.selectedOptions ?? {},
       })),
     };
-
     setOrderQuote(null);
     setIsQuoting(true);
     setQuoteError("");
@@ -118,7 +130,7 @@ function CheckOrder() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [tableId, cartItems, isAddingToOrder]);
+  }, [tableId, cartItemsForQuote, isAddingToOrder]);
 
   // Obtener el número público de la mesa.
   useEffect(() => {
@@ -214,30 +226,71 @@ function CheckOrder() {
 
     setIsSubmitting(true);
 
-    const items = displayedItems.map((item) => ({
-      productId: item.productId,
-      quantity: item.quantity,
-      selectedOptions: item.selectedOptions ?? {},
-    }));
-
     try {
       let resultingOrderId: number;
 
       if (isAddingToOrder) {
-        // Añadir únicamente los productos del carrito temporal
-        // a la comanda que ya existe.
-        await addItemsToOrder(orderId!, { items });
+        // Prepara y valida las instrucciones de los productos que se agregarán a la orden.
+        const instructionsToSend = orderAddItems.flatMap((cartItem) =>
+          (cartItem.specialInstructions ?? []).map(({ unit, instruction }) => ({
+            cartItemId: Number(cartItem.cartItemId),
+            clientId: cartItem.clientId,
+            unit,
+            instruction: instruction.trim(),
+          })),
+        );
+
+const emptyInstruction = instructionsToSend.some(
+  (item) => !item.instruction,
+);
+
+if (emptyInstruction) {
+  alert("Completa las instrucciones de todas las unidades que seleccionaste.");
+  setIsSubmitting(false);
+  return;
+}
+
+await addItemsToOrder(orderId!, {
+  items: displayedItems.map((item) => ({
+    productId: item.productId,
+    quantity: item.quantity,
+    selectedOptions: item.selectedOptions ?? {},
+    specialInstructions: instructionsToSend
+      .filter((instruction) => instruction.cartItemId === Number(item.cartItemId))
+      .map(({ unit, instruction }) => ({ unit, instruction })),
+  })),
+});
 
         resultingOrderId = orderId!;
 
         // Limpiar el carrito temporal solamente si el envío funcionó.
         clearOrderAddCart();
       } else {
-        // Enviar el carrito compartido para crear un pedido nuevo.
-        const createdOrder = await submitSharedCart(
-          tableId,
-          specialInstructions.trim() || undefined,
-        );
+        // Prepara y valida las instrucciones de los productos del carrito compartido.
+        const instructionsToSend = cartItems.flatMap((cartItem) =>
+  (cartItem.specialInstructions ?? []).map(({ unit, instruction }) => ({
+    cartItemId: Number(cartItem.cartItemId),
+    clientId: cartItem.clientId,
+    unit,
+    instruction: instruction.trim(),
+  })),
+);
+
+const hasEmptyInstructions = instructionsToSend.some(
+  (item) => !item.instruction,
+);
+
+if (hasEmptyInstructions) {
+  alert("Completa o desmarca las instrucciones de preparación vacías.");
+  setIsSubmitting(false);
+  return;
+}
+
+const createdOrder = await submitSharedCart(
+  tableId,
+  specialInstructions.trim() || undefined,
+  instructionsToSend,
+);
 
         resultingOrderId = createdOrder.order.orderId;
 
@@ -383,7 +436,7 @@ function CheckOrder() {
           <span>₡{tax.toLocaleString("es-CR")}</span>
         </div>
 
-        <div className="mt-2 flex justify-between gap-4 text-xl font-bold text-mint-darker">
+        <div className="my-2 flex justify-between gap-4 text-xl font-bold text-mint-darker">
           <span>Total</span>
           <span>₡{total.toLocaleString("es-CR")}</span>
         </div>
@@ -407,12 +460,13 @@ function CheckOrder() {
     }
 
     const decrease = () => {
-      if (isAddingToOrder) {
-        decreaseOrderItemQuantity(item.cartItemId);
-      } else {
-        decreaseQuantity(item.cartItemId);
-      }
-    };
+  if (isAddingToOrder) {
+    decreaseOrderItemQuantity(item.cartItemId);
+    return;
+  }
+
+  decreaseQuantity(item.cartItemId);
+};
 
     const increase = () => {
       if (isAddingToOrder) {
@@ -509,7 +563,7 @@ function CheckOrder() {
       >
         <div
           className={`shrink-0 ${
-            isMobile ? "h-34 w-32" : "h-40 w-40"
+            isMobile ? "h-36 w-32" : "h-42 w-40"
           }`}
         >
           <img
@@ -561,6 +615,91 @@ function CheckOrder() {
 </div>
 
           {renderItemQuantity(item, isMobile)}
+
+          // Muestra las opciones de personalización por unidad
+          {!isAddingToOrder && canModifyItem(item) && (
+            <div className="mt-3 flex flex-col gap-3">
+
+              //Genera un campo de personalización por cada unidad
+    {Array.from({ length: item.quantity }, (_, index) => index + 1).map(
+      (unit) => {
+
+// Comprueba si la unidad tiene activada la personalización
+const isSelected = (item.specialInstructions ?? []).some(
+  (instruction) => instruction.unit === unit,
+);
+
+// Obtiene la instrucción guardada para esta unidad
+const currentInstruction = (item.specialInstructions ?? []).find(
+  (instruction) => instruction.unit === unit,
+)?.instruction ?? "";
+
+return (
+  <div key={unit} className="flex flex-col gap-2">
+    <label className="flex items-center gap-2 text-sm font-medium text-text-primary">
+      <input
+        type="checkbox"
+        checked={isSelected}
+        onChange={(event) => {
+          const currentInstructions = item.specialInstructions ?? [];
+
+           // Agrega o elimina la personalización de la unidad
+          const updatedInstructions = event.target.checked
+            ? [...currentInstructions, { unit, instruction: "" }]
+            : currentInstructions.filter(
+                (instruction) => instruction.unit !== unit,
+              );
+
+          updateSpecialInstructions(item.cartItemId, updatedInstructions);
+        }}
+      />
+      Personalizar unidad {unit}
+    </label>
+
+{/* Muestra el campo de texto si la personalización está activada */}
+    {isSelected && (
+      <textarea
+  required
+  value={
+    localInstructions[item.cartItemId]?.[unit] ?? currentInstruction
+  }
+  onChange={(event) => {
+    const value = event.target.value;
+
+     // Guarda temporalmente el texto mientras el cliente escribe
+    setLocalInstructions((prev) => ({
+      ...prev,
+      [item.cartItemId]: {
+        ...(prev[item.cartItemId] ?? {}),
+        [unit]: value,
+      },
+    }));
+  }}
+  onBlur={() => {
+    // Guarda la instrucción en el carrito al salir del campo
+    const value =
+      localInstructions[item.cartItemId]?.[unit] ?? currentInstruction;
+
+    const updatedInstructions = (item.specialInstructions ?? []).map(
+      (instruction) =>
+        instruction.unit === unit
+          ? { ...instruction, instruction: value }
+          : instruction,
+    );
+
+    updateSpecialInstructions(item.cartItemId, updatedInstructions);
+  }}
+  placeholder="Describe tu instrucción de forma clara y breve"
+  maxLength={150}
+  className="min-h-20 w-full resize-none rounded-xl border border-border bg-white p-3 text-sm outline-none focus:border-mint-dark"
+/>
+    )}
+  </div>
+);
+      },
+    )}
+  </div>
+)}
         </div>
 
         {renderRemoveButton(item, isMobile)}
@@ -568,22 +707,7 @@ function CheckOrder() {
     ));
   };
 
-  const renderInstructions = (id: string) => (
-    <div className="mt-8">
-      <label htmlFor={id} className="font-bold text-text-primary">
-        Instrucciones especiales
-      </label>
-
-      <textarea
-        id={id}
-        value={specialInstructions}
-        onChange={(event) => setSpecialInstructions(event.target.value)}
-        placeholder="Ej. Hamburguesa sin tomate..."
-        disabled={isAddingToOrder}
-        className="mt-2 min-h-28 w-full resize-none rounded-2xl border border-border bg-white p-4 outline-none focus:border-mint-dark disabled:bg-gray-100"
-      />
-    </div>
-  );
+  
 
   const readyCounterText = `${readyState.readyCount}/${readyState.connectedCount} personas listas`;
 
@@ -683,7 +807,6 @@ function CheckOrder() {
                 {renderOrderTotals()}
               </div>
 
-              {renderInstructions("specialInstructionsMobile")}
               {renderSubmitButton()}
             </>
           )}
@@ -734,7 +857,6 @@ function CheckOrder() {
                     {renderOrderTotals()}
                   </div>
 
-                  {renderInstructions("specialInstructionsDesktop")}
                   {renderSubmitButton()}
                 </>
               )}

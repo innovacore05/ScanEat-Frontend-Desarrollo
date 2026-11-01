@@ -4,6 +4,10 @@ type OrderCookItem = {
   name: string;
   quantity: number;
   options?: Record<string, string>;
+  specialInstructions?: {
+    unit: number;
+    instruction: string;
+  }[];
 };
 
 type OrderCook = {
@@ -58,7 +62,7 @@ function getElapsedTime(date: string) {
 
 function OrderCardCook({ order, onReady, isUpdating = false }: OrderCardCookProps) {
   return (
-    <div className="w-full h-120 overflow-y-auto bg-white border border-border py-8 px-8 rounded-2xl flex flex-col gap-4 ">
+    <div className="w-full  bg-white border border-border py-8 px-8 rounded-2xl flex flex-col gap-4 ">
       
       <h2 className="text-4xl font-bold text-mint-dark">
         Mesa #{order.tableId}
@@ -94,13 +98,28 @@ function OrderCardCook({ order, onReady, isUpdating = false }: OrderCardCookProp
 
               {item.options && (
                 <div>
+                  //Texto para que se observe la opción que haya elegido el cliente
                   {Object.entries(item.options).map(([name, value]) => (
-                    <p key={name} className="text-2xl text-gray-600">
+                    <p key={name} className="text-xl text-blue-700 font-semibold">
                       {name}: {value}
                     </p>
                   ))}
                 </div>
               )}
+              //Texto de las instrucciones especiales
+              {item.specialInstructions &&
+                item.specialInstructions.length > 0 && (
+                <div className="">
+                  {item.specialInstructions.map((instruction) => (
+                    <p
+                      key={instruction.unit}
+                      className="text-xl text-red-600 font-semibold"
+                    >
+                      Unidad {instruction.unit}: {instruction.instruction}
+        </p>
+      ))}
+    </div>
+  )}
             </div>
           ))}
         </div>

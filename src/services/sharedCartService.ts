@@ -10,6 +10,10 @@ export type SharedCartItem = {
   productName: string;
   quantity: number;
   selectedOptions: Record<string, string>;
+  specialInstructions?: {
+  unit: number;
+  instruction: string;
+}[];
   unitPrice: number;
   lineTotal: number;
 };
@@ -38,6 +42,17 @@ export type AddSharedCartItemPayload = {
 export type UpdateSharedCartItemPayload = {
   clientId: string;
   quantity: number;
+  specialInstructions?: {
+  unit: number;
+  instruction: string;
+}[];
+};
+
+export type SpecialInstructionPayload = {
+  cartItemId: number;
+  clientId: string;
+  unit: number;
+  instruction: string;
 };
 
 export const getSharedCart = (tableId: string) =>
@@ -92,6 +107,7 @@ export const removeCartItem = (
     export const submitSharedCart = (
   tableId: string,
   observation?: string,
+  specialInstructions: SpecialInstructionPayload[] = [],
 ) =>
   cookieSessionClient.request<{
     order: {
@@ -102,7 +118,10 @@ export const removeCartItem = (
     `${SHARED_CARTS_BASE_URL}/${tableId}/submit`,
     {
       method: "POST",
-      body: JSON.stringify({ observation }),
+      body: JSON.stringify({
+        observation,
+        specialInstructions,
+      }),
       fallBackMessage: "No se pudo enviar el pedido",
     },
   );
