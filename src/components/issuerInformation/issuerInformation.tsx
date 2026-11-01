@@ -155,6 +155,7 @@ function IssuerInformation() {
     setActivityOptions([]);
     try {
       const result = await issuerService.lookupTaxpayer(id);
+       setChargesVat(result.chargesVat ?? null);  
       setForm((prev) => ({
         ...prev,
         legalName: result.legalName ?? prev.legalName,
@@ -178,7 +179,7 @@ function IssuerInformation() {
       } else if (result.chargesVat === false) {
         setFeedback({
           type: "ok",
-          text: " 0",
+          text: "Este contribuyente es régimen simplificado: sus comprobantes llevarán IVA en 0.",
         });
       }
     } catch (error) {

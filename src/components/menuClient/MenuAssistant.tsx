@@ -1,5 +1,5 @@
 import { useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent } from "react";
-import { LuBot, LuLoaderCircle, LuSend, LuX } from "react-icons/lu";
+import { LuLoaderCircle, LuSend, LuX } from "react-icons/lu";
 import { sendMenuChatMessage } from "../../services/aiService";
 import { getProductById, type Product } from "../../services/productService";
 import { Bot } from '@/components/animate-ui/icons/bot';
