@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import { getCategories, deleteCategory, type Category, } from "../../services/productService";
-import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import {
     LuCakeSlice,
     LuSandwich,
@@ -32,6 +31,9 @@ import {
 } from "react-icons/gi";
 
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
+import trash from "react-useanimations/lib/trash";
+import { UseAnimations } from "react-useanimations";
+import { Pen01Icon } from "@animateicons/react/huge";
 
 const CATEGORY_ICONS = {
     "dessert": LuCakeSlice,
@@ -155,77 +157,77 @@ function CategoryManagement() {
 
 
 
-<ConfirmDeleteModal
-    isOpen={!!categoryToDelete}
-    title="¿Eliminar categoría?"
-    message={`¿Deseas eliminar "${categoryToDelete?.name}"? Esta acción no se puede deshacer.`}
-    isLoading={deletingId !== null}
-    onCancel={() => setCategoryToDelete(null)}
-    onConfirm={async () => {
-        if (!categoryToDelete) return;
+            <ConfirmDeleteModal
+                isOpen={!!categoryToDelete}
+                title="¿Eliminar categoría?"
+                message={`¿Deseas eliminar "${categoryToDelete?.name}"? Esta acción no se puede deshacer.`}
+                isLoading={deletingId !== null}
+                onCancel={() => setCategoryToDelete(null)}
+                onConfirm={async () => {
+                    if (!categoryToDelete) return;
 
-        try {
-            setDeletingId(categoryToDelete.categoryId);
+                    try {
+                        setDeletingId(categoryToDelete.categoryId);
 
-            await deleteCategory(categoryToDelete.categoryId);
+                        await deleteCategory(categoryToDelete.categoryId);
 
-            setCategories((currentCategories) =>
-                currentCategories.filter(
-                    (category) =>
-                        category.categoryId !== categoryToDelete.categoryId
-                )
-            );
+                        setCategories((currentCategories) =>
+                            currentCategories.filter(
+                                (category) =>
+                                    category.categoryId !== categoryToDelete.categoryId
+                            )
+                        );
 
-            setCategoryToDelete(null);
-        } catch (error) {
-            console.error("Error deleting category:", error);
+                        setCategoryToDelete(null);
+                    } catch (error) {
+                        console.error("Error deleting category:", error);
 
-            const apiError = error as { message?: string };
+                        const apiError = error as { message?: string };
 
-            setDeleteError(
-                apiError.message ??
-                "No se pudo eliminar la categoría."
-            );
+                        setDeleteError(
+                            apiError.message ??
+                            "No se pudo eliminar la categoría."
+                        );
 
-            setCategoryToDelete(null);
-        } finally {
-            setDeletingId(null);
-        }
-    }}
-/>
+                        setCategoryToDelete(null);
+                    } finally {
+                        setDeletingId(null);
+                    }
+                }}
+            />
 
 
             {deleteError && (
-    <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="delete-error-dialog-title"
-    >
-        <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-            <h3
-                id="delete-error-dialog-title"
-                className="text-lg font-bold text-mint-darker"
-            >
-                No se puede eliminar la categoría
-            </h3>
-
-            <p className="mt-2 text-sm text-text-primary">
-                {deleteError}
-            </p>
-
-            <div className="mt-6 flex justify-end">
-                <button
-                    type="button"
-                    onClick={() => setDeleteError("")}
-                    className="cursor-pointer rounded-lg bg-mint-dark px-4 py-2 text-sm font-semibold text-white hover:bg-mint-darker"
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="delete-error-dialog-title"
                 >
-                    Entendido
-                </button>
-            </div>
-        </div>
-    </div>
-)}
+                    <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+                        <h3
+                            id="delete-error-dialog-title"
+                            className="text-lg font-bold text-mint-darker"
+                        >
+                            No se puede eliminar la categoría
+                        </h3>
+
+                        <p className="mt-2 text-sm text-text-primary">
+                            {deleteError}
+                        </p>
+
+                        <div className="mt-6 flex justify-end">
+                            <button
+                                type="button"
+                                onClick={() => setDeleteError("")}
+                                className="cursor-pointer rounded-lg bg-mint-dark px-4 py-2 text-sm font-semibold text-white hover:bg-mint-darker"
+                            >
+                                Entendido
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             <main className="min-h-screen bg-white px-6 lg:px-15 lg:py-15">
                 <div className="flex items-center gap-2">
                     <Link
@@ -239,8 +241,8 @@ function CategoryManagement() {
                         </span>
                     </Link>
                     <h2 className="hidden lg:block text-2xl font-bold text-mint-dark lg:text-3xl">
-            Gestionar categorías
-          </h2>
+                        Gestionar categorías
+                    </h2>
                 </div>
 
                 <div className="mt-8">
@@ -295,7 +297,10 @@ function CategoryManagement() {
                                                 className="flex h-10 w-10 items-center justify-center rounded-lg text-mint-dark cursor-pointer hover:text-mint-darker"
                                                 aria-label={`Editar categoría ${category.name}`}
                                             >
-                                                <MdOutlineEdit className="h-6 w-6" />
+                                                <Pen01Icon
+                                                    size={25}
+                                                    duration={1}
+                                                />
                                             </Link>
                                             <button
                                                 type="button"
@@ -304,7 +309,11 @@ function CategoryManagement() {
                                                 className="flex h-10 w-10 items-center justify-center rounded-lg text-red-500 hover:text-red-700 cursor-pointer"
                                                 aria-label={`Eliminar categoría ${category.name}`}
                                             >
-                                                <MdDeleteOutline className="h-6 w-6" />
+                                                <UseAnimations
+                                                    animation={trash}
+                                                    size={25}
+                                                    interaction="hover"
+                                                />
                                             </button>
                                         </div>
                                     </div>

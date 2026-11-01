@@ -28,10 +28,17 @@ export type CartItem = {
   productId: number;
   name: string;
   price: number;
+  priceWithTax?: number;
+discountedPriceWithTax?: number;
+displayIvaRate?: number;
   discount?: number;
   image: string;
   quantity: number;
   selectedOptions: Record<string, string>;
+  specialInstructions?: {
+  unit: number;
+  instruction: string;
+}[];
 };
 
 type NewCartItem = Omit<CartItem, "cartItemId" | "clientId">;
@@ -47,6 +54,10 @@ type CartContextType = {
   decreaseQuantity: (cartItemId: string) => void;
   removeFromCart: (cartItemId: string) => void;
   canModifyItem: (item: CartItem) => boolean;
+  updateSpecialInstructions: (
+  cartItemId: string,
+  specialInstructions: { unit: number; instruction: string }[],
+) => Promise<void>;
   clearCart: () => void;
   cartCount: number;
 
@@ -84,21 +95,37 @@ export function CartProvider({ children }: { children: ReactNode }) {
       items.map(async (item) => {
         const product = await getProductById(item.productId);
 
+const price = Number(item.unitPrice);
+const discount = Number(
+  product.discountPercentage ??
+    product.discount_percent ??
+    product.discount ??
+    0,
+);
+
+
         return {
           cartItemId: String(item.id),
           clientId: item.clientId,
           productId: item.productId,
           name: item.productName,
-          price: Number(item.unitPrice),
-          discount: Number(
-            product.discountPercentage ??
-              product.discount_percent ??
-              product.discount ??
-              0,
-          ),
+
+          price,
+
+           priceWithTax: Number(product.priceWithTax ?? price),
+  discountedPriceWithTax: Number(
+    product.discountedPriceWithTax ??
+      price * (1 - discount / 100),
+  ),
+  displayIvaRate: Number(product.displayIvaRate ?? 0),
+
+
+          discount,
+          
           image: product.image ?? "",
           quantity: item.quantity,
           selectedOptions: item.selectedOptions ?? {},
+          specialInstructions: item.specialInstructions ?? [],
         };
       }),
     );
@@ -114,6 +141,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const items = await mapSharedCartItems(sharedCart.items);
     setCartItems(items);
+  };
+
+  const notifyTableCartChanged = () => {
+    if (!mesaId) return;
+
+    socket.emit("table:cart-changed", {
+      tableId: mesaId,
+      clientId: getClientId(),
+    });
   };
 
   // Cargar el carrito compartido de la mesa
@@ -237,7 +273,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       socket.off("cart:updated", handleCartUpdated);
       socket.off("cart:expired", handleCartExpired);
       socket.off("cart:submitted", handleCartSubmitted);
-      socket.disconnect();
     };
   }, [mesaId]);
 
@@ -259,6 +294,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       });
 
       await applySharedCart(updatedCart);
+      notifyTableCartChanged();
     } catch (error) {
       console.error(
         "No se pudo agregar el producto al carrito:",
@@ -269,6 +305,36 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const canModifyItem = (item: CartItem) =>
     item.clientId === getClientId();
+
+  const updateSpecialInstructions = async (
+  cartItemId: string,
+  specialInstructions: { unit: number; instruction: string }[],
+) => {
+  if (!mesaId || isLoadingSharedCart) return;
+
+  const item = cartItems.find(
+    (currentItem) => currentItem.cartItemId === cartItemId,
+  );
+
+  if (!item || !canModifyItem(item)) return;
+
+  try {
+    const updatedCart = await updateCartItem(
+      mesaId,
+      Number(cartItemId),
+      {
+        clientId: getClientId(),
+        quantity: item.quantity,
+        specialInstructions,
+      },
+    );
+
+    await applySharedCart(updatedCart);
+    notifyTableCartChanged();
+  } catch (error) {
+    console.error("No se pudieron guardar las instrucciones:", error);
+  }
+};
 
   const changeQuantity = async (
     cartItemId: string,
@@ -300,6 +366,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       );
 
       await applySharedCart(updatedCart);
+      notifyTableCartChanged();
     } catch (error) {
       console.error(
         "No se pudo actualizar la cantidad:",
@@ -333,6 +400,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       );
 
       await applySharedCart(updatedCart);
+      notifyTableCartChanged();
     } catch (error) {
       console.error(
         "No se pudo eliminar el producto:",
@@ -414,6 +482,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         decreaseQuantity,
         removeFromCart,
         canModifyItem,
+        updateSpecialInstructions,
         clearCart,
         cartCount,
 

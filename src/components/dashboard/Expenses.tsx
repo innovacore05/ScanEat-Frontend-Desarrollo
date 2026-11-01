@@ -14,13 +14,15 @@ import {
     FiX,
     FiDollarSign,
     FiClipboard,
-    FiFileText,
+    FiDownload,
 } from "react-icons/fi";
 import { Link } from "@tanstack/react-router";
-import { HiArrowLeft } from "react-icons/hi";
-import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
+import { ArrowLeftIcon } from "@animateicons/react/lucide";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
+import trash from "react-useanimations/lib/trash";
+import { UseAnimations } from "react-useanimations";
+import { FileDownIcon, Pen01Icon } from "@animateicons/react/huge";
 
 type Expense = {
     id: number;
@@ -72,6 +74,7 @@ function Expenses() {
     const [isSaving, setIsSaving] = useState(false);
     const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [isPrinting, setIsPrinting] = useState(false);
 
     const [loading, setLoading] = useState(true);
 
@@ -120,6 +123,30 @@ function Expenses() {
         (sum, expense) => sum + expense.amount,
         0,
     );
+
+    useEffect(() => {
+        if (!isPrinting) {
+            return;
+        }
+
+        const handleAfterPrint = () => setIsPrinting(false);
+
+        window.addEventListener("afterprint", handleAfterPrint);
+        window.setTimeout(() => window.print(), 0);
+
+        return () => {
+            window.removeEventListener("afterprint", handleAfterPrint);
+        };
+    }, [isPrinting]);
+
+    const exportFilteredExpenses = () => {
+        if (filteredExpenses.length === 0) {
+            setError("No hay egresos filtrados para exportar.");
+            return;
+        }
+
+        setIsPrinting(true);
+    };
 
     const openInvoice = async (expenseId: number) => {
         try {
@@ -242,21 +269,130 @@ function Expenses() {
     return (
         <DashboardLayoutAdmin>
             <ConfirmDeleteModal
-            isOpen={expenseToDelete !== null}
-            title="¿Eliminar factura?"
-            message={
-                expenseToDelete
-                    ? `¿Deseas eliminar la factura de "${expenseToDelete.motive}"? Esta acción no se puede deshacer.`
-                    : ""
-            }
-            isLoading={deletingId !== null}
-            onCancel={() => setExpenseToDelete(null)}
-            onConfirm={() => {
-                if (expenseToDelete) {
-                    void handleDelete(expenseToDelete.id);
+                isOpen={expenseToDelete !== null}
+                title="¿Eliminar factura?"
+                message={
+                    expenseToDelete
+                        ? `¿Deseas eliminar la factura de "${expenseToDelete.motive}"? Esta acción no se puede deshacer.`
+                        : ""
                 }
-            }}
+                isLoading={deletingId !== null}
+                onCancel={() => setExpenseToDelete(null)}
+                onConfirm={() => {
+                    if (expenseToDelete) {
+                        void handleDelete(expenseToDelete.id);
+                    }
+                }}
             />
+            {/* Esta parte es para definir como se ve la tabla en el pdf*/}
+            <style>{`
+                .print-export {
+                    display: none;
+                }
+
+                @media print {
+                    body * {
+                        visibility: hidden;
+                    }
+
+                    .print-export,
+                    .print-export * {
+                        visibility: visible;
+                    }
+
+                    .print-export {
+                        display: block;
+                        position: absolute;
+                        inset: 0;
+                        width: 100%;
+                        padding: 24px;
+                        color: #111827;
+                        background: white;
+                    }
+                }
+            `}</style>
+
+            <div className="print-export">
+                <h1 style={{ fontSize: "22px", fontWeight: 700 }}>
+                    Reporte de egresos
+                </h1>
+                <table
+                    style={{
+                        width: "100%",
+                        marginTop: "20px",
+                        borderCollapse: "collapse",
+                        fontSize: "12px",
+                    }}
+                >
+                    <thead>
+                        <tr>
+                            {["Fecha", "Motivo", "Proveedor", "Observaciones", "Monto"].map(
+                                (heading) => (
+                                    <th
+                                        key={heading}
+                                        style={{
+                                            border: "1px solid #9ca3af",
+                                            padding: "8px",
+                                            textAlign: "left",
+                                            background: "#f3f4f6",
+                                        }}
+                                    >
+                                        {heading}
+                                    </th>
+                                ),
+                            )}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredExpenses.map((expense) => (
+                            <tr key={expense.id}>
+                                <td style={{ border: "1px solid #9ca3af", padding: "8px" }}>
+                                    {expense.date}
+                                </td>
+                                <td style={{ border: "1px solid #9ca3af", padding: "8px" }}>
+                                    {expense.motive}
+                                </td>
+                                <td style={{ border: "1px solid #9ca3af", padding: "8px" }}>
+                                    {expense.supplier}
+                                </td>
+                                <td style={{ border: "1px solid #9ca3af", padding: "8px" }}>
+                                    {expense.observations || "—"}
+                                </td>
+                                <td style={{ border: "1px solid #9ca3af", padding: "8px", textAlign: "right" }}>
+                                    {formatMoney(expense.amount)}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td
+                                colSpan={4}
+                                style={{
+                                    border: "1px solid #9ca3af",
+                                    padding: "8px",
+                                    textAlign: "right",
+                                    fontWeight: 700,
+                                }}
+                            >
+                                Total
+                            </td>
+                            <td
+                                style={{
+                                    border: "1px solid #9ca3af",
+                                    padding: "8px",
+                                    textAlign: "right",
+                                    fontWeight: 700,
+                                }}
+                            >
+                                {formatMoney(total)}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            {/*Aquí termina*/}
+
             <section className="px-4 py-6 sm:px-6 lg:px-15 lg:py-15">
                 <div className="mx-auto w-full max-w-7xl">
                     <div className="mb-6">
@@ -265,11 +401,15 @@ function Expenses() {
                                 to="/dashboardAdmin"
                                 className="mb-2 flex items-center gap-1 text-sm text-mint-dark md:hidden"
                             >
-                                <HiArrowLeft className="h-5 w-5" />
-                                Volver al panel
+                                <ArrowLeftIcon
+                                    size={28}
+                                    duration={1}
+                                />
+                                <span className="text-[32px] font-bold text-mint-dark sm:text-3xl">Reporte de egresos</span>
+
                             </Link>
 
-                            <h1 className="text-2xl font-bold text-mint-dark sm:text-3xl">
+                            <h1 className="hidden text-2xl font-bold text-mint-dark md:block sm:text-3xl">
                                 Reporte de egresos
                             </h1>
                         </div>
@@ -493,14 +633,25 @@ function Expenses() {
                                     Historial de egresos
                                 </h2>
 
-                                <button
-                                    type="button"
-                                    onClick={openNewForm}
-                                    className="flex shrink-0 cursor-pointer items-center gap-2 rounded-lg bg-mint-dark hover:bg-mint-darker px-3 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 sm:px-4"
-                                >
-                                    <span className="hidden sm:inline">Registrar egreso</span>
-                                    <span className="sm:hidden">Registrar</span>
-                                </button>
+                                <div className="flex w-full gap-2 sm:w-auto">
+                                    <button
+                                        type="button"
+                                        onClick={openNewForm}
+                                        className="flex shrink-0 cursor-pointer items-center gap-2 rounded-lg bg-mint-dark px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-mint-darker hover:opacity-90 sm:px-4"
+                                    >
+                                        <span className="hidden sm:inline">Registrar egreso</span>
+                                        <span className="sm:hidden">Registrar</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={exportFilteredExpenses}
+                                        disabled={loading || filteredExpenses.length === 0 || isPrinting}
+                                        className="flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-mint-dark px-3 py-2 text-sm font-semibold text-mint-darker transition hover:bg-mint-darker/10 disabled:cursor-not-allowed disabled:opacity-50 sm:px-4"
+                                    >
+                                        <FiDownload />
+                                        Exportar
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -602,7 +753,11 @@ function Expenses() {
                                                     }
                                                     className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-mint-dark disabled:cursor-not-allowed disabled:text-gray-300"
                                                 >
-                                                    <FiFileText className="h-5 w-5" />
+                                                    <FileDownIcon
+                                                        size={25}
+                                                        duration={1}
+
+                                                    />
                                                 </button>
                                                 <button
                                                     type="button"
@@ -611,7 +766,10 @@ function Expenses() {
                                                     title="Editar egreso"
                                                     className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-mint-dark transition hover:text-mint-darker"
                                                 >
-                                                    <MdOutlineEdit className="h-6 w-6" />
+                                                    <Pen01Icon
+                                                        size={25}
+                                                        duration={1}
+                                                    />
                                                 </button>
                                                 <button
                                                     type="button"
@@ -620,7 +778,11 @@ function Expenses() {
                                                     title="Eliminar egreso"
                                                     className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-red-500 transition hover:text-red-700"
                                                 >
-                                                    <MdDeleteOutline className="h-6 w-6" />
+                                                    <UseAnimations
+                                                        animation={trash}
+                                                        size={25}
+                                                        interaction="hover"
+                                                    />
                                                 </button>
                                             </div>
                                         </article>
@@ -681,7 +843,11 @@ function Expenses() {
                                                                 }
                                                                 className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-mint-dark disabled:cursor-not-allowed disabled:text-gray-300"
                                                             >
-                                                                <FiFileText className="h-5 w-5" />
+                                                                <FileDownIcon
+                                                                    size={25}
+                                                                    duration={1}
+
+                                                                />
                                                             </button>
                                                             <button
                                                                 type="button"
@@ -690,7 +856,10 @@ function Expenses() {
                                                                 title="Editar egreso"
                                                                 className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-mint-dark transition hover:text-mint-darker"
                                                             >
-                                                                <MdOutlineEdit className="h-6 w-6" />
+                                                                <Pen01Icon
+                                                                    size={25}
+                                                                    duration={1}
+                                                                />
                                                             </button>
                                                             <button
                                                                 type="button"
@@ -699,7 +868,11 @@ function Expenses() {
                                                                 title="Eliminar egreso"
                                                                 className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-red-500 transition hover:text-red-700"
                                                             >
-                                                                <MdDeleteOutline className="h-6 w-6" />
+                                                                <UseAnimations
+                                                                    animation={trash}
+                                                                    size={25}
+                                                                    interaction="hover"
+                                                                />
                                                             </button>
                                                         </div>
                                                     </td>

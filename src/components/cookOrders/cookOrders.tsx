@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { getKitchenOrders, markKitchenOrderReady } from "../../services/orderService";
 import { logout } from "../../services/authService";
-import OrderCard from "./OrderCard";
+import OrderCardCook from "./OrderCardCook";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { LuLogOut } from "react-icons/lu";
 import { socket } from "../../services/socketClient";
@@ -11,8 +11,18 @@ function CookOrders() {
   const [orders, setOrders] = useState<Array<{
     orderId: number;
     tableId: number;
+    time: string;
+    date: string,
     status: string;
-    items: Array<{ name: string; quantity: number; options?: Record<string, string> }>;
+    items: Array<{
+      name: string;
+      quantity: number;
+      options?: Record<string, string>;
+      specialInstructions?: {
+    unit: number;
+    instruction: string;
+  }[];
+    }>;
     specialInstructions?: string;
   }>>([]);
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
@@ -25,6 +35,8 @@ function CookOrders() {
         backendOrders.map((order) => ({
           orderId: order.orderId,
           tableId: order.tableId,
+          time: order.time,
+          date: order.date,
           status: order.status,
           items: order.items,
           specialInstructions: order.specialInstructions,
@@ -76,7 +88,13 @@ function CookOrders() {
       setUpdatingOrderId(null);
     }
   };
-
+  
+  //Ordenar órdenes para que se acomoden según el tiemo que lleva de espera
+  const sortedOrders = [...orders].sort(
+  (a, b) =>
+    new Date(a.date).getTime() - new Date(b.date).getTime(),
+  );
+  
   return (
     <main className="min-h-screen bg-white">
       <div className="flex h-30 items-center justify-between gap-4 bg-neutral-50 border-b-4 border-mint-dark px-4 py-4 sm:px-8">
@@ -91,23 +109,27 @@ function CookOrders() {
         </Link>
       </div>
 
-      <section className="px-8 pt-8">
-        <div className="mx-auto max-w-300">
+      <section className="px-18 pt-8">
           <h1 className="text-4xl font-bold text-mint-dark">
             Pedidos
           </h1>
 
-          <div className="mt-8 grid grid-cols-3 gap-6 pb-16">
-            {orders.map((order) => (
-              <OrderCard
-                key={order.orderId}
-                order={order}
-                onReady={() => void handleReadyOrder(order.orderId)}
-                isUpdating={updatingOrderId === order.orderId}
-              />
-            ))}
-          </div>
-        </div>
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-16 items-start">
+  {[0, 1, 2].map((column) => (
+    <div key={column} className="flex flex-col gap-6">
+      {sortedOrders
+        .filter((_, index) => index % 3 === column)
+        .map((order) => (
+          <OrderCardCook
+            key={order.orderId}
+            order={order}
+            onReady={() => void handleReadyOrder(order.orderId)}
+            isUpdating={updatingOrderId === order.orderId}
+          />
+        ))}
+    </div>
+  ))}
+</div>
       </section>
     </main>
   );

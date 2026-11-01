@@ -2,13 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getProducts, getCategories, type Product, type Category } from "../../services/productService";
 import { getProductReviews } from "../../services/reviewService";
-import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus, GoTag } from "react-icons/go";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
 import Skeleton from "../shared/Skeleton";
+import { ArrowLeftIcon } from "@animateicons/react/lucide";
 
 
 //limite de muestras
@@ -79,7 +79,7 @@ function ProductList({
             name={product.productName ?? ""}
             description={product.description ?? ""}
             price={product.price}
-            discount={ Number(product.discount ?? 0) }
+            discount={Number(product.discount ?? 0)}
             image={product.image ?? ""}
             rating={product.rating}
             isAdmin={true}
@@ -194,7 +194,10 @@ function MenuManagment() {
               to="/dashboardAdmin"
               className="flex items-center gap-2 text-mint-dark"
             >
-              <HiArrowLeft className="h-6 w-6" />
+              <ArrowLeftIcon
+                size={28}
+                duration={1}
+              />
 
               <span className="text-[32px] font-bold">Menú</span>
             </Link>
@@ -287,7 +290,7 @@ function MenuManagment() {
         {/* Computadora */}
 
         <section className="hidden px-15 py-15 lg:block">
-          
+
 
           <h2 className="text-2xl font-bold text-black">Menú</h2>
 

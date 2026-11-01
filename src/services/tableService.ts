@@ -214,3 +214,14 @@ export const deleteTable = async (tableId: string) => {
     fallBackMessage: "No se pudo eliminar la mesa",
 });
 };
+
+// Activar una mesa
+export const activateTable = async (tableId: string) => {
+  return cookieSessionClient.request<{ message: string }>(
+    `${getTablePath(tableId)}/activate`,
+    {
+      method: "PATCH",
+      fallBackMessage: "No se pudo activar la mesa",
+    },
+  );
+};

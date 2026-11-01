@@ -45,6 +45,10 @@ type BackendOrderDetail = {
   discountAmount?: number | string | null;
   isCustom: number | null;
   selectedOptions: Record<string, string>;
+  specialInstructions?: {
+  unit: number;
+  instruction: string;
+}[];
   optionGroups: Array<{
     id: number;
     name: string;
@@ -122,6 +126,7 @@ const mapBackendOrderToFrontend = (backendOrder: BackendOrder) => {
     price: Number(detail.unitPrice || 0),
     discountAmount: Number(detail.discountAmount ?? 0),
     subtotal: Number(detail.subtotal || 0),
+    specialInstructions: detail.specialInstructions ?? [],
     options: Object.keys(detail.selectedOptions ?? {}).length
       ? formatSelectedOptions(detail.selectedOptions, detail.optionGroups ?? [])
       : undefined,
@@ -386,7 +391,11 @@ export const getOrderQuote = (payload: CreateOrderPayload) =>
     items: Array<{
         productId: number;
         quantity: number;
-        selectedOptions: Record<string, string>;
+      selectedOptions: Record<string, string>;
+        specialInstructions: Array<{
+            unit: number;
+            instruction: string;
+        }>;
     }>;
 };
 

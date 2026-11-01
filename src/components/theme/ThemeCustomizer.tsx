@@ -5,7 +5,6 @@ import {
   type FormEvent,
 } from "react";
 import { Link } from "@tanstack/react-router";
-import { HiArrowLeft } from "react-icons/hi";
 import { LuLockKeyhole } from "react-icons/lu";
 import ColorPickerField from "./ColorPickerField";
 import { useTheme } from "../../contexts/ThemeContext";
@@ -21,6 +20,7 @@ import {
 import { getProfile } from "../../services/authService";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import { updateBusiness } from "../../services/businessService";
+import { ArrowLeftIcon } from "@animateicons/react/lucide";
 
 function ThemeCustomizer() {
   const [businessName, setBusinessName] = useState("");
@@ -261,27 +261,30 @@ function ThemeCustomizer() {
 
 
         <main className="w-full min-w-0 rounded-[30px] bg-white px-6.5 sm:px-8 sm:py-10 lg:w-1/2">
-        <div className="flex w-full items-center gap-2">
-              <Link
-                to="/dashboardAdmin"
-                className="mb-1 flex items-center gap-2 text-mint-dark lg:hidden"
-              >
-                <HiArrowLeft className="h-6 w-6 lg:hidden" />
+          <div className="flex w-full items-center gap-2">
+            <Link
+              to="/dashboardAdmin"
+              className="mb-1 flex items-center gap-2 text-mint-dark lg:hidden"
+            >
+              <ArrowLeftIcon
+                size={28}
+                duration={1}
+              />
 
-                <span className="text-[32px] font-bold">
-                  Personalización
-                </span>
-              </Link>
-              
-               <h2 className="mx-auto hidden w-full text-center text-2xl font-bold text-mint-dark sm:text-[32px] lg:block">
-                  Personalización
-                </h2>
-            </div>
+              <span className="text-[32px] font-bold">
+                Personalización
+              </span>
+            </Link>
+
+            <h2 className="mx-auto hidden w-full text-center text-2xl font-bold text-mint-dark sm:text-[32px] lg:block">
+              Personalización
+            </h2>
+          </div>
           <form
             onSubmit={handleSubmit}
             className="mx-auto flex w-full flex-col items-center gap-6"
           >
-            
+
 
             <section className="w-full">
               <h2 className="mb-4 text-center font-bold text-text-primary">
