@@ -6,6 +6,7 @@ import OrderCardCook from "./OrderCardCook";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { LuLogOut } from "react-icons/lu";
 import { socket } from "../../services/socketClient";
+import { useBell } from "../../hooks/useBell";
 
 function CookOrders() {
   const [orders, setOrders] = useState<Array<{
@@ -26,6 +27,7 @@ function CookOrders() {
     specialInstructions?: string;
   }>>([]);
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
+  const { playBell } = useBell();
 
   const loadOrders = async () => {
     try {
@@ -58,7 +60,12 @@ function CookOrders() {
       void loadOrders();
     };
 
+    const handleNewOrder = () => {
+      playBell("kitchen");
+    };
+
     socket.on("kitchen_orders_updated", handleKitchenOrdersUpdated);
+    socket.on("kitchen:new-order", handleNewOrder);
     socket.on("connect", handleConnect);
 
     if (socket.connected) {
@@ -69,11 +76,12 @@ function CookOrders() {
     
     return () => {
       socket.off("kitchen_orders_updated", handleKitchenOrdersUpdated);
+      socket.off("kitchen:new-order", handleNewOrder);
       socket.off("connect", handleConnect);
     };
 
     
-  }, []);
+  }, [playBell]);
   
 
   const handleReadyOrder = async (orderId: number) => {
