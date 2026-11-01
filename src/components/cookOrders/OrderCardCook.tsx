@@ -98,7 +98,7 @@ function OrderCardCook({ order, onReady, isUpdating = false }: OrderCardCookProp
 
               {item.options && (
                 <div>
-                  //Texto para que se observe la opción que haya elegido el cliente
+                  {/*Texto para que se observe la opción que haya elegido el cliente*/}
                   {Object.entries(item.options).map(([name, value]) => (
                     <p key={name} className="text-xl text-blue-700 font-semibold">
                       {name}: {value}
@@ -106,7 +106,7 @@ function OrderCardCook({ order, onReady, isUpdating = false }: OrderCardCookProp
                   ))}
                 </div>
               )}
-              //Texto de las instrucciones especiales
+              {/*Texto de las instrucciones especiales*/}
               {item.specialInstructions &&
                 item.specialInstructions.length > 0 && (
                 <div className="">
