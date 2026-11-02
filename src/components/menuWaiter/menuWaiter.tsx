@@ -7,7 +7,7 @@ import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
 import Skeleton from "../shared/Skeleton";
-
+import { motion } from "motion/react";
 
 //limite de muestras
 const PAGE_SIZE = 10;
@@ -51,8 +51,18 @@ function ProductList({
         <p className="text-text-primary">No hay platillos...</p>
       )}
 
-		{visibleProducts.map((product) => (
-		<div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
+		{visibleProducts.map((product,index) => (
+		  <motion.div
+    key={product.productId}
+    initial={{ opacity: 0, x: -35 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{
+      duration: 0.4,
+      delay: index * 0.08,
+      ease: "easeOut",
+    }}
+    
+    className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
           <DishCard
             name={product.productName ?? ""}
             description={product.description ?? ""}
@@ -73,7 +83,7 @@ displayIvaRate={product.displayIvaRate}
             onViewMore={() => onViewMore(product.productId)}
             onCloseDetails={onCloseDetails}
           />
-        </div>
+        </motion.div>
       ))}
     </div>
   );

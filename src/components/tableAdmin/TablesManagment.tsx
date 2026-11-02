@@ -17,6 +17,7 @@ import { FaToggleOff } from "react-icons/fa";
 import { ArrowLeftIcon } from "@animateicons/react/lucide";
 import { Pen01Icon } from "@animateicons/react/huge";
 
+import { motion } from "motion/react";
 
 
 
@@ -106,8 +107,11 @@ function TablesManagment() {
 			await deleteTable(selectedTable.id);
 			const updatedTable = { ...selectedTable, active: false };
 			setTables((currentTables) =>
-				currentTables.map((table) => table.id == selectedTable.id ? updatedTable : table),
+				currentTables.map((table) => table.id
+					== selectedTable.id ? updatedTable :
+					table),
 			);
+
 			setSelectedTable(updatedTable);
 			setIsDeleteDialogOpen(false);
 		} catch (error) {
@@ -202,38 +206,63 @@ function TablesManagment() {
 							) : tables.length === 0 ? (
 								<p>No hay mesas creadas.</p>
 							) : (
-								tables.map((table) => (
-									<div
+								tables.map((table, index) => (
+									<motion.div
 										key={table.id}
-										onClick={() => setSelectedTable(table)}
-										className={`flex cursor-pointer items-center justify-between gap-3 rounded border px-3 py-2 text-left text-s font-bold text-text-primary
+										initial={{ opacity: 0, x: -35 }}
+										animate={{ opacity: 1, x: 0 }}
+										transition={{
+											duration: 0.4,
+											delay: index * 0.08,
+											ease: "easeOut",
+										}}
+									>
+
+										<div
+											onClick={() => setSelectedTable(table)}
+											className={`flex cursor-pointer items-center justify-between gap-3 rounded border px-3 py-2 text-left text-s font-bold text-text-primary
 											${table.active === false
-												? `border-gray-300 bg-gray-200 text-gray-400! hover:border-gray-600"
+													? `border-gray-300 bg-gray-200 text-gray-400! hover:border-gray-600"
 												${selectedTable?.id === table.id ? "border-2 border-gray-600" : ""
 
-												}`
-												: selectedTable?.id === table.id
-													? "border-mint-dark border-2 bg-mint-dark/10"
-													: "border-border hover:border-mint-dark"
-											}`}
-									>
-										<span>Mesa #{table.tableNumber}</span>
-										{isOwner && <button
-											type="button"
-											onClick={(event) => {
-												event.stopPropagation();
-												handleShowQr(table.id, table.tableNumber);
-											}}
-											className={`rounded px-3 py-1 text-xs text-white ${table.active === false ? "bg-gray-300" : "bg-mint-dark hover:bg-mint-dark/90"}`}
+													}`
+													: selectedTable?.id === table.id
+														? "border-mint-dark border-2 bg-mint-dark/10"
+														: "border-border hover:border-mint-dark"
+												}`}
 										>
-											Ver QR
-										</button>}
-									</div>
+
+											<span>Mesa #{table.tableNumber}</span>
+											{isOwner &&
+												<motion.button
+													type="button"
+													onClick={(event) => {
+														event.stopPropagation();
+														handleShowQr(table.id, table.tableNumber);
+													}}
+													whileHover={{ scale: 1.1 }}
+													whileTap={{ scale: 0.95 }}
+													className={`rounded px-3 py-1 text-xs text-white ${table.active === false ? "bg-gray-300" : "bg-mint-dark hover:bg-mint-dark/90"}`}
+												>
+													Ver QR
+												</motion.button>
+											}
+										</div>
+									</motion.div>
 								))
 							)}
 						</div>
 
-						<div className="mt-2">
+						<motion.div
+    key={selectedTable?.id ?? "empty"}
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{
+        duration: 0.4,
+        ease: "easeOut",
+    }}
+    className="mt-2"
+>
 							<p className="text-lg font-bold text-text-primary">
 								Detalles de mesa
 							</p>
@@ -275,7 +304,7 @@ function TablesManagment() {
 									</div>
 								)}
 							</div>
-						</div>
+						</motion.div>
 
 						{isOwner && <QrCodeModal
 							isOpen={isQrModalOpen}
@@ -388,33 +417,47 @@ function TablesManagment() {
 								) : tables.length === 0 ? (
 									<p>No hay mesas creadas.</p>
 								) : (
-									tables.map((table) => (
-										<div
+									tables.map((table, index) => (
+										<motion.div
 											key={table.id}
-											onClick={() => setSelectedTable(table)}
-											className={`flex cursor-pointer items-center justify-between gap-3 rounded border px-3 py-2 text-left text-s font-bold text-text-primary 
+											initial={{ opacity: 0, x: -35 }}
+											animate={{ opacity: 1, x: 0 }}
+											transition={{
+												duration: 0.4,
+												delay: index * 0.08,
+												ease: "easeOut",
+											}}
+										>
+											<div
+												onClick={() => setSelectedTable(table)}
+												className={`flex cursor-pointer items-center justify-between gap-3 rounded border px-3 py-2 text-left text-s font-bold text-text-primary 
 												${table.active === false
-													? `border-gray-300 bg-gray-200 text-gray-400! hover:border-gray-600"
+														? `border-gray-300 bg-gray-200 text-gray-400! hover:border-gray-600"
 												${selectedTable?.id === table.id ? "border-2 border-gray-600" : ""
 
-													}`
-													: selectedTable?.id === table.id
-														? "border-mint-dark border-2 bg-mint-dark/10"
-														: "border-border hover:border-mint-dark"
-												}`}
-										>
-											<span>Mesa #{table.tableNumber}</span>
-											{isOwner && <button
-												type="button"
-												onClick={(event) => {
-													event.stopPropagation();
-													handleShowQr(table.id, table.tableNumber);
-												}}
-												className={`rounded px-3 py-1 text-xs text-white ${table.active === false ? "bg-gray-300" : "bg-mint-dark hover:bg-mint-dark/90"}`}
+														}`
+														: selectedTable?.id === table.id
+															? "border-mint-dark border-2 bg-mint-dark/10"
+															: "border-border hover:border-mint-dark"
+													}`}
 											>
-												Ver QR
-											</button>}
-										</div>
+												<span>Mesa #{table.tableNumber}</span>
+												{isOwner &&
+													<motion.button
+														type="button"
+														onClick={(event) => {
+															event.stopPropagation();
+															handleShowQr(table.id, table.tableNumber);
+														}}
+														whileHover={{ scale: 1.1 }}
+														whileTap={{ scale: 0.95 }}
+														className={`rounded px-3 py-1 text-xs text-white ${table.active === false ? "bg-gray-300" : "bg-mint-dark hover:bg-mint-dark/90"}`}
+													>
+														Ver QR
+													</motion.button>
+												}
+											</div>
+										</motion.div>
 									))
 								)}
 							</div>
@@ -427,7 +470,15 @@ function TablesManagment() {
 							/>}
 						</div>
 
-						<div>
+						<motion.div
+    key={selectedTable?.id ?? "empty"}
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{
+        duration: 0.4,
+        ease: "easeOut",
+    }}
+>
 							<p className="text-lg font-bold text-text-primary">
 								Detalles de mesa
 							</p>
@@ -462,7 +513,7 @@ function TablesManagment() {
 									</div>
 								)}
 							</div>
-						</div>
+						</motion.div>
 					</div>
 				</section>
 			</main>

@@ -15,7 +15,7 @@ import { HiOutlineDocumentReport } from "react-icons/hi";
 import { IoReceiptOutline } from "react-icons/io5";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { LuHistory } from "react-icons/lu";
-
+import { AnimatePresence,motion } from "motion/react";
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
@@ -51,7 +51,12 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
     <main className="min-h-screen bg-white">
       {/* Barra lateral - COMPUTADORA */}
 
-      <aside className="fixed left-0 top-0 hidden scrollbar-thin scrollbar-thumb-mint-darker/75 scrollbar-track-mint-dark/20 h-screen overflow-y-auto w-66 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
+      <motion.aside
+  initial={{ opacity: 0, x: -40 }}
+  animate={{ opacity: 1, x: 0 }}
+  transition={{ duration: 0.5, ease: "easeOut" }}
+  className="fixed left-0 top-0 hidden scrollbar-thin scrollbar-thumb-mint-darker/75 scrollbar-track-mint-dark/20 h-screen overflow-y-auto w-66 bg-neutral-50 px-8 py-8 lg:flex lg:flex-col rounded-r-4xl"
+>
         <div className="flex justify-start">
           <RestaurantLogo className="h-16 w-16 object-contain" />
           <span className="font-bold text-mint-darker">
@@ -221,7 +226,7 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
           <Link
             to="/tablesManagment"
-            onClick={() => setIsMenuOpen(false)}
+            onClick={() => setIsProfileMenuOpen(false)}
             activeProps={{
               className: `
       relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
@@ -459,7 +464,7 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
             </div>
           </div>
         </div>
-      </aside>
+      </motion.aside>
 
       <div className="lg:ml-64">
         {/* Barra superior - TELÉFONO Y TABLET */}
@@ -497,30 +502,36 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
         {children}
       </div>
+<AnimatePresence>
+  {isMenuOpen && (
+    <>
+      <motion.button
+        key="menu-overlay"
+        type="button"
+        aria-label="Cerrar menú"
+        onClick={() => setIsMenuOpen(false)}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className="fixed inset-0 z-40 cursor-default bg-black/20 lg:hidden"
+      />
 
-      {isMenuOpen && (
-        // ANIMACION
-        <>
-          <button
-            type="button"
-            aria-label="Cerrar menú"
-            onClick={() => setIsMenuOpen(false)}
-            className={`fixed inset-0 z-40 cursor-default bg-transparent transition-opacity duration-300 lg:hidden ${isMenuOpen
-              ? "pointer-events-auto opacity-100"
-              : "pointer-events-none opacity-0"
-              }`}
-          />
-          <div
-            className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col rounded-r-[30px] bg-mint-dark px-8 pt-10 transition-transform duration-300 ease-in-out lg:hidden ${isMenuOpen ? "translate-x-0" : "-translate-x-full"
-              }`}
-          >
+      <motion.div
+        key="mobile-menu"
+        initial={{ x: "-100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "-100%" }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="fixed left-0 top-0 z-50 flex h-screen w-72 flex-col rounded-r-[30px] bg-mint-dark px-8 pt-10 lg:hidden"
+      >
 
 
             <div className="mt-14 w-full">
               <div className="flex flex-col gap-2">
                 <Link
                   to="/dashboardAdmin"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={() => setIsProfileMenuOpen(false)}
                   activeProps={{
                     className:
                       "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white ",
@@ -657,28 +668,34 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
 
 
             </div>
-          </div>
+          </motion.div>
         </>
       )}
-
+</AnimatePresence>
       {/* ANIMACION */}
-      {isProfileMenuOpen && (
-        <>
-          <button
-            type="button"
-            aria-label="Cerrar menú"
-            onClick={() => setIsProfileMenuOpen(false)}
-            className={`fixed inset-0 z-40 cursor-default bg-transparent transition-opacity duration-300 lg:hidden ${isProfileMenuOpen
-              ? "pointer-events-auto opacity-100"
-              : "pointer-events-none opacity-0"
-              }`}
-          />
+      <AnimatePresence>
+  {isProfileMenuOpen && (
+    <>
+      <motion.button
+        key="profile-overlay"
+        type="button"
+        aria-label="Cerrar menú"
+        onClick={() => setIsProfileMenuOpen(false)}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className="fixed inset-0 z-40 cursor-default bg-black/20 lg:hidden"
+      />
 
-          <div
-            className={`fixed right-0 top-0 z-50 flex h-screen w-72 flex-col items-center rounded-l-[30px] bg-mint-dark px-8 pt-10 transition-transform duration-300 ease-in-out lg:hidden ${isProfileMenuOpen ? "translate-x-0" : "translate-x-full"
-              }`}
-          >
-
+      <motion.div
+        key="profile-menu"
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="fixed right-0 top-0 z-50 flex h-screen w-72 flex-col items-center rounded-l-[30px] bg-mint-dark px-8 pt-10 lg:hidden"
+      >
 
 
             <div className="mt-14 w-58">
@@ -753,9 +770,10 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
     </span>
 </a> */}
             </div>
-          </div>
+          </motion.div>
         </>
       )}
+    </AnimatePresence>
     </main>
   );
 }

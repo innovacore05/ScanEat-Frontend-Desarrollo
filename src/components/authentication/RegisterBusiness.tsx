@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { createBusiness, generateBusinessCode } from "../../services/businessService";
-
-
+import { motion } from "motion/react";
 
 
 
@@ -80,9 +79,19 @@ function RegisterBusiness() {
     }
 
     return (
-        <main className="min-h-screen bg-white">
-            <div className="h-38 bg-mint" />
-            <section className="-mt-10 min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-10">
+       <main className="min-h-screen bg-mint">
+    <div className="h-38 bg-mint" />
+
+    <motion.section
+        initial={{ y: 100 }}
+        animate={{ y: 0 }}
+        transition={{
+            duration: 0.6,
+            ease: "easeOut",
+        }}
+        className="-mt-10 min-h-[calc(100vh-7rem)] rounded-t-[40px] bg-white px-6 py-10"
+    >
+             
                 {showSuccess && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6">
                         <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-lg">
@@ -181,7 +190,7 @@ function RegisterBusiness() {
                     </button>
 
                 </form>
-            </section>
+            </motion.section>
         </main>
     );
 }
