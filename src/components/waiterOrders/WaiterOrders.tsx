@@ -166,6 +166,7 @@ function WaiterOrders() {
       <OrderCard
         order={order}
         onDetails={() => setSelectedOrder(order)}
+        
       />
     </motion.div>
   ))
@@ -182,7 +183,7 @@ function WaiterOrders() {
 
         {/* Computadora */}
         <section className="hidden px-15 py-15 lg:block">
-
+<button onClick={() => playBell("waiter")}>Probar campana</button>
           <h2 className=" text-2xl font-bold text-mint-dark">
             Pedidos
           </h2>
