@@ -10,7 +10,7 @@ import Skeleton from "../shared/Skeleton";
 import { socket } from "../../services/socketClient";
 import SearchOrders from "../Orders/SearchOrders";
 import { ArrowLeftIcon } from "@animateicons/react/lucide";
-import { AnimatePresence,motion } from "motion/react";
+import { motion } from "motion/react";
 
 function HistorySales() {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
