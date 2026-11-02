@@ -10,6 +10,9 @@ import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
 import Skeleton from "../shared/Skeleton";
 import { socket } from "../../services/socketClient";
+import { useBell } from "../../hooks/useBell";
+import { motion } from "motion/react";
+
 
 function WaiterOrders() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,6 +22,7 @@ function WaiterOrders() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+  const { playBell } = useBell();
 
   const loadOrders = useCallback(async (showLoading = false) => {
     if (showLoading) setIsLoadingOrders(true);
@@ -49,7 +53,12 @@ function WaiterOrders() {
       void loadOrders(true);
     };
 
+    const handleOrderReady = () => {
+      playBell("waiter");
+    };
+
     socket.on("waiter_orders_updated", handleWaiterOrdersUpdated);
+    socket.on("waiter:order-ready", handleOrderReady);
     socket.on("connect", handleConnect);
     
     if (socket.connected) {
@@ -60,10 +69,11 @@ function WaiterOrders() {
 
     return () => {
       socket.off("waiter_orders_updated", handleWaiterOrdersUpdated);
+      socket.off("waiter:order-ready", handleOrderReady);
       socket.off("connect", handleConnect);
     };
     
-  }, [loadOrders]);
+  }, [loadOrders, playBell]);
 
 
   const filteredOrders = orders.filter( (order) => {
@@ -134,22 +144,37 @@ function WaiterOrders() {
             </p>
 
             <div className="flex flex-col gap-8 pb-20">
-              {isLoadingOrders ? Array.from({ length: 3 }, (_, index) => (
-                <Skeleton key={index} className="h-44 w-full rounded-2xl" />
-              )) : filteredOrders.length > 0 ? (
-                    filteredOrders.map((order) => (
-                <OrderCard
-                  key={order.orderId}
-                  order={order}
-                  onDetails={() => setSelectedOrder(order)}
-                />
-             ))
-                ) : (
-                      <p className="py-8 text-center text-gray-500">
-                        No hay resultados para esta búsqueda.
-                </p>
-                    )}
-            </div>
+             {isLoadingOrders ? (
+  Array.from({ length: 3 }, (_, index) => (
+    <Skeleton
+      key={index}
+      className="h-44 w-full rounded-2xl"
+    />
+  ))
+) : filteredOrders.length > 0 ? (
+  filteredOrders.map((order, index) => (
+    <motion.div
+      key={order.orderId}
+      initial={{ opacity: 0, x: -35 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{
+        duration: 0.4,
+        delay: index * 0.08,
+        ease: "easeOut",
+      }}
+    >
+      <OrderCard
+        order={order}
+        onDetails={() => setSelectedOrder(order)}
+      />
+    </motion.div>
+  ))
+) : (
+  <p className="py-8 text-center text-gray-500">
+    No hay resultados para esta búsqueda.
+  </p>
+)}
+          </div>
           </div>
         </section>
 
@@ -185,14 +210,27 @@ function WaiterOrders() {
             <div className="flex flex-col gap-12">
               {isLoadingOrders ? Array.from({ length: 4 }, (_, index) => (
                 <Skeleton key={index} className="h-44 w-full rounded-2xl" />
-              )) : filteredOrders.length > 0 ? (
-                    filteredOrders.map((order) => (
-                <OrderCard
-                  key={order.orderId}
-                  order={order}
-                  onDetails={() => setSelectedOrder(order)}
-                />
-             ))
+              )) 
+              
+              : filteredOrders.length > 0 ? (
+                  
+               filteredOrders.map((order, index) => (
+    <motion.div
+        key={order.orderId}
+        initial={{ opacity: 0, x: -35 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{
+            duration: 0.4,
+            delay: index * 0.08,
+            ease: "easeOut",
+        }}
+    >
+        <OrderCard
+            order={order}
+            onDetails={() => setSelectedOrder(order)}
+        />
+    </motion.div>
+))
                 ) : (
                       <p className="py-8 text-center text-gray-500">
                         No hay resultados para esta búsqueda.
@@ -201,7 +239,16 @@ function WaiterOrders() {
             </div>
 
             {/* Detalles */}
-            <div>
+            <motion.div
+    key={orderForDetails?.orderId ?? "empty"}
+    className="sticky top-6 self-start"
+    initial={{ opacity: 0, y: 25 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{
+        duration: 0.4,
+        ease: "easeOut",
+    }}
+>
               <p className="pb-4 text-xl text-text-primary font-bold ">Orden actual</p>
               {isLoadingOrders ? (
                 <Skeleton className="min-h-80 w-full rounded-4xl" />
@@ -219,7 +266,7 @@ function WaiterOrders() {
                   </p>
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
         </section>
       </main>

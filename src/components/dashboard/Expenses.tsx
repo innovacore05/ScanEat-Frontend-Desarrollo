@@ -23,6 +23,8 @@ import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
 import trash from "react-useanimations/lib/trash";
 import { UseAnimations } from "react-useanimations";
 import { FileDownIcon, Pen01Icon } from "@animateicons/react/huge";
+import { motion } from "motion/react";
+
 
 type Expense = {
     id: number;
@@ -393,7 +395,12 @@ function Expenses() {
             </div>
             {/*Aquí termina*/}
 
-            <section className="px-4 py-6 sm:px-6 lg:px-15 lg:py-15">
+            <motion.section
+                className="px-4 py-6 sm:px-6 lg:px-15 lg:py-15"
+                initial={{ opacity: 0, y: -15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+            >
                 <div className="mx-auto w-full max-w-7xl">
                     <div className="mb-6">
                         <div>
@@ -707,8 +714,19 @@ function Expenses() {
                             <>
                                 {/* Vista para móvil */}
                                 <div className="max-h-120 divide-y divide-border overflow-y-auto md:hidden">
-                                    {filteredExpenses.map((expense) => (
-                                        <article key={expense.id} className="space-y-3 p-4">
+                                    {filteredExpenses.map((expense, index) => (
+                                        <motion.article
+                                            key={expense.id}
+                                            initial={{ opacity: 0, x: -35 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{
+                                                duration: 0.4,
+                                                delay: index * 0.08,
+                                                ease: "easeOut",
+                                            }}
+                                            className="space-y-3 p-4"
+                                        >
+
                                             <div className="flex items-start justify-between gap-3">
                                                 <div className="min-w-0">
                                                     <h3 className="wrap-break-word font-semibold text-mint-dark">
@@ -785,7 +803,7 @@ function Expenses() {
                                                     />
                                                 </button>
                                             </div>
-                                        </article>
+                                        </motion.article>
                                     ))}
                                 </div>
 
@@ -802,8 +820,18 @@ function Expenses() {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-border">
-                                            {filteredExpenses.map((expense) => (
-                                                <tr key={expense.id} className="hover:bg-gray-50">
+                                            {filteredExpenses.map((expense, index) => (
+                                                <motion.tr
+                                                    key={expense.id}
+                                                    initial={{ opacity: 0, x: -35 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{
+                                                        duration: 0.4,
+                                                        delay: index * 0.08,
+                                                        ease: "easeOut",
+                                                    }}
+                                                    className="hover:bg-gray-50"
+                                                >
                                                     <td className="whitespace-nowrap text-mint-darker font-semibold px-5 py-4">
                                                         {expense.date}
                                                     </td>
@@ -876,7 +904,7 @@ function Expenses() {
                                                             </button>
                                                         </div>
                                                     </td>
-                                                </tr>
+                                                </motion.tr>
                                             ))}
                                         </tbody>
                                     </table>
@@ -885,7 +913,7 @@ function Expenses() {
                         )}
                     </section>
                 </div>
-            </section>
+            </motion.section>
         </DashboardLayoutAdmin>
     );
 }

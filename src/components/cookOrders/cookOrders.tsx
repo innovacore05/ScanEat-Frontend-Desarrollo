@@ -6,6 +6,8 @@ import OrderCardCook from "./OrderCardCook";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { LuLogOut } from "react-icons/lu";
 import { socket } from "../../services/socketClient";
+import { useBell } from "../../hooks/useBell";
+import { AnimatePresence, motion } from "motion/react"
 
 function CookOrders() {
   const [orders, setOrders] = useState<Array<{
@@ -26,6 +28,7 @@ function CookOrders() {
     specialInstructions?: string;
   }>>([]);
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
+  const { playBell } = useBell();
 
   const loadOrders = async () => {
     try {
@@ -58,7 +61,12 @@ function CookOrders() {
       void loadOrders();
     };
 
+    const handleNewOrder = () => {
+      playBell("kitchen");
+    };
+
     socket.on("kitchen_orders_updated", handleKitchenOrdersUpdated);
+    socket.on("kitchen:new-order", handleNewOrder);
     socket.on("connect", handleConnect);
 
     if (socket.connected) {
@@ -69,11 +77,12 @@ function CookOrders() {
     
     return () => {
       socket.off("kitchen_orders_updated", handleKitchenOrdersUpdated);
+      socket.off("kitchen:new-order", handleNewOrder);
       socket.off("connect", handleConnect);
     };
 
     
-  }, []);
+  }, [playBell]);
   
 
   const handleReadyOrder = async (orderId: number) => {
@@ -115,21 +124,31 @@ function CookOrders() {
           </h1>
 
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-16 items-start">
-  {[0, 1, 2].map((column) => (
-    <div key={column} className="flex flex-col gap-6">
-      {sortedOrders
-        .filter((_, index) => index % 3 === column)
-        .map((order) => (
-          <OrderCardCook
-            key={order.orderId}
-            order={order}
-            onReady={() => void handleReadyOrder(order.orderId)}
-            isUpdating={updatingOrderId === order.orderId}
-          />
-        ))}
-    </div>
-  ))}
-</div>
+            {[0, 1, 2].map((column) => (
+              <div key={column} className="flex flex-col gap-6">
+                <AnimatePresence mode="popLayout">
+                  {sortedOrders
+                    .filter((_, index) => index % 3 === column)
+                    .map((order) => (
+                      <motion.div
+                        key={order.orderId}
+                        layout
+                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      >
+                        <OrderCardCook
+                          order={order}
+                          onReady={() => void handleReadyOrder(order.orderId)}
+                          isUpdating={updatingOrderId === order.orderId}
+                        />
+                      </motion.div>
+                    ))}
+                </AnimatePresence>
+              </div>
+            ))}
+          </div>
       </section>
     </main>
   );

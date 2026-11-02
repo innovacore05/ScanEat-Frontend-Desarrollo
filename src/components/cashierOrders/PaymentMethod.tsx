@@ -18,7 +18,7 @@ import PaymentModal, {
   type PaymentType,
 } from "./PaymentModal";
 import InvoiceModal from "./InvoiceModal";
-
+import { motion } from "motion/react";
 
 const formatCRC = (value: string | number) =>
   `₡${Number(value).toLocaleString("es-CR", {
@@ -353,7 +353,16 @@ return {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-white">
+      
+    <motion.main
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+            duration: 0.5,
+            ease: "easeOut",
+        }}
+        className="min-h-screen bg-white"
+    >
         <div className="flex h-30 items-center justify-between gap-4 border-b-4 border-mint-dark bg-neutral-50 px-4 py-4 sm:px-8">
           <RestaurantLogo className="h-16 w-16" />
         </div>
@@ -410,7 +419,7 @@ return {
             </div>
           </div>
         </section>
-      </main>
+      </motion.main>
     );
   }
 
@@ -476,15 +485,22 @@ return {
 
               <div className="mt-5 max-h-80 overflow-y-auto pr-2">
                 <div className="flex flex-col gap-4">
-                 {order.lines.map((line) => {
+                 {order.lines.map((line, index) => {
   const quantity =
     selectedQuantities[line.detailId] ?? line.pendingQuantity;
   const amounts = getSelectedLineAmounts(line, quantity);
 
   return (
-    <div
-      key={line.detailId}
-      className="flex items-center justify-between gap-4 border-b border-border pb-4"
+    <motion.div
+        key={line.detailId}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+            duration: 0.35,
+            delay: index * 0.06,
+            ease: "easeOut",
+        }}
+        className="flex items-center justify-between gap-4 border-b border-border pb-4"
     >
       <div className="min-w-0 flex-1">
         <p className="font-medium">{line.detail}</p>
@@ -495,35 +511,13 @@ return {
             : `IVA ${Number(line.ivaRate)} %`}
         </p>
 
-        <label className="mt-2 flex items-center gap-2 text-sm">
-          Cantidad a cobrar
-          <input
-            type="number"
-            min={0}
-            max={line.pendingQuantity}
-            step={1}
-            value={quantity}
-            disabled={isPaying || receipt !== null}
-            onChange={(event) => {
-              const parsed = Number.parseInt(event.target.value, 10);
-              const nextQuantity = Number.isNaN(parsed)
-                ? 0
-                : Math.max(0, Math.min(parsed, line.pendingQuantity));
-
-              setSelectedQuantities((previous) => ({
-                ...previous,
-                [line.detailId]: nextQuantity,
-              }));
-            }}
-            className="w-20 rounded-md border border-gray-300 p-1 text-center"
-          />
-        </label>
+       
       </div>
 
       <p className="shrink-0 tracking-wider">
         {formatCRC(amounts.total)}
       </p>
-    </div>
+    </motion.div>
   );
 })}
                 </div>
@@ -590,7 +584,16 @@ return {
             </div>
 
             <div className="flex flex-col justify-center px-2 lg:px-8">
-              <div className="flex flex-col items-center gap-5">
+              <motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{
+    duration: 0.5,
+    delay: 0.2,
+    ease: "easeOut",
+  }}
+  className="flex flex-col items-center gap-5"
+>
                 <button
                   type="button"
                   onClick={() => openPaymentModal("sinpe")}
@@ -632,7 +635,7 @@ return {
                 >
                   Efectivo
                 </button>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>

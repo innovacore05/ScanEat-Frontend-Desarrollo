@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { HiArrowLeft } from "react-icons/hi";
 import { FiMinus, FiPlus } from "react-icons/fi";
@@ -27,30 +28,59 @@ function SelectOrderProducts() {
   >({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showHaciendaPopup, setShowHaciendaPopup] = useState(false);
 
-  useEffect(() => {
+ useEffect(() => {
     const loadOrder = async () => {
-      try {
-        const data = await getPaymentPreview(orderId);
-        setOrder(data);
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "No se pudo cargar la orden.",
-        );
-      } finally {
-        setLoading(false);
-      }
+        try {
+            const data = await getPaymentPreview(orderId);
+            setOrder(data);
+        } catch (err: unknown) {
+            const apiError = err as {
+                message?: string;
+                response?: {
+                    data?: {
+                        message?: string;
+                        error?: string;
+                    };
+                };
+            };
+
+            const message =
+                apiError.response?.data?.message ??
+                apiError.response?.data?.error ??
+                apiError.message ??
+                "No se pudo cargar la orden.";
+
+            console.log("Error completo:", err);
+            console.log("Mensaje recibido:", message);
+
+            const normalizedMessage = message
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase();
+
+            if (
+                normalizedMessage.includes("verificacion") &&
+                normalizedMessage.includes("regimen") &&
+                normalizedMessage.includes("venc")
+            ) {
+                setShowHaciendaPopup(true);
+            } else {
+                setError(message);
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (orderId) {
-      void loadOrder();
+        void loadOrder();
     } else {
-      setError("No se recibió el número de la orden.");
-      setLoading(false);
+        setError("No se recibió el número de la orden.");
+        setLoading(false);
     }
-  }, [orderId]);
+}, [orderId]);
 
   const selectedItems =
     order?.lines
@@ -147,18 +177,78 @@ function SelectOrderProducts() {
     );
   }
 
-  if (!order) {
+if (!order) {
     return (
-      <main className="min-h-screen p-8">
-        <p className="text-red-600">
-          {error || "No se pudo cargar la orden."}
-        </p>
-      </main>
-    );
-  }
+        <main className="min-h-screen bg-white">
+            {showHaciendaPopup ? (
+                <AnimatePresence>
+                    <motion.div
+                        key="hacienda-expired-modal"
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+                        role="dialog"
+                        aria-modal="true"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <motion.div
+                            className="w-full max-w-sm rounded-2xl"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                        >
+                            <div className="w-full rounded-2xl bg-white p-6 shadow-xl">
+                                <h3 className="text-lg font-bold text-mint-darker">
+                                    Verificación de Hacienda vencida
+                                </h3>
 
-  return (
-    <main className="min-h-screen bg-white">
+                                <p className="mt-2 text-sm text-text-primary">
+                                    La verificación del régimen de Hacienda ha
+                                    vencido. Solicita al propietario o
+                                    administrador del negocio que actualice
+                                    los datos del emisor para continuar con
+                                    la facturación electrónica.
+                                </p>
+
+                                <div className="mt-6 flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            void navigate({
+                                                to: "/cashierOrders",
+                                            })
+                                        }
+                                        className="cursor-pointer rounded-lg bg-mint-dark px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+                                    >
+                                        Volver a las órdenes
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                </AnimatePresence>
+            ) : (
+                <div className="p-8">
+                    <p className="text-red-600">
+                        {error || "No se pudo cargar la orden."}
+                    </p>
+                </div>
+            )}
+        </main>
+    );
+}
+ 
+    return (
+    <motion.main
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+            duration: 0.5,
+            ease: "easeOut",
+        }}
+        className="min-h-screen bg-white"
+    >
+
       <header className="flex h-30 items-center border-b-4 border-mint-dark bg-neutral-50 px-4 py-4 sm:px-8">
         <RestaurantLogo className="h-16 w-16" />
       </header>
@@ -199,7 +289,7 @@ function SelectOrderProducts() {
           </div>
 
           <div className="space-y-5">
-            {order.lines.map((line) => {
+            {order.lines.map((line,index) => {
               const pending = line.pendingQuantity;
               const selected =
                 selectedQuantities[line.detailId] ?? 0;
@@ -211,10 +301,18 @@ function SelectOrderProducts() {
                   : 0;
 
               return (
-                <div
-                  key={line.detailId}
-                  className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between"
-                >
+                <motion.div
+        key={line.detailId}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+            duration: 0.35,
+            delay: index * 0.06,
+            ease: "easeOut",
+        }}
+        className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between"
+    >
+
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold">{line.detail}</p>
 
@@ -283,7 +381,7 @@ function SelectOrderProducts() {
                       </button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -312,7 +410,29 @@ function SelectOrderProducts() {
           </button>
         </div>
       </section>
-    </main>
+      
+    
+        <AnimatePresence>
+    {showHaciendaPopup && (
+        <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+        >
+            <motion.div
+                className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+                {/* Conserva aquí el contenido actual del popup */}
+            </motion.div>
+        </motion.div>
+    )}
+</AnimatePresence>
+    </motion.main>
   );
 }
 

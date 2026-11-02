@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "motion/react";
 
 export default function SessionExpiredScreen() {
   const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
+
 
   useEffect(() => {
     const handleSessionExpired = () => {
@@ -29,8 +31,27 @@ export default function SessionExpiredScreen() {
   if (!isVisible) return null;
 
   return (
-    <main className="fixed inset-0 z-[9999] flex min-h-screen items-center justify-center bg-neutral-50 px-6 py-10">
-      <div className="w-full max-w-md overflow-hidden rounded-3xl border border-border bg-white shadow-sm">
+    <AnimatePresence> 
+       {isVisible && (
+      <motion.div
+					key="handleSessionExpired"
+					className="fixed inset-0 z-9999 flex min-h-screen items-center justify-center bg-neutral-50 px-6 py-10"
+					role="dialog"
+					aria-modal="true"
+		
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+				> 
+   <motion.div
+      className="w-full max-w-md overflow-hidden rounded-3xl border border-border bg-white shadow-sm"
+         initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          >
+        
+        
         <div className="flex flex-col items-center bg-mint-dark px-6 py-8 text-center text-white">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-3xl font-bold text-mint-dark shadow-sm">
             !
@@ -58,7 +79,10 @@ export default function SessionExpiredScreen() {
             Volver a iniciar sesión
           </button>
         </div>
-      </div>
-    </main>
+        </motion.div>
+        </motion.div>
+      )}
+      </AnimatePresence>
+
   );
 }

@@ -16,6 +16,7 @@ import { LuShoppingBag } from "react-icons/lu";
 import { MdOutlineDiscount } from "react-icons/md";
 import { MdOutlineTableBar } from "react-icons/md";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
+import { AnimatePresence, motion } from "motion/react";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -49,7 +50,13 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
     <main className="min-h-screen bg-white">
       {/* Barra lateral - COMPUTADORA */}
 
-      <aside className="fixed left-0 top-0 hidden h-screen overflow-y-auto w-66 bg-neutral-50  px-8 py-8 lg:flex lg:flex-col rounded-r-4xl">
+      <motion.aside
+  className="fixed left-0 top-0 hidden h-screen overflow-y-auto w-66 bg-neutral-50 px-8 py-8 lg:flex lg:flex-col rounded-r-4xl"
+  initial={{ opacity: 0, x: -30 }}
+  animate={{ opacity: 1, x: 0 }}
+  transition={{ duration: 0.5, ease: "easeOut" }}
+>
+  
         <div className="flex justify-start">
           <RestaurantLogo className="h-16 w-16 object-contain" />
         </div>
@@ -263,7 +270,7 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
             </div>
           </div>
         </div>
-      </aside>
+      </motion.aside>
 
 
 

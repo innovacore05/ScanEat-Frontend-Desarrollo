@@ -24,6 +24,7 @@ import { HiArrowLeft } from "react-icons/hi";
 import MenuAssistant from "./MenuAssistant";
 import UseAnimations from 'react-useanimations';
 import shoppingBag from 'react-useanimations/lib/shoppingBag';
+import { motion } from "motion/react";
 
 // Límite de muestras
 const PAGE_SIZE = 10;
@@ -81,9 +82,16 @@ function ProductList({
         <p className="text-text-primary">No hay platillos...</p>
       )}
 
-      {visibleProducts.map((product) => (
-        <div
-          key={product.productId}
+      {visibleProducts.map((product,index) => (
+         <motion.div
+    key={product.productId}
+    initial={{ opacity: 0, x: -35 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{
+      duration: 0.4,
+      delay: index * 0.08,
+      ease: "easeOut",
+    }}
           className={
             selectedProductId === product.productId
               ? "w-full lg:w-192.5"
@@ -111,7 +119,7 @@ displayIvaRate={product.displayIvaRate}
             onViewMore={() => onViewMore(product.productId)}
             onCloseDetails={onCloseDetails}
           />
-        </div>
+        </motion.div>
       ))}
     </div>
   );

@@ -9,7 +9,7 @@ import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import DashboardLayoutWaiter from "../../components/layout/DashboardLayoutWaiter";
 import Skeleton from "../shared/Skeleton";
 import { ArrowLeftIcon } from "@animateicons/react/lucide";
-
+import { motion } from "motion/react";
 
 //limite de muestras
 const PAGE_SIZE = 10;
@@ -53,8 +53,24 @@ function ProductList({
         <p className="text-text-primary">No hay platillos...</p>
       )}
 
-    {visibleProducts.map((product) => (
-    <div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
+    {visibleProducts.map((product, index) => (
+  <motion.div
+    key={product.productId}
+    initial={{ opacity: 0, x: -35 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{
+      duration: 0.4,
+      delay: index * 0.08,
+      ease: "easeOut",
+    }}
+    className={
+      selectedProductId === product.productId
+        ? "w-full lg:w-192.5"
+        : "w-full lg:w-87.5"
+    }
+  >
+    
+         
           <DishCard
             name={product.productName ?? ""}
             description={product.description ?? ""}
@@ -77,7 +93,7 @@ displayIvaRate={product.displayIvaRate}
             onViewMore={() => onViewMore(product.productId)}
             onCloseDetails={onCloseDetails}
           />
-        </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -182,7 +198,12 @@ useEffect(() => {
     <Layout>
       <main className="min-h-screen bg-brand-white  ">
         {/* Celular */}
-        <section className="lg:hidden px-6.5 ">
+       <motion.section
+  className="lg:hidden px-6.5"
+  initial={{ opacity: 0, y: -15 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, ease: "easeOut" }}
+>
           <div className="flex items-center gap-2">
             <Link
               to={dashboardPath}
@@ -245,12 +266,16 @@ useEffect(() => {
 
           </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Computadora */}
 
-        <section className="hidden px-15 py-15 lg:block">
-          
+        <motion.section
+  className="hidden px-15 py-15 lg:block"
+  initial={{ opacity: 0, y: -15 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, ease: "easeOut" }}
+>
 
           <h2 className=" text-2xl font-bold text-black">Menú</h2>
 
@@ -302,7 +327,7 @@ useEffect(() => {
               </button>
             </div>
           )}
-        </section>
+        </motion.section>
       </main>
     </Layout>
   );

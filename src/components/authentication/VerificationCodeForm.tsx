@@ -10,6 +10,7 @@ import {
   verifyResetCode,
 } from "../../services/authService";
 import { getDashboardForRole } from "../../config/roles";
+import { motion } from "motion/react";
 
 function VerificationCodeForm() {
   const navigate = useNavigate();
@@ -187,7 +188,16 @@ function VerificationCodeForm() {
     <main className="min-h-screen bg-white">
       <div className="h-38 bg-mint" />
 
-      <section className="-mt-10 min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-10">
+    
+        <motion.section
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            transition={{
+                duration: 0.6,
+                ease: "easeOut",
+            }}
+            className="-mt-10 min-h-[calc(100vh-7rem)] rounded-t-[40px] bg-white px-6 py-10"
+        >
         <form
           onSubmit={handleSubmit}
           className="mx-auto flex w-full max-w-sm flex-col"
@@ -270,7 +280,7 @@ function VerificationCodeForm() {
               </p>
             </div>
         </form>
-      </section>
+      </motion.section>
     </main>
   );
 }

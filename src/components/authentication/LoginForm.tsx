@@ -2,8 +2,7 @@ import { useState } from "react";
 import { ImEye, ImEyeBlocked } from "react-icons/im";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { login as loginUser } from "../../services/authService";
-import { BsFillArrowLeftCircleFill } from "react-icons/bs";
-
+import { motion } from "motion/react";
 
 function LoginForm() {
 	const navigate = useNavigate();
@@ -58,11 +57,19 @@ function LoginForm() {
 	}
 
 	return (
-		<main className="min-h-screen bg-white">
-			<div className="h-38 bg-mint" />
+		<main className="min-h-screen overflow-hidden bg-mint">
+		<div className="h-38 bg-mint" />
 
-			<section className="-mt-10 min-h-[calc(100vh-11rem)] rounded-t-[40px] bg-white px-6 py-10">
-				<form
+			<motion.section
+    initial={{ y: 100 }}
+    animate={{ y: 0 }}
+    transition={{
+        duration: 0.6,
+        ease: "easeOut",
+    }}
+     className="-mt-10 min-h-[calc(100vh-7rem)] rounded-t-[40px] bg-white px-6 py-10"
+>
+			<form
 					onSubmit={handleSubmit}
 					className="mx-auto flex w-full max-w-sm flex-col gap-5"
 				>
@@ -143,7 +150,7 @@ function LoginForm() {
 						<BsFillArrowLeftCircleFill className="h-10 w-10" />
 					</a>
 				</form>
-			</section>
+			</motion.section>
 		</main>
 	);
 }

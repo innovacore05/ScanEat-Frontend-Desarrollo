@@ -12,7 +12,7 @@ import { getStoredRoleId } from "../../services/authService";
 import { ROLE_IDS } from "../../config/roles";
 import Skeleton from "../shared/Skeleton";
 import { ArrowLeftIcon } from "@animateicons/react/lucide";
-
+import { motion, AnimatePresence } from "motion/react";
 
 //Este objeto mapea los periodos de tiempo a los valores que se envían a la API para obtener los datos del reporte de ventas.
 const periodToApiValue: Record<SalesPeriod, "today" | "week" | "month" | "year"
@@ -222,7 +222,13 @@ function SalesReport() {
 
   return (
     <DashboardLayoutAdmin>
-      <section className="px-6 lg:px-15 lg:py-15">
+     <motion.section
+  className="px-6 lg:px-15 lg:py-15"
+  initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, ease: "easeOut" }}
+>
+
         <div className="w-full">
           <div className="flex items-center gap-2 md:hidden">
             <Link
@@ -504,7 +510,7 @@ function SalesReport() {
           {/*Aquí es la parte de las ordenes*/}
 
         </div>
-      </section>
+      </motion.section>
     </DashboardLayoutAdmin>
   );
 }

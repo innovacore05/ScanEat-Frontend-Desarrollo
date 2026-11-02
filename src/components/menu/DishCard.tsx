@@ -13,6 +13,7 @@ import {
   isCustomProduct,
   productIsCustom,
 } from "../../services/productService";
+import { motion } from "motion/react";
 
 const EMPTY_OPTION_GROUPS: { id: string; name: string; options: string[] }[] = [];
 
@@ -398,13 +399,16 @@ function DishCard({
             </Link>
           )}
 
-          <button
-            type="button"
-            onClick={isDetailView ? onCloseDetails : onViewMore}
-            className="mt-2 cursor-pointer self-start text-sm font-bold text-brown hover:underline"
-          >
-            {isDetailView ? "Ver menos" : "Ver más"}
-          </button>
+          <motion.button
+  type="button"
+  onClick={isDetailView ? onCloseDetails : onViewMore}
+  whileHover={{ scale: 1.08, x: 4 }}
+  whileTap={{ scale: 0.95 }}
+  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+  className="mt-2 cursor-pointer self-start text-sm font-bold text-brown hover:underline"
+>
+  {isDetailView ? "Ver menos" : "Ver más"}
+</motion.button>
         </div>
       </article>
 
