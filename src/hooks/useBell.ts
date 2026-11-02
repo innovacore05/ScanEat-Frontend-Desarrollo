@@ -23,8 +23,8 @@ export function useBell() {
     const bell = getAudio(type);
 
     bell.currentTime = 0;
-    void bell.play().catch((err) => {
-       console.error(`Error al reproducir ${type}:`, err.name, err.message);
+    void bell.play().catch(() => {
+      // El navegador puede bloquear autoplay; aquí lo ignoramos
     });
   }, []);
 

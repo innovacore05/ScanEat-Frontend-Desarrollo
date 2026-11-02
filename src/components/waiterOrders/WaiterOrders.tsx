@@ -103,13 +103,7 @@ function WaiterOrders() {
   return (
     <DashboardLayoutWaiter>
       <main className="min-h-screen bg-white">
-<button
-      style={{ position: "fixed", bottom: 20, right: 20, zIndex: 9999, padding: 12 }}
-      className="rounded bg-red-500 text-white"
-      onClick={() => playBell("waiter")}
-    >
-      Probar campana
-    </button>
+
 
         {/* Celular */}
         <section className="px-6 lg:hidden">
