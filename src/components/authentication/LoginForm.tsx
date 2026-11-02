@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ImEye, ImEyeBlocked } from "react-icons/im";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { login as loginUser } from "../../services/authService";
+import { BsFillArrowLeftCircleFill } from "react-icons/bs";
 import { motion } from "motion/react";
 
 function LoginForm() {
