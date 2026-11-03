@@ -742,7 +742,7 @@ function IssuedReceipts() {
 
                     <section className="mt-6 overflow-hidden rounded-2xl border border-border bg-white">
 
-                        <div className="border-b border-border p-5">
+                        <div className="p-5">
 
                             <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
 
@@ -875,7 +875,7 @@ function IssuedReceipts() {
 
                                 <div
                                     onScroll={handleListScroll}
-                                    className="max-h-120 divide-y divide-border overflow-y-auto md:hidden"
+                                   className="mx-5 max-h-120 divide-y divide-border overflow-y-auto rounded-xl border border-border md:hidden"
                                 >
 
                                     {items.map((receipt, index) => (
@@ -960,7 +960,7 @@ function IssuedReceipts() {
 
                                 <div
                                     onScroll={handleListScroll}
-                                    className="hidden max-h-92 overflow-auto md:block"
+                                   className="mx-5 hidden max-h-92 overflow-auto rounded-xl border border-border md:block"
                                 >
 
                                     <table className="w-full text-left text-sm">
@@ -1073,7 +1073,7 @@ function IssuedReceipts() {
 
                                 {/* Paginación */}
 
-                                <div className="flex items-center justify-between border-t border-border p-4 text-sm text-text-primary">
+                                <div className="flex items-center justify-between border-border p-4 text-sm text-text-primary">
 
 
 
