@@ -10,7 +10,7 @@ import Skeleton from "../shared/Skeleton";
 import { socket } from "../../services/socketClient";
 import SearchOrders from "../Orders/SearchOrders";
 import { ArrowLeftIcon } from "@animateicons/react/lucide";
-
+import { AnimatePresence,motion } from "motion/react";
 
 function HistorySales() {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -81,7 +81,13 @@ function HistorySales() {
 
     return (
         <DashboardLayoutAdmin>
-            <main className="min-h-screen bg-white">
+           <motion.main
+    className="min-h-screen bg-white"
+    initial={{ opacity: 0, y: -15 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4, ease: "easeOut" }}
+>
+
                 {/* Celular */}
                 <section className="px-6 lg:hidden">
                     <div className="flex items-center gap-2">
@@ -116,18 +122,29 @@ function HistorySales() {
                                     <Skeleton key={index} className="h-44 w-full rounded-2xl" />
                                 ))
                             ) : filteredOrders.length > 0 ? (
-                                filteredOrders.map((order) => (
-                                    <HistoryCard
-                                        key={order.orderId}
-                                        order={order}
-                                        onDetails={() => setSelectedOrder(order)}
-                                    />
-                                ))
+                                filteredOrders.map((order, index) => (
+    <motion.div
+        key={order.orderId}
+        initial={{ opacity: 0, x: -35 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{
+            duration: 0.4,
+            delay: index * 0.08,
+            ease: "easeOut",
+        }}
+    >
+        <HistoryCard
+            order={order}
+            onDetails={() => setSelectedOrder(order)}
+        />
+    </motion.div>
+))
                             ) : (
                                 <p className="py-8 text-center text-gray-500">
                                     No hay resultados para esta búsqueda.
                                 </p>
                             )}
+
                         </div>
                     </div>
                 </section>
@@ -157,13 +174,24 @@ function HistorySales() {
                                     <Skeleton key={index} className="h-44 w-full rounded-2xl" />
                                 ))
                             ) : filteredOrders.length > 0 ? (
-                                filteredOrders.map((order) => (
-                                    <HistoryCard
-                                        key={order.orderId}
-                                        order={order}
-                                        onDetails={() => setSelectedOrder(order)}
-                                    />
-                                ))
+                                filteredOrders.map((order, index) => (
+    <motion.div
+        key={order.orderId}
+        initial={{ opacity: 0, x: -35 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{
+            duration: 0.4,
+            delay: index * 0.08,
+            ease: "easeOut",
+        }}
+    >
+        <HistoryCard
+            order={order}
+            onDetails={() => setSelectedOrder(order)}
+        />
+    </motion.div>
+))
+
                             ) : (
                                 <p className="py-8 text-center text-gray-500">
                                     No hay resultados para esta búsqueda.
@@ -192,7 +220,7 @@ function HistorySales() {
                         </div>
                     </div>
                 </section>
-            </main>
+            </motion.main>
         </DashboardLayoutAdmin>
     );
 }

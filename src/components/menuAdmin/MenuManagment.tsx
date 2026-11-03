@@ -9,7 +9,7 @@ import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
 import Skeleton from "../shared/Skeleton";
 import { ArrowLeftIcon } from "@animateicons/react/lucide";
-
+import { motion } from "motion/react";
 
 //limite de muestras
 const PAGE_SIZE = 10;
@@ -73,8 +73,22 @@ function ProductList({
         <p className="text-text-primary">No hay platillos...</p>
       )}
 
-      {visibleProducts.map((product) => (
-        <div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
+      {visibleProducts.map((product,index) => (
+        
+        <motion.div
+    key={product.productId}
+    initial={{ opacity: 0, x: -35 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{
+      duration: 0.4,
+      delay: index * 0.08,
+      ease: "easeOut",
+    }}
+        className={selectedProductId === product.productId 
+        ? "w-full lg:w-192.5" 
+        : "w-full lg:w-87.5"
+        }>
+
           <DishCard
             name={product.productName ?? ""}
             description={product.description ?? ""}
@@ -91,7 +105,7 @@ function ProductList({
             onViewMore={() => onViewMore(product.productId)}
             onCloseDetails={onCloseDetails}
           />
-        </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -186,7 +200,11 @@ function MenuManagment() {
 
   return (
     <DashboardLayoutAdmin>
-      <main className="min-h-screen bg-white  ">
+      <motion.main 
+       initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, ease: "easeOut" }}
+  className="min-h-screen bg-white">
         {/* Celular */}
         <section className="lg:hidden px-6.5 ">
           <div className="flex items-center gap-2">
@@ -273,14 +291,18 @@ function MenuManagment() {
               </div>
 
               {hasMore && selectedProductId === null && (
-                <button
-                  type="button"
-                  onClick={handleLoadMore}
-                  disabled={isLoadingMore}
-                  className="w-full mt-6  rounded-2xl bg-white border border-border py-3 text-base font-bold text-mint-dark disabled:opacity-50"
-                >
-                  {isLoadingMore ? "Cargando..." : "Cargar más"}
-                </button>
+                <motion.button
+  type="button"
+  onClick={handleLoadMore}
+  disabled={isLoadingMore}
+  whileHover={!isLoadingMore ? { scale: 1.04 } : {}}
+  whileTap={!isLoadingMore ? { scale: 0.97 } : {}}
+  transition={{ duration: 0.2, ease: "easeOut" }}
+  className="w-full mt-6 rounded-2xl bg-white border border-border py-3 text-base font-bold text-mint-dark disabled:opacity-50"
+>
+  {isLoadingMore ? "Cargando..." : "Cargar más"}
+</motion.button>
+
               )}
 
             </div>
@@ -365,18 +387,21 @@ function MenuManagment() {
 
           {hasMore && selectedProductId === null && (
             <div className="mt-6 flex justify-center ">
-              <button
-                type="button"
-                onClick={handleLoadMore}
-                disabled={isLoadingMore}
-                className="rounded-lg bg-white border border-border px-8 py-3 text-base font-bold text-mint-dark disabled:opacity-50"
-              >
-                {isLoadingMore ? "Cargando..." : "Cargar más"}
-              </button>
+              <motion.button
+  type="button"
+  onClick={handleLoadMore}
+  disabled={isLoadingMore}
+  whileHover={!isLoadingMore ? { scale: 1.04 } : {}}
+  whileTap={!isLoadingMore ? { scale: 0.97 } : {}}
+  transition={{ duration: 0.2, ease: "easeOut" }}
+  className="w-full mt-6 rounded-2xl bg-white border border-border py-3 text-base font-bold text-mint-dark disabled:opacity-50"
+>
+  {isLoadingMore ? "Cargando..." : "Cargar más"}
+</motion.button>
             </div>
           )}
         </section>
-      </main>
+      </motion.main>
     </DashboardLayoutAdmin>
   );
 }

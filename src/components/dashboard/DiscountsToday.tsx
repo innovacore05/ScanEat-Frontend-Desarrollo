@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getProducts, type Product } from "../../services/productService";
 import SearchBar from "../menu/SearchBar";
 import Skeleton from "../shared/Skeleton";
+import { motion, AnimatePresence } from "motion/react";
 
 function DiscountsToday() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -43,39 +44,64 @@ function DiscountsToday() {
 
   return (
     <section>
-      <h2 className=" text-2xl font-bold text-mint-dark">
-        Descuentos de hoy
-      </h2>
+        <motion.h2
+      className="text-2xl font-bold text-mint-dark"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      Descuentos de hoy
+    </motion.h2>
 
-      <div className="mb-6 flex items-center">
-        <SearchBar
-              searchTerm={search}
-              setSearchTerm={setSearch}
-              className="mt-6 w-full"
-            />
-      </div>
+      <motion.div
+      className="mb-6 flex items-center"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.1 }}
+    >
+      <SearchBar
+        searchTerm={search}
+        setSearchTerm={setSearch}
+        className="mt-6 w-full"
+      />
+    </motion.div>
+
 
       <div className="flex max-h-96 flex-col gap-3 overflow-y-auto rounded-2xl border border-border">
         {isLoading ? (
           Array.from({ length: 3 }, (_, index) => (
-            <div key={index} className="flex h-30 shrink-0 overflow-hidden rounded-xl bg-white">
+             <motion.div
+            key={index}
+            className="flex h-30 shrink-0 overflow-hidden rounded-xl bg-white"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.1 }}
+          >
               <Skeleton className="h-full w-44 shrink-0 rounded-none" />
               <div className="flex min-w-0 flex-1 flex-col gap-3 px-4 py-3">
                 <Skeleton className="h-4 w-36" />
                 <Skeleton className="h-3 w-full max-w-sm" />
                 <Skeleton className="mt-auto h-4 w-28" />
               </div>
-            </div>
+            </motion.div>
           ))
-        ) : visibleProducts.map((product) => {
-          const discount = Number(product.discount ?? 0);
-          const finalPrice = product.price * (1 - discount / 100);
-
+        ) : 
+        
+        (
+        <AnimatePresence mode="popLayout">
+          {visibleProducts.map((product) => {
+            const discount = Number(product.discount ?? 0);
+            const finalPrice = product.price * (1 - discount / 100);
           return (
-            <article
-              key={product.productId}
-              className="flex h-30 min-w-0 shrink-0 overflow-hidden rounded-xl bg-white"
-            >
+             <motion.article
+                key={product.productId}
+                className="flex h-30 min-w-0 shrink-0 overflow-hidden rounded-xl bg-white"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                layout
+              >
               <img
                 src={product.image ?? "/img/placeholder.jpg"}
                 alt={product.productName}
@@ -102,9 +128,11 @@ function DiscountsToday() {
                   </span>
                 </div>
               </div>
-            </article>
-          );
+            </motion.article>
+            );      
         })}
+      </AnimatePresence>
+      )}
       </div>
     </section>
   );

@@ -1,4 +1,4 @@
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import OrderCard, { type Order } from "../Orders/OrderCard";
 import { getOrders } from "../../services/orderService";
@@ -9,6 +9,7 @@ import Skeleton from "../shared/Skeleton";
 import { socket } from "../../services/socketClient";
 import SearchOrders from "../Orders/SearchOrders";
 import { getPaymentPreview } from "../../services/billingService";
+import { motion } from "motion/react";
 
 const formatCRC = (value: number) =>
     `₡${value.toLocaleString("es-CR", {
@@ -26,8 +27,8 @@ const getPendingTotal = (lines: Awaited<ReturnType<typeof getPaymentPreview>>["l
             (Number(line.total) * line.pendingQuantity) / line.originalQuantity;
     }, 0);
 
-function CashierOrders (){
-const [orders,setOrders]=useState<Order[]>([]);
+function CashierOrders() {
+    const [orders, setOrders] = useState<Order[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const { refresh } = useSearch({
@@ -35,95 +36,103 @@ const [orders,setOrders]=useState<Order[]>([]);
     });
 
     useEffect(() => {
-    //Consulta las órdenes que están pendientes de pago
-    const loadOrders =async ()=>{
-        try{
-       setIsLoading(true);
-       const data = await getOrders("delivered",true);
-       const ordersWithPendingTotals = await Promise.all(
-        data.map(async (order) => {
+        //Consulta las órdenes que están pendientes de pago
+        const loadOrders = async () => {
             try {
-                const paymentPreview = await getPaymentPreview(order.orderId);
+                setIsLoading(true);
+                const data = await getOrders("delivered", true);
+                const ordersWithPendingTotals = await Promise.all(
+                    data.map(async (order) => {
+                        try {
+                            const paymentPreview = await getPaymentPreview(order.orderId);
 
-                return {
-                    ...order,
-                    price: formatCRC(getPendingTotal(paymentPreview.lines)),
-                };
-            } catch (error) {
-                console.error(
-                    `No se pudo actualizar el saldo pendiente de la orden ${order.orderId}:`,
-                    error,
+                            return {
+                                ...order,
+                                price: formatCRC(getPendingTotal(paymentPreview.lines)),
+                            };
+                        } catch (error) {
+                            console.error(
+                                `No se pudo actualizar el saldo pendiente de la orden ${order.orderId}:`,
+                                error,
+                            );
+                            return order;
+                        }
+                    }),
                 );
-                return order;
+
+                setOrders(ordersWithPendingTotals);
+            } catch (error) {
+                console.error("Error cargando órdenes:", error);
+            } finally {
+                setIsLoading(false);
             }
-        }),
-       );
+        };
 
-       setOrders(ordersWithPendingTotals);
-        }catch(error){
-        console.error("Error cargando órdenes:", error);
-        } finally {
-        setIsLoading(false);
-        }
-    };
+        //Se actualiza las órdenes cuando el backend notifica un cqambio
+        const handleCashierOrdersUpdated = () => {
+            void loadOrders();
+        };
 
-    //Se actualiza las órdenes cuando el backend notifica un cqambio
-    const handleCashierOrdersUpdated = () => {
-        void loadOrders();
-    };
-
-    //Vuelve a consultar las órdenes al conectarse o reconectarse
-    const handleConnect = () => {
-        void loadOrders();
-    };
+        //Vuelve a consultar las órdenes al conectarse o reconectarse
+        const handleConnect = () => {
+            void loadOrders();
+        };
 
         //Escucha las notificaciones que están destinadas a la pantalla del cajero
-    socket.on("cashier_orders_updated", handleCashierOrdersUpdated);
-    socket.on("connect", handleConnect);
+        socket.on("cashier_orders_updated", handleCashierOrdersUpdated);
+        socket.on("connect", handleConnect);
 
-    //Carga las órdenes iniciales y establece conexión si hace falta (como por ejemplo si se pierde la conexión a internet)
-    if (socket.connected) {
-        void loadOrders();
-    } else {
-        socket.connect();
-    }
+        //Carga las órdenes iniciales y establece conexión si hace falta (como por ejemplo si se pierde la conexión a internet)
+        if (socket.connected) {
+            void loadOrders();
+        } else {
+            socket.connect();
+        }
 
-    //Elimina los listeners cuando sale de la pantalla
-     return () => {
-        socket.off("cashier_orders_updated", handleCashierOrdersUpdated);
-        socket.off("connect", handleConnect);
-     };
-    
+        //Elimina los listeners cuando sale de la pantalla
+        return () => {
+            socket.off("cashier_orders_updated", handleCashierOrdersUpdated);
+            socket.off("connect", handleConnect);
+        };
+
     }, [refresh]);
-    
-    
 
 
-  const filteredOrders = orders.filter((order) => {
-    if (order.status !== "Entregado") {
-        return false;
-    }
-    return (
-        order.tableId.toString().includes(searchTerm.trim()) ||
-      order.orderId.toString().includes(searchTerm.trim())
-    );
-});
 
-    
-    
+
+    const filteredOrders = orders.filter((order) => {
+        if (order.status !== "Entregado") {
+            return false;
+        }
+        return (
+            order.tableId.toString().includes(searchTerm.trim()) ||
+            order.orderId.toString().includes(searchTerm.trim())
+        );
+    });
+
+
+
     return (
         <main className="min-h-screen bg-white">
-            <div className="flex h-30 items-center justify-between gap-4 bg-neutral-50 border-b-4 border-mint-dark px-4 py-4 sm:px-8">
+
+
+            <motion.div
+                initial={{ opacity: 0, y: -15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="flex h-30 items-center justify-between gap-4 bg-neutral-50 border-b-4 border-mint-dark px-4 py-4 sm:px-8"
+            >
+
                 <RestaurantLogo className="h-16 w-16" />
                 <Link
-                          to="/login"
-                          onClick={logout}
-                          className="flex items-center justify-center gap-2 rounded-2xl bg-mint-dark px-3 py-3 text-base font-bold text-white sm:gap-3 sm:px-8 sm:py-4 sm:text-xl"
-                        >
-                          <LuLogOut className="h-4 w-4 sm:h-5 sm:w-5" />
-                          <span>Cerrar sesión</span>
-                        </Link>
-            </div>
+                    to="/login"
+                    onClick={logout}
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-mint-dark px-3 py-3 text-base font-bold text-white sm:gap-3 sm:px-8 sm:py-4 sm:text-xl"
+                >
+                    <LuLogOut className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span>Cerrar sesión</span>
+                </Link>
+            </motion.div>
 
             <section className="px-8 pt-8">
                 <div className="mx-auto max-w-300">
@@ -132,14 +141,19 @@ const [orders,setOrders]=useState<Order[]>([]);
                     </h1>
 
 
-                    <div className="my-6 flex flex-col gap-5 bg-white">
+                    <motion.div
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+                        className="my-6 flex flex-col gap-5 bg-white"
+                    >
                         <SearchOrders
-                        searchTerm={searchTerm}
-                        setSearchTerm={setSearchTerm}
+                            searchTerm={searchTerm}
+                            setSearchTerm={setSearchTerm}
                             className="w-full"
                         />
-                    </div>
-                    
+                    </motion.div>
+
 
                     <p className="mt-4 text-mint-darker text-2xl">
                         Órdenes
@@ -151,19 +165,28 @@ const [orders,setOrders]=useState<Order[]>([]);
                                 <Skeleton key={index} className="h-56 w-full rounded-2xl" />
                             ))
                         ) : filteredOrders.length > 0 ? (
-                            filteredOrders.map((order) => (
-                            <OrderCard
-                                key={order.orderId}
-                                order={order}
-                                isCashier
-                            />
+                            filteredOrders.map((order, index) => (
+                                <motion.div
+                                    key={order.orderId}
+                                    initial={{ opacity: 0, x: -35 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{
+                                        duration: 0.4,
+                                        delay: index * 0.08,
+                                        ease: "easeOut",
+                                    }}
+                                >
+                                    <OrderCard order={order} isCashier />
+                                </motion.div>
                             ))
-                            ) : (
-                                    <p className="py-8  text-gray-500">
-                                        No hay resultados para esta búsqueda.
+                        ) : (
+                            <p className="py-8 text-gray-500">
+                                No hay resultados para esta búsqueda.
                             </p>
                         )}
+
                     </div>
+
                 </div>
             </section>
         </main>

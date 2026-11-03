@@ -12,6 +12,7 @@ import {
 import { getPublicTableNumber } from "../../services/tableService";
 import { socket } from "../../services/socketClient";
 import OrderPaid from "./OrderPaid";
+import { motion } from "motion/react";
 
 type OrderStatusProps = {
   orderId: number;
@@ -219,9 +220,20 @@ socket.on("connect", handleConnect);
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="h-20 bg-mint-dark" />
 
-      <section className="-mt-10 min-h-[calc(100vh-5rem)] rounded-t-[40px] bg-white px-6 py-10 lg:px-10">
+      <motion.div
+  className="h-20 bg-mint-dark"
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, ease: "easeOut" }}
+/>
+
+      <motion.section
+  className="-mt-10 min-h-[calc(100vh-5rem)] rounded-t-[40px] bg-white px-6 py-10 lg:px-10"
+  initial={{ opacity: 0, y: 25 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" }}
+>
         <Link
           to="/menuClient"
           search={{ mesaId: tableId }}
@@ -241,11 +253,22 @@ socket.on("connect", handleConnect);
             Pedido #{orderId}
           </p>
 
-          <currentContent.icon
-            className="mt-6 h-64 w-full text-mint-dark sm:h-80"
-            aria-label={currentContent.title}
-            role="img"
-          />
+         <motion.div
+  key={status}
+  initial={{ opacity: 0, scale: 0.7, rotate: -10 }}
+  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+  transition={{
+    type: "spring",
+    stiffness: 160,
+    damping: 14,
+  }}
+>
+  <currentContent.icon
+    className="mt-6 h-64 w-full text-mint-dark sm:h-80"
+    aria-label={currentContent.title}
+    role="img"
+  />
+</motion.div>
 
           <h1 className="mt-6 text-3xl font-bold text-mint-darker">
             {currentContent.title}
@@ -255,11 +278,19 @@ socket.on("connect", handleConnect);
           </p>
 
           <div className="mt-8 grid w-full grid-cols-4 gap-2">
+           
             {statusOrder.map((orderStatus, index) => (
-              <div
-                key={orderStatus}
-                className="flex flex-col items-center gap-2"
-              >
+              <motion.div
+  key={orderStatus}
+  className="flex flex-col items-center gap-2"
+  initial={{ opacity: 0, y: 15 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{
+    duration: 0.35,
+    delay: index * 0.1,
+    ease: "easeOut",
+  }}
+>
                 {(() => {
                   const StatusIcon = statusIcons[orderStatus];
 
@@ -283,7 +314,7 @@ socket.on("connect", handleConnect);
                 >
                   {orderStatus}
                 </span>
-              </div>
+              </motion.div>
             ))}
           </div>
 
@@ -300,7 +331,7 @@ socket.on("connect", handleConnect);
 
           {error && <p className="mt-6 text-sm text-red-500">{error}</p>}
         </div>
-      </section>
+      </motion.section>
     </main>
   );
 }

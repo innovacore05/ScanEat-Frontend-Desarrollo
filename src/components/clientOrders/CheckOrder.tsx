@@ -8,6 +8,7 @@ import {addItemsToOrder,getClientId,getOrderQuote,type OrderQuote,} from "../../
 import { getPublicTableNumber } from "../../services/tableService";
 import { socket } from "../../services/socketClient";
 import { submitSharedCart } from "../../services/sharedCartService";
+import { AnimatePresence, motion } from "motion/react";
 
 function getDishName(
   name: string,
@@ -554,13 +555,20 @@ const createdOrder = await submitSharedCart(
       );
     }
 
-    return displayedItems.map((item) => (
-      <div
-        key={item.cartItemId}
-        className={`flex ${
-          isMobile ? "min-h-32" : "min-h-36"
-        } overflow-hidden rounded-2xl bg-white shadow-sm`}
-      >
+    return displayedItems.map((item,index) => (
+      <motion.div
+    key={item.cartItemId}
+    initial={{ opacity: 0, x: -35 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{
+      duration: 0.4,
+      delay: index * 0.08,
+      ease: "easeOut",
+    }}
+    className={`flex ${
+      isMobile ? "min-h-32" : "min-h-36"
+    } overflow-hidden rounded-2xl bg-white shadow-sm`}
+  >
         <div
           className={`shrink-0 ${
             isMobile ? "h-36 w-32" : "h-42 w-40"
@@ -703,7 +711,7 @@ return (
         </div>
 
         {renderRemoveButton(item, isMobile)}
-      </div>
+      </motion.div> 
     ));
   };
 
@@ -767,9 +775,20 @@ return (
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="h-20 bg-mint-dark" />
+     <motion.div
+  className="h-20 bg-mint-dark"
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, ease: "easeOut" }}
+/>
 
-      <section className="-mt-10 min-h-[calc(100vh-5rem)] w-full rounded-t-[40px] bg-white px-6 py-10 lg:px-10">
+     <motion.section
+  className="-mt-10 min-h-[calc(100vh-5rem)] w-full rounded-t-[40px] bg-white px-6 py-10 lg:px-10"
+  initial={{ opacity: 0, y: 25 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" }}
+>
+
         {/* Celular */}
         <div className="lg:hidden">
           <div className="flex items-center gap-2">
@@ -863,50 +882,75 @@ return (
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Modal de éxito */}
-      {isSuccessDialogOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="success-dialog-title"
+      <AnimatePresence>
+  {isSuccessDialogOpen && (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="success-dialog-title"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+    >
+      <motion.div
+        className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl"
+        initial={{ opacity: 0, scale: 0.85, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 15 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+      >
+        <h2
+          id="success-dialog-title"
+          className="text-lg font-bold text-mint-darker"
         >
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl">
-            <h2
-              id="success-dialog-title"
-              className="text-lg font-bold text-mint-darker"
-            >
-              ¡Listo!
-            </h2>
+          ¡Listo!
+        </h2>
 
-            <p className="mt-2 text-sm text-text-primary">
-              {isAddingToOrder
-                ? "Los productos se agregaron correctamente a la orden."
-                : "Tu pedido fue enviado correctamente."}
-            </p>
+        <p className="mt-2 text-sm text-text-primary">
+          {isAddingToOrder
+            ? "Los productos se agregaron correctamente a la orden."
+            : "Tu pedido fue enviado correctamente."}
+        </p>
 
-            <button
-              type="button"
-              onClick={handleSuccess}
-              className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white"
-            >
-              Aceptar
-            </button>
-          </div>
-        </div>
-      )}
+        <button
+          type="button"
+          onClick={handleSuccess}
+          className="mt-6 cursor-pointer rounded-lg bg-mint-dark px-5 py-2 text-sm font-semibold text-white"
+        >
+          Aceptar
+        </button>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+      
 
       {/* Modal de confirmación */}
-      {isConfirmDialogOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="confirm-dialog-title"
-        >
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+       <AnimatePresence>
+  {isConfirmDialogOpen && (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-dialog-title"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+    >
+          <motion.div
+        className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl"
+        initial={{ opacity: 0, scale: 0.85, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 15 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+      >
+          
             <h3
               id="confirm-dialog-title"
               className="text-lg font-bold text-mint-darker"
@@ -946,9 +990,10 @@ return (
                 {isSubmitting ? "Enviando..." : "Confirmar"}
               </button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </main>
   );
 }
