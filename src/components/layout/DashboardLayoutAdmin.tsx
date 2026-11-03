@@ -14,7 +14,7 @@ import { MdOutlineTableBar } from "react-icons/md";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { IoReceiptOutline } from "react-icons/io5";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
-import { LuHistory } from "react-icons/lu";
+import { LuHistory,LuReceiptText } from "react-icons/lu";
 import { AnimatePresence,motion } from "motion/react";
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -191,6 +191,30 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
               Reporte de ventas
             </span>
           </Link>
+
+<Link
+  to="/issuedReceipts"
+  activeProps={{
+    className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      bg-mint-darker px-4 py-3 text-white shadow-md
+      transition-all duration-700
+    `,
+  }}
+  inactiveProps={{
+    className: `
+      relative z-30 flex items-center gap-4 overflow-hidden rounded-xl
+      px-4 py-3 text-text-primary hover:bg-mint-dark/10 hover:text-white
+      transition-all duration-700
+    `,
+  }}
+>
+  <LuReceiptText className="h-6 w-6 shrink-0" />
+  <span className="cursor-pointer text-[15px] font-bold">
+    Comprobantes
+  </span>
+</Link>
+
 
           <Link
             to="/expenses"
@@ -598,6 +622,23 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
                 <span className="text-xl font-bold">Reporte de ventas</span>
               </Link>
 
+
+<Link
+  to="/issuedReceipts"
+  onClick={() => setIsMenuOpen(false)}
+  activeProps={{
+    className:
+      "flex items-center gap-4 rounded-xl px-4 py-3 bg-white/20 text-white",
+  }}
+  inactiveProps={{
+    className:
+      "flex items-center gap-4 rounded-xl px-4 py-3 text-white",
+  }}
+>
+  <LuReceiptText className="h-6 w-6 shrink-0" />
+  <span className="text-xl font-bold">Comprobantes</span>
+</Link>
+
               <Link
                 to="/expenses"
                 onClick={() => setIsMenuOpen(false)}
@@ -613,6 +654,7 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
                 <LuCalculator className="h-6 w-6 shrink-0" />
                 <span className="text-xl font-bold">Egresos</span>
               </Link>
+
 
 
               <Link

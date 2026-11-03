@@ -30,6 +30,7 @@ import { Route as dashboardExpensesRouteImport } from './routes/(dashboard)/expe
 import { Route as dashboardSalesReportRouteImport } from './routes/(dashboard)/salesReport'
 import { Route as historySalesHistorySalesRouteImport } from './routes/(historySales)/historySales'
 import { Route as historySalesHistorySalesDetailsRouteImport } from './routes/(historySales)/historySalesDetails'
+import { Route as issuedReceiptsIssuedReceiptsRouteImport } from './routes/(issuedReceipts)/issuedReceipts'
 import { Route as issuerInformationIssuerInformationRouteImport } from './routes/(issuerInformation)/issuerInformation'
 import { Route as menuDiscountProductsRouteImport } from './routes/(menu)/discountProducts'
 import { Route as menuAdminCategoryFormRouteImport } from './routes/(menuAdmin)/categoryForm'
@@ -167,6 +168,12 @@ const historySalesHistorySalesDetailsRoute =
   historySalesHistorySalesDetailsRouteImport.update({
     id: '/(historySales)/historySalesDetails',
     path: '/historySalesDetails',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const issuedReceiptsIssuedReceiptsRoute =
+  issuedReceiptsIssuedReceiptsRouteImport.update({
+    id: '/(issuedReceipts)/issuedReceipts',
+    path: '/issuedReceipts',
     getParentRoute: () => rootRouteImport,
   } as any)
 const issuerInformationIssuerInformationRoute =
@@ -309,6 +316,7 @@ export interface FileRoutesByFullPath {
   '/salesReport': typeof dashboardSalesReportRoute
   '/historySales': typeof historySalesHistorySalesRoute
   '/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
+  '/issuedReceipts': typeof issuedReceiptsIssuedReceiptsRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/discountProducts': typeof menuDiscountProductsRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
@@ -354,6 +362,7 @@ export interface FileRoutesByTo {
   '/salesReport': typeof dashboardSalesReportRoute
   '/historySales': typeof historySalesHistorySalesRoute
   '/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
+  '/issuedReceipts': typeof issuedReceiptsIssuedReceiptsRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/discountProducts': typeof menuDiscountProductsRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
@@ -400,6 +409,7 @@ export interface FileRoutesById {
   '/(dashboard)/salesReport': typeof dashboardSalesReportRoute
   '/(historySales)/historySales': typeof historySalesHistorySalesRoute
   '/(historySales)/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
+  '/(issuedReceipts)/issuedReceipts': typeof issuedReceiptsIssuedReceiptsRoute
   '/(issuerInformation)/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/(menu)/discountProducts': typeof menuDiscountProductsRoute
   '/(menuAdmin)/categoryForm': typeof menuAdminCategoryFormRoute
@@ -447,6 +457,7 @@ export interface FileRouteTypes {
     | '/salesReport'
     | '/historySales'
     | '/historySalesDetails'
+    | '/issuedReceipts'
     | '/issuerInformation'
     | '/discountProducts'
     | '/categoryForm'
@@ -492,6 +503,7 @@ export interface FileRouteTypes {
     | '/salesReport'
     | '/historySales'
     | '/historySalesDetails'
+    | '/issuedReceipts'
     | '/issuerInformation'
     | '/discountProducts'
     | '/categoryForm'
@@ -537,6 +549,7 @@ export interface FileRouteTypes {
     | '/(dashboard)/salesReport'
     | '/(historySales)/historySales'
     | '/(historySales)/historySalesDetails'
+    | '/(issuedReceipts)/issuedReceipts'
     | '/(issuerInformation)/issuerInformation'
     | '/(menu)/discountProducts'
     | '/(menuAdmin)/categoryForm'
@@ -583,6 +596,7 @@ export interface RootRouteChildren {
   dashboardSalesReportRoute: typeof dashboardSalesReportRoute
   historySalesHistorySalesRoute: typeof historySalesHistorySalesRoute
   historySalesHistorySalesDetailsRoute: typeof historySalesHistorySalesDetailsRoute
+  issuedReceiptsIssuedReceiptsRoute: typeof issuedReceiptsIssuedReceiptsRoute
   issuerInformationIssuerInformationRoute: typeof issuerInformationIssuerInformationRoute
   menuDiscountProductsRoute: typeof menuDiscountProductsRoute
   menuAdminCategoryFormRoute: typeof menuAdminCategoryFormRoute
@@ -754,6 +768,13 @@ declare module '@tanstack/react-router' {
       path: '/historySalesDetails'
       fullPath: '/historySalesDetails'
       preLoaderRoute: typeof historySalesHistorySalesDetailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(issuedReceipts)/issuedReceipts': {
+      id: '/(issuedReceipts)/issuedReceipts'
+      path: '/issuedReceipts'
+      fullPath: '/issuedReceipts'
+      preLoaderRoute: typeof issuedReceiptsIssuedReceiptsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(issuerInformation)/issuerInformation': {
@@ -936,6 +957,7 @@ const rootRouteChildren: RootRouteChildren = {
   dashboardSalesReportRoute: dashboardSalesReportRoute,
   historySalesHistorySalesRoute: historySalesHistorySalesRoute,
   historySalesHistorySalesDetailsRoute: historySalesHistorySalesDetailsRoute,
+  issuedReceiptsIssuedReceiptsRoute: issuedReceiptsIssuedReceiptsRoute,
   issuerInformationIssuerInformationRoute:
     issuerInformationIssuerInformationRoute,
   menuDiscountProductsRoute: menuDiscountProductsRoute,

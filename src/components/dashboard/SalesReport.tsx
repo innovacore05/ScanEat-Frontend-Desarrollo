@@ -12,7 +12,7 @@ import { getStoredRoleId } from "../../services/authService";
 import { ROLE_IDS } from "../../config/roles";
 import Skeleton from "../shared/Skeleton";
 import { ArrowLeftIcon } from "@animateicons/react/lucide";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 
 //Este objeto mapea los periodos de tiempo a los valores que se envían a la API para obtener los datos del reporte de ventas.
 const periodToApiValue: Record<SalesPeriod, "today" | "week" | "month" | "year"

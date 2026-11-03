@@ -16,7 +16,7 @@ import { LuShoppingBag } from "react-icons/lu";
 import { MdOutlineDiscount } from "react-icons/md";
 import { MdOutlineTableBar } from "react-icons/md";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
