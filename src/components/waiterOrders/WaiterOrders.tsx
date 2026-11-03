@@ -10,6 +10,7 @@ import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
 import Skeleton from "../shared/Skeleton";
 import { socket } from "../../services/socketClient";
+import { useBell } from "../../hooks/useBell";
 
 function WaiterOrders() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,6 +20,7 @@ function WaiterOrders() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+  const { playBell } = useBell();
 
   const loadOrders = useCallback(async (showLoading = false) => {
     if (showLoading) setIsLoadingOrders(true);
@@ -49,7 +51,12 @@ function WaiterOrders() {
       void loadOrders(true);
     };
 
+    const handleOrderReady = () => {
+      playBell("waiter");
+    };
+
     socket.on("waiter_orders_updated", handleWaiterOrdersUpdated);
+    socket.on("waiter:order-ready", handleOrderReady);
     socket.on("connect", handleConnect);
     
     if (socket.connected) {
@@ -60,10 +67,11 @@ function WaiterOrders() {
 
     return () => {
       socket.off("waiter_orders_updated", handleWaiterOrdersUpdated);
+      socket.off("waiter:order-ready", handleOrderReady);
       socket.off("connect", handleConnect);
     };
     
-  }, [loadOrders]);
+  }, [loadOrders, playBell]);
 
 
   const filteredOrders = orders.filter( (order) => {
