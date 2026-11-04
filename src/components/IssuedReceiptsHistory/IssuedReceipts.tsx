@@ -687,7 +687,7 @@ function IssuedReceipts() {
 
                         </div>
 
-                        <div className="grid grid-cols-3 overflow-hidden rounded-xl bg-[#61B1A2] text-center text-white">
+                        <div className="grid grid-cols-3 overflow-hidden rounded-xl bg-mint-darker text-center text-white">
 
                             {[
 

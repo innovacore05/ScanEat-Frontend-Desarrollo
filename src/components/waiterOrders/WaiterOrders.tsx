@@ -10,9 +10,7 @@ import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
 import Skeleton from "../shared/Skeleton";
 import { socket } from "../../services/socketClient";
-import { useBell } from "../../hooks/useBell";
 import { motion } from "motion/react";
-
 
 function WaiterOrders() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,7 +20,6 @@ function WaiterOrders() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
-  const { playBell } = useBell();
 
   const loadOrders = useCallback(async (showLoading = false) => {
     if (showLoading) setIsLoadingOrders(true);
@@ -36,9 +33,11 @@ function WaiterOrders() {
 
         return backendOrders[0] ?? null;
       });
+      return backendOrders;
     } catch (error) {
       console.error("No se pudieron cargar los pedidos:", error);
       setOrders([]);
+      return [];
     } finally {
       if (showLoading) setIsLoadingOrders(false);
     }
@@ -49,31 +48,14 @@ function WaiterOrders() {
     const handleWaiterOrdersUpdated = () => {
       void loadOrders();
     };
-    const handleConnect = () => {
-      void loadOrders(true);
-    };
-
-    const handleOrderReady = () => {
-      playBell("waiter");
-    };
 
     socket.on("waiter_orders_updated", handleWaiterOrdersUpdated);
-    socket.on("waiter:order-ready", handleOrderReady);
-    socket.on("connect", handleConnect);
-    
-    if (socket.connected) {
-      void loadOrders(true);
-    } else {
-      socket.connect();
-    }
+    void Promise.resolve().then(() => loadOrders(true));
 
     return () => {
       socket.off("waiter_orders_updated", handleWaiterOrdersUpdated);
-      socket.off("waiter:order-ready", handleOrderReady);
-      socket.off("connect", handleConnect);
     };
-    
-  }, [loadOrders, playBell]);
+  }, [loadOrders]);
 
 
   const filteredOrders = orders.filter( (order) => {
@@ -103,8 +85,6 @@ function WaiterOrders() {
   return (
     <DashboardLayoutWaiter>
       <main className="min-h-screen bg-white">
-
-
         {/* Celular */}
         <section className="px-6 lg:hidden">
           <div className="flex items-center gap-2">
@@ -257,7 +237,9 @@ function WaiterOrders() {
                   order={orderForDetails}
                   embedded
                   canAddProducts
-                  onStatusChanged={loadOrders}
+                  onStatusChanged={() => {
+                    void loadOrders();
+                  }}
                 />
               ) : (
                 <div className="flex min-h-80 items-center justify-center rounded-4xl bg-neutral-100 px-8">

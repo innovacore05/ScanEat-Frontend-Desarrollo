@@ -139,6 +139,15 @@
 	transform: translateX(0);
 }
 
+.notification-stack {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.notification-stack::-webkit-scrollbar {
+	display: none;
+}
+
 /* formato html para la impresion del ticket */
 .logo-container {
   text-align: center;
