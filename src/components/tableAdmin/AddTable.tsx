@@ -64,6 +64,8 @@ function AddTable() {
 			setIsSubmitting(true);
 
 			const table = await createTable(tableNumberValue, chairNumberValue);
+			setTableNumber("");
+			setChairNumber("");
 			//setCreatedTableId(table.id);
 			openQrForTable(table.id, tableNumberValue);
 		} catch (error) {

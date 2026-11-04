@@ -32,6 +32,7 @@ function CustomDishForm({ mode = "create", productId }: CustomDishFormProps) {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
 
   //cabys
   const [categories, setCategories] = useState<Category[]>([]);
@@ -73,6 +74,17 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
 
 
 
+  /* useEffect para mensaje de advertir si no hay ninguna categoría*/
+    useEffect(() => {
+      if (!categoriesLoaded) return;
+
+    if (categories.length === 0) {
+      setError("Debe crear al menos una categoría antes de guardar un platillo");
+    } else {
+      setError("");
+    }
+  }, [categories, categoriesLoaded]);
+  
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -81,7 +93,9 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
         setCategories(data);
       } catch (error) {
         console.error("Error loading categories:", error);
-      }
+      } finally {
+      setCategoriesLoaded(true);
+    }
     };
 
     loadCategories();
@@ -312,6 +326,11 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
+
+    if (categories.length === 0) {
+      setError("Debe crear al menos una categoría antes de guardar un platillo");
+      return;
+    }
 
     if (!name.trim()) {
       setError("Ingresa el nombre del platillo");

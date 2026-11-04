@@ -27,6 +27,7 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
  
   //cabys
   const [categories, setCategories] = useState<Category[]>([]);
@@ -59,9 +60,17 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
     setCabysResults([]);
   };
 
-  {
-    /* useEffect para cargar el nombre del usuario */
-  }
+  
+  /* useEffect para mensaje de advertir si no hay ninguna categoría*/
+    useEffect(() => {
+      if (!categoriesLoaded) return;
+
+    if (categories.length === 0) {
+      setError("Debe crear al menos una categoría antes de guardar un platillo");
+    } else {
+      setError("");
+    }
+  }, [categories, categoriesLoaded]);
 
   {
     /* useEffect para cargar las categorías */
@@ -73,6 +82,8 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
         setCategories(data);
       } catch (error) {
         console.error("Error loading categories:", error);
+      } finally {
+        setCategoriesLoaded(true);
       }
     };
 
@@ -141,8 +152,6 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
       })
       .catch((error) => console.error("Error cargando CABYS:", error));
   }, [usesSearch, cabysCode]);
-
-
 
 
 
@@ -317,6 +326,10 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
     event.preventDefault();
     setError("");
 
+    if (categories.length === 0) {
+      setError("Debe crear al menos una categoría antes de guardar un platillo");
+      return;
+    }
     if (!name.trim()) {
       setError("Ingresa el nombre del platillo");
       return;

@@ -88,7 +88,7 @@ function CheckOrder() {
   // Cotizar solamente los pedidos nuevos.
   useEffect(() => {
     if (isAddingToOrder || !tableId || cartItems.length === 0) {
-      setOrderQuote(null);
+      
       setIsQuoting(false);
       setQuoteError("");
       return;
@@ -104,7 +104,6 @@ function CheckOrder() {
         selectedOptions: item.selectedOptions ?? {},
       })),
     };
-    setOrderQuote(null);
     setIsQuoting(true);
     setQuoteError("");
 
@@ -383,8 +382,6 @@ const createdOrder = await submitSharedCart(
       );
     }
 
-    if (isQuoting) return <p>Actualizando el total…</p>;
-
     if (quoteError) {
       return (
         <p role="alert" className="text-red-600">
@@ -393,7 +390,15 @@ const createdOrder = await submitSharedCart(
       );
     }
 
-    if (!orderQuote) return null;
+    if (!orderQuote) {
+  return isQuoting ? (
+    <div className="flex flex-col gap-2" aria-hidden="true">
+      <div className="h-6" />
+      <div className="h-6" />
+      <div className="my-2 h-7" />
+    </div>
+  ) : null;
+}
 
     const subtotal = Number(orderQuote.totals.subtotal);
     const subtotalBeforeDiscount = Number(
