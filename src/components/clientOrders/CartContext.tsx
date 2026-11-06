@@ -286,12 +286,29 @@ const discount = Number(
     }
 
     try {
-      const updatedCart = await addCartItem(mesaId, {
+      let updatedCart = await addCartItem(mesaId, {
         productId: item.productId,
         quantity: item.quantity,
         selectedOptions: item.selectedOptions,
         clientId: getClientId(),
       });
+
+      if (item.specialInstructions?.length) {
+        const addedItem = updatedCart.items.find(
+          (cartItem) =>
+            cartItem.clientId === getClientId() &&
+            cartItem.productId === item.productId &&
+            JSON.stringify(Object.entries(cartItem.selectedOptions ?? {}).sort()) ===
+              JSON.stringify(Object.entries(item.selectedOptions ?? {}).sort()),
+        );
+        if (addedItem) {
+          updatedCart = await updateCartItem(mesaId, addedItem.id, {
+            clientId: getClientId(),
+            quantity: addedItem.quantity,
+            specialInstructions: item.specialInstructions,
+          });
+        }
+      }
 
       await applySharedCart(updatedCart);
       notifyTableCartChanged();
