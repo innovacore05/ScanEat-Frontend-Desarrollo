@@ -350,6 +350,7 @@ const discount = Number(
     notifyTableCartChanged();
   } catch (error) {
     console.error("No se pudieron guardar las instrucciones:", error);
+    throw error;
   }
 };
 
