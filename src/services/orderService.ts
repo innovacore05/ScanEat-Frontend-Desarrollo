@@ -422,3 +422,39 @@ export const markKitchenOrderReady = async (orderId: number) => {
     },
   );
 };
+
+
+//recupera el pedido al volver a escanear  el qr
+
+export const getActiveOrder = async (tableId: string) => {
+  try {
+    return await cookieSessionClient.request<{
+      order: {
+        orderId: number;
+        state: OrderStatus;
+      };
+    }>(`${ORDERS_BASE_URL}/active/${encodeURIComponent(tableId)}`, {
+      method: "GET",
+      fallBackMessage: "No se pudo recuperar el pedido",
+    });
+    } catch (error) {
+    const status =
+      typeof error === "object" && error !== null && "status" in error
+        ? Number(error.status)
+        : undefined;
+
+    const message =
+      typeof error === "object" && error !== null && "message" in error
+        ? String(error.message)
+        : "";
+
+    if (
+      status === 404 &&
+      message === "No hay una orden activa para esta mesa"
+    ) {
+      return null;
+    }
+
+    throw error;
+  }
+};

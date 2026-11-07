@@ -119,8 +119,8 @@ function OrderStatus({ orderId, tableId }: OrderStatusProps) {
           setError("");
 
           if (newStatus === "Entregado") {
-            localStorage.removeItem("currentOrderId");
-            localStorage.removeItem("currentOrderTableId");
+            // localStorage.removeItem("currentOrderId");
+            // localStorage.removeItem("currentOrderTableId");
           }
         }
       } catch (loadError) {
@@ -166,8 +166,8 @@ function OrderStatus({ orderId, tableId }: OrderStatusProps) {
       setError("");
 
     if (newStatus === "Entregado") {
-      localStorage.removeItem("currentOrderId");
-      localStorage.removeItem("currentOrderTableId");
+      // localStorage.removeItem("currentOrderId");
+      // localStorage.removeItem("currentOrderTableId");
     }
     };
     

@@ -25,6 +25,9 @@ import MenuAssistant from "./MenuAssistant";
 import UseAnimations from 'react-useanimations';
 import shoppingBag from 'react-useanimations/lib/shoppingBag';
 import { motion } from "motion/react";
+import { getActiveOrder } from "../../services/orderService";
+import OrderClosed from '../clientOrders/OrderClosed';
+import { socket } from "../../services/socketClient";
 
 // Límite de muestras
 const PAGE_SIZE = 10;
@@ -126,6 +129,7 @@ displayIvaRate={product.displayIvaRate}
 }
 
 function MenuClient() {
+  
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
@@ -149,7 +153,9 @@ function MenuClient() {
   const [currentOrderTableId, setCurrentOrderTableId] = useState<
     string | undefined
   >(undefined);
-
+const [isCheckingActiveOrder, setIsCheckingActiveOrder] = useState(true);
+const [orderRecoveryError, setOrderRecoveryError] = useState("");
+const [orderCheckAttempt, setOrderCheckAttempt] = useState(0);
   const {
     cartCount,
     orderAddCount,
@@ -163,40 +169,123 @@ function MenuClient() {
   });
 
   const isAddingToOrder = mode === "add" && orderId !== undefined;
+const [showOrderClosed, setShowOrderClosed] = useState(false);
 
-  // Recuperar la comanda actual de esta mesa
-  useEffect(() => {
-    const savedOrderId = localStorage.getItem("currentOrderId");
-    const savedOrderTableId = localStorage.getItem("currentOrderTableId");
 
-    if (!mesaId || !savedOrderId || !savedOrderTableId) {
-      setCurrentOrderId(null);
-      setCurrentOrderTableId(undefined);
+// Mostrar el aviso cuando caja paga el pedido de esta mesa
+useEffect(() => {
+  if (!mesaId) return;
+
+  const handleOrderStatusUpdated = (update: {
+    orderId: number;
+    tableId: string;
+    state: string;
+  }) => {
+    if (update.tableId !== mesaId || update.state !== "paid") return;
+
+    if (
+      currentOrderId !== null &&
+      update.orderId !== currentOrderId
+    ) {
       return;
     }
 
-    if (savedOrderTableId !== mesaId) {
+    if (localStorage.getItem("currentOrderTableId") === mesaId) {
       localStorage.removeItem("currentOrderId");
       localStorage.removeItem("currentOrderTableId");
-
-      setCurrentOrderId(null);
-      setCurrentOrderTableId(undefined);
-      return;
     }
 
-    const parsedOrderId = Number(savedOrderId);
+    setCurrentOrderId(null);
+    setCurrentOrderTableId(undefined);
+    setShowOrderClosed(true);
+  };
 
-    if (Number.isInteger(parsedOrderId) && parsedOrderId > 0) {
-      setCurrentOrderId(parsedOrderId);
-      setCurrentOrderTableId(savedOrderTableId);
-    } else {
-      localStorage.removeItem("currentOrderId");
-      localStorage.removeItem("currentOrderTableId");
+  socket.on("order_status_updated", handleOrderStatusUpdated);
 
-      setCurrentOrderId(null);
-      setCurrentOrderTableId(undefined);
-    }
-  }, [mesaId]);
+  return () => {
+    socket.off("order_status_updated", handleOrderStatusUpdated);
+  };
+}, [mesaId, currentOrderId]);
+
+// Consultar con el servidor si todavía hay un pedido activo
+useEffect(() => {
+  if (!mesaId) {
+    setCurrentOrderId(null);
+    setCurrentOrderTableId(undefined);
+    setIsCheckingActiveOrder(false);
+    setOrderRecoveryError("");
+    return;
+  }
+
+  const savedOrderId = localStorage.getItem("currentOrderId");
+  const savedTableId = localStorage.getItem("currentOrderTableId");
+  const savedId = Number(savedOrderId);
+  const hasSavedOrder =
+    savedTableId === mesaId &&
+    Number.isInteger(savedId) &&
+    savedId > 0;
+
+  let cancelled = false;
+
+  setIsCheckingActiveOrder(true);
+  setOrderRecoveryError("");
+
+  void getActiveOrder(mesaId)
+    .then((active) => {
+      if (cancelled) return;
+
+      if (!active) {
+        if (savedTableId === mesaId) {
+          localStorage.removeItem("currentOrderId");
+          localStorage.removeItem("currentOrderTableId");
+        }
+
+        setCurrentOrderId(null);
+        setCurrentOrderTableId(undefined);
+        return;
+      }
+
+      localStorage.setItem("currentOrderId", String(active.order.orderId));
+      localStorage.setItem("currentOrderTableId", mesaId);
+      setCurrentOrderId(active.order.orderId);
+      setCurrentOrderTableId(mesaId);
+    })
+    .catch((error) => {
+      if (cancelled) return;
+
+      setOrderRecoveryError(
+        "No pudimos verificar el pedido por la conexión. Conservamos el acceso y volveremos a intentar.",
+      );
+
+      if (hasSavedOrder) {
+        setCurrentOrderId(savedId);
+        setCurrentOrderTableId(mesaId);
+      } else {
+        setCurrentOrderId(null);
+        setCurrentOrderTableId(undefined);
+      }
+
+      console.error("No se pudo consultar la orden:", error);
+    })
+    .finally(() => {
+      if (!cancelled) setIsCheckingActiveOrder(false);
+    });
+
+  return () => {
+    cancelled = true;
+  };
+}, [mesaId, orderCheckAttempt]);
+
+// Reintentar la consulta cuando regrese internet
+useEffect(() => {
+  const retryWhenOnline = () => {
+    setOrderCheckAttempt((attempt) => attempt + 1);
+  };
+
+  window.addEventListener("online", retryWhenOnline);
+  return () => window.removeEventListener("online", retryWhenOnline);
+}, []);
+
 
   // Mantener identificada la mesa del carrito compartido
   useEffect(() => {
@@ -389,6 +478,29 @@ function MenuClient() {
 
   return (
     <main className="min-h-screen bg-white px-8 pt-8 lg:bg-neutral-50">
+ 
+ {orderRecoveryError && (
+  <div
+    role="status"
+    className="fixed bottom-16 left-4 right-4 z-50 rounded-xl bg-amber-50 p-3 text-center text-sm text-amber-900 shadow"
+  >
+    <p>{orderRecoveryError}</p>
+    <button
+      type="button"
+      onClick={() => setOrderCheckAttempt((attempt) => attempt + 1)}
+      className="mt-2 font-bold underline"
+    >
+      Reintentar
+    </button>
+  </div>
+)}
+
+{showOrderClosed && (
+  <OrderClosed
+    onStartNewSession={() => window.location.reload()}
+  />
+)}
+     
       {/* Celular */}
       <section className="lg:hidden">
         <div className="mt-4 flex flex-col gap-5">
@@ -544,7 +656,18 @@ function MenuClient() {
       <div className="fixed bottom-2 left-8 right-8 z-50 flex h-12 items-center justify-center rounded-2xl border border-border bg-white lg:bottom-8 lg:left-10 lg:right-auto lg:top-8 lg:h-[calc(100vh-4rem)] lg:w-20 lg:rounded-full lg:border-0">
         <RestaurantLogo className="absolute top-6 hidden h-16 w-16 object-contain lg:block" />
 
-        {!isAddingToOrder && currentOrderId !== null ? (
+        {!isAddingToOrder &&
+(isCheckingActiveOrder ||
+  (Boolean(orderRecoveryError) && currentOrderId === null)) ? (
+  <button
+    type="button"
+    disabled
+    aria-label="Verificando el estado del pedido"
+    className="absolute flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark text-xs font-semibold text-white opacity-80 lg:top-1/2 lg:-translate-y-1/2"
+  >
+    Verificando
+  </button>
+) : !isAddingToOrder && currentOrderId !== null ? (
           <Link
             to="/orderStatus"
             search={{
