@@ -1,6 +1,10 @@
 import { useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent } from "react";
-import { LuLoaderCircle, LuSend, LuX } from "react-icons/lu";
-import { sendMenuChatMessage } from "../../services/aiService";
+import {LuLoaderCircle, LuSend, LuX } from "react-icons/lu";
+import {
+  sendMenuChatMessage,
+  type ChatMessage,
+  type ChatAction,
+} from "../../services/aiService";
 import { getProductById, type Product } from "../../services/productService";
 import { Bot } from '@/components/animate-ui/icons/bot';
 
@@ -20,6 +24,13 @@ type Message = {
   recommendations?: Recommendation[];
 };
 
+type AgentStage =
+  | "idle"
+  | "awaiting_add_confirmation"
+  | "awaiting_option"
+  | "awaiting_instruction"
+  | "awaiting_final_confirmation";
+
 type CartProduct = {
   productId: number;
   name: string;
@@ -28,6 +39,10 @@ type CartProduct = {
   image: string;
   quantity: number;
   selectedOptions: Record<string, string>;
+  specialInstructions?: {
+    unit: number;
+    instruction: string;
+  }[];
 };
 
 type Props = {
@@ -55,6 +70,16 @@ function MenuAssistant({
   const [isSending, setIsSending] = useState(false);
   const [loadingRecommendation, setLoadingRecommendation] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
+  const [pendingAction, setPendingAction] = useState<Extract<
+  ChatAction,
+  { type: "confirm_add_to_cart" }
+> | null>(null);
+  const pendingRecommendedProductsRef = useRef<Recommendation[]>([]);
+  const [lastRecommendations, setLastRecommendations] = useState<Recommendation[]>([]);
+  const [pendingQuantity, setPendingQuantity] = useState(1);
+  const [agentStage, setAgentStage] = useState<AgentStage>("idle");
+  const [optionGroupIndex, setOptionGroupIndex] = useState(0);
+  const [specialInstruction, setSpecialInstruction] = useState("");
   const [productToCustomize, setProductToCustomize] = useState<Product | null>(null);
   const [options, setOptions] = useState<Record<string, string>>({});
   const [buttonPosition, setButtonPosition] = useState<{ left: number; top: number } | null>(null);
@@ -127,6 +152,180 @@ function MenuAssistant({
     setIsOpen(!isOpen);
   };
 
+  const startProductConfiguration = async (
+    action: Extract<ChatAction, { type: "confirm_add_to_cart" }>,
+  ) => {
+
+  setIsSending(true);
+  setNotice("");
+
+  try {
+    const product = await getProductById(action.productId);
+
+    setPendingQuantity(action.quantity);
+    setProductToCustomize(product);
+    setOptions({});
+    setSpecialInstruction("");
+    setPendingAction(null);
+    const groups = product.optionGroups ?? [];
+    setOptionGroupIndex(0);
+    setAgentStage(groups.length > 0 ? "awaiting_option" : "awaiting_instruction");
+
+    setMessages((current) => [
+      ...current,
+      {
+        from: "client",
+        text: "Sí",
+      },
+      {
+        from: "assistant",
+        text: product.optionGroups?.length
+          ? `Perfecto. ¿Qué ${product.optionGroups[0].name.toLowerCase()} deseas para ${product.productName}? Opciones: ${product.optionGroups[0].options.join(", ")}.`
+          : `Perfecto. ¿Quieres agregar una indicación especial para ${product.productName}? Escribe "ninguna" si no deseas agregarla.`,
+      },
+    ]);
+  } catch {
+    setPendingAction(null);
+
+    setMessages((current) => [
+      ...current,
+      {
+        from: "client",
+        text: "Sí",
+      },
+      {
+        from: "assistant",
+        text: "No pude cargar ese producto. No se agregó a la orden.",
+      },
+    ]);
+  } finally {
+    setIsSending(false);
+  }
+};
+
+const startPendingProductConfiguration = async () => {
+  if (!pendingAction) return;
+  await startProductConfiguration(pendingAction);
+};
+
+const finishProductConfiguration = (
+  instruction: string,
+  selectedOptions: Record<string, string> = options,
+) => {
+  if (!productToCustomize) return;
+
+  setSpecialInstruction(instruction);
+  setAgentStage("awaiting_final_confirmation");
+  const selectedOptionsText = Object.values(selectedOptions).join(", ");
+  const instructionText = instruction || "sin indicaciones especiales";
+
+  setMessages((current) => [
+    ...current,
+    {
+      from: "assistant",
+      text: `Confirma: ¿deseas agregar ${pendingQuantity} ${productToCustomize.productName} a la orden${selectedOptionsText ? ` (${selectedOptionsText})` : ""}, ${instructionText}? Responde sí o no.`,
+    },
+  ]);
+};
+
+const handleAgentMessage = (clientMessage: string): boolean => {
+  if (!productToCustomize) return false;
+
+  if (agentStage === "awaiting_option") {
+    const groups = productToCustomize.optionGroups ?? [];
+    const group = groups[optionGroupIndex];
+    if (!group) return false;
+
+    const normalizedMessage = clientMessage.trim().toLocaleLowerCase();
+    const selectedOption = group.options.find(
+      (option) => option.toLocaleLowerCase() === normalizedMessage,
+    );
+
+    if (!selectedOption) {
+      setMessages((current) => [
+        ...current,
+        {
+          from: "assistant",
+          text: `No reconocí esa opción. Para ${group.name}, elige una de estas: ${group.options.join(", ")}.`,
+        },
+      ]);
+      return true;
+    }
+
+    const nextOptions = {
+      ...options,
+      [String(group.id)]: selectedOption,
+    };
+    setOptions(nextOptions);
+
+    const nextGroup = groups[optionGroupIndex + 1];
+    if (nextGroup) {
+      setOptionGroupIndex(optionGroupIndex + 1);
+      setMessages((current) => [
+        ...current,
+        {
+          from: "assistant",
+          text: `¿Qué ${nextGroup.name.toLowerCase()} deseas? Opciones: ${nextGroup.options.join(", ")}.`,
+        },
+      ]);
+    } else {
+      setAgentStage("awaiting_instruction");
+      setMessages((current) => [
+        ...current,
+        {
+          from: "assistant",
+          text: '¿Quieres agregar una indicación especial? Escríbela o responde "ninguna".',
+        },
+      ]);
+    }
+
+    return true;
+  }
+
+  if (agentStage === "awaiting_instruction") {
+    const instruction =
+      /^(ninguna|ninguno|no|sin indicaciones?|no gracias)$/i.test(clientMessage.trim())
+        ? ""
+        : clientMessage.trim();
+    finishProductConfiguration(instruction, options);
+    return true;
+  }
+
+  if (agentStage === "awaiting_final_confirmation") {
+    if (isConfirmation(clientMessage)) {
+      putInCart(
+        productToCustomize,
+        options,
+        specialInstruction,
+        pendingQuantity,
+      );
+    } else if (isCancellation(clientMessage)) {
+      setProductToCustomize(null);
+      setOptions({});
+      setSpecialInstruction("");
+      setAgentStage("idle");
+      setMessages((current) => [
+        ...current,
+        {
+          from: "assistant",
+          text: "Está bien, no agregué el producto a la orden.",
+        },
+      ]);
+    } else {
+      setMessages((current) => [
+        ...current,
+        {
+          from: "assistant",
+          text: "Responde sí para agregarlo o no para cancelar.",
+        },
+      ]);
+    }
+    return true;
+  }
+
+  return false;
+};
+
   const sendMessage = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!mesaId || !text.trim() || isSending || loadingRecommendation) return;
@@ -134,11 +333,100 @@ function MenuAssistant({
     const clientMessage = text.trim();
     setText("");
     setNotice("");
-    setMessages((current) => [...current, { from: "client", text: clientMessage }]);
-    setIsSending(true);
+    const history: ChatMessage[] = messages.map((message) => ({
+  role: message.from === "client" ? "user" : "assistant",
+  content: message.text,
+}));
 
-    try {
-      const answer = await sendMenuChatMessage(mesaId, clientMessage);
+if (pendingAction && isConfirmation(clientMessage)) {
+  await startPendingProductConfiguration();
+  return;
+}
+
+if (
+  agentStage === "idle" &&
+  pendingAction === null &&
+  lastRecommendations.length > 0 &&
+  /^(agrega|agregar|agrégalo|agregalo|añade|anade)\s+(eso|esto|lo recomendado|las recomendaciones|todo|los dos|ambos)$/i.test(
+    clientMessage,
+  ) ||
+  /^(quiero|deseo)\s+(agregar|añadir|sumar)\s+(eso|esto|los dos|ambos|lo recomendado|las recomendaciones)$/i.test(
+    clientMessage,
+  )
+) {
+  const productsToAdd = lastRecommendations.filter(
+    (recommendation) => recommendation.role !== "dessert",
+  );
+  if (productsToAdd.length > 0) {
+    const [first, ...rest] = productsToAdd;
+    pendingRecommendedProductsRef.current = rest;
+    setPendingAction({
+      type: "confirm_add_to_cart",
+      productId: first.productId,
+      productName: first.productName,
+      quantity: 1,
+    });
+    setMessages((current) => [
+      ...current,
+      { from: "client", text: clientMessage },
+      {
+        from: "assistant",
+        text: `Entendido. ¿Quieres agregar ${productsToAdd
+          .map((product) => product.productName)
+          .join(" y ")} a la orden?`,
+      },
+    ]);
+  }
+  return;
+}
+
+if (pendingAction && isCancellation(clientMessage)) {
+  setPendingAction(null);
+  pendingRecommendedProductsRef.current = [];
+  setNotice("Está bien, no agregué el producto a la orden.");
+  setMessages((current) => [
+    ...current,
+    { from: "client", text: clientMessage },
+    {
+      from: "assistant",
+      text: "Está bien, no agregué el producto. ¿Qué te gustaría pedir?",
+    },
+  ]);
+  setText("");
+  return;
+}
+
+if (agentStage !== "idle") {
+  setMessages((current) => [
+    ...current,
+    { from: "client", text: clientMessage },
+  ]);
+  if (handleAgentMessage(clientMessage)) {
+    return;
+  }
+}
+
+if (agentStage !== "idle" && productToCustomize) {
+  return;
+}
+
+setMessages((current) => [
+  ...current,
+  { from: "client", text: clientMessage },
+]);
+
+setIsSending(true);
+
+try {
+  const answer = await sendMenuChatMessage(
+    mesaId,
+    clientMessage,
+    history,
+  );
+  setLastRecommendations(answer.recommendations);
+  if (answer.action.type === "confirm_add_to_cart") {
+  setPendingAction(answer.action);
+}
       setMessages((current) => [
         ...current,
         {
@@ -160,15 +448,23 @@ function MenuAssistant({
     }
   };
 
-  const putInCart = (product: Product, selectedOptions: Record<string, string>) => {
+  const putInCart = (
+  product: Product,
+  selectedOptions: Record<string, string>,
+  instruction = "",
+  quantity = 1,
+) => {
     const cartProduct: CartProduct = {
       productId: product.productId,
       name: product.productName,
       price: Number(product.price),
       discount: Number(product.discount ?? 0),
       image: product.image ?? "",
-      quantity: 1,
+      quantity: Number.isInteger(quantity) && quantity > 0 ? quantity : 1,
       selectedOptions,
+      specialInstructions: instruction.trim()
+  ? [{ unit: 1, instruction: instruction.trim() }]
+  : [],
     };
 
     if (isAddingToOrder) onAddToOrderCart(cartProduct);
@@ -177,6 +473,23 @@ function MenuAssistant({
     setNotice(`${product.productName} se agregó al carrito.`);
     setProductToCustomize(null);
     setOptions({});
+    setSpecialInstruction("");
+    setPendingQuantity(1);
+    setOptionGroupIndex(0);
+    setPendingAction(null);
+    const [nextProduct, ...remainingProducts] =
+      pendingRecommendedProductsRef.current;
+    pendingRecommendedProductsRef.current = remainingProducts;
+    if (nextProduct) {
+      void startProductConfiguration({
+        type: "confirm_add_to_cart",
+        productId: nextProduct.productId,
+        productName: nextProduct.productName,
+        quantity: 1,
+      });
+    } else {
+      setAgentStage("idle");
+    }
   };
 
   const chooseProduct = async (recommendation: Recommendation) => {
@@ -187,12 +500,23 @@ function MenuAssistant({
     try {
       const product = await getProductById(recommendation.productId);
 
-      if (product.optionGroups?.length) {
-        setProductToCustomize(product);
-        setOptions({});
-      } else {
-        putInCart(product, {});
-      }
+      setProductToCustomize(product);
+      setOptions({});
+      setSpecialInstruction("");
+      setPendingQuantity(1);
+      setOptionGroupIndex(0);
+      setAgentStage(
+        product.optionGroups?.length ? "awaiting_option" : "awaiting_instruction",
+      );
+      setMessages((current) => [
+        ...current,
+        {
+          from: "assistant",
+          text: product.optionGroups?.length
+            ? `Selecciona por chat las opciones de ${product.productName}. ¿Qué ${product.optionGroups[0].name.toLowerCase()} deseas? Opciones: ${product.optionGroups[0].options.join(", ")}.`
+            : `¿Quieres agregar una indicación especial para ${product.productName}? Escríbela o responde "ninguna".`,
+        },
+      ]);
     } catch {
       setNotice("No pude cargar las opciones de ese platillo. Inténtalo de nuevo.");
     } finally {
@@ -200,19 +524,15 @@ function MenuAssistant({
     }
   };
 
-  const confirmOptions = () => {
-    if (!productToCustomize) return;
+  const isConfirmation = (value: string) =>
+    /^(sí|si|s[ií]|claro|dale|agrégala|agregar|agrega los dos|agrega ambos|confirmo|ok|okay)$/i.test(
+    value.trim(),
+  );
 
-    const groups = productToCustomize.optionGroups ?? [];
-    const allOptionsChosen = groups.every((group) => options[String(group.id)]);
-
-    if (!allOptionsChosen) {
-      setNotice("Elige una opción en cada grupo.");
-      return;
-    }
-
-    putInCart(productToCustomize, options);
-  };
+const isCancellation = (value: string) =>
+  /^(no|cancelar|cancela|mejor no|no la agregues)$/i.test(
+    value.trim(),
+  );
 
   return (
     <>
@@ -278,36 +598,6 @@ function MenuAssistant({
                 <LuLoaderCircle className="h-4 w-4 animate-spin" />
                 Un momento...
               </p>
-            )}
-
-            {productToCustomize && (
-              <div className="space-y-3 rounded-xl bg-white p-3">
-                <strong>Opciones de {productToCustomize.productName}</strong>
-                {productToCustomize.optionGroups?.map((group) => (
-                  <label key={group.id} className="block text-sm">
-                    <span>{group.name}</span>
-                    <select
-                      value={options[String(group.id)] ?? ""}
-                      onChange={(event) =>
-                        setOptions({ ...options, [String(group.id)]: event.target.value })
-                      }
-                      className="mt-1 w-full rounded-lg border border-border p-2"
-                    >
-                      <option value="">Elige una opción</option>
-                      {group.options.map((option) => (
-                        <option key={option} value={option}>{option}</option>
-                      ))}
-                    </select>
-                  </label>
-                ))}
-                <button
-                  type="button"
-                  onClick={confirmOptions}
-                  className="w-full rounded-xl bg-mint-dark p-2 font-semibold text-white"
-                >
-                  Confirmar y agregar
-                </button>
-              </div>
             )}
 
             {notice && <p role="status" className="text-sm text-mint-dark">{notice}</p>}

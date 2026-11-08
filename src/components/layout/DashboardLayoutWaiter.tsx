@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   getProfile,
@@ -16,7 +16,32 @@ import { LuShoppingBag } from "react-icons/lu";
 import { MdOutlineDiscount } from "react-icons/md";
 import { MdOutlineTableBar } from "react-icons/md";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import { HiCheckCircle, HiX } from "react-icons/hi";
+import { socket } from "../../services/socketClient";
+import { getOrders } from "../../services/orderService";
+import { useBell } from "../../hooks/useBell";
+
+type OrderReadyEvent = {
+  orderId?: number;
+  tableNumber?: number;
+  order?: {
+    orderId?: number;
+    tableNumber?: number;
+    table?: {
+      tableNumber?: number;
+    };
+  };
+  table?: {
+    tableNumber?: number;
+  };
+};
+
+type WaiterNotification = {
+  id: string;
+  type: "ready" | "new";
+  tableNumber: number | null;
+};
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -29,6 +54,138 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
   const [firstName, setFirstName] = useState(getStoredFirstName);
   const [lastName, setLastName] = useState(getStoredLastName);
   const [email, setEmail] = useState(getStoredEmail);
+  const [notifications, setNotifications] = useState<WaiterNotification[]>([]);
+  const knownOrderIdsRef = useRef<Set<number> | null>(null);
+  const notificationSequenceRef = useRef(0);
+  const { playBell } = useBell();
+
+  const addNotification = (
+    type: WaiterNotification["type"],
+    tableNumber: number | null,
+    orderId?: number,
+  ) => {
+    notificationSequenceRef.current += 1;
+    const id = `${type}-${orderId ?? "unknown"}-${notificationSequenceRef.current}`;
+
+    setNotifications((current) => [
+      { id, type, tableNumber },
+      ...current,
+    ]);
+  };
+//Cuando llega orden desde cocina (pedido listo) se reproduce sonido y se agrega notificación
+  useEffect(() => {
+    const handleOrderReady = async (event: OrderReadyEvent = {}) => {
+      playBell("waiter");
+
+      const eventTableNumber =
+        event.tableNumber ??
+        event.order?.tableNumber ??
+        event.order?.table?.tableNumber ??
+        event.table?.tableNumber ??
+        null;
+
+      let tableNumber = eventTableNumber;
+      if (tableNumber === null) {
+        try {
+          const updatedOrders = await getOrders();
+          const eventOrderId = event.orderId ?? event.order?.orderId;
+          const readyOrder = eventOrderId
+            ? updatedOrders.find((order) => order.orderId === eventOrderId)
+            : updatedOrders.find((order) => order.status === "Listo");
+
+          tableNumber = readyOrder?.tableId ?? null;
+        } catch (error) {
+          console.error("No se pudo identificar la mesa del pedido listo:", error);
+        }
+      }
+
+      addNotification(
+        "ready",
+        tableNumber,
+        event.orderId ?? event.order?.orderId,
+      );
+    };
+
+    socket.on("waiter:order-ready", handleOrderReady);
+
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    return () => {
+      socket.off("waiter:order-ready", handleOrderReady);
+    };
+  }, [playBell]);
+
+  //Cuando llega orden desde cliente (pedido nuevo) solo se agrega notificación por el momento
+  useEffect(() => {
+    const loadKnownOrders = async () => {
+      try {
+        const orders = await getOrders();
+        knownOrderIdsRef.current = new Set(
+          orders.map((order) => order.orderId),
+        );
+      } catch (error) {
+        console.error("No se pudieron preparar las notificaciones de pedidos:", error);
+      }
+    };
+
+    const handleNewOrder = async (event: OrderReadyEvent = {}) => {
+      let updatedOrders;
+      try {
+        updatedOrders = await getOrders();
+      } catch (error) {
+        console.error("No se pudo comprobar si llegó un nuevo pedido:", error);
+        return;
+      }
+
+      const currentOrderIds = new Set(
+        updatedOrders.map((order) => order.orderId),
+      );
+      const knownOrderIds = knownOrderIdsRef.current;
+      knownOrderIdsRef.current = currentOrderIds;
+
+      if (!knownOrderIds) {
+        return;
+      }
+
+      const eventOrderId = event.orderId ?? event.order?.orderId;
+      const newOrder = eventOrderId
+        ? !knownOrderIds.has(eventOrderId)
+          ? updatedOrders.find((order) => order.orderId === eventOrderId)
+          : undefined
+        : updatedOrders.find((order) => !knownOrderIds.has(order.orderId));
+
+      if (!newOrder) {
+        return;
+      }
+
+      const eventTableNumber =
+        event.tableNumber ??
+        event.order?.tableNumber ??
+        event.order?.table?.tableNumber ??
+        event.table?.tableNumber ??
+        null;
+
+      let tableNumber = eventTableNumber;
+      if (tableNumber === null) {
+        try {
+          tableNumber = newOrder.tableId;
+        } catch (error) {
+          console.error("No se pudo identificar la mesa del nuevo pedido:", error);
+        }
+      }
+
+      addNotification("new", tableNumber, newOrder.orderId);
+    };
+
+    socket.on("waiter_orders_updated", handleNewOrder);
+    void loadKnownOrders();
+
+    return () => {
+      socket.off("waiter_orders_updated", handleNewOrder);
+    };
+  }, []);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -48,6 +205,52 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
 
   return (
     <main className="min-h-screen bg-white">
+      <div className="notification-stack fixed right-4 top-4 z-50 flex max-h-[calc(100vh-2rem)] w-[calc(100%-2rem)] max-w-96 flex-col gap-3 overflow-y-auto pr-1 sm:right-6">
+        <AnimatePresence initial={false}>
+          {notifications.map((notification) => (
+          <motion.div
+            key={notification.id}
+            role="alert"
+            aria-live={notification.type === "ready" ? "assertive" : "polite"}
+            layout
+            initial={{ opacity: 0, x: 40, scale: 0.92 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 40, scale: 0.92, height: 0, marginTop: -12 }}
+            transition={{ type: "spring", stiffness: 360, damping: 28 }}
+            className="flex items-start gap-3 rounded-2xl border border-mint-dark bg-white p-4 text-mint-darker shadow-sm"
+          >
+            <HiCheckCircle
+              aria-hidden="true"
+              className="mt-0.5 h-7 w-7 shrink-0 text-mint-dark"
+            />
+            <div className="min-w-0 flex-1">
+              <p className="font-bold">
+                {notification.type === "ready"
+                  ? notification.tableNumber === null
+                    ? "Pedido listo para entregar"
+                    : `El pedido de la mesa #${notification.tableNumber} está listo para entregar`
+                  : notification.tableNumber === null
+                    ? "Nuevo pedido recibido"
+                    : `Nuevo pedido de la mesa #${notification.tableNumber}`}
+              </p>
+            </div>
+            <button
+              type="button"
+              aria-label="Cerrar notificación"
+              onClick={() =>
+                setNotifications((current) =>
+                  current.filter((item) => item.id !== notification.id),
+                )
+              }
+              className="rounded-full p-1 text-text-primary transition-colors hover:bg-neutral-100"
+            >
+              <HiX aria-hidden="true" className="h-5 w-5" />
+            </button>
+          </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
       {/* Barra lateral - COMPUTADORA */}
 
       <motion.aside

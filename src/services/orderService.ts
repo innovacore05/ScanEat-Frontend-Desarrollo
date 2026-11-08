@@ -121,6 +121,7 @@ export const stateToLabel: Record<OrderStatus, FrontendOrderStatus> = {
 const mapBackendOrderToFrontend = (backendOrder: BackendOrder) => {
   const totalValue = Number(backendOrder.order.total || 0);
   const items = backendOrder.details.map((detail) => ({
+    detailId: detail.detailId,
     name: detail.productName,
     quantity: detail.quantity,
     price: Number(detail.unitPrice || 0),
@@ -413,6 +414,26 @@ export const addItemsToOrder = (
     );
 
 
+export const updateOrderItem = (
+  orderId: number,
+  detailId: number,
+  payload: {
+    quantity: number;
+    specialInstructions: { unit: number; instruction: string }[];
+  },
+) =>
+  cookieSessionClient.request(`${ORDERS_BASE_URL}/${orderId}/items/${detailId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+    fallBackMessage: "No se pudo editar el producto",
+  });
+
+export const deleteOrderItem = (orderId: number, detailId: number) =>
+  cookieSessionClient.request(`${ORDERS_BASE_URL}/${orderId}/items/${detailId}`, {
+    method: "DELETE",
+    fallBackMessage: "No se pudo eliminar el producto",
+  });
+
 export const markKitchenOrderReady = async (orderId: number) => {
   return cookieSessionClient.request(
     `${ORDERS_BASE_URL}/${orderId}/kitchen-ready`,
@@ -421,4 +442,40 @@ export const markKitchenOrderReady = async (orderId: number) => {
       fallBackMessage: "No se pudieron marcar los productos como listos",
     },
   );
+};
+
+
+//recupera el pedido al volver a escanear  el qr
+
+export const getActiveOrder = async (tableId: string) => {
+  try {
+    return await cookieSessionClient.request<{
+      order: {
+        orderId: number;
+        state: OrderStatus;
+      };
+    }>(`${ORDERS_BASE_URL}/active/${encodeURIComponent(tableId)}`, {
+      method: "GET",
+      fallBackMessage: "No se pudo recuperar el pedido",
+    });
+    } catch (error) {
+    const status =
+      typeof error === "object" && error !== null && "status" in error
+        ? Number(error.status)
+        : undefined;
+
+    const message =
+      typeof error === "object" && error !== null && "message" in error
+        ? String(error.message)
+        : "";
+
+    if (
+      status === 404 &&
+      message === "No hay una orden activa para esta mesa"
+    ) {
+      return null;
+    }
+
+    throw error;
+  }
 };

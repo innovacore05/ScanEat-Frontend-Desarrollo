@@ -4,11 +4,13 @@ import WaiterOrderDetails from "../../components/Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
 import type { Order } from "../../components/Orders/OrderCard";
 import Skeleton from "../../components/shared/Skeleton";
+import { requireRole } from "../-routeGuards";
 
 export const Route = createFileRoute("/(waiterOrders)/waiterOrderDetails",)({
   validateSearch: (search) => ({
     orderId: Number(search.orderId),
   }),
+  beforeLoad: requireRole(3),
   component: RouteComponent,
 });
 

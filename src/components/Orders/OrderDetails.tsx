@@ -5,7 +5,10 @@ import type { Order } from "./OrderCard";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import type { ReactNode, ComponentType } from "react";
 import { useState, useRef, useEffect } from "react";
-import { confirmOrder, deliverOrder } from "../../services/orderService";
+import { confirmOrder, deliverOrder, updateOrderItem, deleteOrderItem } from "../../services/orderService";
+import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
+import { UseAnimations } from "react-useanimations";
+import trash from "react-useanimations/lib/trash";
 
 type OrderDetailsProps = {
   order: Order;
@@ -34,6 +37,12 @@ function OrderDetailsContent({
   canAddProducts?: boolean;
 }) {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isChangingStatus, setIsChangingStatus] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{
+    orderId: number;
+    detailId: number;
+    name: string;
+  } | null>(null);
   const subtotal = order.subtotal ?? 0;
   const iva = order.tax ?? 0;
   const total = order.total ?? subtotal + iva;
@@ -46,6 +55,7 @@ function OrderDetailsContent({
 
     try {
       setIsUpdating(true);
+      setIsChangingStatus(true);
       if (order.status === "Pendiente") {
         await confirmOrder(order.orderId);
       } else if (order.status === "Listo") {
@@ -61,8 +71,84 @@ function OrderDetailsContent({
       alert(message);
     } finally {
       setIsUpdating(false);
+      setIsChangingStatus(false);
     }
   };
+
+  // Solo el mesero puede modificar productos y únicamente con la orden pendiente
+  const canEditItems = !!canAddProducts && order.status === "Pendiente";
+
+  const handleDeleteItem = async () => {
+    if (!itemToDelete || itemToDelete.orderId !== order.orderId || !canEditItems || isUpdating) return;
+
+    try {
+      setIsUpdating(true);
+      await deleteOrderItem(itemToDelete.orderId, itemToDelete.detailId);
+      setItemToDelete(null);
+      await onStatusChanged?.();
+    } catch (error) {
+      setItemToDelete(null);
+      alert(error instanceof Error ? error.message : "No se pudo eliminar el producto.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleChangeQuantity = async (item: Order["items"][number], delta: number) => {
+    const quantity = item.quantity + delta;
+    if (!item.detailId || quantity < 1) return;
+
+    // Al bajar la cantidad se descartan las instrucciones de unidades que ya no existen
+    const specialInstructions = (item.specialInstructions ?? []).filter(
+      (instruction) => instruction.unit <= quantity,
+    );
+
+    try {
+      setIsUpdating(true);
+      await updateOrderItem(order.orderId, item.detailId, { quantity, specialInstructions });
+      await onStatusChanged?.();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "No se pudo editar el producto.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const renderItemControls = (item: Order["items"][number]) =>
+    canEditItems && item.detailId ? (
+      <div className="mt-2 flex items-center gap-2">
+        <button
+          type="button"
+          disabled={isUpdating || item.quantity <= 1}
+          onClick={() => void handleChangeQuantity(item, -1)}
+          className="h-8 w-8 cursor-pointer rounded-lg border border-border font-bold text-mint-dark disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          −
+        </button>
+        <span className="min-w-6 text-center font-semibold">{item.quantity}</span>
+        <button
+          type="button"
+          disabled={isUpdating}
+          onClick={() => void handleChangeQuantity(item, 1)}
+          className="h-8 w-8 cursor-pointer rounded-lg border border-border font-bold text-mint-dark disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          +
+        </button>
+        <button
+          type="button"
+          disabled={isUpdating || order.items.length === 1}
+          onClick={() => {
+            if (item.detailId) {
+              setItemToDelete({ orderId: order.orderId, detailId: item.detailId, name: item.name });
+            }
+          }}
+          className="ml-2 cursor-pointer text-mint-dark hover:text-mint-darker disabled:cursor-not-allowed disabled:opacity-40"
+          aria-label={`Eliminar ${item.name}`}
+        >
+          <UseAnimations animation={trash} size={25} interaction="hover" />
+        </button>
+      </div>
+    ) : null;
 
   //Flecha para subir o bajar para celular
   const [showScrollUp, setShowScrollUp] = useState(false);
@@ -100,6 +186,15 @@ function OrderDetailsContent({
 
   return (
     <div className="w-full">
+      <ConfirmDeleteModal
+        isOpen={!!itemToDelete && itemToDelete.orderId === order.orderId && canEditItems}
+        title="¿Eliminar producto de la orden?"
+        message={`¿Deseas eliminar "${itemToDelete?.name}" de la orden?`}
+        variant="themed-danger"
+        isLoading={isUpdating}
+        onCancel={() => setItemToDelete(null)}
+        onConfirm={() => void handleDeleteItem()}
+      />
       {/* Celular */}
       <section className="lg:hidden ">
         <div className="flex items-center gap-2  ">
@@ -193,6 +288,7 @@ function OrderDetailsContent({
                         )}
                       </div>
                     )}
+                    {renderItemControls(item)}
                   </div>
 
                   <div className="shrink-0 flex items-center justify-end gap-2">
@@ -262,7 +358,7 @@ function OrderDetailsContent({
                 disabled={isUpdating}
                 className="flex min-h-12 w-full items-center justify-center cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-lg font-bold text-white"
               >
-                {isUpdating
+                {isChangingStatus
                   ? "Actualizando..."
                   : order.status === "Listo"
                     ? "Entregar"
@@ -375,6 +471,7 @@ function OrderDetailsContent({
                         )}
                       </div>
                     )}
+                    {renderItemControls(item)}
                   </div>
 
                   <div className="shrink-0 flex items-center justify-end gap-2">
@@ -445,7 +542,7 @@ function OrderDetailsContent({
                 disabled={isUpdating}
                 className="cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-lg font-bold text-white"
               >
-                {isUpdating
+                {isChangingStatus
                   ? "Actualizando..."
                   : order.status === "Listo"
                     ? "Entregar"

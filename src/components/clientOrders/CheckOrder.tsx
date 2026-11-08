@@ -74,6 +74,10 @@ function CheckOrder() {
     isReady: false,
   });
 
+  const [instructionErrors, setInstructionErrors] = useState<
+  Record<string, Record<number, string>>
+>({});
+
   const navigate = useNavigate();
 
   //Detecta cambios en los productos que afectan el precio
@@ -88,7 +92,7 @@ function CheckOrder() {
   // Cotizar solamente los pedidos nuevos.
   useEffect(() => {
     if (isAddingToOrder || !tableId || cartItems.length === 0) {
-      setOrderQuote(null);
+      
       setIsQuoting(false);
       setQuoteError("");
       return;
@@ -104,7 +108,6 @@ function CheckOrder() {
         selectedOptions: item.selectedOptions ?? {},
       })),
     };
-    setOrderQuote(null);
     setIsQuoting(true);
     setQuoteError("");
 
@@ -350,6 +353,15 @@ const createdOrder = await submitSharedCart(
     });
   };
 
+  const removeReady = () => {
+  if (!tableId || !readyState.isReady) return;
+
+  socket.emit("table:toggle-ready", {
+    tableId,
+    clientId: getClientId(),
+  });
+};
+
   const handleSuccess = () => {
     if (createdOrderId === null) return;
 
@@ -390,8 +402,6 @@ const createdOrder = await submitSharedCart(
       );
     }
 
-    if (isQuoting) return <p>Actualizando el total…</p>;
-
     if (quoteError) {
       return (
         <p role="alert" className="text-red-600">
@@ -400,7 +410,15 @@ const createdOrder = await submitSharedCart(
       );
     }
 
-    if (!orderQuote) return null;
+    if (!orderQuote) {
+  return isQuoting ? (
+    <div className="flex flex-col gap-2" aria-hidden="true">
+      <div className="h-6" />
+      <div className="h-6" />
+      <div className="my-2 h-7" />
+    </div>
+  ) : null;
+}
 
     const subtotal = Number(orderQuote.totals.subtotal);
     const subtotalBeforeDiscount = Number(
@@ -673,6 +691,7 @@ return (
 
 {/* Muestra el campo de texto si la personalización está activada */}
     {isSelected && (
+      <div className="flex flex-col gap-2">
       <textarea
   required
   value={
@@ -690,24 +709,62 @@ return (
       },
     }));
   }}
-  onBlur={() => {
-    {/*Guarda la instrucción en el carrito al salir del campo*/ }
-    const value =
-      localInstructions[item.cartItemId]?.[unit] ?? currentInstruction;
+  onBlur={async () => {
+  const value =
+    localInstructions[item.cartItemId]?.[unit] ?? currentInstruction;
 
-    const updatedInstructions = (item.specialInstructions ?? []).map(
-      (instruction) =>
-        instruction.unit === unit
-          ? { ...instruction, instruction: value }
-          : instruction,
-    );
+  const updatedInstructions = (item.specialInstructions ?? []).map(
+    (instruction) =>
+      instruction.unit === unit
+        ? { ...instruction, instruction: value }
+        : instruction,
+  );
 
-    updateSpecialInstructions(item.cartItemId, updatedInstructions);
-  }}
+  try {
+    await updateSpecialInstructions(item.cartItemId, updatedInstructions);
+
+    // Si se guardó correctamente, quitar el error anterior.
+    setInstructionErrors((prev) => {
+      const updated = { ...prev };
+      const itemErrors = { ...(updated[item.cartItemId] ?? {}) };
+
+      delete itemErrors[unit];
+
+      if (Object.keys(itemErrors).length === 0) {
+        delete updated[item.cartItemId];
+      } else {
+        updated[item.cartItemId] = itemErrors;
+      }
+
+      return updated;
+    });
+  } catch (error) {
+    removeReady();
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Ingresa una instrucción válida o más específica.";
+
+    setInstructionErrors((prev) => ({
+      ...prev,
+      [item.cartItemId]: {
+        ...(prev[item.cartItemId] ?? {}),
+        [unit]: message,
+      },
+    }));
+  }
+}}
   placeholder="Describe tu instrucción de forma clara y breve"
   maxLength={150}
   className="min-h-20 w-full resize-none rounded-xl border border-border bg-white p-3 text-sm outline-none focus:border-mint-dark"
 />
+{instructionErrors[item.cartItemId]?.[unit] && (
+      <p className="text-sm text-red-600">
+        {instructionErrors[item.cartItemId][unit]}
+      </p>
+    )}
+     </div>
+
     )}
   </div>
 );

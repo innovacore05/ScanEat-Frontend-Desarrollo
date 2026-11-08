@@ -212,11 +212,56 @@ function PaymentMethod() {
         if (!isActive) return;
 
         setOrder(data);
-        setSelectedQuantities(
-          Object.fromEntries(
-            data.lines.map((line) => [line.detailId, line.pendingQuantity]),
-          ),
-        );
+
+        const rawSelection = search.selectedItems;
+
+let quantities: Record<number, number>;
+
+if (typeof rawSelection === "string") {
+  const items: unknown = JSON.parse(rawSelection);
+
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new Error("No hay productos seleccionados para cobrar.");
+  }
+
+  quantities = {};
+
+  for (const item of items) {
+    if (
+      typeof item !== "object" ||
+      item === null ||
+      !("detailId" in item) ||
+      !("quantity" in item) ||
+      !Number.isSafeInteger(item.detailId) ||
+      !Number.isSafeInteger(item.quantity) ||
+      item.quantity <= 0 ||
+      quantities[item.detailId] !== undefined
+    ) {
+      throw new Error("La selección de productos no es válida.");
+    }
+
+    const line = data.lines.find(
+      (line) => line.detailId === item.detailId,
+    );
+
+    if (!line || item.quantity > line.pendingQuantity) {
+      throw new Error("La selección ya no está disponible.");
+    }
+
+    quantities[item.detailId] = item.quantity;
+  }
+} else {
+ 
+  quantities = Object.fromEntries(
+    data.lines.map((line) => [line.detailId, line.pendingQuantity]),
+  );
+}
+
+setOrder(data);
+setSelectedQuantities(quantities);
+
+
+
       } catch (error) {
         if (!isActive) return;
 
@@ -485,7 +530,9 @@ return {
 
               <div className="mt-5 max-h-80 overflow-y-auto pr-2">
                 <div className="flex flex-col gap-4">
-                 {order.lines.map((line, index) => {
+                 {order.lines
+  .filter((line) => (selectedQuantities[line.detailId] ?? 0) > 0)
+  .map((line, index) => {
   const quantity =
     selectedQuantities[line.detailId] ?? line.pendingQuantity;
   const amounts = getSelectedLineAmounts(line, quantity);

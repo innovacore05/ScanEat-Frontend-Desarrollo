@@ -31,22 +31,39 @@ export const generateAISalesReport = async (
   );
 };
 
+export type ChatAction =
+  | {
+      type: "none";
+    }
+  | {
+      type: "confirm_add_to_cart";
+      productId: number;
+      productName: string;
+      quantity: number;
+    };
+
+export type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+};
 export const sendMenuChatMessage = async (
   mesaId: string,
   message: string,
+  history: ChatMessage[] = [],
 ) => {
   return cookieSessionClient.request<{
-    reply: string;
-    recommendations: {
-      productId: number;
-      productName: string;
-      price: number;
-      reason: string;
-      role: "meal" | "drink" | "dessert";
-    }[];
-  }>("/api/ai/menu-chat", {
+  reply: string;
+  recommendations: {
+    productId: number;
+    productName: string;
+    price: number;
+    reason: string;
+    role: "meal" | "drink" | "dessert";
+  }[];
+  action: ChatAction;
+}>("/api/ai/menu-chat", {
     method: "POST",
-    body: JSON.stringify({ mesaId, message }),
+    body: JSON.stringify({ mesaId, message, history }),
     fallBackMessage: "No se pudo consultar el asistente",
   });
 };

@@ -12,7 +12,6 @@ import {
 import {
     FiSearch,
     FiX,
-    FiDollarSign,
     FiClipboard,
     FiDownload,
 } from "react-icons/fi";
@@ -428,7 +427,7 @@ function Expenses() {
                         <article className="rounded-xl border border-border bg-mint-darker p-5">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-mint-darker border border-white">
-                                    <FiDollarSign className="h-6 w-6 text-white" />
+                                    <span className="text-2xl font-semibold text-white">₡</span>
                                 </div>
                                 <div>
                                     <p className="text-sm text-white">

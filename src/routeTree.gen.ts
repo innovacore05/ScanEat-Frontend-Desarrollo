@@ -30,6 +30,7 @@ import { Route as dashboardExpensesRouteImport } from './routes/(dashboard)/expe
 import { Route as dashboardSalesReportRouteImport } from './routes/(dashboard)/salesReport'
 import { Route as historySalesHistorySalesRouteImport } from './routes/(historySales)/historySales'
 import { Route as historySalesHistorySalesDetailsRouteImport } from './routes/(historySales)/historySalesDetails'
+import { Route as issuedReceiptsIssuedReceiptsRouteImport } from './routes/(issuedReceipts)/issuedReceipts'
 import { Route as issuerInformationIssuerInformationRouteImport } from './routes/(issuerInformation)/issuerInformation'
 import { Route as menuDiscountProductsRouteImport } from './routes/(menu)/discountProducts'
 import { Route as menuAdminCategoryFormRouteImport } from './routes/(menuAdmin)/categoryForm'
@@ -38,6 +39,7 @@ import { Route as menuAdminCustomDishFormRouteImport } from './routes/(menuAdmin
 import { Route as menuAdminEditMenuRouteImport } from './routes/(menuAdmin)/editMenu'
 import { Route as menuAdminMenuManagmentRouteImport } from './routes/(menuAdmin)/menuManagment'
 import { Route as menuAdminSimpleDishFormRouteImport } from './routes/(menuAdmin)/simpleDishForm'
+import { Route as menuClientInvalidTableScreenRouteImport } from './routes/(menuClient)/invalidTableScreen'
 import { Route as menuClientMenuClientRouteImport } from './routes/(menuClient)/menuClient'
 import { Route as menuClientReviewsRouteImport } from './routes/(menuClient)/reviews'
 import { Route as menuWaiterMenuWaiterRouteImport } from './routes/(menuWaiter)/menuWaiter'
@@ -169,6 +171,12 @@ const historySalesHistorySalesDetailsRoute =
     path: '/historySalesDetails',
     getParentRoute: () => rootRouteImport,
   } as any)
+const issuedReceiptsIssuedReceiptsRoute =
+  issuedReceiptsIssuedReceiptsRouteImport.update({
+    id: '/(issuedReceipts)/issuedReceipts',
+    path: '/issuedReceipts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const issuerInformationIssuerInformationRoute =
   issuerInformationIssuerInformationRouteImport.update({
     id: '/(issuerInformation)/issuerInformation',
@@ -211,6 +219,12 @@ const menuAdminSimpleDishFormRoute = menuAdminSimpleDishFormRouteImport.update({
   path: '/simpleDishForm',
   getParentRoute: () => rootRouteImport,
 } as any)
+const menuClientInvalidTableScreenRoute =
+  menuClientInvalidTableScreenRouteImport.update({
+    id: '/(menuClient)/invalidTableScreen',
+    path: '/invalidTableScreen',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const menuClientMenuClientRoute = menuClientMenuClientRouteImport.update({
   id: '/(menuClient)/menuClient',
   path: '/menuClient',
@@ -309,6 +323,7 @@ export interface FileRoutesByFullPath {
   '/salesReport': typeof dashboardSalesReportRoute
   '/historySales': typeof historySalesHistorySalesRoute
   '/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
+  '/issuedReceipts': typeof issuedReceiptsIssuedReceiptsRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/discountProducts': typeof menuDiscountProductsRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
@@ -317,6 +332,7 @@ export interface FileRoutesByFullPath {
   '/editMenu': typeof menuAdminEditMenuRoute
   '/menuManagment': typeof menuAdminMenuManagmentRoute
   '/simpleDishForm': typeof menuAdminSimpleDishFormRoute
+  '/invalidTableScreen': typeof menuClientInvalidTableScreenRoute
   '/menuClient': typeof menuClientMenuClientRoute
   '/reviews': typeof menuClientReviewsRoute
   '/menuWaiter': typeof menuWaiterMenuWaiterRoute
@@ -354,6 +370,7 @@ export interface FileRoutesByTo {
   '/salesReport': typeof dashboardSalesReportRoute
   '/historySales': typeof historySalesHistorySalesRoute
   '/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
+  '/issuedReceipts': typeof issuedReceiptsIssuedReceiptsRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/discountProducts': typeof menuDiscountProductsRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
@@ -362,6 +379,7 @@ export interface FileRoutesByTo {
   '/editMenu': typeof menuAdminEditMenuRoute
   '/menuManagment': typeof menuAdminMenuManagmentRoute
   '/simpleDishForm': typeof menuAdminSimpleDishFormRoute
+  '/invalidTableScreen': typeof menuClientInvalidTableScreenRoute
   '/menuClient': typeof menuClientMenuClientRoute
   '/reviews': typeof menuClientReviewsRoute
   '/menuWaiter': typeof menuWaiterMenuWaiterRoute
@@ -400,6 +418,7 @@ export interface FileRoutesById {
   '/(dashboard)/salesReport': typeof dashboardSalesReportRoute
   '/(historySales)/historySales': typeof historySalesHistorySalesRoute
   '/(historySales)/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
+  '/(issuedReceipts)/issuedReceipts': typeof issuedReceiptsIssuedReceiptsRoute
   '/(issuerInformation)/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/(menu)/discountProducts': typeof menuDiscountProductsRoute
   '/(menuAdmin)/categoryForm': typeof menuAdminCategoryFormRoute
@@ -408,6 +427,7 @@ export interface FileRoutesById {
   '/(menuAdmin)/editMenu': typeof menuAdminEditMenuRoute
   '/(menuAdmin)/menuManagment': typeof menuAdminMenuManagmentRoute
   '/(menuAdmin)/simpleDishForm': typeof menuAdminSimpleDishFormRoute
+  '/(menuClient)/invalidTableScreen': typeof menuClientInvalidTableScreenRoute
   '/(menuClient)/menuClient': typeof menuClientMenuClientRoute
   '/(menuClient)/reviews': typeof menuClientReviewsRoute
   '/(menuWaiter)/menuWaiter': typeof menuWaiterMenuWaiterRoute
@@ -447,6 +467,7 @@ export interface FileRouteTypes {
     | '/salesReport'
     | '/historySales'
     | '/historySalesDetails'
+    | '/issuedReceipts'
     | '/issuerInformation'
     | '/discountProducts'
     | '/categoryForm'
@@ -455,6 +476,7 @@ export interface FileRouteTypes {
     | '/editMenu'
     | '/menuManagment'
     | '/simpleDishForm'
+    | '/invalidTableScreen'
     | '/menuClient'
     | '/reviews'
     | '/menuWaiter'
@@ -492,6 +514,7 @@ export interface FileRouteTypes {
     | '/salesReport'
     | '/historySales'
     | '/historySalesDetails'
+    | '/issuedReceipts'
     | '/issuerInformation'
     | '/discountProducts'
     | '/categoryForm'
@@ -500,6 +523,7 @@ export interface FileRouteTypes {
     | '/editMenu'
     | '/menuManagment'
     | '/simpleDishForm'
+    | '/invalidTableScreen'
     | '/menuClient'
     | '/reviews'
     | '/menuWaiter'
@@ -537,6 +561,7 @@ export interface FileRouteTypes {
     | '/(dashboard)/salesReport'
     | '/(historySales)/historySales'
     | '/(historySales)/historySalesDetails'
+    | '/(issuedReceipts)/issuedReceipts'
     | '/(issuerInformation)/issuerInformation'
     | '/(menu)/discountProducts'
     | '/(menuAdmin)/categoryForm'
@@ -545,6 +570,7 @@ export interface FileRouteTypes {
     | '/(menuAdmin)/editMenu'
     | '/(menuAdmin)/menuManagment'
     | '/(menuAdmin)/simpleDishForm'
+    | '/(menuClient)/invalidTableScreen'
     | '/(menuClient)/menuClient'
     | '/(menuClient)/reviews'
     | '/(menuWaiter)/menuWaiter'
@@ -583,6 +609,7 @@ export interface RootRouteChildren {
   dashboardSalesReportRoute: typeof dashboardSalesReportRoute
   historySalesHistorySalesRoute: typeof historySalesHistorySalesRoute
   historySalesHistorySalesDetailsRoute: typeof historySalesHistorySalesDetailsRoute
+  issuedReceiptsIssuedReceiptsRoute: typeof issuedReceiptsIssuedReceiptsRoute
   issuerInformationIssuerInformationRoute: typeof issuerInformationIssuerInformationRoute
   menuDiscountProductsRoute: typeof menuDiscountProductsRoute
   menuAdminCategoryFormRoute: typeof menuAdminCategoryFormRoute
@@ -591,6 +618,7 @@ export interface RootRouteChildren {
   menuAdminEditMenuRoute: typeof menuAdminEditMenuRoute
   menuAdminMenuManagmentRoute: typeof menuAdminMenuManagmentRoute
   menuAdminSimpleDishFormRoute: typeof menuAdminSimpleDishFormRoute
+  menuClientInvalidTableScreenRoute: typeof menuClientInvalidTableScreenRoute
   menuClientMenuClientRoute: typeof menuClientMenuClientRoute
   menuClientReviewsRoute: typeof menuClientReviewsRoute
   menuWaiterMenuWaiterRoute: typeof menuWaiterMenuWaiterRoute
@@ -756,6 +784,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof historySalesHistorySalesDetailsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(issuedReceipts)/issuedReceipts': {
+      id: '/(issuedReceipts)/issuedReceipts'
+      path: '/issuedReceipts'
+      fullPath: '/issuedReceipts'
+      preLoaderRoute: typeof issuedReceiptsIssuedReceiptsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(issuerInformation)/issuerInformation': {
       id: '/(issuerInformation)/issuerInformation'
       path: '/issuerInformation'
@@ -810,6 +845,13 @@ declare module '@tanstack/react-router' {
       path: '/simpleDishForm'
       fullPath: '/simpleDishForm'
       preLoaderRoute: typeof menuAdminSimpleDishFormRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menuClient)/invalidTableScreen': {
+      id: '/(menuClient)/invalidTableScreen'
+      path: '/invalidTableScreen'
+      fullPath: '/invalidTableScreen'
+      preLoaderRoute: typeof menuClientInvalidTableScreenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(menuClient)/menuClient': {
@@ -936,6 +978,7 @@ const rootRouteChildren: RootRouteChildren = {
   dashboardSalesReportRoute: dashboardSalesReportRoute,
   historySalesHistorySalesRoute: historySalesHistorySalesRoute,
   historySalesHistorySalesDetailsRoute: historySalesHistorySalesDetailsRoute,
+  issuedReceiptsIssuedReceiptsRoute: issuedReceiptsIssuedReceiptsRoute,
   issuerInformationIssuerInformationRoute:
     issuerInformationIssuerInformationRoute,
   menuDiscountProductsRoute: menuDiscountProductsRoute,
@@ -945,6 +988,7 @@ const rootRouteChildren: RootRouteChildren = {
   menuAdminEditMenuRoute: menuAdminEditMenuRoute,
   menuAdminMenuManagmentRoute: menuAdminMenuManagmentRoute,
   menuAdminSimpleDishFormRoute: menuAdminSimpleDishFormRoute,
+  menuClientInvalidTableScreenRoute: menuClientInvalidTableScreenRoute,
   menuClientMenuClientRoute: menuClientMenuClientRoute,
   menuClientReviewsRoute: menuClientReviewsRoute,
   menuWaiterMenuWaiterRoute: menuWaiterMenuWaiterRoute,

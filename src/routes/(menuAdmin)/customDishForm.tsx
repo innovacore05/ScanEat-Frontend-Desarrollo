@@ -1,10 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
 import CustomDishForm from '../../components/menuAdmin/CustomDishForm';
+import { requireRole } from "../-routeGuards";
+
 export const Route = createFileRoute('/(menuAdmin)/customDishForm')({
   validateSearch: (search) => ({
     mode: search.mode === "edit" ? "edit" : "create",
     productId: search.productId ? Number(search.productId) : undefined,
   }),
+  beforeLoad: requireRole(1),
   component: RouteComponent,
 })
 
