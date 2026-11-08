@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 
 type OrderItem = {
+  detailId?: number;
   name: string;
   quantity: number;
   price: number;

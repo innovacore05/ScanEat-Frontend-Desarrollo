@@ -121,6 +121,7 @@ export const stateToLabel: Record<OrderStatus, FrontendOrderStatus> = {
 const mapBackendOrderToFrontend = (backendOrder: BackendOrder) => {
   const totalValue = Number(backendOrder.order.total || 0);
   const items = backendOrder.details.map((detail) => ({
+    detailId: detail.detailId,
     name: detail.productName,
     quantity: detail.quantity,
     price: Number(detail.unitPrice || 0),
@@ -412,6 +413,26 @@ export const addItemsToOrder = (
         },
     );
 
+
+export const updateOrderItem = (
+  orderId: number,
+  detailId: number,
+  payload: {
+    quantity: number;
+    specialInstructions: { unit: number; instruction: string }[];
+  },
+) =>
+  cookieSessionClient.request(`${ORDERS_BASE_URL}/${orderId}/items/${detailId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+    fallBackMessage: "No se pudo editar el producto",
+  });
+
+export const deleteOrderItem = (orderId: number, detailId: number) =>
+  cookieSessionClient.request(`${ORDERS_BASE_URL}/${orderId}/items/${detailId}`, {
+    method: "DELETE",
+    fallBackMessage: "No se pudo eliminar el producto",
+  });
 
 export const markKitchenOrderReady = async (orderId: number) => {
   return cookieSessionClient.request(

@@ -11,7 +11,7 @@ type ConfirmDeleteModalProps = {
   confirmText?: string;
   loadingText?: string;
   cancelText?: string;
-  variant?: "danger" | "message";
+  variant?: "danger" | "themed-danger" | "message";
 };
 
 
@@ -64,7 +64,7 @@ function ConfirmDeleteModal({
             </div>
 
             <div className="mt-6 flex justify-end gap-3">
-              {variant === "danger" && (
+              {variant !== "message" && (
                 <button
                   type="button"
                   onClick={onCancel}
