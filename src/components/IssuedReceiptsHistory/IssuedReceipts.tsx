@@ -7,7 +7,7 @@ import { FileDownIcon } from "@animateicons/react/huge";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
 import {
 
-    FiDownload,
+  
     FiInfo,
     FiMail,
     FiRefreshCw,
