@@ -84,7 +84,8 @@ if (
     } as ApiError;
 }
 
-if (contentType.includes("application/pdf")) {
+    if (contentType.includes("application/pdf") || contentType.startsWith("image/")
+        ) {
     return await response.blob() as T;
 }
 

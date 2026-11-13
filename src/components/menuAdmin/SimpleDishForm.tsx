@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus, GoTag } from "react-icons/go";
 import { FiCamera } from "react-icons/fi";
+import ImageCropModal from "./ImageCropModal";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import { createProduct, 
   getProductById, 
+  getProductImageById,
   updateProduct, 
   getCategories, 
   getFiscalOptions, 
@@ -28,6 +30,10 @@ function SimpleDishForm({ mode = "create", productId }: SimpleDishFormProps) {
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
+  const [originalImage, setOriginalImage] = useState<File | null>(null);
+  const [imageToCrop, setImageToCrop] = useState<File | null>(null);
+  const [savedCrop, setSavedCrop] = useState({ x: 0, y: 0 });
+  const [savedZoom, setSavedZoom] = useState(1);
  
   //cabys
   const [categories, setCategories] = useState<Category[]>([]);
@@ -159,16 +165,18 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
     /* useEffect para actualizar la vista previa de la imagen */
   }
   useEffect(() => {
-    if (!image) {
+  if (!image) {
+    if (!isEditMode) {
       setImagePreview(null);
-      return;
     }
+    return;
+  }
 
-    const previewUrl = URL.createObjectURL(image);
-    setImagePreview(previewUrl);
+  const previewUrl = URL.createObjectURL(image);
+  setImagePreview(previewUrl);
 
-    return () => URL.revokeObjectURL(previewUrl);
-  }, [image]);
+  return () => URL.revokeObjectURL(previewUrl);
+}, [image, isEditMode]);
 
   useEffect(() => {
     if (!isEditMode || !productId) {
@@ -193,7 +201,20 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
             : "",
         );
         setImagePreview(product.image ?? null);
-        setImage(null);
+        if (product.image) {
+          try {
+            const originalFile = await getProductImageById(productId);
+            setOriginalImage(originalFile);
+            console.log("Imagen lista para editar:", originalFile);
+          } catch (error) {
+            console.error("Error al recuperar la imagen original:", error);
+            console.log("URL de la imagen:", product.image);
+            setOriginalImage(null);
+          }
+        } else {
+          setOriginalImage(null);
+        }
+
       } catch (error) {
         console.error("Error loading product to edit:", error);
         alert("No se pudo cargar la información del platillo");
@@ -202,6 +223,30 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
 
     loadProduct();
   }, [isEditMode, productId]);
+
+  useEffect(() => {
+  if (isEditMode) return;
+
+  setName("");
+  setDescription("");
+  setPrice("");
+  setCategory("");
+
+  setImage(null);
+  setOriginalImage(null);
+  setImagePreview(null);
+  setImageToCrop(null);
+
+  setSavedCrop({ x: 0, y: 0 });
+  setSavedZoom(1);
+
+  setDiscount("");
+  resetCabys();
+
+  setSuccessMessage(null);
+  setError("");
+  setIsImageFormatModalOpen(false);
+}, [isEditMode]);
 
 //selector para elegir 
   const renderCabysField = () => {
@@ -433,6 +478,10 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
       setDiscount("");
       setImage(null);
       setImagePreview(null);
+      setOriginalImage(null);
+setImageToCrop(null);
+setSavedCrop({ x: 0, y: 0 });
+setSavedZoom(1);
     } catch (error) {
       console.error("Error al guardar el platillo:", error);
 
@@ -530,7 +579,7 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
             <form onSubmit={handleSubmit} >
               {/* Input image*/}
               <label
-                htmlFor="image"
+                htmlFor="image-mobile"
                 className="mt-6 flex h-48 w-full cursor-pointer items-center justify-center rounded-2xl bg-mint-dark transition hover:opacity-90"
               >
                 {imagePreview ? (
@@ -548,8 +597,21 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
                   </div>
                 )}
               </label>
+              {imagePreview && originalImage && (
+                <button
+                type="button"
+                onClick={() => {
+                  setSavedCrop({ x: 0, y: 0 });
+                  setSavedZoom(1);
+                  setImageToCrop(originalImage);
+                }}
+                className="mt-2 flex w-full justify-center text-sm font-semibold text-mint-dark underline"
+                >
+                  Editar imagen
+                </button>
+              )}
               <input
-                id="image"
+                id="image-mobile"
                 type="file"
                 accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                 className="sr-only"
@@ -559,14 +621,16 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
 
   const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
-  if (!allowedTypes.includes(file.type)) {
-   setIsImageFormatModalOpen(true);
-    event.target.value = "";
-    setImage(null);
-    return;
-  }
+ if (!allowedTypes.includes(file.type)) {
+  setIsImageFormatModalOpen(true);
+  event.target.value = "";
+  return;
+}
 
-  setImage(file);
+  setOriginalImage(file);
+  setImageToCrop(file);
+  setSavedCrop({ x: 0, y: 0 });
+  setSavedZoom(1);
 }}
               />
               {/* Input name*/}
@@ -713,12 +777,12 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
           {/*Form platillo simple*/}
           <form
             onSubmit={handleSubmit}
-            className="mt-6 grid max-w-5xl grid-cols-[280px_minmax(0,1fr)] gap-10"
+            className="mt-6 grid max-w-5xl grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-10"
           >
             <div>
               <label
-                htmlFor="image"
-                className="flex h-72 w-full cursor-pointer items-center justify-center rounded-2xl bg-mint-dark transition hover:opacity-90"
+                htmlFor="image-desktop"
+                className="flex h-48 w-full cursor-pointer items-center justify-center rounded-2xl bg-mint-dark transition hover:opacity-90"
               >
                 {imagePreview ? (
                   <img
@@ -735,8 +799,23 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
                   </div>
                 )}
               </label>
+            
+              {imagePreview && originalImage && (
+                <button
+                  type="button"
+                  onClick={() => {
+                  setSavedCrop({ x: 0, y: 0 });
+                  setSavedZoom(1);
+                  setImageToCrop(originalImage);
+                  }}
+                  className="mt-2 flex w-full justify-center text-sm font-semibold text-mint-dark underline hover:text-mint-darker"
+                >
+                  Editar imagen
+                </button>
+              )}
+
               <input
-  id="image"
+  id="image-desktop"
   type="file"
   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
   className="sr-only"
@@ -747,13 +826,15 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
     if (!allowedTypes.includes(file.type)) {
-      setIsImageFormatModalOpen(true);
-      event.target.value = "";
-      setImage(null);
-      return;
-    }
+  setIsImageFormatModalOpen(true);
+  event.target.value = "";
+  return;
+}
 
-    setImage(file);
+    setOriginalImage(file);
+    setImageToCrop(file);
+    setSavedCrop({ x: 0, y: 0 });
+    setSavedZoom(1);
   }}
 />
             </div>
@@ -880,7 +961,30 @@ const [isImageFormatModalOpen, setIsImageFormatModalOpen] = useState(false);
     </div>
   </div>
 )}
+
+{imageToCrop && (
+  <ImageCropModal
+    image={imageToCrop}
+    initialCrop={savedCrop}
+    initialZoom={savedZoom}
+    onViewChange={(newCrop, newZoom) => {
+      setSavedCrop(newCrop);
+      setSavedZoom(newZoom);
+    }}
+    onConfirm={(croppedImage) => {
+      setImage(croppedImage);
+      setImageToCrop(null);
+    }}
+    onCancel={() => {
+      setImageToCrop(null);
+    }}
+  />
+)}
+      
+      
     </DashboardLayoutAdmin>
+
+    
   );
 }
 

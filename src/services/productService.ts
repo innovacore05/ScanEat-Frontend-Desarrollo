@@ -136,6 +136,25 @@ const data =await cookieSessionClient.request<Product>(
 };
 
 
+// Obtener imagen original de un producto para editarla
+export const getProductImageById = async (
+  id: number | string,
+): Promise<File> => {
+  const blob = await cookieSessionClient.request<Blob>(
+    `${MENU_BASE_URL}/products/${id}/image`,
+    {
+      method: "GET",
+      fallBackMessage: "No se pudo recuperar la imagen del producto",
+    },
+  );
+
+  return new File(
+    [blob],
+    "platillo-original.jpg",
+    { type: blob.type || "image/jpeg" },
+  );
+};
+
 export const isCustomProduct = async (id: number): Promise<boolean> => {
 
 try{
