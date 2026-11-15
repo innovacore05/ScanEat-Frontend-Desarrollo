@@ -22,6 +22,7 @@ function ProductList({
 	selectedProductId,
 	onViewMore,
 	onCloseDetails,
+	onAvailabilityChange,
 }: {
   initialLoading: boolean;
   isFiltering: boolean;
@@ -30,6 +31,7 @@ function ProductList({
 	selectedProductId: number | null;
 	onViewMore: (productId: number) => void;
 	onCloseDetails: () => void;
+	onAvailabilityChange: (productId: number, isAvailable: boolean) => void;
 }) {
 	const visibleProducts = selectedProductId === null
 		? products
@@ -76,8 +78,14 @@ displayIvaRate={product.displayIvaRate}
             isAdmin={false}
             showRating={false}
             showActions={false}
+            showAddAction={false}
             productId={product.productId}
             optionGroups={product.optionGroups}
+            isAvailable={product.isAvailable}
+            canManageAvailability
+            onAvailabilityChange={(isAvailable) =>
+              onAvailabilityChange(product.productId, isAvailable)
+            }
             onDelete={onDeleteProduct}
             isDetailView={selectedProductId === product.productId}
             onViewMore={() => onViewMore(product.productId)}
@@ -173,6 +181,14 @@ useEffect(() => {
 		setSelectedProductId((current) => current === productId ? null : current);
   };
 
+  const handleAvailabilityChange = (productId: number, isAvailable: boolean) => {
+    setProducts((current) =>
+      current.map((item) =>
+        item.productId === productId ? { ...item, isAvailable } : item,
+      ),
+    );
+  };
+
 
   return (
     <DashboardLayoutWaiter>
@@ -222,6 +238,7 @@ useEffect(() => {
 				selectedProductId={selectedProductId}
 				onViewMore={setSelectedProductId}
 				onCloseDetails={() => setSelectedProductId(null)}
+				onAvailabilityChange={handleAvailabilityChange}
               />
             </div>
 
@@ -280,6 +297,7 @@ useEffect(() => {
 				selectedProductId={selectedProductId}
 				onViewMore={setSelectedProductId}
 				onCloseDetails={() => setSelectedProductId(null)}
+				onAvailabilityChange={handleAvailabilityChange}
             />
           </div>
 

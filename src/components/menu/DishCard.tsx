@@ -1,7 +1,7 @@
 import { useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { HiStar } from "react-icons/hi";
-import { CirclePlusIcon } from "@animateicons/react/lucide";
+import { BanIcon, CirclePlusIcon, SquareCheckIcon } from "@animateicons/react/lucide";
 import { Pen01Icon } from "@animateicons/react/huge";
 import { useCart } from "../clientOrders/CartContext";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
@@ -14,6 +14,8 @@ import {
   productIsCustom,
 } from "../../services/productService";
 import { motion } from "motion/react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { updateProductAvailability } from "../../services/productService";
 
 const EMPTY_OPTION_GROUPS: { id: string; name: string; options: string[] }[] = [];
 
@@ -49,6 +51,11 @@ interface DishCardProps {
     quantity: number;
     selectedOptions: Record<string, string>;
   }) => void;
+  isAvailable?: boolean;
+  canManageAvailability?: boolean;
+  onAvailabilityChange?: (isAvailable: boolean) => void;
+  isClientMenu?: boolean;
+  showAddAction?: boolean;
 }
 
 function Stars({ rating }: { rating: number }) {
@@ -91,6 +98,11 @@ function DishCard({
   onAddToCart,
   isAddingToOrder = false,
   onAddProduct,
+  isAvailable = true,
+  canManageAvailability = false,
+  onAvailabilityChange,
+  isClientMenu = false,
+  showAddAction = true,
 }: DishCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -99,6 +111,7 @@ function DishCard({
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [validationMessage, setValidationMessage] = useState("");
+  const [isUpdatingAvailability, setIsUpdatingAvailability] = useState(false);
 
   const navigate = useNavigate();
   const { addToCart } = useCart();
@@ -138,7 +151,7 @@ function DishCard({
   }, [isDetailView, productId, optionGroups]);
 
   const handleAddProduct = (options: Record<string, string>) => {
-    if (!productId) return;
+    if (!productId || !isAvailable) return;
 
     const item = {
       productId,
@@ -157,6 +170,22 @@ function DishCard({
     }
 
     onAddToCart?.();
+  };
+
+  const handleAvailabilityChange = async () => {
+    if (!productId) return;
+    const nextAvailability = !isAvailable;
+    try {
+      setIsUpdatingAvailability(true);
+      await updateProductAvailability(productId, nextAvailability);
+      onAvailabilityChange?.(nextAvailability);
+    } catch (error) {
+      console.error("Error updating product availability:", error);
+      const apiError = error as { message?: string };
+      alert(apiError.message ?? "No se pudo actualizar la disponibilidad");
+    } finally {
+      setIsUpdatingAvailability(false);
+    }
   };
 
   const handleEdit = async () => {
@@ -234,9 +263,12 @@ function DishCard({
   return (
     <>
       <article
-        className={`flex w-full overflow-hidden rounded-2xl bg-white shadow-sm ${isDetailView
-          ? "flex-col lg:h-107.5 lg:flex-row"
-          : "flex-row lg:h-105 lg:flex-col"
+        className={`flex w-full overflow-hidden rounded-2xl bg-white shadow-sm ${isClientMenu && !isAvailable
+          ? "cursor-not-allowed opacity-60"
+          : ""
+          } ${isDetailView
+            ? "flex-col lg:h-107.5 lg:flex-row"
+            : "flex-row lg:h-105 lg:flex-col"
           }`}
       >
         <div
@@ -259,7 +291,14 @@ function DishCard({
             : ""
             }`}
         >
-          <h2 className="text-base font-bold text-mint-darker">{name}</h2>
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-base font-bold text-mint-darker">{name}</h2>
+            {!isAvailable && (
+              <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-bold text-red-700">
+                Agotado
+              </span>
+            )}
+          </div>
 
           <p
             className={`mt-1 text-sm text-text-primary ${isDetailView ? "" : "line-clamp-2"
@@ -326,9 +365,24 @@ function DishCard({
               <span />
             )}
 
-            {showActions && (
+            {(showActions || canManageAvailability) && (
               <div className="flex items-center gap-2">
-                {isAdmin ? (
+                {canManageAvailability && productId && (
+                  <button
+                    type="button"
+                    onClick={handleAvailabilityChange}
+                    disabled={isUpdatingAvailability}
+                    className="flex items-center gap-1 rounded-lg border-mint-dark px-2 py-1 text-xs font-semibold text-mint-dark hover:text-mint-darker disabled:opacity-15"
+                    aria-label={isAvailable ? `Marcar ${name} como agotado` : `Marcar ${name} como disponible`}
+                  >
+                    {isAvailable ? <BanIcon
+                      size={23}
+                      duration={1} /> : <SquareCheckIcon
+                      size={23}
+                      duration={1} />}
+                  </button>
+                )}
+                {showActions && isAdmin ? (
                   <>
                     {productId ? (
                       <button
@@ -344,7 +398,7 @@ function DishCard({
 
                         />
                       </button>
-                    ) : (
+                    ) : showActions ? (
                       <button
                         type="button"
                         className="cursor-pointer text-mint-dark hover:text-mint-darker"
@@ -355,7 +409,7 @@ function DishCard({
                           duration={1}
                         />
                       </button>
-                    )}
+                    ) : null}
 
                     <button
                       type="button"
@@ -370,11 +424,11 @@ function DishCard({
                       />
                     </button>
                   </>
-                ) : (
+                ) : showAddAction ? (
                   <button
                     type="button"
                     onClick={groupsOptions}
-                    disabled={isLoadingEdit}
+                    disabled={isLoadingEdit || !isAvailable}
                     className="cursor-pointer text-mint-dark disabled:opacity-50"
                     aria-label={`Agregar ${name}`}
                   >
@@ -384,7 +438,7 @@ function DishCard({
 
                     />
                   </button>
-                )}
+                ) : null}
               </div>
             )}
           </div>
@@ -400,15 +454,15 @@ function DishCard({
           )}
 
           <motion.button
-  type="button"
-  onClick={isDetailView ? onCloseDetails : onViewMore}
-  whileHover={{ scale: 1.08, x: 4 }}
-  whileTap={{ scale: 0.95 }}
-  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-  className="mt-2 cursor-pointer self-start text-sm font-bold text-brown hover:underline"
->
-  {isDetailView ? "Ver menos" : "Ver más"}
-</motion.button>
+            type="button"
+            onClick={isDetailView ? onCloseDetails : onViewMore}
+            whileHover={{ scale: 1.08, x: 4 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            className="mt-2 cursor-pointer self-start text-sm font-bold text-brown hover:underline"
+          >
+            {isDetailView ? "Ver menos" : "Ver más"}
+          </motion.button>
         </div>
       </article>
 

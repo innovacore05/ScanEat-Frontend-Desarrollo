@@ -26,14 +26,14 @@ function DashboardWaiter() {
     return (
         <DashboardLayoutWaiter>
                <motion.main
-            className="min-h-screen bg-brand-white px-4 py-5 sm:px-6 sm:py-8 lg:px-15 lg:py-15"
+            className="min-h-screen bg-brand-white px-4 py-6 sm:px-6 sm:py-8 lg:px-15 lg:py-15"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
         >
             {/* Saludo */}
             <motion.div
-                className="rounded-2xl bg-mint-darker px-5 py-5 sm:px-8 sm:py-6"
+                className="mb-6 rounded-2xl bg-mint-darker px-5 py-5 sm:px-8 sm:py-6"
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 }}

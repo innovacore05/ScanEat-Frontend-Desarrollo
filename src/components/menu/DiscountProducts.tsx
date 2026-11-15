@@ -88,6 +88,7 @@ displayIvaRate={product.displayIvaRate}
             showActions={false}
             productId={product.productId}
             optionGroups={product.optionGroups}
+            isAvailable={product.isAvailable}
             onDelete={onDeleteProduct}
             isDetailView={selectedProductId === product.productId}
             onViewMore={() => onViewMore(product.productId)}

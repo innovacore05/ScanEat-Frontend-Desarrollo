@@ -34,7 +34,21 @@ options?: unknown[];
 customizations?: unknown[];
 customizationGroups?: unknown[];
 isCustomProduct?: boolean | number;
+isAvailable?: boolean;
 };
+
+export const updateProductAvailability = async (
+  id: number,
+  isAvailable: boolean,
+) =>
+  cookieSessionClient.request<Product>(
+    `${MENU_BASE_URL}/products/${id}/availability`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ isAvailable }),
+      fallBackMessage: "No se pudo actualizar la disponibilidad",
+    },
+  );
 
 export type ProductsPage = {
 	products: Product[];
