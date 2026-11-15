@@ -10,7 +10,7 @@ import Skeleton from "../shared/Skeleton";
 import { socket } from "../../services/socketClient";
 import SearchOrders from "../Orders/SearchOrders";
 import { ArrowLeftIcon } from "@animateicons/react/lucide";
-import { AnimatePresence,motion } from "motion/react";
+import { motion } from "motion/react";
 
 function HistorySales() {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -151,7 +151,7 @@ function HistorySales() {
 
 
                 {/* Computadora */}
-                <section className="hidden px-15 py-15 lg:block">
+                <section className="w-full max-w-394 hidden px-15 py-15 lg:block">
 
 
                     <h2 className="text-3xl font-bold text-mint-dark">

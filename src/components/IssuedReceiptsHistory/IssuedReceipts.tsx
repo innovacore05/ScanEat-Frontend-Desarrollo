@@ -537,7 +537,7 @@ useEffect(() => {
   return (
     <DashboardLayoutAdmin>
       <motion.section
-        className="px-6 lg:px-15 lg:py-15"
+        className=" w-full max-w-394 px-6 lg:px-15 lg:py-15 "
 
         initial={{ opacity: 0, y: 10 }}
 

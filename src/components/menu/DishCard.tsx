@@ -14,7 +14,6 @@ import {
   productIsCustom,
 } from "../../services/productService";
 import { motion } from "motion/react";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { updateProductAvailability } from "../../services/productService";
 
 const EMPTY_OPTION_GROUPS: { id: string; name: string; options: string[] }[] = [];
@@ -294,7 +293,7 @@ function DishCard({
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-base font-bold text-mint-darker">{name}</h2>
             {!isAvailable && (
-              <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-bold text-red-700">
+              <span className="rounded-full bg-red-700 px-2 py-1 text-xs font-bold text-white">
                 Agotado
               </span>
             )}

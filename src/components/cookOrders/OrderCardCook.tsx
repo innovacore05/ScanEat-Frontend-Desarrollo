@@ -107,19 +107,16 @@ function OrderCardCook({ order, onReady, isUpdating = false }: OrderCardCookProp
                 </div>
               )}
               {/*Texto de las instrucciones especiales*/}
-              {item.specialInstructions &&
-                item.specialInstructions.length > 0 && (
-                <div className="">
-                  {item.specialInstructions.map((instruction) => (
-                    <p
-                      key={instruction.unit}
-                      className="text-xl text-red-600 font-semibold"
-                    >
-                      Unidad {instruction.unit}: {instruction.instruction}
-        </p>
-      ))}
-    </div>
-  )}
+             {item.specialInstructions?.filter(
+  (instruction) => instruction.instruction.trim() !== ""
+).map((instruction) => (
+  <p
+    key={instruction.unit}
+    className="text-xl text-red-600 font-semibold"
+  >
+    Unidad {instruction.unit}: {instruction.instruction}
+  </p>
+))}
             </div>
           ))}
         </div>

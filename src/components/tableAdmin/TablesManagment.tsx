@@ -16,7 +16,8 @@ import { FaToggleOn } from "react-icons/fa";
 import { FaToggleOff } from "react-icons/fa";
 import { ArrowLeftIcon } from "@animateicons/react/lucide";
 import { Pen01Icon } from "@animateicons/react/huge";
-
+import AddTable from "./AddTable";
+import EditTable from "./EditTable";
 import { motion } from "motion/react";
 
 
@@ -40,7 +41,8 @@ function TablesManagment() {
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [orders, setOrders] = useState<Order[]>([]);
 	const [isLoadingTables, setIsLoadingTables] = useState(true);
-
+	const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 
@@ -49,6 +51,28 @@ function TablesManagment() {
 		setQrTableNumber(tableNumber);
 		setIsQrModalOpen(true);
 	};
+
+	const handleTableCreated = (table: TableItem) => {
+    setTables((currentTables) => [...currentTables, table]);
+    setSelectedTable(table);
+    setIsAddModalOpen(false);
+	handleShowQr(table.id, table.tableNumber);
+	};
+
+	const handleTableUpdated = async () => {
+    const data = await getTables();
+    setTables(data);
+
+    const updatedTable = data.find(
+        (table) => table.id === selectedTable?.id
+    );
+
+    if (updatedTable) {
+        setSelectedTable(updatedTable);
+    }
+
+    setIsEditModalOpen(false);
+};
 
 	useEffect(() => {
 		const loadProfile = async () => {
@@ -314,25 +338,28 @@ function TablesManagment() {
 						/>}
 
 						{isOwner && <div className="mt-auto flex flex-col gap-4">
-							<Link
-								to="/editTable"
-								search={{ tableId: selectedTable?.id }}
-								className={`mt-7 w-full cursor-pointer rounded-lg px-4 py-3 text-base font-bold text-white ${selectedTable ? 'bg-mint-dark hover:bg-mint-dark/90' : 'bg-mint-dark/50 cursor-not-allowed'}`}
-								disabled={!selectedTable}
-							>
-								<span className="font-bold text-white justify-center flex">
-									Editar mesa
-								</span>
-							</Link>
+							<button
+    type="button"
+    onClick={() => setIsEditModalOpen(true)}
+    disabled={!selectedTable}
+    className={`mt-7 w-full rounded-lg px-4 py-3 text-base font-bold text-white ${
+        selectedTable
+            ? "bg-mint-dark hover:bg-mint-dark/90"
+            : "bg-mint-dark/50 cursor-not-allowed"
+    }`}
+>
+    Editar mesa
+</button>
 
-							<Link
-								to="/addTable"
+							<button
+								type="button"
+								onClick={() => setIsAddModalOpen(true)}
 								className="w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-mint-dark/90"
 							>
 								<span className="font-bold text-white justify-center flex">
 									Añadir mesa
 								</span>
-							</Link>
+							</button>
 
 							<button className="w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-mint-dark/90"
 								onClick={() =>
@@ -354,7 +381,7 @@ function TablesManagment() {
 
 				{/* Computadora */}
 
-				<section className="hidden px-15 py-15 lg:block">
+				<section className="w-full max-w-394 hidden px-15 py-12 lg:block">
 
 
 					<div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
@@ -365,25 +392,32 @@ function TablesManagment() {
 								</h2>
 
 								{isOwner && <div className="flex flex-wrap gap-3">
-									<Link
-										to="/addTable"
+									<button
+										type="button"
+										onClick={() => setIsAddModalOpen(true)}
 										className="flex items-center justify-between rounded border min-h-8.5 whitespace-nowrap gap-2 shrink-0 px-3 py-2 text-s font-bold border-border text-text-primary hover:bg-mint-dark/10"
 									>
 										<span>Añadir mesa</span>
 										<IoIosAdd className="text-mint-dark w-8 h-8" />
-									</Link>
+									</button>
 
-									<Link
-										to="/editTable"
-										search={{ tableId: selectedTable?.id }}
-										className={`flex items-center justify-between rounded border min-h-8.5 whitespace-nowrap gap-2 shrink-0 px-3 py-2 text-s font-bold ${selectedTable ? 'border-border text-text-primary hover:border-mint-dark hover:bg-mint-dark/10' : 'border-border/50 text-text-primary/50 cursor-not-allowed'}`}
+									<button
+									type="button"
+									onClick={() => setIsEditModalOpen(true)}
 										disabled={!selectedTable}
+										className={`flex items-center justify-between rounded border min-h-8.5 whitespace-nowrap gap-2 shrink-0 px-3 py-2 text-s font-bold ${selectedTable
+											? "border-border text-text-primary hover:border-mint-dark hover:bg-mint-dark/10"
+											: "border-border/50 text-text-primary/50 cursor-not-allowed"
+											}`}
 									>
 										<span>Editar mesa</span>
 										<Pen01Icon
-											size={25}
-											duration={1} className={`w-6 h-6  ${selectedTable ? 'text-mint-dark ' : 'text-mint-dark/50'}`} />
-									</Link>
+										size={25}
+										duration={1}
+											className={`w-6 h-6 ${selectedTable ? "text-mint-dark" : "text-mint-dark/50"
+												}`}
+										/>
+									</button>
 
 									<button className="cursor-pointer flex items-center justify-between rounded border min-h-8.5 whitespace-nowrap gap-2 shrink-0 border-border px-3 py-2 text-s font-bold text-text-primary hover:bg-mint-dark/10"
 										onClick={() =>
@@ -471,14 +505,14 @@ function TablesManagment() {
 						</div>
 
 						<motion.div
-    key={selectedTable?.id ?? "empty"}
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{
-        duration: 0.4,
-        ease: "easeOut",
-    }}
->
+						key={selectedTable?.id ?? "empty"}
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{
+							duration: 0.4,
+							ease: "easeOut",
+							}}
+						>
 							<p className="text-lg font-bold text-text-primary">
 								Detalles de mesa
 							</p>
@@ -517,6 +551,14 @@ function TablesManagment() {
 					</div>
 				</section>
 			</main>
+			
+			{isOwner && isEditModalOpen && selectedTable && (
+				<EditTable
+				table={selectedTable}
+					onClose={() => setIsEditModalOpen(false)}
+					onUpdated={handleTableUpdated}
+				/>
+			)}
 
 			<ConfirmDeleteModal
 				isOpen={isDeleteDialogOpen && !!selectedTable}
@@ -528,6 +570,13 @@ function TablesManagment() {
 				onConfirm={handleDeleteTable}
 				onCancel={() => setIsDeleteDialogOpen(false)}
 			/>
+
+			{isOwner && isAddModalOpen && (
+				<AddTable
+				onClose={() => setIsAddModalOpen(false)}
+					onCreated={handleTableCreated}
+				/>
+			)}
 
 
 

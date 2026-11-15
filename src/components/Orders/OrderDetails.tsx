@@ -171,6 +171,7 @@ function OrderDetailsContent({
 
   //Flecha para subir o bajar para computadora
   const orderScrollRef = useRef<HTMLDivElement>(null);
+  const [hasScroll, setHasScroll] = useState(false);
   
   const scrollToOrder = (position: "top" | "bottom") => {
     
@@ -181,6 +182,29 @@ function OrderDetailsContent({
       behavior: "smooth",
     });
   };
+
+ useEffect(() => {
+  const container = orderScrollRef.current;
+  if (!container) return;
+
+  const checkScroll = () => {
+    setHasScroll(container.scrollHeight > container.clientHeight + 1);
+  };
+
+  checkScroll();
+
+  const observer = new ResizeObserver(checkScroll);
+
+  observer.observe(container);
+
+  if (container.firstElementChild) {
+    observer.observe(container.firstElementChild);
+  }
+
+  return () => {
+    observer.disconnect();
+  };
+}, [order]);
   
 
 
@@ -370,23 +394,26 @@ function OrderDetailsContent({
           ) : null}
           
         </div>
-        <button
-          type="button"
-          onClick={() =>
-            window.scrollTo({
-              top: showScrollUp
-                ? 0
-                : document.documentElement.scrollHeight,
-              behavior: "smooth",
-            })}
-          className="fixed bottom-5 right-5 flex h-12 w-12 items-center justify-center rounded-full bg-mint-dark/70 text-white lg:hidden"
-        >
-          {showScrollUp ? (
-            <HiArrowUp className="h-6 w-6" />
-          ) : (
-            <HiArrowDown className="h-6 w-6" />
-          )}
-        </button>
+        {document.documentElement.scrollHeight > window.innerHeight && (
+  <button
+    type="button"
+    onClick={() =>
+      window.scrollTo({
+        top: showScrollUp
+          ? 0
+          : document.documentElement.scrollHeight,
+        behavior: "smooth",
+      })
+    }
+    className="fixed bottom-5 right-5 flex h-12 w-12 items-center justify-center rounded-full bg-mint-dark/70 text-white lg:hidden"
+  >
+    {showScrollUp ? (
+      <HiArrowUp className="h-6 w-6" />
+    ) : (
+      <HiArrowDown className="h-6 w-6" />
+    )}
+  </button>
+)}
         
         
       </section>
@@ -395,7 +422,7 @@ function OrderDetailsContent({
       <section className="hidden lg:flex items-center gap-3">
         <div
           ref={orderScrollRef}
-          className="relative w-full min-w-0 h-150 overflow-y-auto rounded-4xl bg-neutral-100 px-8 py-8">
+          className="relative w-full min-w-0 h-150 overflow-y-auto rounded-4xl bg-neutral-100 px-8 py-4">
           <div className="flex flex-col gap-4">
             <p className="text-2xl font-bold text-mint-dark">
               Orden #{order.orderId}
@@ -554,24 +581,25 @@ function OrderDetailsContent({
           )}
         </div>
 
-        <div className="flex flex-col gap-10">
-          <button
-            type="button"
-            onClick={() => scrollToOrder("top")}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-mint-dark text-white shadow-lg transition hover:bg-mint-darker"
-          >
-            <HiArrowUp className="h-6 w-6" />
-          </button>
-          
-          <button
-          type="button"
-          onClick={() => scrollToOrder("bottom")}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-mint-dark text-white shadow-lg transition hover:bg-mint-darker"
-          >
-            <HiArrowDown className="h-6 w-6" />
-          </button>
-        </div>
-        
+        {hasScroll && (
+          <div className="flex flex-col gap-10">
+            <button
+              type="button"
+              onClick={() => scrollToOrder("top")}
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-mint-dark text-white shadow-lg transition hover:bg-mint-darker"
+            >
+              <HiArrowUp className="h-6 w-6" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => scrollToOrder("bottom")}
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-mint-dark text-white shadow-lg transition hover:bg-mint-darker"
+            >
+              <HiArrowDown className="h-6 w-6" />
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );

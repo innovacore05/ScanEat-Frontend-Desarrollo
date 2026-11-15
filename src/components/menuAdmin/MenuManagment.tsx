@@ -327,10 +327,10 @@ function MenuManagment() {
 
         {/* Computadora */}
 
-        <section className="hidden px-15 py-15 lg:block">
+        <section className="hidden px-15 py-12 lg:block">
 
 
-          <h2 className="text-2xl font-bold text-black">Menú</h2>
+          <h2 className="text-3xl font-bold text-mint-dark">Menú</h2>
 
           <div className="mt-6 flex gap-4">
             <Link

@@ -1,271 +1,128 @@
-import { Link } from "@tanstack/react-router";
-import { HiArrowLeft } from "react-icons/hi";
-import { getProfile, getStoredFirstName } from "../../services/authService";
-import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
-import { useEffect, useState } from "react";
-import { IoIosAdd } from "react-icons/io";
-import { MdOutlineModeEditOutline } from "react-icons/md";
-import QrCodeModal from "../tableAdmin/QRCodeModal";
-import { createTable, getTables } from "../../services/tableService";
 
-function AddTable() {
+import { useState } from "react";
+import { createTable } from "../../services/tableService";
+
+type AddTableProps = {
+	onClose: () => void;
+	onCreated: (table: {
+		id: string;
+		tableNumber: number;
+		chairNumber: number;
+	}) => void;
+};
+
+function AddTable({ onClose, onCreated }: AddTableProps) {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [tableNumber, setTableNumber] = useState("");
 	const [chairNumber, setChairNumber] = useState("");
-	const [firstName, setFirstName] = useState(getStoredFirstName);
-	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
-	const [qrValue, setQrValue] = useState("");
-	const [qrTableNumber, setQrTableNumber] = useState<number | string>("");
-	const [tables, setTables] = useState<any[]>([]);
-	//const [createdTableId, setCreatedTableId] = useState<string | null>(null);
-	
-
-	useEffect(() => {
-		const loadProfile = async () => {
-			try {
-				const data = await getProfile();
-				setFirstName(data.user.firstName);
-			} catch (error) {
-				console.error("Error loading profile:", error);
-			}
-		};
-
-		loadProfile();
-	}, []);
-
-	useEffect(() => {
-		const loadTables = async () => {
-			try {
-				const data = await getTables();
-				setTables(data);
-			} catch (error) {
-				console.error("Error trayendo mesas:", error);
-			}
-		};
-
-		loadTables();
-	}, []);
-
-	const openQrForTable = (tableId: string, numeroMesa: number | string) => {
-  const qrUrl = `https://scanneatf.up.railway.app/menuClient?mesaId=${tableId}`;
-  setQrValue(qrUrl);
-	  setQrTableNumber(numeroMesa);
-  setIsQrModalOpen(true);
-};
+	const [errorMessage, setErrorMessage] = useState("");
 
 	const handleCreateTable = async () => {
 		const tableNumberValue = Number(tableNumber);
 		const chairNumberValue = Number(chairNumber);
 
-		if (!Number.isFinite(tableNumberValue) || tableNumberValue <= 0) return;
-		if (!Number.isFinite(chairNumberValue) || chairNumberValue <= 0) return;
+		if (!tableNumber || !chairNumber ||
+			!Number.isFinite(tableNumberValue) || tableNumberValue <= 0 ||
+			!Number.isFinite(chairNumberValue) || chairNumberValue <= 0) {
+			setErrorMessage("Ingresá un número de mesa y una cantidad de sillas válidos.");
+			return;
+		}
 
 		try {
 			setIsSubmitting(true);
+			setErrorMessage("");
 
-			const table = await createTable(tableNumberValue, chairNumberValue);
-			setTableNumber("");
-			setChairNumber("");
-			//setCreatedTableId(table.id);
-			openQrForTable(table.id, tableNumberValue);
+			const table = await createTable(
+				tableNumberValue,
+				chairNumberValue
+			);
+
+			onCreated({
+				id: table.id,
+				tableNumber: tableNumberValue,
+				chairNumber: chairNumberValue
+			});
+
 		} catch (error) {
-			console.error(error);
+			console.error("Error creando mesa:", error);
+			setErrorMessage("No se pudo crear la mesa.");
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
 
-	// const handleGenerateQr = () => {
-	// 	if (createdTableId) openQrForTable(createdTableId, qrTableNumber);
-	// };
-
 	return (
-		<DashboardLayoutAdmin>
-			<main className="flex min-h-screen flex-col bg-white ">
+		<div
+			className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-4"
+			onClick={onClose}
+			role="dialog"
+			aria-modal="true"
+		>
+			<div
+				className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+				onClick={(e) => e.stopPropagation()}
+			>
+				<div className="mb-6 flex items-center justify-between">
+					<h2 className="text-2xl font-bold text-mint-dark">
+						Añadir mesa
+					</h2>
 
-				{/* Celular */}
-				<section className="flex flex-1 flex-col lg:hidden">
+					<button
+						type="button"
+						onClick={onClose}
+						className="text-2xl text-gray-500 hover:text-gray-800"
+					>
+						&times;
+					</button>
+				</div>
 
-					<div className="flex items-center gap-2">
-						<Link
-							to="/tablesManagment"
-							className="flex items-center gap-2 px-8 text-mint-dark"
-						>
-							<HiArrowLeft className="h-6 w-6" />
+				<div className="flex flex-col gap-4">
+					<input
+						type="number"
+						min="1"
+						value={tableNumber}
+						onChange={(e) => setTableNumber(e.target.value)}
+						placeholder="Número de mesa"
+						className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brown"
+					/>
 
-							<span className="text-[32px] font-bold">
-								Añadir mesa
-							</span>
-						</Link>
-					</div>
+					<input
+						type="number"
+						min="1"
+						value={chairNumber}
+						onChange={(e) => setChairNumber(e.target.value)}
+						placeholder="Cantidad de sillas"
+						className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brown"
+					/>
 
+					{errorMessage && (
+						<p className="text-sm text-red-600">
+							{errorMessage}
+						</p>
+					)}
+				</div>
 
-					<div className="mt-2 flex flex-1 flex-col gap-6 px-6 py-8 sm:px-8">
+				<div className="mt-8 flex justify-end gap-3">
+					<button
+						type="button"
+						onClick={onClose}
+						disabled={isSubmitting}
+						className="rounded-lg border border-mint-dark px-4 py-3 font-bold text-mint-dark hover:bg-mint-dark/10"
+					>
+						Cancelar
+					</button>
 
-						<div className="mt-1">
-							<input
-								type="number"
-								value={tableNumber}
-								onChange={(e) => {
-									setTableNumber(e.target.value);
-									//setCreatedTableId(null);
-								}}
-								placeholder="Numero de mesa"
-								className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brown"
-							/>
-						</div>
-
-						<div className="mt-1">
-							<input
-								type="number"
-								value={chairNumber}
-								onChange={(e) => {
-									setChairNumber(e.target.value);
-									//setCreatedTableId(null);
-								}}
-								placeholder="Cantidad de sillas"
-								className="w-full rounded-lg border border-border px-4 py-3 text-text-primary outline-none focus:border-2 focus:border-brown"
-							/>
-						</div>
-
-						<div className="mt-auto flex flex-col">
-
-							<Link
-								to="/TablesManagment"
-								className="mt-16 block w-full cursor-pointer rounded-lg border border-mint-dark px-4 py-3 text-center text-base font-bold text-mint-dark hover:bg-mint-dark/10"
-							>
-								Cancelar
-							</Link>
-
-							<button
-								type="button"
-								onClick={handleCreateTable}
-								disabled={isSubmitting}
-								className="mt-6 w-full cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-base font-bold text-white hover:bg-mint-dark/90"
-							>
-								{isSubmitting ? "Guardando..." : "Guardar"}
-							</button>
-						</div>
-
-					</div>
-				</section>
-
-
-				{/* Computadora */}
-
-				<section className="hidden px-15 py-15 lg:block">
-					<div className="rounded-2xl bg-mint-dark px-8 py-6">
-						<h1 className="text-3xl font-bold text-white">
-							¡Hola, {firstName || "Usuario"}!
-						</h1>
-					</div>
-
-					
-
-					<div className="mt-8 px-2 py-2">
-						<div>
-							<div className="flex items-center justify-between">
-								<div className="flex items-center gap-2">
-									<Link
-										to="/tablesManagment"
-										className="flex items-center text-mint-dark"
-									>
-										<HiArrowLeft className="h-6 w-6" />
-									</Link>
-
-									<h2 className="text-2xl font-bold text-mint-dark">
-										Mesas
-									</h2>
-								</div>
-								
-
-								<div className="flex gap-8 items-start">
-									<Link
-										to="/addTable"
-										className="flex items-center justify-between rounded border-4 w-45 h-8.5 border-mint-darker/50 px-3 py-2 text-s font-bold text-text-primary"
-									>
-										<span>Añadir mesa</span>
-										<IoIosAdd className="text-mint-darker w-8 h-8" />
-									</Link>
-
-									<Link
-										to="/editTable"
-										className="flex items-center justify-between rounded border w-41.75 h-8.5 border-border px-3 py-2 text-s font-bold text-text-primary"
-									>
-										<span>Editar mesa</span>
-										<MdOutlineModeEditOutline className="text-mint-darker w-6 h-6" />
-									</Link>
-								</div>
-							</div>
-
-							<div className="mt-4 flex flex-col gap-2">
-								{tables.length === 0 ? (
-									<p>No hay mesas creadas.</p>
-								) : (
-									tables.map((table) => (
-										<div key={table.id} className="rounded border border-border px-3 py-2 text-left text-s font-bold text-text-primary hover:border-mint-dark">
-											Mesa #{table.tableNumber}
-										</div>
-									))
-								)}
-							</div>
-						</div>
-
-						<div className="mt-8 border border-border rounded">
-							<p className=" font-bold text-text-primary px-8 py-6 text-md">Nueva mesa</p>
-
-
-							<div className="mt-2 flex flex-1 flex-col gap-3 px-8 py-3">
-
-								<div className="mt-1  text-mint-darker">
-									<input
-										type="number"
-										value={tableNumber}
-										onChange={(e) => {
-											setTableNumber(e.target.value);
-										//setCreatedTableId(null);
-										}}
-										placeholder="Numero de mesa"
-										className="w-full rounded-lg border border-border px-4 py-2 outline-none focus:border-2 focus:border-brown"
-									/>
-								</div>
-
-								<div className="mt-1 text-mint-darker">
-									<input
-										type="number"
-										value={chairNumber}
-										onChange={(e) => {
-											setChairNumber(e.target.value);
-											//setCreatedTableId(null);
-										}}
-										placeholder="Cantidad de sillas"
-										className="w-full rounded-lg border border-border px-4 py-2 outline-none focus:border-2 focus:border-brown"
-									/>
-								</div>
-
-								<div className="mt-7 mb-4 flex gap-10 align-center justify-end">
-									
-									<QrCodeModal
-									isOpen={isQrModalOpen}
-									value={qrValue}
-									numeroMesa={qrTableNumber}
-									onClose={() => setIsQrModalOpen(false)}
-									/>
-
-									<button
-										type="button"
-										onClick={handleCreateTable}
-										className="flex justify-center w-39.75 cursor-pointer rounded-lg bg-mint-dark px-3 py-2 text-base font-bold text-white hover:bg-mint-dark/90"
-									>
-										{isSubmitting ? "Guardando..." : "Guardar"}
-									</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</section>
-			</main>
-		</DashboardLayoutAdmin >
+					<button
+						type="button"
+						onClick={handleCreateTable}
+						disabled={isSubmitting}
+						className="rounded-lg bg-mint-dark px-5 py-3 font-bold text-white hover:bg-mint-dark/90 disabled:opacity-50"
+					>
+						{isSubmitting ? "Guardando..." : "Guardar"}
+					</button>
+				</div>
+			</div>
+		</div>
 	);
 }
 

@@ -26,7 +26,7 @@ function DashboardWaiter() {
     return (
         <DashboardLayoutWaiter>
                <motion.main
-            className="min-h-screen bg-brand-white px-4 py-6 sm:px-6 sm:py-8 lg:px-15 lg:py-15"
+            className="w-full max-w-394 min-h-screen bg-brand-white px-4 py-6 sm:px-6 sm:py-8 lg:px-15 lg:py-12"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}

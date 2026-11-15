@@ -15,8 +15,8 @@ function ColorPickerField({
   onChange,
 }: ColorPickerFieldProps) {
   return (
-    <div className="flex w-full min-w-0 flex-col items-center gap-3">
-      <label className="text-center font-bold text-text-primary">
+    <div className="flex flex-col px-8 items-center gap-3">
+      <label className="block w-full text-center font-bold text-text-primary">
         {label}
       </label>
 
