@@ -48,9 +48,7 @@ import { Route as profileChangePasswordErrorRouteImport } from './routes/(profil
 import { Route as profileChangePasswordSuccessRouteImport } from './routes/(profile)/changePasswordSuccess'
 import { Route as profileCustomizationRouteImport } from './routes/(profile)/customization'
 import { Route as profileProfileSettingsRouteImport } from './routes/(profile)/profileSettings'
-import { Route as tableAdminAddtableRouteImport } from './routes/(tableAdmin)/Addtable'
 import { Route as tableAdminTablesManagmentRouteImport } from './routes/(tableAdmin)/TablesManagment'
-import { Route as tableAdminEditTableRouteImport } from './routes/(tableAdmin)/editTable'
 import { Route as userAdminUsersManagmentRouteImport } from './routes/(userAdmin)/usersManagment'
 import { Route as waiterOrdersWaiterOrderDetailsRouteImport } from './routes/(waiterOrders)/waiterOrderDetails'
 import { Route as waiterOrdersWaiterOrdersRouteImport } from './routes/(waiterOrders)/waiterOrders'
@@ -267,22 +265,12 @@ const profileProfileSettingsRoute = profileProfileSettingsRouteImport.update({
   path: '/profileSettings',
   getParentRoute: () => rootRouteImport,
 } as any)
-const tableAdminAddtableRoute = tableAdminAddtableRouteImport.update({
-  id: '/(tableAdmin)/Addtable',
-  path: '/Addtable',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const tableAdminTablesManagmentRoute =
   tableAdminTablesManagmentRouteImport.update({
     id: '/(tableAdmin)/TablesManagment',
     path: '/TablesManagment',
     getParentRoute: () => rootRouteImport,
   } as any)
-const tableAdminEditTableRoute = tableAdminEditTableRouteImport.update({
-  id: '/(tableAdmin)/editTable',
-  path: '/editTable',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const userAdminUsersManagmentRoute = userAdminUsersManagmentRouteImport.update({
   id: '/(userAdmin)/usersManagment',
   path: '/usersManagment',
@@ -341,9 +329,7 @@ export interface FileRoutesByFullPath {
   '/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
   '/customization': typeof profileCustomizationRoute
   '/profileSettings': typeof profileProfileSettingsRoute
-  '/Addtable': typeof tableAdminAddtableRoute
   '/TablesManagment': typeof tableAdminTablesManagmentRoute
-  '/editTable': typeof tableAdminEditTableRoute
   '/usersManagment': typeof userAdminUsersManagmentRoute
   '/waiterOrderDetails': typeof waiterOrdersWaiterOrderDetailsRoute
   '/waiterOrders': typeof waiterOrdersWaiterOrdersRoute
@@ -388,9 +374,7 @@ export interface FileRoutesByTo {
   '/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
   '/customization': typeof profileCustomizationRoute
   '/profileSettings': typeof profileProfileSettingsRoute
-  '/Addtable': typeof tableAdminAddtableRoute
   '/TablesManagment': typeof tableAdminTablesManagmentRoute
-  '/editTable': typeof tableAdminEditTableRoute
   '/usersManagment': typeof userAdminUsersManagmentRoute
   '/waiterOrderDetails': typeof waiterOrdersWaiterOrderDetailsRoute
   '/waiterOrders': typeof waiterOrdersWaiterOrdersRoute
@@ -436,9 +420,7 @@ export interface FileRoutesById {
   '/(profile)/changePasswordSuccess': typeof profileChangePasswordSuccessRoute
   '/(profile)/customization': typeof profileCustomizationRoute
   '/(profile)/profileSettings': typeof profileProfileSettingsRoute
-  '/(tableAdmin)/Addtable': typeof tableAdminAddtableRoute
   '/(tableAdmin)/TablesManagment': typeof tableAdminTablesManagmentRoute
-  '/(tableAdmin)/editTable': typeof tableAdminEditTableRoute
   '/(userAdmin)/usersManagment': typeof userAdminUsersManagmentRoute
   '/(waiterOrders)/waiterOrderDetails': typeof waiterOrdersWaiterOrderDetailsRoute
   '/(waiterOrders)/waiterOrders': typeof waiterOrdersWaiterOrdersRoute
@@ -485,9 +467,7 @@ export interface FileRouteTypes {
     | '/changePasswordSuccess'
     | '/customization'
     | '/profileSettings'
-    | '/Addtable'
     | '/TablesManagment'
-    | '/editTable'
     | '/usersManagment'
     | '/waiterOrderDetails'
     | '/waiterOrders'
@@ -532,9 +512,7 @@ export interface FileRouteTypes {
     | '/changePasswordSuccess'
     | '/customization'
     | '/profileSettings'
-    | '/Addtable'
     | '/TablesManagment'
-    | '/editTable'
     | '/usersManagment'
     | '/waiterOrderDetails'
     | '/waiterOrders'
@@ -579,9 +557,7 @@ export interface FileRouteTypes {
     | '/(profile)/changePasswordSuccess'
     | '/(profile)/customization'
     | '/(profile)/profileSettings'
-    | '/(tableAdmin)/Addtable'
     | '/(tableAdmin)/TablesManagment'
-    | '/(tableAdmin)/editTable'
     | '/(userAdmin)/usersManagment'
     | '/(waiterOrders)/waiterOrderDetails'
     | '/(waiterOrders)/waiterOrders'
@@ -627,9 +603,7 @@ export interface RootRouteChildren {
   profileChangePasswordSuccessRoute: typeof profileChangePasswordSuccessRoute
   profileCustomizationRoute: typeof profileCustomizationRoute
   profileProfileSettingsRoute: typeof profileProfileSettingsRoute
-  tableAdminAddtableRoute: typeof tableAdminAddtableRoute
   tableAdminTablesManagmentRoute: typeof tableAdminTablesManagmentRoute
-  tableAdminEditTableRoute: typeof tableAdminEditTableRoute
   userAdminUsersManagmentRoute: typeof userAdminUsersManagmentRoute
   waiterOrdersWaiterOrderDetailsRoute: typeof waiterOrdersWaiterOrderDetailsRoute
   waiterOrdersWaiterOrdersRoute: typeof waiterOrdersWaiterOrdersRoute
@@ -910,25 +884,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof profileProfileSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(tableAdmin)/Addtable': {
-      id: '/(tableAdmin)/Addtable'
-      path: '/Addtable'
-      fullPath: '/Addtable'
-      preLoaderRoute: typeof tableAdminAddtableRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/(tableAdmin)/TablesManagment': {
       id: '/(tableAdmin)/TablesManagment'
       path: '/TablesManagment'
       fullPath: '/TablesManagment'
       preLoaderRoute: typeof tableAdminTablesManagmentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(tableAdmin)/editTable': {
-      id: '/(tableAdmin)/editTable'
-      path: '/editTable'
-      fullPath: '/editTable'
-      preLoaderRoute: typeof tableAdminEditTableRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(userAdmin)/usersManagment': {
@@ -997,9 +957,7 @@ const rootRouteChildren: RootRouteChildren = {
   profileChangePasswordSuccessRoute: profileChangePasswordSuccessRoute,
   profileCustomizationRoute: profileCustomizationRoute,
   profileProfileSettingsRoute: profileProfileSettingsRoute,
-  tableAdminAddtableRoute: tableAdminAddtableRoute,
   tableAdminTablesManagmentRoute: tableAdminTablesManagmentRoute,
-  tableAdminEditTableRoute: tableAdminEditTableRoute,
   userAdminUsersManagmentRoute: userAdminUsersManagmentRoute,
   waiterOrdersWaiterOrderDetailsRoute: waiterOrdersWaiterOrderDetailsRoute,
   waiterOrdersWaiterOrdersRoute: waiterOrdersWaiterOrdersRoute,

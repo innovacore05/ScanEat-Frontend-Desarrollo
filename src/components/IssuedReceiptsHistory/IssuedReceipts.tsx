@@ -421,13 +421,9 @@ useEffect(() => {
     console.error("Error al conectar Socket.IO:", error.message);
   };
 
-  const handleReceiptStatusUpdated = (payload: {
-    receiptId: number;
-    status: string;
-  }) => {
-    
-    setReloadKey((key) => key + 1);
-  };
+const handleReceiptStatusUpdated = () => {
+  setReloadKey((key) => key + 1);
+};
 
 
   socket.on("connect", handleConnect);
