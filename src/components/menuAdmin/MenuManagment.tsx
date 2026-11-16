@@ -45,6 +45,7 @@ function ProductList({
   selectedProductId,
   onViewMore,
   onCloseDetails,
+  onAvailabilityChange,
 }: {
   initialLoading: boolean;
   isFiltering: boolean;
@@ -53,6 +54,7 @@ function ProductList({
   selectedProductId: number | null;
   onViewMore: (productId: number) => void;
   onCloseDetails: () => void;
+  onAvailabilityChange: (productId: number, isAvailable: boolean) => void;
 }) {
   const visibleProducts = selectedProductId === null
     ? products
@@ -100,6 +102,11 @@ function ProductList({
             showReviews
             productId={product.productId}
             optionGroups={product.optionGroups}
+            isAvailable={product.isAvailable}
+            canManageAvailability
+            onAvailabilityChange={(isAvailable) =>
+              onAvailabilityChange(product.productId, isAvailable)
+            }
             onDelete={onDeleteProduct}
             isDetailView={selectedProductId === product.productId}
             onViewMore={() => onViewMore(product.productId)}
@@ -197,6 +204,14 @@ function MenuManagment() {
     setSelectedProductId((current) => current === productId ? null : current);
   };
 
+  const handleAvailabilityChange = (productId: number, isAvailable: boolean) => {
+    setProducts((current) =>
+      current.map((item) =>
+        item.productId === productId ? { ...item, isAvailable } : item,
+      ),
+    );
+  };
+
 
   return (
     <DashboardLayoutAdmin>
@@ -287,6 +302,7 @@ function MenuManagment() {
                   selectedProductId={selectedProductId}
                   onViewMore={setSelectedProductId}
                   onCloseDetails={() => setSelectedProductId(null)}
+                  onAvailabilityChange={handleAvailabilityChange}
                 />
               </div>
 
@@ -311,10 +327,10 @@ function MenuManagment() {
 
         {/* Computadora */}
 
-        <section className="hidden px-15 py-15 lg:block">
+        <section className="hidden px-15 py-12 lg:block">
 
 
-          <h2 className="text-2xl font-bold text-black">Menú</h2>
+          <h2 className="text-3xl font-bold text-mint-dark">Menú</h2>
 
           <div className="mt-6 flex gap-4">
             <Link
@@ -382,6 +398,7 @@ function MenuManagment() {
               selectedProductId={selectedProductId}
               onViewMore={setSelectedProductId}
               onCloseDetails={() => setSelectedProductId(null)}
+              onAvailabilityChange={handleAvailabilityChange}
             />
           </div>
 

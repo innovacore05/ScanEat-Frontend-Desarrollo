@@ -194,8 +194,8 @@ function IssuerInformation() {
 
   return (
     <DashboardLayoutAdmin>
-      <main className="min-h-screen bg-brand-white p-4 sm:p-6 lg:p-15">
-        <div className="mx-auto w-full max-w-6xl">
+      <main className="w-full max-w-394 min-h-screen bg-brand-white p-4 sm:p-6 lg:py-12 lg:px-15">
+        <div className="">
           <div>
             <Link
               to="/dashboardAdmin"
@@ -209,7 +209,7 @@ function IssuerInformation() {
 
             </Link>
 
-            <h1 className="hidden text-2xl font-bold text-mint-dark md:block sm:text-3xl">
+            <h1 className="mb-8 hidden text-2xl font-bold text-mint-dark md:block sm:text-3xl">
               Datos del emisor
             </h1>
           </div>

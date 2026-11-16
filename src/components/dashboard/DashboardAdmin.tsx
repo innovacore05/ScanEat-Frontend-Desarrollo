@@ -97,7 +97,7 @@ function DashboardForm() {
 
 <DashboardLayoutAdmin>
     <motion.section
-      className="px-4 py-6 sm:px-6 lg:px-8 lg:py-10"
+      className="w-full max-w-394 px-4 py-6 sm:px-6 lg:px-15 lg:py-14"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}

@@ -151,7 +151,7 @@ function HistorySales() {
 
 
                 {/* Computadora */}
-                <section className="hidden px-15 py-15 lg:block">
+                <section className="w-full max-w-394 hidden px-15 py-15 lg:block">
 
 
                     <h2 className="text-3xl font-bold text-mint-dark">

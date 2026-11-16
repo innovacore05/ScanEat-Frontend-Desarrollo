@@ -112,9 +112,11 @@ displayIvaRate={product.displayIvaRate}
             image={product.image ?? ""}
             rating={product.rating}
             isAdmin={false}
+            isClientMenu
             productId={product.productId}
             mesaId={mesaId}
             optionGroups={product.optionGroups}
+            isAvailable={product.isAvailable}
             isDetailView={selectedProductId === product.productId}
             showReviews
             isAddingToOrder={isAddingToOrder}

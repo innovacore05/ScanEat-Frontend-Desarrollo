@@ -129,9 +129,10 @@ export function listReceipts(params: ReceiptListParams, signal?: AbortSignal) {
   if (params.status) query.set("status", params.status);
   if (params.search.trim()) query.set("search", params.search.trim());
 
-  return request<ReceiptListResponse>(`/api/receipts?${query.toString()}`, {
-    signal,
-  });
+ return request<ReceiptListResponse>(`/api/receipts?${query.toString()}`, {
+  signal,
+  cache: "no-store",
+});
 }
 
 export function refreshReceiptStatus(id: string) {

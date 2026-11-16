@@ -395,12 +395,12 @@ function Expenses() {
             {/*Aquí termina*/}
 
             <motion.section
-                className="px-4 py-6 sm:px-6 lg:px-15 lg:py-15"
+                className="w-full max-w-394 px-4 py-6 sm:px-6 lg:px-15 lg:py-12"
                 initial={{ opacity: 0, y: -15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
             >
-                <div className="mx-auto w-full max-w-7xl">
+                <div className=" w-full">
                     <div className="mb-6">
                         <div>
                             <Link

@@ -242,24 +242,17 @@ function CheckOrder() {
 
       if (isAddingToOrder) {
         // Prepara y valida las instrucciones de los productos que se agregarán a la orden.
-        const instructionsToSend = orderAddItems.flatMap((cartItem) =>
-          (cartItem.specialInstructions ?? []).map(({ unit, instruction }) => ({
-            cartItemId: Number(cartItem.cartItemId),
-            clientId: cartItem.clientId,
-            unit,
-            instruction: instruction.trim(),
-          })),
-        );
-
-const emptyInstruction = instructionsToSend.some(
-  (item) => !item.instruction,
+       const instructionsToSend = orderAddItems.flatMap((cartItem) =>
+  (cartItem.specialInstructions ?? [])
+    .filter(({ instruction }) => instruction.trim() !== "")
+    .map(({ unit, instruction }) => ({
+      cartItemId: Number(cartItem.cartItemId),
+      clientId: cartItem.clientId,
+      unit,
+      instruction: instruction.trim(),
+    })),
 );
 
-if (emptyInstruction) {
-  alert("Completa las instrucciones de todas las unidades que seleccionaste.");
-  setIsSubmitting(false);
-  return;
-}
 
 await addItemsToOrder(orderId!, {
   items: displayedItems.map((item) => ({
@@ -278,24 +271,18 @@ await addItemsToOrder(orderId!, {
         clearOrderAddCart();
       } else {
         // Prepara y valida las instrucciones de los productos del carrito compartido.
-        const instructionsToSend = cartItems.flatMap((cartItem) =>
-  (cartItem.specialInstructions ?? []).map(({ unit, instruction }) => ({
-    cartItemId: Number(cartItem.cartItemId),
-    clientId: cartItem.clientId,
-    unit,
-    instruction: instruction.trim(),
-  })),
+       const instructionsToSend = cartItems.flatMap((cartItem) =>
+  (cartItem.specialInstructions ?? [])
+    .filter(({ instruction }) => instruction.trim() !== "")
+    .map(({ unit, instruction }) => ({
+      cartItemId: Number(cartItem.cartItemId),
+      clientId: cartItem.clientId,
+      unit,
+      instruction: instruction.trim(),
+    })),
 );
 
-const hasEmptyInstructions = instructionsToSend.some(
-  (item) => !item.instruction,
-);
 
-if (hasEmptyInstructions) {
-  alert("Completa o desmarca las instrucciones de preparación vacías.");
-  setIsSubmitting(false);
-  return;
-}
 
 const createdOrder = await submitSharedCart(
   tableId,

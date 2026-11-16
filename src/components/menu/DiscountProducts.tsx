@@ -88,6 +88,7 @@ displayIvaRate={product.displayIvaRate}
             showActions={false}
             productId={product.productId}
             optionGroups={product.optionGroups}
+            isAvailable={product.isAvailable}
             onDelete={onDeleteProduct}
             isDetailView={selectedProductId === product.productId}
             onViewMore={() => onViewMore(product.productId)}
@@ -271,13 +272,13 @@ useEffect(() => {
         {/* Computadora */}
 
         <motion.section
-  className="hidden px-15 py-15 lg:block"
+  className="hidden px-15 py-12 lg:block"
   initial={{ opacity: 0, y: -15 }}
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.4, ease: "easeOut" }}
 >
 
-          <h2 className=" text-2xl font-bold text-black">Menú</h2>
+          <h2 className="text-3xl font-bold text-mint-dark">Menú</h2>
 
 
           <SearchBar
