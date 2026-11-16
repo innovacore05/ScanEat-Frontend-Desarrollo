@@ -546,7 +546,7 @@ function OrderDetailsContent({
 
 
           {canChangeStatus && (
-            <div className="mt-8 flex justify-end gap-3">
+            <div className="mt-8 flex flex-wrap justify-end gap-3">
 
               {canAddProducts && order.status === "Pendiente" && (
             <Link
@@ -557,7 +557,7 @@ function OrderDetailsContent({
                 mode: "add",
                 returnTo: "waiter",
               }}
-              className="rounded-lg bg-mint-dark px-4 py-2 font-semibold text-white"
+              className="min-w-0 flex-1 basis-40 rounded-lg bg-mint-dark px-4 py-2 text-center font-semibold break-words text-white"
             >
               Agregar productos
             </Link>
@@ -567,7 +567,7 @@ function OrderDetailsContent({
                 type="button"
                 onClick={() => void handleStatusChange()}
                 disabled={isUpdating}
-                className="cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-lg font-bold text-white"
+                className="min-w-0 flex-1 basis-40 cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-center text-lg font-bold break-words text-white"
               >
                 {isChangingStatus
                   ? "Actualizando..."
