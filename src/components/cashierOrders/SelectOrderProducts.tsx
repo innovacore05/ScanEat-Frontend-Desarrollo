@@ -1,9 +1,10 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { HiArrowLeft } from "react-icons/hi";
 import { FiMinus, FiPlus } from "react-icons/fi";
+import { HiArrowUp, HiArrowDown } from "react-icons/hi";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import Skeleton from "../shared/Skeleton";
 import {
@@ -30,6 +31,9 @@ function SelectOrderProducts() {
   const [error, setError] = useState("");
   const [showHaciendaPopup, setShowHaciendaPopup] = useState(false);
 
+  const pendingProductsRef = useRef<HTMLDivElement>(null);
+  const [hasPendingScroll, setHasPendingScroll] = useState(false);
+  
  useEffect(() => {
     const loadOrder = async () => {
         try {
@@ -80,7 +84,25 @@ function SelectOrderProducts() {
         setError("No se recibió el número de la orden.");
         setLoading(false);
     }
-}, [orderId]);
+ }, [orderId]);
+  useEffect(() => {
+  const container = pendingProductsRef.current;
+  if (!container) return;
+
+  const checkScroll = () => {
+    setHasPendingScroll(
+      container.scrollHeight > container.clientHeight + 1
+    );
+  };
+
+  checkScroll();
+
+  const observer = new ResizeObserver(checkScroll);
+  observer.observe(container);
+
+  return () => observer.disconnect();
+  }, [order?.lines]);
+  
 
   const selectedItems =
     order?.lines
@@ -153,6 +175,16 @@ function SelectOrderProducts() {
       }, 0)
     : 0;
 
+    const scrollPendingProducts = (position: "top" | "bottom") => {
+  const container = pendingProductsRef.current;
+  if (!container) return;
+
+  container.scrollTo({
+    top: position === "top" ? 0 : container.scrollHeight,
+    behavior: "smooth",
+  });
+  };
+  
   const continueToPayment = () => {
     if (!selectedItems.length) {
       setError("Selecciona al menos un producto para cobrar.");
@@ -271,144 +303,181 @@ if (!order) {
           Cuenta de mesa #{order.tableNumber}
         </p>
 
-        <div className="mt-8 rounded-xl border border-border p-5 sm:p-8">
-          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-xl font-bold text-mint-dark">
-              Productos pendientes de pago
-            </h2>
+          <div className="mt-8 flex w-full items-center gap-4">
 
-            <button
-              type="button"
-              onClick={toggleAllProducts}
-              className="rounded-lg border border-mint-dark px-4 py-2 font-semibold text-mint-dark transition hover:bg-mint-dark hover:text-white"
-            >
-              {allSelected
-                ? "Deseleccionar todos"
-                : "Seleccionar todos"}
-            </button>
-          </div>
+  <div className="min-w-0 flex-1 rounded-xl border border-border p-5 sm:p-8">
 
-          <div className="space-y-5">
-            {order.lines.map((line,index) => {
-              const pending = line.pendingQuantity;
-              const selected =
-                selectedQuantities[line.detailId] ?? 0;
+    <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h2 className="text-xl font-bold text-mint-dark">
+      Productos pendientes de pago
+    </h2>
 
-              const pendingTotal =
-                pending > 0 && line.originalQuantity > 0
-                  ? (Number(line.total) * pending) /
-                    line.originalQuantity
-                  : 0;
-
-              return (
-                <motion.div
-        key={line.detailId}
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-            duration: 0.35,
-            delay: index * 0.06,
-            ease: "easeOut",
-        }}
-        className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between"
+    <button
+      type="button"
+      onClick={toggleAllProducts}
+      className="rounded-lg border border-mint-dark px-4 py-2 font-semibold text-mint-dark transition hover:bg-mint-dark hover:text-white"
     >
+      {allSelected
+        ? "Deseleccionar todos"
+        : "Seleccionar todos"}
+    </button>
+  </div>
 
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold">{line.detail}</p>
+  <div className="flex items-center gap-4">
+    {/* Lista de productos y total */}
+    <div className="min-w-0 flex-1">
+      <div
+        ref={pendingProductsRef}
+        className="max-h-96 space-y-5 overflow-y-auto scrollbar-thin scrollbar-thumb-mint-darker/75 scrollbar-track-mint-dark/20"
+      >
+        {order.lines.map((line, index) => {
+          const pending = line.pendingQuantity;
+          const selected =
+            selectedQuantities[line.detailId] ?? 0;
 
-                    <p className="mt-1 text-sm text-gray-500">
-                      Pendientes: {pending} · IVA{" "}
-                      {Number(line.ivaRate)} %
-                    </p>
+          const pendingTotal =
+            pending > 0 && line.originalQuantity > 0
+              ? (Number(line.total) * pending) /
+                line.originalQuantity
+              : 0;
 
-                    <p className="mt-1 text-sm text-gray-600">
-                      Precio total pendiente:{" "}
-                      {formatCRC(pendingTotal)}
-                    </p>
+          return (
+            <motion.div
+              key={line.detailId}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.35,
+                delay: index * 0.06,
+                ease: "easeOut",
+              }}
+              className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold">{line.detail}</p>
 
-                    {selected > 0 && (
-                      <p className="mt-1 text-sm font-medium text-mint-dark">
-                        Seleccionados: {selected} de {pending}
-                      </p>
-                    )}
-                  </div>
+                <p className="mt-1 text-sm text-gray-500">
+                  Pendientes: {pending} · IVA{" "}
+                  {Number(line.ivaRate)} %
+                </p>
 
-                  <div className="flex items-center justify-between gap-4 sm:justify-end">
-                    <span className="text-sm font-medium text-gray-600">
-                      Cantidad
-                    </span>
+                <p className="mt-1 text-sm text-gray-600">
+                  Precio total pendiente:{" "}
+                  {formatCRC(pendingTotal)}
+                </p>
 
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        aria-label={`Quitar una unidad de ${line.detail}`}
-                        disabled={pending <= 0 || selected <= 0}
-                        onClick={() =>
-                          updateQuantity(
-                            line.detailId,
-                            pending,
-                            selected - 1,
-                          )
-                        }
-                        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-border bg-white text-mint-dark transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
-                      >
-                        <FiMinus className="h-4 w-4" />
-                      </button>
+                {selected > 0 && (
+                  <p className="mt-1 text-sm font-medium text-mint-dark">
+                    Seleccionados: {selected} de {pending}
+                  </p>
+                )}
+              </div>
 
-                      <span
-                        aria-live="polite"
-                        className="w-8 text-center text-lg font-semibold tabular-nums"
-                      >
-                        {selected}
-                      </span>
+              <div className="flex items-center justify-between gap-4 sm:justify-end">
+                <span className="text-sm font-medium text-gray-600">
+                  Cantidad
+                </span>
 
-                      <button
-                        type="button"
-                        aria-label={`Agregar una unidad de ${line.detail}`}
-                        disabled={
-                          pending <= 0 || selected >= pending
-                        }
-                        onClick={() =>
-                          updateQuantity(
-                            line.detailId,
-                            pending,
-                            selected + 1,
-                          )
-                        }
-                        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-mint-dark text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-                      >
-                        <FiPlus className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    aria-label={`Quitar una unidad de ${line.detail}`}
+                    disabled={pending <= 0 || selected <= 0}
+                    onClick={() =>
+                      updateQuantity(
+                        line.detailId,
+                        pending,
+                        selected - 1,
+                      )
+                    }
+                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-border bg-white text-mint-dark transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <FiMinus className="h-4 w-4" />
+                  </button>
 
-          <div className="mt-6 flex items-center justify-between gap-4 pt-5">
-            <p className="text-lg font-bold text-mint-dark">
-              Total seleccionado
-            </p>
+                  <span
+                    aria-live="polite"
+                    className="w-8 text-center text-lg font-semibold tabular-nums"
+                  >
+                    {selected}
+                  </span>
 
-            <p className="text-xl font-bold text-mint-dark">
-              {formatCRC(total)}
-            </p>
-          </div>
+                  <button
+                    type="button"
+                    aria-label={`Agregar una unidad de ${line.detail}`}
+                    disabled={
+                      pending <= 0 || selected >= pending
+                    }
+                    onClick={() =>
+                      updateQuantity(
+                        line.detailId,
+                        pending,
+                        selected + 1,
+                      )
+                    }
+                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-mint-dark text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <FiPlus className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
 
-          {error && (
-            <p className="mt-4 text-sm text-red-600">{error}</p>
-          )}
+      {/* Total seleccionado */}
+      <div className="mt-6 flex items-center justify-between gap-4 pt-5">
+        <p className="text-lg font-bold text-mint-dark">
+          Total seleccionado
+        </p>
 
-          <button
-            type="button"
-            onClick={continueToPayment}
-            disabled={selectedItems.length === 0}
-            className="mt-6 w-full rounded-xl bg-mint-dark px-6 py-3 text-lg font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Continuar al pago
-          </button>
-        </div>
+        <p className="text-xl font-bold text-mint-dark">
+          {formatCRC(total)}
+        </p>
+      </div>
+    </div>
+
+   
+  </div>
+
+  {error && (
+    <p className="mt-4 text-sm text-red-600">{error}</p>
+  )}
+
+  <button
+    type="button"
+    onClick={continueToPayment}
+    disabled={selectedItems.length === 0}
+    className="mt-6 w-full rounded-xl bg-mint-dark px-6 py-3 text-lg font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+  >
+    Continuar al pago
+  </button>
+</div>
+
+      {/* Flechas al lado derecho */}
+    {hasPendingScroll && (
+      <div className="flex shrink-0 flex-col gap-10">
+        <button
+          type="button"
+          onClick={() => scrollPendingProducts("top")}
+          aria-label="Subir al inicio de los productos"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-mint-dark text-white shadow-lg transition hover:bg-mint-darker"
+        >
+          <HiArrowUp className="h-6 w-6" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => scrollPendingProducts("bottom")}
+          aria-label="Bajar al final de los productos"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-mint-dark text-white shadow-lg transition hover:bg-mint-darker"
+        >
+          <HiArrowDown className="h-6 w-6" />
+        </button>
+      </div>
+    )}       
+</div>
       </section>
       
     

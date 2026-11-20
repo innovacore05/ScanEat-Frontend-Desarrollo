@@ -28,6 +28,7 @@ import { motion } from "motion/react";
 import { getActiveOrder } from "../../services/orderService";
 import OrderClosed from '../clientOrders/OrderClosed';
 import { socket } from "../../services/socketClient";
+import { getTableById } from "../../services/tableService";
 
 // Límite de muestras
 const PAGE_SIZE = 10;
@@ -44,6 +45,7 @@ function ProductList({
   onViewMore,
   onCloseDetails,
   isAddingToOrder = false,
+  hasActiveOrder = false,
   onAddProduct,
 }: {
   initialLoading: boolean;
@@ -55,6 +57,7 @@ function ProductList({
   onViewMore: (productId: number) => void;
   onCloseDetails: () => void;
   isAddingToOrder?: boolean;
+  hasActiveOrder?: boolean;
   onAddProduct?: (item: ProductToAdd) => void;
 }) {
   const visibleProducts =
@@ -106,8 +109,8 @@ function ProductList({
             description={product.description ?? ""}
             price={product.price}
             priceWithTax={product.priceWithTax}
-discountedPriceWithTax={product.discountedPriceWithTax}
-displayIvaRate={product.displayIvaRate}
+            discountedPriceWithTax={product.discountedPriceWithTax}
+            displayIvaRate={product.displayIvaRate}
             discount={Number(product.discount ?? 0)}
             image={product.image ?? ""}
             rating={product.rating}
@@ -120,6 +123,7 @@ displayIvaRate={product.displayIvaRate}
             isDetailView={selectedProductId === product.productId}
             showReviews
             isAddingToOrder={isAddingToOrder}
+            hasActiveOrder={hasActiveOrder}
             onAddProduct={onAddProduct}
             onViewMore={() => onViewMore(product.productId)}
             onCloseDetails={onCloseDetails}
@@ -150,6 +154,8 @@ function MenuClient() {
     mesaId: string;
     tableNumber: number;
   } | null>(null);
+  const [isTableActive, setIsTableActive] = useState<boolean | null>(null);
+  const [isCheckingTableStatus, setIsCheckingTableStatus] = useState(true);
 
   const [currentOrderId, setCurrentOrderId] = useState<number | null>(null);
   const [currentOrderTableId, setCurrentOrderTableId] = useState<
@@ -171,7 +177,10 @@ const [orderCheckAttempt, setOrderCheckAttempt] = useState(0);
   });
 
   const isAddingToOrder = mode === "add" && orderId !== undefined;
-const [showOrderClosed, setShowOrderClosed] = useState(false);
+const hasActiveOrder =
+  !isCheckingActiveOrder &&
+  currentOrderId !== null &&
+  !isAddingToOrder;const [showOrderClosed, setShowOrderClosed] = useState(false);
 
 
 // Mostrar el aviso cuando caja paga el pedido de esta mesa
@@ -318,6 +327,42 @@ useEffect(() => {
       isCurrentRequest = false;
     };
   }, [mesaId]);
+
+// Verificar si la mesa del QR está activa
+useEffect(() => {
+  if (!mesaId) {
+    setIsTableActive(null);
+    setIsCheckingTableStatus(false);
+    return;
+  }
+
+  let isCurrentRequest = true;
+
+  setIsCheckingTableStatus(true);
+
+  void getTableById(mesaId)
+    .then((table) => {
+      if (isCurrentRequest) {
+        setIsTableActive(table.active === true);
+      }
+    })
+    .catch((error) => {
+      console.error("Error verificando el estado de la mesa:", error);
+
+      if (isCurrentRequest) {
+        setIsTableActive(null);
+      }
+    })
+    .finally(() => {
+      if (isCurrentRequest) {
+        setIsCheckingTableStatus(false);
+      }
+    });
+
+  return () => {
+    isCurrentRequest = false;
+  };
+}, [mesaId]);
 
   // Cargar productos con sus calificaciones
   const loadProductsWithRatings = async (products: Product[]) => {
@@ -481,6 +526,31 @@ useEffect(() => {
   return (
     <main className="min-h-screen bg-white px-8 pt-8 lg:bg-neutral-50">
  
+      {!isCheckingTableStatus && isTableActive !== true && (
+  <div className="fixed inset-0 z-100 flex items-center justify-center bg-white px-6">
+    <div className="w-full max-w-md rounded-3xl bg-neutral-50 p-8 text-center shadow-lg">
+      <div className="mb-5 flex justify-center">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-200">
+          <span className="text-4xl text-red-600 font-extrabold">!</span>
+        </div>
+      </div>
+
+      <h2 className="mb-3 text-2xl font-bold text-mint-darker">
+        {isTableActive === false
+          ? "Mesa desactivada"
+          : "No se pudo verificar la mesa"}
+      </h2>
+
+      <p className="text-base text-gray-600">
+        {isTableActive === false
+          ? "Esta mesa se encuentra desactivada y no es posible realizar pedidos en este momento. Por favor, comunícate con el personal del restaurante."
+          : "No pudimos comprobar el estado de esta mesa. Por seguridad, no es posible realizar pedidos en este momento."}
+      </p>
+    </div>
+  </div>
+      )}
+      
+
  {orderRecoveryError && (
   <div
     role="status"
@@ -561,6 +631,7 @@ useEffect(() => {
                 onViewMore={setSelectedProductId}
                 onCloseDetails={() => setSelectedProductId(null)}
                 isAddingToOrder={isAddingToOrder}
+                hasActiveOrder={hasActiveOrder}
                 onAddProduct={addToOrderCart}
               />
             </div>
@@ -636,6 +707,7 @@ useEffect(() => {
             onViewMore={setSelectedProductId}
             onCloseDetails={() => setSelectedProductId(null)}
             isAddingToOrder={isAddingToOrder}
+            hasActiveOrder={hasActiveOrder}
             onAddProduct={addToOrderCart}
           />
         </div>

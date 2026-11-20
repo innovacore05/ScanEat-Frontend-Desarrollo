@@ -55,6 +55,7 @@ interface DishCardProps {
   onAvailabilityChange?: (isAvailable: boolean) => void;
   isClientMenu?: boolean;
   showAddAction?: boolean;
+  hasActiveOrder?: boolean;
 }
 
 function Stars({ rating }: { rating: number }) {
@@ -102,6 +103,7 @@ function DishCard({
   onAvailabilityChange,
   isClientMenu = false,
   showAddAction = true,
+  hasActiveOrder = false
 }: DishCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -111,7 +113,8 @@ function DishCard({
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [validationMessage, setValidationMessage] = useState("");
   const [isUpdatingAvailability, setIsUpdatingAvailability] = useState(false);
-
+  const [showOrderAlreadySent, setShowOrderAlreadySent] = useState(false);
+  
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
@@ -424,19 +427,21 @@ function DishCard({
                     </button>
                   </>
                 ) : showAddAction ? (
-                  <button
-                    type="button"
-                    onClick={groupsOptions}
-                    disabled={isLoadingEdit || !isAvailable}
-                    className="cursor-pointer text-mint-dark disabled:opacity-50"
-                    aria-label={`Agregar ${name}`}
-                  >
-                    <CirclePlusIcon
-                      size={34}
-                      duration={1}
-
-                    />
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (hasActiveOrder) {
+                          setShowOrderAlreadySent(true);
+                          return;
+                        }
+                        groupsOptions();
+                      }}
+                      disabled={isLoadingEdit || !isAvailable}
+                      className="cursor-pointer text-mint-dark disabled:opacity-50"
+                      aria-label={`Agregar ${name}`}
+                    >
+                      <CirclePlusIcon size={34} duration={1} />
+                    </button>
                 ) : null}
               </div>
             )}
@@ -555,6 +560,33 @@ function DishCard({
         onConfirm={handleDelete}
         onCancel={() => setIsDeleteDialogOpen(false)}
       />
+
+      {showOrderAlreadySent && (
+  <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-4">
+    <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl">
+      
+
+      <h2 className="mb-2 text-lg font-semibold text-gray-800">
+        Pedido ya enviado
+      </h2>
+
+      <p className="mb-6 text-sm leading-relaxed text-gray-600">
+        Tu pedido ya fue enviado y no puedes agregar más productos
+        desde el menú. Si deseas solicitar algo adicional, comunícalo al mesero.
+      </p>
+
+      <button
+        type="button"
+        onClick={() => setShowOrderAlreadySent(false)}
+        className="w-full rounded-xl bg-mint-dark px-4 py-3 font-medium text-white transition hover:opacity-90"
+      >
+        Entendido
+      </button>
+    </div>
+  </div>
+      )}
+      
+
     </>
   );
 }

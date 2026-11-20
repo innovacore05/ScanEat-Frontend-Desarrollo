@@ -541,8 +541,8 @@ const createdOrder = await submitSharedCart(
         type="button"
         onClick={remove}
         className={`${
-          isMobile ? "mr-4 h-8 w-8" : "mr-6 h-9 w-9"
-        } flex shrink-0 cursor-pointer items-center justify-center self-center rounded-full text-gray-500 hover:text-red-600`}
+          isMobile ? "mr-3 mt-3 h-8 w-8" : "mr-3 h-9 w-9 mt-3"
+        } flex shrink-0 cursor-pointer items-center justify-center  rounded-full text-gray-500 hover:text-red-600`}
         aria-label={`Eliminar ${item.name}`}
       >
         <FiX className="h-5 w-5" />

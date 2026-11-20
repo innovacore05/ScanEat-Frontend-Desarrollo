@@ -557,7 +557,7 @@ function OrderDetailsContent({
                 mode: "add",
                 returnTo: "waiter",
               }}
-              className="min-w-0 flex-1 basis-40 rounded-lg bg-mint-dark px-4 py-2 text-center font-semibold break-words text-white"
+              className="min-w-0 flex-1 basis-40 rounded-lg bg-mint-dark px-4 py-2 text-center font-semibold wrap-break-word text-white"
             >
               Agregar productos
             </Link>
@@ -567,7 +567,7 @@ function OrderDetailsContent({
                 type="button"
                 onClick={() => void handleStatusChange()}
                 disabled={isUpdating}
-                className="min-w-0 flex-1 basis-40 cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-center text-lg font-bold break-words text-white"
+                className="min-w-0 flex-1 basis-40 cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-center text-lg font-bold wrap-break-word text-white"
               >
                 {isChangingStatus
                   ? "Actualizando..."
