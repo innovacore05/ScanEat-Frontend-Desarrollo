@@ -50,6 +50,10 @@ interface DashboardLayoutProps {
 function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [shouldAnimateSidebar] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem("waiter-sidebar-animated") !== "true";
+  });
 
   const [firstName, setFirstName] = useState(getStoredFirstName);
   const [lastName, setLastName] = useState(getStoredLastName);
@@ -188,6 +192,16 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
   }, []);
 
   useEffect(() => {
+    if (shouldAnimateSidebar) {
+      const timeoutId = window.setTimeout(() => {
+        sessionStorage.setItem("waiter-sidebar-animated", "true");
+      }, 600);
+
+      return () => window.clearTimeout(timeoutId);
+    }
+  }, [shouldAnimateSidebar]);
+
+  useEffect(() => {
     const loadProfile = async () => {
       try {
         const data = await getProfile();
@@ -254,10 +268,10 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
       {/* Barra lateral - COMPUTADORA */}
 
       <motion.aside
-  className="fixed left-0 top-0 hidden h-screen overflow-y-auto w-66 bg-neutral-50 px-8 py-8 lg:flex lg:flex-col rounded-r-4xl"
-  initial={{ opacity: 0, x: -30 }}
+  initial={shouldAnimateSidebar ? { opacity: 0, x: -30 } : false}
   animate={{ opacity: 1, x: 0 }}
   transition={{ duration: 0.5, ease: "easeOut" }}
+  className="fixed left-0 top-0 hidden h-screen overflow-y-auto w-66 bg-neutral-50 px-8 py-8 lg:flex lg:flex-col rounded-r-4xl"
 >
   
         <div className="flex justify-start">
