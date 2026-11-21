@@ -4,6 +4,7 @@ import {
   type SalesAnalytics,
 } from "../../services/analyticsService";
 import Skeleton from "../shared/Skeleton";
+import { motion } from "motion/react";
 
 function FavoritesToday() {
   const [topProducts, setTopProducts] = useState<
@@ -32,7 +33,10 @@ function FavoritesToday() {
     void loadTopProducts();
   }, []);
 
-  const barWidths = ["w-full", "w-4/5", "w-3/5"];
+  const maxQuantity = Math.max(
+    ...topProducts.slice(0, 3).map((product) => product.quantity),
+    1,
+  );
 
   return (
     <div className="flex min-w-0 flex-col gap-3">
@@ -57,15 +61,48 @@ function FavoritesToday() {
       ) : (
         <div className="flex flex-col items-start gap-2">
           {topProducts.slice(0, 3).map((product, index) => (
-            <div
+            <motion.div
               key={product.productId}
-              className={`${barWidths[index]} flex min-w-0 items-center justify-between gap-3 rounded-lg bg-mint-darker px-4 py-2 text-white`}
+              className="flex min-h-10 min-w-24 origin-left items-center justify-between gap-3 overflow-hidden rounded-lg bg-mint-darker px-4 py-2 text-white"
+              initial={{ width: 0, opacity: 0 }}
+              animate={{
+                width: `${Math.max(
+                  42,
+                  (product.quantity / maxQuantity) * 100,
+                )}%`,
+                opacity: 1,
+              }}
+              transition={{
+                width: {
+                  duration: 0.65,
+                  delay: index * 0.12,
+                  ease: [0.22, 1, 0.36, 1],
+                },
+                opacity: { duration: 0.25, delay: index * 0.12 },
+              }}
             >
-              <span className="truncate">{product.name}</span>
-              <span className="shrink-0 text-sm font-semibold">
+              <motion.span
+                className="truncate"
+                initial={{ x: -8, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.35, delay: 0.25 + index * 0.12 }}
+              >
+                {product.name}
+              </motion.span>
+              <motion.span
+                className="shrink-0 rounded-full bg-white/15 px-2 py-0.5 text-sm font-semibold"
+                initial={{ scale: 0.6, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 18,
+                  delay: 0.45 + index * 0.12,
+                }}
+              >
                 {product.quantity}
-              </span>
-            </div>
+              </motion.span>
+            </motion.div>
           ))}
         </div>
       )}

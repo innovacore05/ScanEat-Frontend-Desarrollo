@@ -4,9 +4,11 @@ import type { SalesAnalytics } from "../../services/analyticsService";
 import { getOrders } from "../../services/orderService";
 import Skeleton from "../shared/Skeleton";
 import { motion } from "motion/react";
+import { useLocalDay } from "../../hooks/useLocalDay";
 
 function DataSummary() {
   const [analytics, setAnalytics] = useState<SalesAnalytics | null>(null);
+  const localDay = useLocalDay();
   const [occupiedTables, setOccupiedTables] = useState(0);
   const [ordersInKitchen, setOrdersInKitchen] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +58,7 @@ function DataSummary() {
     };
 
     void loadDashboardData();
-  }, []);
+  }, [localDay]);
 
   const summary = analytics?.summary;
 

@@ -179,9 +179,12 @@ function CashierOrders() {
                                     <OrderCard order={order} isCashier />
                                 </motion.div>
                             ))
-                        ) : (
-                            <p className="py-8 text-gray-500">
-                                No hay resultados para esta búsqueda.
+                            ) : orders.length > 0 ? (
+                                    <p className="text-gray-500">
+                                        No hay resultados para esta búsqueda.
+                                    </p>) : (  
+                                        <p className="text-gray-500">
+                                            No hay órdenes pendientes de pago.
                             </p>
                         )}
 

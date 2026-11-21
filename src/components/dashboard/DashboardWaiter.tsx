@@ -6,9 +6,11 @@ import PendingTables from "./PendingTables";
 import FavoritesToday from "./FavoritesToday";
 import DiscountsToday from "./DiscountsToday";
 import { motion } from "motion/react";
+import { useLocalDay } from "../../hooks/useLocalDay";
 
 function DashboardWaiter() {
     const [firstName, setFirstName] = useState(getStoredFirstName);
+    const localDay = useLocalDay();
 
     useEffect(() => {
         const loadProfile = async () => {
@@ -26,6 +28,7 @@ function DashboardWaiter() {
     return (
         <DashboardLayoutWaiter>
                <motion.main
+            key={localDay}
             className="w-full max-w-394 min-h-screen bg-brand-white px-4 py-6 sm:px-6 sm:py-8 lg:px-15 lg:py-12"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

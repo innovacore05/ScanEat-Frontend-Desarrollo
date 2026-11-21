@@ -10,6 +10,7 @@ import {getProfile, getStoredFirstName,} from "../../services/authService";
 import { getOrders } from "../../services/orderService";
 import {getSalesAnalytics, type SalesAnalytics,} from "../../services/analyticsService";
 import { motion } from "motion/react";
+import { useLocalDay } from "../../hooks/useLocalDay";
 
 const periodToApiValue: Record< SalesPeriod, "today" | "week" | "month" | "year"
 > = {
@@ -22,6 +23,7 @@ const periodToApiValue: Record< SalesPeriod, "today" | "week" | "month" | "year"
 function DashboardForm() {
   const [firstName, setFirstName] = useState(getStoredFirstName);
   const [period] = useState<SalesPeriod>("Hoy");
+  const localDay = useLocalDay();
 
   const [analytics, setAnalytics] = useState<SalesAnalytics | null>(null);
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(false);
@@ -57,7 +59,7 @@ function DashboardForm() {
     };
 
     void loadAnalytics();
-  }, [period]);
+  }, [period, localDay]);
 
   useEffect(() => {
     const loadOrders = async () => {
@@ -89,7 +91,7 @@ function DashboardForm() {
     };
 
     void loadOrders();
-  }, []);
+  }, [localDay]);
 
   return (
     

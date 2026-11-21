@@ -23,11 +23,25 @@ interface DashboardLayoutProps {
 function DashboardAdmin({ children }: DashboardLayoutProps) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [shouldAnimateSidebar] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem("admin-sidebar-animated") !== "true";
+  });
 
   const [firstName, setFirstName] = useState(getStoredFirstName);
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   {/*const [businessName, setBusinessName] = useState("");*/ }
+
+  useEffect(() => {
+    if (shouldAnimateSidebar) {
+      const timeoutId = window.setTimeout(() => {
+        sessionStorage.setItem("admin-sidebar-animated", "true");
+      }, 600);
+
+      return () => window.clearTimeout(timeoutId);
+    }
+  }, [shouldAnimateSidebar]);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -52,7 +66,7 @@ function DashboardAdmin({ children }: DashboardLayoutProps) {
       {/* Barra lateral - COMPUTADORA */}
 
       <motion.aside
-  initial={{ opacity: 0, x: -40 }}
+  initial={shouldAnimateSidebar ? { opacity: 0, x: -40 } : false}
   animate={{ opacity: 1, x: 0 }}
   transition={{ duration: 0.5, ease: "easeOut" }}
   className="fixed left-0 top-0 hidden scrollbar-thin scrollbar-thumb-mint-darker/75 scrollbar-track-mint-dark/20 h-screen overflow-y-auto w-66 bg-neutral-50 px-8 py-8 lg:flex lg:flex-col rounded-r-4xl"
