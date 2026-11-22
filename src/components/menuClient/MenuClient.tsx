@@ -28,7 +28,7 @@ import { motion } from "motion/react";
 import { getActiveOrder } from "../../services/orderService";
 import OrderClosed from '../clientOrders/OrderClosed';
 import { socket } from "../../services/socketClient";
-import { getTableById } from "../../services/tableService";
+
 
 // Límite de muestras
 const PAGE_SIZE = 10;
@@ -156,6 +156,7 @@ function MenuClient() {
   } | null>(null);
   const [isTableActive, setIsTableActive] = useState<boolean | null>(null);
   const [isCheckingTableStatus, setIsCheckingTableStatus] = useState(true);
+const [tableCheckAttempt, setTableCheckAttempt] = useState(0);
 
   const [currentOrderId, setCurrentOrderId] = useState<number | null>(null);
   const [currentOrderTableId, setCurrentOrderTableId] = useState<
@@ -175,13 +176,15 @@ const [orderCheckAttempt, setOrderCheckAttempt] = useState(0);
   const { mesaId, orderId, mode, returnTo } = useSearch({
     from: "/(menuClient)/menuClient",
   });
+  const navigate = useNavigate();
 
   const isAddingToOrder = mode === "add" && orderId !== undefined;
 const hasActiveOrder =
   !isCheckingActiveOrder &&
   currentOrderId !== null &&
   !isAddingToOrder;const [showOrderClosed, setShowOrderClosed] = useState(false);
-
+const [hasCompletedTableCheck, setHasCompletedTableCheck] =
+  useState(false);
 
 // Mostrar el aviso cuando caja paga el pedido de esta mesa
 useEffect(() => {
@@ -290,8 +293,9 @@ useEffect(() => {
 // Reintentar la consulta cuando regrese internet
 useEffect(() => {
   const retryWhenOnline = () => {
-    setOrderCheckAttempt((attempt) => attempt + 1);
-  };
+  setOrderCheckAttempt((attempt) => attempt + 1);
+  setTableCheckAttempt((attempt) => attempt + 1);
+};
 
   window.addEventListener("online", retryWhenOnline);
   return () => window.removeEventListener("online", retryWhenOnline);
@@ -303,34 +307,12 @@ useEffect(() => {
     setMesaId(mesaId);
   }, [mesaId, setMesaId]);
 
-  // Obtener el número público de la mesa
-  useEffect(() => {
-    if (!mesaId) return;
 
-    let isCurrentRequest = true;
-
-    void getPublicTableNumber(mesaId)
-      .then(({ tableNumber: number }) => {
-        if (isCurrentRequest) {
-          setTableInfo({ mesaId, tableNumber: number });
-        }
-      })
-      .catch((error) => {
-        console.error("Error loading table number:", error);
-
-        if (isCurrentRequest) {
-          setTableInfo(null);
-        }
-      });
-
-    return () => {
-      isCurrentRequest = false;
-    };
-  }, [mesaId]);
 
 // Verificar si la mesa del QR está activa
 useEffect(() => {
   if (!mesaId) {
+    setTableInfo(null);
     setIsTableActive(null);
     setIsCheckingTableStatus(false);
     return;
@@ -340,29 +322,45 @@ useEffect(() => {
 
   setIsCheckingTableStatus(true);
 
-  void getTableById(mesaId)
-    .then((table) => {
-      if (isCurrentRequest) {
-        setIsTableActive(table.active === true);
-      }
+  void getPublicTableNumber(mesaId)
+    .then(({ tableNumber, active }) => {
+      if (!isCurrentRequest) return;
+
+      setTableInfo({ mesaId, tableNumber });
+      setIsTableActive(active);
     })
     .catch((error) => {
-      console.error("Error verificando el estado de la mesa:", error);
+      if (!isCurrentRequest) return;
 
-      if (isCurrentRequest) {
-        setIsTableActive(null);
+      const status =
+        typeof error === "object" &&
+        error !== null &&
+        "status" in error
+          ? Number(error.status)
+          : undefined;
+
+      if (status === 404) {
+        setTableInfo(null);
+        setIsTableActive(false);
+        void navigate({ to: "/invalidTableScreen" });
+        return;
       }
+
+      // Un error de red o del servidor no significa que el QR sea inválido.
+      setTableInfo(null);
+      setIsTableActive(null);
     })
-    .finally(() => {
-      if (isCurrentRequest) {
-        setIsCheckingTableStatus(false);
-      }
-    });
+   .finally(() => {
+  if (isCurrentRequest) {
+    setIsCheckingTableStatus(false);
+    setHasCompletedTableCheck(true);
+  }
+});
 
   return () => {
     isCurrentRequest = false;
   };
-}, [mesaId]);
+}, [mesaId, tableCheckAttempt, navigate]);
 
   // Cargar productos con sus calificaciones
   const loadProductsWithRatings = async (products: Product[]) => {
@@ -414,7 +412,7 @@ useEffect(() => {
     return () => {
       isCurrentRequest = false;
     };
-  }, [mesaId]);
+ }, [mesaId, tableCheckAttempt]);
 
   // Cargar los productos
   useEffect(() => {
@@ -465,7 +463,7 @@ useEffect(() => {
       isCurrentRequest = false;
       clearTimeout(timeoutId);
     };
-  }, [searchTerm, selectedCategory, mesaId]);
+ }, [searchTerm, selectedCategory, mesaId, tableCheckAttempt]);
 
   // Cargar más productos
   const handleLoadMore = async () => {
@@ -505,7 +503,7 @@ useEffect(() => {
     );
   };
 
-  const navigate = useNavigate();
+
 
   // Volver a la pantalla anterior al agregar productos
   const handleReturnFromAdd = () => {
@@ -526,44 +524,88 @@ useEffect(() => {
   return (
     <main className="min-h-screen bg-white px-8 pt-8 lg:bg-neutral-50">
  
-      {!isCheckingTableStatus && isTableActive !== true && (
+    {(hasCompletedTableCheck || !isCheckingTableStatus) &&
+  isTableActive !== true && (
   <div className="fixed inset-0 z-100 flex items-center justify-center bg-white px-6">
     <div className="w-full max-w-md rounded-3xl bg-neutral-50 p-8 text-center shadow-lg">
       <div className="mb-5 flex justify-center">
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-200">
-          <span className="text-4xl text-red-600 font-extrabold">!</span>
+          <span className="text-4xl font-extrabold text-red-600">!</span>
         </div>
       </div>
 
       <h2 className="mb-3 text-2xl font-bold text-mint-darker">
-        {isTableActive === false
-          ? "Mesa desactivada"
-          : "No se pudo verificar la mesa"}
+        {isCheckingTableStatus
+          ? "Validando mesa..."
+          : isTableActive === false
+            ? "Mesa desactivada"
+            : "No se pudo verificar la mesa"}
       </h2>
 
       <p className="text-base text-gray-600">
-        {isTableActive === false
-          ? "Esta mesa se encuentra desactivada y no es posible realizar pedidos en este momento. Por favor, comunícate con el personal del restaurante."
-          : "No pudimos comprobar el estado de esta mesa. Por seguridad, no es posible realizar pedidos en este momento."}
+        {isCheckingTableStatus
+          ? "Estamos comprobando el código QR."
+          : isTableActive === false
+            ? "Esta mesa no está disponible. Comunícate con el personal del restaurante."
+            : "No pudimos comprobar el estado de esta mesa. Revisa tu conexión e inténtalo de nuevo."}
       </p>
+
+      {!isCheckingTableStatus && isTableActive === null && (
+        <button
+          type="button"
+          onClick={() => {
+           setTableCheckAttempt((attempt) => attempt + 1);
+  setOrderCheckAttempt((attempt) => attempt + 1);
+  window.dispatchEvent(new Event("scaneat:retry-shared-cart"));
+          }}
+          className="mt-5 rounded-xl bg-mint-dark px-5 py-3 font-semibold text-white"
+        >
+          Reintentar
+        </button>
+      )}
     </div>
   </div>
-      )}
-      
+)}
 
- {orderRecoveryError && (
+{orderRecoveryError && isTableActive === true && (
   <div
-    role="status"
-    className="fixed bottom-16 left-4 right-4 z-50 rounded-xl bg-amber-50 p-3 text-center text-sm text-amber-900 shadow"
+    className="fixed inset-0 z-[110] flex min-h-screen items-center justify-center bg-black/50 px-6 py-10"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="order-recovery-title"
   >
-    <p>{orderRecoveryError}</p>
-    <button
-      type="button"
-      onClick={() => setOrderCheckAttempt((attempt) => attempt + 1)}
-      className="mt-2 font-bold underline"
-    >
-      Reintentar
-    </button>
+    <div className="w-full max-w-md overflow-hidden rounded-3xl border border-border bg-white shadow-xl">
+      <div className="flex flex-col items-center bg-mint-dark px-6 py-8 text-center text-white">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-3xl font-bold text-mint-dark">
+          !
+        </div>
+
+        <h2
+          id="order-recovery-title"
+          className="mt-5 text-2xl font-bold"
+        >
+          No pudimos verificar el pedido
+        </h2>
+      </div>
+
+      <div className="px-6 py-7 text-center">
+        <p className="text-base leading-relaxed text-text-primary">
+          {orderRecoveryError}
+        </p>
+
+        <button
+          type="button"
+          onClick={() => {
+            setOrderCheckAttempt((attempt) => attempt + 1);
+            setTableCheckAttempt((attempt) => attempt + 1);
+            window.dispatchEvent(new Event("scaneat:retry-shared-cart"));
+          }}
+          className="mt-6 rounded-2xl bg-mint-dark px-5 py-3 text-sm font-semibold text-white hover:bg-mint-darker"
+        >
+          Reintentar
+        </button>
+      </div>
+    </div>
   </div>
 )}
 

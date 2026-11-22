@@ -7,21 +7,35 @@ export default function SessionExpiredScreen() {
   const [isVisible, setIsVisible] = useState(false);
 
 
-  useEffect(() => {
-    const handleSessionExpired = () => {
-      localStorage.removeItem("authUser");
-      setIsVisible(true);
-    };
+ useEffect(() => {
+  const isCustomerRoute = () => {
+    const path = window.location.pathname;
 
-    window.addEventListener("auth:session-expired", handleSessionExpired);
+    return [
+      "/menuClient",
+      "/checkOrder",
+      "/orderStatus",
+      "/reviewPlate",
+      "/reviews",
+      "/invalidTableScreen",
+    ].some((route) => path.startsWith(route));
+  };
 
-    return () => {
-      window.removeEventListener(
-        "auth:session-expired",
-        handleSessionExpired,
-      );
-    };
-  }, []);
+  const handleSessionExpired = () => {
+    if (isCustomerRoute()) {
+      return;
+    }
+
+    localStorage.removeItem("authUser");
+    setIsVisible(true);
+  };
+
+  window.addEventListener("auth:session-expired", handleSessionExpired);
+
+  return () => {
+    window.removeEventListener("auth:session-expired", handleSessionExpired);
+  };
+}, []);
 
   const handleLogin = () => {
     setIsVisible(false);

@@ -78,6 +78,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // Carrito compartido
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [sharedCartReloadAttempt, setSharedCartReloadAttempt] = useState(0);
   const [isLoadingSharedCart, setIsLoadingSharedCart] = useState(false);
   const sharedCartIdRef = useRef<string | null>(null);
 
@@ -152,6 +153,20 @@ const discount = Number(
     });
   };
 
+useEffect(() => {
+  const retryCartLoad = () => {
+    setSharedCartReloadAttempt((attempt) => attempt + 1);
+  };
+
+  window.addEventListener("online", retryCartLoad);
+  window.addEventListener("scaneat:retry-shared-cart", retryCartLoad);
+
+  return () => {
+    window.removeEventListener("online", retryCartLoad);
+    window.removeEventListener("scaneat:retry-shared-cart", retryCartLoad);
+  };
+}, []);
+
   // Cargar el carrito compartido de la mesa
   useEffect(() => {
     if (!mesaId) {
@@ -191,7 +206,7 @@ const discount = Number(
     return () => {
       cancelled = true;
     };
-  }, [mesaId]);
+  }, [mesaId, sharedCartReloadAttempt]);
 
   // Conectar Socket.IO y entrar a la sala de la mesa.
   useEffect(() => {
@@ -274,7 +289,7 @@ const discount = Number(
       socket.off("cart:expired", handleCartExpired);
       socket.off("cart:submitted", handleCartSubmitted);
     };
-  }, [mesaId]);
+ }, [mesaId]);
 
   // Agregar al carrito compartido.
   const addToCart = async (item: NewCartItem) => {
@@ -313,11 +328,25 @@ const discount = Number(
       await applySharedCart(updatedCart);
       notifyTableCartChanged();
     } catch (error) {
-      console.error(
-        "No se pudo agregar el producto al carrito:",
-        error,
-      );
-    }
+  const status =
+    typeof error === "object" &&
+    error !== null &&
+    "status" in error
+      ? Number(error.status)
+      : undefined;
+
+  if (status === 410) {
+    window.alert(
+      "El carrito anterior expiró por inactividad. El QR sigue activo; vuelve a agregar tus productos.",
+    );
+    return;
+  }
+
+  console.error(
+    "No se pudo agregar el producto al carrito:",
+    error,
+  );
+}
   };
 
   const canModifyItem = (item: CartItem) =>
