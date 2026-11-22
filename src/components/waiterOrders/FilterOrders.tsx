@@ -35,7 +35,7 @@ isLoading = false,
               type="button"
               onClick={() => onSelect(active ? null : id)}
               className={`cursor-pointer flex h-8 w-30 text-sm lg:text-base lg:h-10 lg:w-36 items-center justify-center rounded-lg  transition font-bold
-                ${active ? "bg-mint-darker text-white" : "bg-white border border-mint-darker text-mint-darker"}`}
+                ${active ? "bg-mint-darker text-white" : "bg-white border hover:bg-mint-darker hover:text-white border-mint-darker text-mint-darker"}`}
               aria-label={name}
               aria-pressed={active}
               >

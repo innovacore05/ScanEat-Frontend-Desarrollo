@@ -1,10 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { HiArrowLeft } from "react-icons/hi";
+import { HiArrowUp, HiArrowDown } from "react-icons/hi";
 import type { Order } from "./OrderCard";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import type { ReactNode, ComponentType } from "react";
-import { useState } from "react";
-import { confirmOrder, deliverOrder } from "../../services/orderService";
+import { useState, useRef, useEffect } from "react";
+import { confirmOrder, deliverOrder, updateOrderItem, deleteOrderItem } from "../../services/orderService";
+import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
+import { UseAnimations } from "react-useanimations";
+import trash from "react-useanimations/lib/trash";
 
 type OrderDetailsProps = {
   order: Order;
@@ -14,6 +18,7 @@ type OrderDetailsProps = {
   mobileBackRoute?: string;
   showMobileBack?: boolean;
   Layout?: ComponentType<{ children: ReactNode }>;
+  canAddProducts?: boolean;
 };
 
 function OrderDetailsContent({
@@ -22,14 +27,22 @@ function OrderDetailsContent({
   mobileBackRoute,
   showMobileBack,
   onStatusChanged,
+  canAddProducts,
 }: {
   order: Order;
   showConfirmButton: boolean;
   mobileBackRoute: string;
   showMobileBack: boolean;
   onStatusChanged?: () => void | Promise<void>;
+  canAddProducts?: boolean;
 }) {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isChangingStatus, setIsChangingStatus] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{
+    orderId: number;
+    detailId: number;
+    name: string;
+  } | null>(null);
   const subtotal = order.subtotal ?? 0;
   const iva = order.tax ?? 0;
   const total = order.total ?? subtotal + iva;
@@ -42,6 +55,7 @@ function OrderDetailsContent({
 
     try {
       setIsUpdating(true);
+      setIsChangingStatus(true);
       if (order.status === "Pendiente") {
         await confirmOrder(order.orderId);
       } else if (order.status === "Listo") {
@@ -57,14 +71,157 @@ function OrderDetailsContent({
       alert(message);
     } finally {
       setIsUpdating(false);
+      setIsChangingStatus(false);
     }
   };
 
+  // Solo el mesero puede modificar productos y únicamente con la orden pendiente
+  const canEditItems = !!canAddProducts && order.status === "Pendiente";
+
+  const handleDeleteItem = async () => {
+    if (!itemToDelete || itemToDelete.orderId !== order.orderId || !canEditItems || isUpdating) return;
+
+    try {
+      setIsUpdating(true);
+      await deleteOrderItem(itemToDelete.orderId, itemToDelete.detailId);
+      setItemToDelete(null);
+      await onStatusChanged?.();
+    } catch (error) {
+      setItemToDelete(null);
+      alert(error instanceof Error ? error.message : "No se pudo eliminar el producto.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleChangeQuantity = async (item: Order["items"][number], delta: number) => {
+    const quantity = item.quantity + delta;
+    if (!item.detailId || quantity < 1) return;
+
+    // Al bajar la cantidad se descartan las instrucciones de unidades que ya no existen
+    const specialInstructions = (item.specialInstructions ?? []).filter(
+      (instruction) => instruction.unit <= quantity,
+    );
+
+    try {
+      setIsUpdating(true);
+      await updateOrderItem(order.orderId, item.detailId, { quantity, specialInstructions });
+      await onStatusChanged?.();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "No se pudo editar el producto.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const renderItemControls = (item: Order["items"][number]) =>
+    canEditItems && item.detailId ? (
+      <div className="mt-2 flex items-center gap-2">
+        <button
+          type="button"
+          disabled={isUpdating || item.quantity <= 1}
+          onClick={() => void handleChangeQuantity(item, -1)}
+          className="h-8 w-8 cursor-pointer rounded-lg border border-border font-bold text-mint-dark disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          −
+        </button>
+        <span className="min-w-6 text-center font-semibold">{item.quantity}</span>
+        <button
+          type="button"
+          disabled={isUpdating}
+          onClick={() => void handleChangeQuantity(item, 1)}
+          className="h-8 w-8 cursor-pointer rounded-lg border border-border font-bold text-mint-dark disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          +
+        </button>
+        <button
+          type="button"
+          disabled={isUpdating || order.items.length === 1}
+          onClick={() => {
+            if (item.detailId) {
+              setItemToDelete({ orderId: order.orderId, detailId: item.detailId, name: item.name });
+            }
+          }}
+          className="ml-2 cursor-pointer text-mint-dark hover:text-mint-darker disabled:cursor-not-allowed disabled:opacity-40"
+          aria-label={`Eliminar ${item.name}`}
+        >
+          <UseAnimations animation={trash} size={25} interaction="hover" />
+        </button>
+      </div>
+    ) : null;
+
+  //Flecha para subir o bajar para celular
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  
+  useEffect(() => {
+    
+    const handleScroll = () => {
+      const maxScroll =
+        document.documentElement.scrollHeight - window.innerHeight;
+      setShowScrollUp(window.scrollY > maxScroll / 2);
+    };
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  //Flecha para subir o bajar para computadora
+  const orderScrollRef = useRef<HTMLDivElement>(null);
+  const [hasScroll, setHasScroll] = useState(false);
+  
+  const scrollToOrder = (position: "top" | "bottom") => {
+    
+    const container = orderScrollRef.current;
+    if (!container) return;
+    container.scrollTo({
+      top: position === "top" ? 0 : container.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
+ useEffect(() => {
+  const container = orderScrollRef.current;
+  if (!container) return;
+
+  const checkScroll = () => {
+    setHasScroll(container.scrollHeight > container.clientHeight + 1);
+  };
+
+  checkScroll();
+
+  const observer = new ResizeObserver(checkScroll);
+
+  observer.observe(container);
+
+  if (container.firstElementChild) {
+    observer.observe(container.firstElementChild);
+  }
+
+  return () => {
+    observer.disconnect();
+  };
+}, [order]);
+  
+
+
   return (
     <div className="w-full">
+      <ConfirmDeleteModal
+        isOpen={!!itemToDelete && itemToDelete.orderId === order.orderId && canEditItems}
+        title="¿Eliminar producto de la orden?"
+        message={`¿Deseas eliminar "${itemToDelete?.name}" de la orden?`}
+        variant="themed-danger"
+        isLoading={isUpdating}
+        onCancel={() => setItemToDelete(null)}
+        onConfirm={() => void handleDeleteItem()}
+      />
       {/* Celular */}
-      <section className="lg:hidden">
-        <div className="flex items-center gap-2">
+      <section className="lg:hidden ">
+        <div className="flex items-center gap-2  ">
           {showMobileBack ? (
             <Link
               to={mobileBackRoute}
@@ -83,8 +240,8 @@ function OrderDetailsContent({
           )}
         </div>
 
-        <div className="mt-2 rounded-4xl bg-neutral-100 px-6 py-6">
-          <div className="flex flex-col gap-4">
+        <div className="mt-2 rounded-4xl bg-neutral-100 px-6 py-6 ">
+          <div className="flex flex-col gap-4 ">
             <h2 className="text-2xl font-bold text-mint-dark">
               Mesa #{order.tableId}
             </h2>
@@ -155,6 +312,7 @@ function OrderDetailsContent({
                         )}
                       </div>
                     )}
+                    {renderItemControls(item)}
                   </div>
 
                   <div className="shrink-0 flex items-center justify-end gap-2">
@@ -163,12 +321,12 @@ function OrderDetailsContent({
                         ₡{(item.price * item.quantity).toLocaleString("es-CR")}
                       </p>
                     )}
-                    
+
                     <p className="text-base font-semibold text-text-primary">
                       ₡{Number(item.subtotal ?? item.price * item.quantity).toLocaleString("es-CR")}
                     </p>
                   </div>
-                  
+
                 </div>
               ))}
             </div>
@@ -200,28 +358,71 @@ function OrderDetailsContent({
             </div>
           </div>
 
-          {canChangeStatus && (
-            <div className="mt-8 flex justify-end">
+          {(canAddProducts && order.status === "Pendiente") || canChangeStatus ? (
+            <div className="mt-6 flex w-full flex-col gap-3">
+              {canAddProducts && order.status === "Pendiente" && (
+                <Link
+                  to="/menuClient"
+                  search={{
+                    mesaId: order.tableUuid,
+                    orderId: order.orderId,
+                    mode: "add",
+                    returnTo: "waiter",
+                  }}
+                  className="flex min-h-12 w-full items-center justify-center rounded-lg bg-mint-dark px-4 py-3 text-center font-semibold text-white"
+                >
+                  Agregar productos
+                </Link>
+              )}
+
+              {canChangeStatus && (
               <button
                 type="button"
                 onClick={() => void handleStatusChange()}
                 disabled={isUpdating}
-                className="cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-lg font-bold text-white"
+                className="flex min-h-12 w-full items-center justify-center cursor-pointer rounded-lg bg-mint-dark px-4 py-3 text-lg font-bold text-white"
               >
-                {isUpdating
+                {isChangingStatus
                   ? "Actualizando..."
                   : order.status === "Listo"
                     ? "Entregar"
                     : "Confirmar"}
               </button>
+              )}
             </div>
-          )}
+            
+          ) : null}
+          
         </div>
+        {document.documentElement.scrollHeight > window.innerHeight && (
+  <button
+    type="button"
+    onClick={() =>
+      window.scrollTo({
+        top: showScrollUp
+          ? 0
+          : document.documentElement.scrollHeight,
+        behavior: "smooth",
+      })
+    }
+    className="fixed bottom-5 right-5 flex h-12 w-12 items-center justify-center rounded-full bg-mint-dark/70 text-white lg:hidden"
+  >
+    {showScrollUp ? (
+      <HiArrowUp className="h-6 w-6" />
+    ) : (
+      <HiArrowDown className="h-6 w-6" />
+    )}
+  </button>
+)}
+        
+        
       </section>
 
       {/* Computadora */}
-      <section className="hidden lg:block">
-        <div className="w-full min-w-0 rounded-4xl bg-neutral-100 px-8 py-8">
+      <section className="hidden lg:flex items-center gap-3">
+        <div
+          ref={orderScrollRef}
+          className="relative w-full min-w-0 h-150 overflow-y-auto rounded-4xl bg-neutral-100 px-8 py-4">
           <div className="flex flex-col gap-4">
             <p className="text-2xl font-bold text-mint-dark">
               Orden #{order.orderId}
@@ -297,6 +498,7 @@ function OrderDetailsContent({
                         )}
                       </div>
                     )}
+                    {renderItemControls(item)}
                   </div>
 
                   <div className="shrink-0 flex items-center justify-end gap-2">
@@ -305,12 +507,12 @@ function OrderDetailsContent({
                         ₡{(item.price * item.quantity).toLocaleString("es-CR")}
                       </p>
                     )}
-                    
+
                     <p className="text-lg font-semibold text-text-primary">
                       ₡{Number(item.subtotal ?? item.price * item.quantity).toLocaleString("es-CR")}
                     </p>
                   </div>
-                  
+
                 </div>
               ))}
             </div>
@@ -342,23 +544,62 @@ function OrderDetailsContent({
             </div>
           </div>
 
+
           {canChangeStatus && (
-            <div className="mt-8 flex justify-end">
+            <div className="mt-8 flex flex-wrap justify-end gap-3">
+
+              {canAddProducts && order.status === "Pendiente" && (
+            <Link
+              to="/menuClient"
+              search={{
+                mesaId: order.tableUuid,
+                orderId: order.orderId,
+                mode: "add",
+                returnTo: "waiter",
+              }}
+              className="min-w-0 flex-1 basis-40 rounded-lg bg-mint-dark px-4 py-2 text-center font-semibold wrap-break-word text-white"
+            >
+              Agregar productos
+            </Link>
+          )}
+
               <button
                 type="button"
                 onClick={() => void handleStatusChange()}
                 disabled={isUpdating}
-                className="cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-lg font-bold text-white"
+                className="min-w-0 flex-1 basis-40 cursor-pointer rounded-lg bg-mint-dark px-6 py-2 text-center text-lg font-bold wrap-break-word text-white"
               >
-                {isUpdating
+                {isChangingStatus
                   ? "Actualizando..."
                   : order.status === "Listo"
                     ? "Entregar"
                     : "Confirmar"}
               </button>
+
+              
             </div>
           )}
         </div>
+
+        {hasScroll && (
+          <div className="flex flex-col gap-10">
+            <button
+              type="button"
+              onClick={() => scrollToOrder("top")}
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-mint-dark text-white shadow-lg transition hover:bg-mint-darker"
+            >
+              <HiArrowUp className="h-6 w-6" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => scrollToOrder("bottom")}
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-mint-dark text-white shadow-lg transition hover:bg-mint-darker"
+            >
+              <HiArrowDown className="h-6 w-6" />
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );
@@ -372,6 +613,7 @@ function OrderDetails({
   showMobileBack = true,
   Layout = DashboardLayoutWaiter,
   onStatusChanged,
+  canAddProducts = false,
 }: OrderDetailsProps) {
   if (embedded) {
     return (
@@ -381,6 +623,7 @@ function OrderDetails({
         mobileBackRoute={mobileBackRoute}
         showMobileBack={showMobileBack}
         onStatusChanged={onStatusChanged}
+        canAddProducts={canAddProducts}
       />
     );
   }
@@ -394,6 +637,7 @@ function OrderDetails({
           mobileBackRoute={mobileBackRoute}
           showMobileBack={showMobileBack}
           onStatusChanged={onStatusChanged}
+          canAddProducts={canAddProducts}
         />
       </main>
     </Layout>

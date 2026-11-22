@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { HiArrowLeft } from "react-icons/hi";
 import { Link } from "@tanstack/react-router";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import { ROLE_IDS } from "../../config/roles";
@@ -12,6 +11,9 @@ import {
 import UserCard from "./UserCard";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
 import Skeleton from "../shared/Skeleton";
+import { ArrowLeftIcon } from "@animateicons/react/lucide";
+import { AnimatePresence, motion } from "motion/react";
+
 
 function UsersManagement() {
   const [users, setUsers] = useState<ManagedUser[]>([]);
@@ -34,7 +36,7 @@ function UsersManagement() {
   });
 
   useEffect(() => {
-    
+
 
     const loadUsers = async () => {
       try {
@@ -92,12 +94,12 @@ function UsersManagement() {
         current.map((user) =>
           user.userId === selectedUser.userId
             ? {
-                ...user,
-                ...form,
-                firstName: form.firstName.trim(),
-                lastName: form.lastName.trim(),
-                email: form.email.trim(),
-              }
+              ...user,
+              ...form,
+              firstName: form.firstName.trim(),
+              lastName: form.lastName.trim(),
+              email: form.email.trim(),
+            }
             : user,
         ),
       );
@@ -130,17 +132,26 @@ function UsersManagement() {
 
   return (
     <DashboardLayoutAdmin>
-      
-      <main className="min-h-screen bg-white px-8 py-8 sm:px-6 sm:py-8 lg:px-15 lg:pt-15 lg:pb-15">
+
+      <main className="min-h-screen bg-white px-6.5 sm:px-6 lg:px-15 lg:pt-15 lg:pb-15">
+       
         <div className="w-full">
-          <Link
-            to="/dashboardAdmin"
-            className="mb-1 flex items-center gap-2 text-mint-dark lg:hidden"
-          >
-            <HiArrowLeft className="h-6 w-6" />
-            <span className="text-[32px] font-bold">Gestión de personal</span>
-          </Link>
-          <h2 className="hidden lg:block text-2xl font-bold text-mint-darker lg:text-3xl">
+        
+          <motion.div
+    initial={{ opacity: 0, x: -20 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.4, ease: "easeOut" }}
+>
+    <Link
+        to="/dashboardAdmin"
+        className="flex items-center gap-2 text-mint-dark lg:hidden"
+    >
+        <ArrowLeftIcon size={28} duration={1} />
+        <span className="text-[32px] font-bold">Personal</span>
+    </Link>
+    </motion.div>
+
+          <h2 className="hidden lg:block text-2xl font-bold text-mint-dark lg:text-3xl">
             Gestión de personal
           </h2>
           {error && (
@@ -162,28 +173,46 @@ function UsersManagement() {
           )}
           <div className="max-w-5xl">
             <div className="mt-6 grid grid-cols-1 gap-4 sm:mt-8 md:grid-cols-2">
-              {users.map((user) => (
-                <UserCard
-                  key={user.userId}
-                  user={user}
-                  onEdit={openEdit}
-                  onDelete={setUserToDelete}
-                />
-              ))}
+              {users.map((user, index) => (
+    <motion.div
+        key={user.userId}
+        initial={{ opacity: 0, x: -35 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{
+            duration: 0.4,
+            delay: index * 0.08,
+            ease: "easeOut",
+        }}
+    >
+        <UserCard
+            user={user}
+            onEdit={openEdit}
+            onDelete={setUserToDelete}
+        />
+    </motion.div>
+))}
             </div>
           </div>
         </div>
 
-        {selectedUser && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-            role="dialog"
-            aria-modal="true"
-          >
-            <form
-              onSubmit={handleSave}
-              className="max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:p-6"
-            >
+        <AnimatePresence>
+  {selectedUser && (
+    <motion.div
+      key="edit-user-modal"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      role="dialog"
+      aria-modal="true"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+             <motion.form
+        onSubmit={handleSave}
+        className="max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:p-6"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+      >
               <h2 className="text-xl font-bold text-mint-darker">
                 Editar usuario
               </h2>
@@ -242,9 +271,11 @@ function UsersManagement() {
                   {isSaving ? "Guardando..." : "Guardar"}
                 </button>
               </div>
-            </form>
-          </div>
-        )}
+             </motion.form>
+    </motion.div>
+  )}
+</AnimatePresence>
+        
 
         {/* {userToDelete && (
 					<div

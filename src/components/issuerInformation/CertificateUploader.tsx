@@ -9,7 +9,7 @@
 //sube certificado
 //de issuer information vienen
 //la fecha de carga, verifgicacion de los datos del usaaurio de hacienda,
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { issuerService, getErrorMessage } from "../../services/issuerService";
 
@@ -34,35 +34,47 @@ function CertificateUploader({ uploadedAt, disabled, onUploaded }: Props) {
   } | null>(null);
 
   const ready = file && p12Password && haciendaUsername && haciendaPassword;
+const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = async () => {
-    if (!file) return;
-    setUploading(true);
-    setFeedback(null);
-    try {
-      const body = new FormData();
-      body.append("p12", file);
-      body.append("p12Password", p12Password);
-      body.append("haciendaUsername", haciendaUsername);
-      body.append("haciendaPassword", haciendaPassword);
-      await issuerService.uploadCertificate(body);
+  if (!file) return;
 
-      // se borra el certificado del navegador 
-      setFile(null);
-      setP12Password("");
-      setHaciendaUsername("");
-      setHaciendaPassword("");
-      setFeedback({ type: "ok", text: "Certificado enviado correctamente" });
-      onUploaded();
-    } catch (error) {
-      setFeedback({
-        type: "error",
-        text: getErrorMessage(error, "No se pudo subir el certificado"),
-      });
-    } finally {
-      setUploading(false);
+  setUploading(true);
+  setFeedback(null);
+
+  try {
+    const body = new FormData();
+    body.append("p12", file);
+    body.append("p12Password", p12Password);
+    body.append("haciendaUsername", haciendaUsername);
+    body.append("haciendaPassword", haciendaPassword);
+
+    await issuerService.uploadCertificate(body);
+
+    setFeedback({
+      type: "ok",
+      text: "Certificado enviado correctamente",
+    });
+
+    onUploaded();
+  } catch (error) {
+    setFeedback({
+      type: "error",
+      text: getErrorMessage(error, "No se pudo subir el certificado"),
+    });
+  } finally {
+    setFile(null);
+    setP12Password("");
+    setHaciendaUsername("");
+    setHaciendaPassword("");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
-  };
+
+    setUploading(false);
+  }
+};
 
   return (
     <div className="mb-8 rounded-lg border border-border bg-gray-50 p-6">
@@ -92,12 +104,13 @@ function CertificateUploader({ uploadedAt, disabled, onUploaded }: Props) {
           <span>{file?.name ?? "Seleccioná el archivo .p12"}</span>
         </label>
         <input
-          id="certificate"
-          type="file"
-          accept=".p12"
-          className="hidden"
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-        />
+  ref={fileInputRef}
+  id="certificate"
+  type="file"
+  accept=".p12"
+  className="hidden"
+  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+/>
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">

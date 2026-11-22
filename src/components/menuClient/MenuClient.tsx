@@ -1,23 +1,41 @@
+
 import { useEffect, useState } from "react";
-import { getProducts, getCategories, type Product, type Category } from "../../services/productService";
-import { LuShoppingBag } from "react-icons/lu";
+import {
+  getProducts,
+  getCategories,
+  type Product,
+  type Category,
+} from "../../services/productService";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
 import Skeleton from "../shared/Skeleton";
-import { Link, useSearch } from "@tanstack/react-router";
+import {
+  Link,
+  useSearch,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useCart } from "../clientOrders/CartContext";
+import type { CartItem } from "../clientOrders/CartContext";
 import { getProductReviews } from "../../services/reviewService";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import { getPublicTableNumber } from "../../services/tableService";
+import { HiArrowLeft } from "react-icons/hi";
+import MenuAssistant from "./MenuAssistant";
+import UseAnimations from 'react-useanimations';
+import shoppingBag from 'react-useanimations/lib/shoppingBag';
+import { motion } from "motion/react";
+import { getActiveOrder } from "../../services/orderService";
+import OrderClosed from '../clientOrders/OrderClosed';
+import { socket } from "../../services/socketClient";
 
 
-
-//limite de muestras
+// Límite de muestras
 const PAGE_SIZE = 10;
 
+type ProductToAdd = Omit<CartItem, "cartItemId" | "clientId">;
 
-//funcion de carga de datos de platillos/productos desde la bd:
+// Función para mostrar los productos
 function ProductList({
   initialLoading,
   isFiltering,
@@ -26,6 +44,9 @@ function ProductList({
   selectedProductId,
   onViewMore,
   onCloseDetails,
+  isAddingToOrder = false,
+  hasActiveOrder = false,
+  onAddProduct,
 }: {
   initialLoading: boolean;
   isFiltering: boolean;
@@ -35,211 +56,421 @@ function ProductList({
   selectedProductId: number | null;
   onViewMore: (productId: number) => void;
   onCloseDetails: () => void;
+  isAddingToOrder?: boolean;
+  hasActiveOrder?: boolean;
+  onAddProduct?: (item: ProductToAdd) => void;
 }) {
-  const visibleProducts = selectedProductId === null
-    ? products
-    : products.filter((product) => product.productId === selectedProductId);
+  const visibleProducts =
+    selectedProductId === null
+      ? products
+      : products.filter(
+          (product) => product.productId === selectedProductId,
+        );
 
   return (
     <div
-      className={`contents transition-opacity duration-200 ${isFiltering ? "opacity-50" : "opacity-100"
-        }`}
+      className={`contents transition-opacity duration-200 ${
+        isFiltering ? "opacity-50" : "opacity-100"
+      }`}
     >
       {initialLoading && (
         <>
           {Array.from({ length: 6 }, (_, index) => (
-            <Skeleton key={index} className="h-80 w-full rounded-2xl lg:w-87.5" />
+            <Skeleton
+              key={index}
+              className="h-80 w-full rounded-2xl lg:w-87.5"
+            />
           ))}
         </>
       )}
+
       {!initialLoading && products.length === 0 && (
         <p className="text-text-primary">No hay platillos...</p>
       )}
 
-      {visibleProducts.map((product) => (
-        <div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
+      {visibleProducts.map((product,index) => (
+         <motion.div
+    key={product.productId}
+    initial={{ opacity: 0, x: -35 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{
+      duration: 0.4,
+      delay: index * 0.08,
+      ease: "easeOut",
+    }}
+          className={
+            selectedProductId === product.productId
+              ? "w-full lg:w-192.5"
+              : "w-full lg:w-87.5"
+          }
+        >
           <DishCard
             name={product.productName ?? ""}
             description={product.description ?? ""}
             price={product.price}
-            discount={ Number(product.discount ?? 0) }
+            priceWithTax={product.priceWithTax}
+            discountedPriceWithTax={product.discountedPriceWithTax}
+            displayIvaRate={product.displayIvaRate}
+            discount={Number(product.discount ?? 0)}
             image={product.image ?? ""}
             rating={product.rating}
             isAdmin={false}
+            isClientMenu
             productId={product.productId}
             mesaId={mesaId}
             optionGroups={product.optionGroups}
+            isAvailable={product.isAvailable}
             isDetailView={selectedProductId === product.productId}
             showReviews
+            isAddingToOrder={isAddingToOrder}
+            hasActiveOrder={hasActiveOrder}
+            onAddProduct={onAddProduct}
             onViewMore={() => onViewMore(product.productId)}
             onCloseDetails={onCloseDetails}
           />
-        </div>
+        </motion.div>
       ))}
     </div>
   );
 }
 
-
-
 function MenuClient() {
+  
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(
+    null,
+  );
   const [isFiltering, setIsFiltering] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
-  const [tableInfo, setTableInfo] = useState<{mesaId: string; tableNumber: number;} | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(
+    null,
+  );
+  const [tableInfo, setTableInfo] = useState<{
+    mesaId: string;
+    tableNumber: number;
+  } | null>(null);
+  const [isTableActive, setIsTableActive] = useState<boolean | null>(null);
+  const [isCheckingTableStatus, setIsCheckingTableStatus] = useState(true);
+const [tableCheckAttempt, setTableCheckAttempt] = useState(0);
 
-//nuevo
-const [currentOrderId, setCurrentOrderId] = useState<number | null>(null);
+  const [currentOrderId, setCurrentOrderId] = useState<number | null>(null);
+  const [currentOrderTableId, setCurrentOrderTableId] = useState<
+    string | undefined
+  >(undefined);
+const [isCheckingActiveOrder, setIsCheckingActiveOrder] = useState(true);
+const [orderRecoveryError, setOrderRecoveryError] = useState("");
+const [orderCheckAttempt, setOrderCheckAttempt] = useState(0);
+  const {
+    cartCount,
+    orderAddCount,
+    setMesaId,
+    addToCart,
+    addToOrderCart,
+  } = useCart();
 
-const [currentOrderTableId, setCurrentOrderTableId] = useState<
-  string | undefined
->(undefined);
-
-
- const { cartCount, setMesaId } = useCart();
-
-
-
-
-
-
-  const { mesaId } = useSearch({
+  const { mesaId, orderId, mode, returnTo } = useSearch({
     from: "/(menuClient)/menuClient",
   });
+  const navigate = useNavigate();
 
-  useEffect(() => {
+  const isAddingToOrder = mode === "add" && orderId !== undefined;
+const hasActiveOrder =
+  !isCheckingActiveOrder &&
+  currentOrderId !== null &&
+  !isAddingToOrder;const [showOrderClosed, setShowOrderClosed] = useState(false);
+const [hasCompletedTableCheck, setHasCompletedTableCheck] =
+  useState(false);
+
+// Mostrar el aviso cuando caja paga el pedido de esta mesa
+useEffect(() => {
+  if (!mesaId) return;
+
+  const handleOrderStatusUpdated = (update: {
+    orderId: number;
+    tableId: string;
+    state: string;
+  }) => {
+    if (update.tableId !== mesaId || update.state !== "paid") return;
+
+    if (
+      currentOrderId !== null &&
+      update.orderId !== currentOrderId
+    ) {
+      return;
+    }
+
+    if (localStorage.getItem("currentOrderTableId") === mesaId) {
+      localStorage.removeItem("currentOrderId");
+      localStorage.removeItem("currentOrderTableId");
+    }
+
+    setCurrentOrderId(null);
+    setCurrentOrderTableId(undefined);
+    setShowOrderClosed(true);
+  };
+
+  socket.on("order_status_updated", handleOrderStatusUpdated);
+
+  return () => {
+    socket.off("order_status_updated", handleOrderStatusUpdated);
+  };
+}, [mesaId, currentOrderId]);
+
+// Consultar con el servidor si todavía hay un pedido activo
+useEffect(() => {
+  if (!mesaId) {
+    setCurrentOrderId(null);
+    setCurrentOrderTableId(undefined);
+    setIsCheckingActiveOrder(false);
+    setOrderRecoveryError("");
+    return;
+  }
+
   const savedOrderId = localStorage.getItem("currentOrderId");
-  const savedOrderTableId = localStorage.getItem("currentOrderTableId");
+  const savedTableId = localStorage.getItem("currentOrderTableId");
+  const savedId = Number(savedOrderId);
+  const hasSavedOrder =
+    savedTableId === mesaId &&
+    Number.isInteger(savedId) &&
+    savedId > 0;
 
-  if (!mesaId || !savedOrderId || !savedOrderTableId) {
-    setCurrentOrderId(null);
-    setCurrentOrderTableId(undefined);
-    return;
-  }
+  let cancelled = false;
 
-  if (savedOrderTableId !== mesaId) {
-    localStorage.removeItem("currentOrderId");
-    localStorage.removeItem("currentOrderTableId");
+  setIsCheckingActiveOrder(true);
+  setOrderRecoveryError("");
 
-    setCurrentOrderId(null);
-    setCurrentOrderTableId(undefined);
-    return;
-  }
+  void getActiveOrder(mesaId)
+    .then((active) => {
+      if (cancelled) return;
 
-  const parsedOrderId = Number(savedOrderId);
+      if (!active) {
+        if (savedTableId === mesaId) {
+          localStorage.removeItem("currentOrderId");
+          localStorage.removeItem("currentOrderTableId");
+        }
 
-  if (Number.isInteger(parsedOrderId) && parsedOrderId > 0) {
-    setCurrentOrderId(parsedOrderId);
-    setCurrentOrderTableId(savedOrderTableId);
-  } else {
-    localStorage.removeItem("currentOrderId");
-    localStorage.removeItem("currentOrderTableId");
+        setCurrentOrderId(null);
+        setCurrentOrderTableId(undefined);
+        return;
+      }
 
-    setCurrentOrderId(null);
-    setCurrentOrderTableId(undefined);
-  }
-}, [mesaId]);
+      localStorage.setItem("currentOrderId", String(active.order.orderId));
+      localStorage.setItem("currentOrderTableId", mesaId);
+      setCurrentOrderId(active.order.orderId);
+      setCurrentOrderTableId(mesaId);
+    })
+    .catch((error) => {
+      if (cancelled) return;
 
+      setOrderRecoveryError(
+        "No pudimos verificar el pedido por la conexión. Conservamos el acceso y volveremos a intentar.",
+      );
+
+      if (hasSavedOrder) {
+        setCurrentOrderId(savedId);
+        setCurrentOrderTableId(mesaId);
+      } else {
+        setCurrentOrderId(null);
+        setCurrentOrderTableId(undefined);
+      }
+
+      console.error("No se pudo consultar la orden:", error);
+    })
+    .finally(() => {
+      if (!cancelled) setIsCheckingActiveOrder(false);
+    });
+
+  return () => {
+    cancelled = true;
+  };
+}, [mesaId, orderCheckAttempt]);
+
+// Reintentar la consulta cuando regrese internet
+useEffect(() => {
+  const retryWhenOnline = () => {
+  setOrderCheckAttempt((attempt) => attempt + 1);
+  setTableCheckAttempt((attempt) => attempt + 1);
+};
+
+  window.addEventListener("online", retryWhenOnline);
+  return () => window.removeEventListener("online", retryWhenOnline);
+}, []);
+
+
+  // Mantener identificada la mesa del carrito compartido
   useEffect(() => {
     setMesaId(mesaId);
   }, [mesaId, setMesaId]);
 
+
+
+// Verificar si la mesa del QR está activa
+useEffect(() => {
+  if (!mesaId) {
+    setTableInfo(null);
+    setIsTableActive(null);
+    setIsCheckingTableStatus(false);
+    return;
+  }
+
+  let isCurrentRequest = true;
+
+  setIsCheckingTableStatus(true);
+
+  void getPublicTableNumber(mesaId)
+    .then(({ tableNumber, active }) => {
+      if (!isCurrentRequest) return;
+
+      setTableInfo({ mesaId, tableNumber });
+      setIsTableActive(active);
+    })
+    .catch((error) => {
+      if (!isCurrentRequest) return;
+
+      const status =
+        typeof error === "object" &&
+        error !== null &&
+        "status" in error
+          ? Number(error.status)
+          : undefined;
+
+      if (status === 404) {
+        setTableInfo(null);
+        setIsTableActive(false);
+        void navigate({ to: "/invalidTableScreen" });
+        return;
+      }
+
+      // Un error de red o del servidor no significa que el QR sea inválido.
+      setTableInfo(null);
+      setIsTableActive(null);
+    })
+   .finally(() => {
+  if (isCurrentRequest) {
+    setIsCheckingTableStatus(false);
+    setHasCompletedTableCheck(true);
+  }
+});
+
+  return () => {
+    isCurrentRequest = false;
+  };
+}, [mesaId, tableCheckAttempt, navigate]);
+
+  // Cargar productos con sus calificaciones
+  const loadProductsWithRatings = async (products: Product[]) => {
+    return Promise.all(
+      products.map(async (product) => {
+        try {
+          const reviewData = await getProductReviews(product.productId);
+
+          return {
+            ...product,
+            rating: reviewData.averageRating,
+          };
+        } catch {
+          return {
+            ...product,
+            rating: 0,
+          };
+        }
+      }),
+    );
+  };
+
+  // Cargar categorías
   useEffect(() => {
     if (!mesaId) return;
 
     let isCurrentRequest = true;
 
-    void getPublicTableNumber(mesaId)
-      .then(({ tableNumber: number }) => {
-        if (isCurrentRequest) setTableInfo({ mesaId, tableNumber: number });
-      })
-      .catch((error) => {
-        console.error("Error loading table number:", error);
-        if (isCurrentRequest) setTableInfo(null);
-      });
+    const loadCategories = async () => {
+      setIsLoadingCategories(true);
+
+      try {
+        const data = await getCategories(mesaId);
+
+        if (isCurrentRequest) {
+          setCategories(data);
+        }
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      } finally {
+        if (isCurrentRequest) {
+          setIsLoadingCategories(false);
+        }
+      }
+    };
+
+    void loadCategories();
 
     return () => {
       isCurrentRequest = false;
     };
-  }, [mesaId]);
+ }, [mesaId, tableCheckAttempt]);
 
-  const loadProductsWithRatings = async (products: Product[]) => {
-  return Promise.all(
-    products.map(async (product) => {
-      try {
-        const reviewData = await getProductReviews(product.productId);
-
-        return {
-          ...product,
-          rating: reviewData.averageRating,
-        };
-      } catch {
-        return {
-          ...product,
-          rating: 0,
-        };
-      }
-    }),
-  );
-};
-useEffect(() => {
-  if (!mesaId) return;
-
-  const loadCategories = async () => {
-    try {
-      const data = await getCategories(mesaId);
-      setCategories(data);
-    } catch (error) {
-      console.error("Error loading categories:", error);
-    } finally {
-      setIsLoadingCategories(false);
-    }
-  };
-
-  loadCategories();
-}, [mesaId]);
-
-
-  //cargar los productos
+  // Cargar los productos
   useEffect(() => {
+    if (!mesaId) {
+      setInitialLoading(false);
+      return;
+    }
+
+    let isCurrentRequest = true;
+
     const loadProducts = async () => {
       setSelectedProductId(null);
       setIsFiltering(true);
+
       try {
         const data = await getProducts({
           mesaId,
           search: searchTerm,
-          //si hay texto en elbuscador se ignora categoria
           category: searchTerm ? undefined : selectedCategory ?? undefined,
           limit: PAGE_SIZE,
-          offset: 0
+          offset: 0,
         });
-        const productsWithRatings = await loadProductsWithRatings(data.products);
 
-setProducts(productsWithRatings);
-        setHasMore(data.hasMore);
+        const productsWithRatings = await loadProductsWithRatings(
+          data.products,
+        );
+
+        if (isCurrentRequest) {
+          setProducts(productsWithRatings);
+          setHasMore(data.hasMore);
+        }
       } catch (error) {
         console.error("Error loading products:", error);
       } finally {
-        setInitialLoading(false);
-        setIsFiltering(false);
+        if (isCurrentRequest) {
+          setInitialLoading(false);
+          setIsFiltering(false);
+        }
       }
     };
-    //duracion de carga entre busqueda o filtro
-    const delay = searchTerm ? 400 : 0;
-    const timeoutId = setTimeout(loadProducts, delay);
-    return () => clearTimeout(timeoutId);
-  },[searchTerm, selectedCategory, mesaId]);;
 
+    const delay = searchTerm ? 400 : 0;
+    const timeoutId = setTimeout(() => {
+      void loadProducts();
+    }, delay);
+
+    return () => {
+      isCurrentRequest = false;
+      clearTimeout(timeoutId);
+    };
+ }, [searchTerm, selectedCategory, mesaId, tableCheckAttempt]);
+
+  // Cargar más productos
   const handleLoadMore = async () => {
+    if (isLoadingMore || !mesaId) return;
+
     setIsLoadingMore(true);
+
     try {
       const data = await getProducts({
         mesaId,
@@ -248,10 +479,13 @@ setProducts(productsWithRatings);
         limit: PAGE_SIZE,
         offset: products.length,
       });
-      const productsWithRatings = await loadProductsWithRatings(data.products);
 
-setProducts((prev) => [...prev, ...productsWithRatings]);
-      setHasMore(data.hasMore)
+      const productsWithRatings = await loadProductsWithRatings(
+        data.products,
+      );
+
+      setProducts((prev) => [...prev, ...productsWithRatings]);
+      setHasMore(data.hasMore);
     } catch (error) {
       console.error("Error loading more products:", error);
     } finally {
@@ -260,32 +494,153 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
   };
 
   const handleDeleteProduct = (productId: number) => {
-    setProducts((prev) => prev.filter((product) => product.productId !== productId));
-    setSelectedProductId((current) => current === productId ? null : current);
+    setProducts((prev) =>
+      prev.filter((product) => product.productId !== productId),
+    );
+
+    setSelectedProductId((current) =>
+      current === productId ? null : current,
+    );
   };
 
 
 
+  // Volver a la pantalla anterior al agregar productos
+  const handleReturnFromAdd = () => {
+    if (returnTo === "cashier" && orderId !== undefined) {
+      void navigate({
+        to: "/paymentMethod",
+        search: { orderId },
+      });
+
+      return;
+    }
+
+    void navigate({
+      to: "/waiterOrders",
+    });
+  };
 
   return (
-
     <main className="min-h-screen bg-white px-8 pt-8 lg:bg-neutral-50">
+ 
+    {(hasCompletedTableCheck || !isCheckingTableStatus) &&
+  isTableActive !== true && (
+  <div className="fixed inset-0 z-100 flex items-center justify-center bg-white px-6">
+    <div className="w-full max-w-md rounded-3xl bg-neutral-50 p-8 text-center shadow-lg">
+      <div className="mb-5 flex justify-center">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-200">
+          <span className="text-4xl font-extrabold text-red-600">!</span>
+        </div>
+      </div>
+
+      <h2 className="mb-3 text-2xl font-bold text-mint-darker">
+        {isCheckingTableStatus
+          ? "Validando mesa..."
+          : isTableActive === false
+            ? "Mesa desactivada"
+            : "No se pudo verificar la mesa"}
+      </h2>
+
+      <p className="text-base text-gray-600">
+        {isCheckingTableStatus
+          ? "Estamos comprobando el código QR."
+          : isTableActive === false
+            ? "Esta mesa no está disponible. Comunícate con el personal del restaurante."
+            : "No pudimos comprobar el estado de esta mesa. Revisa tu conexión e inténtalo de nuevo."}
+      </p>
+
+      {!isCheckingTableStatus && isTableActive === null && (
+        <button
+          type="button"
+          onClick={() => {
+           setTableCheckAttempt((attempt) => attempt + 1);
+  setOrderCheckAttempt((attempt) => attempt + 1);
+  window.dispatchEvent(new Event("scaneat:retry-shared-cart"));
+          }}
+          className="mt-5 rounded-xl bg-mint-dark px-5 py-3 font-semibold text-white"
+        >
+          Reintentar
+        </button>
+      )}
+    </div>
+  </div>
+)}
+
+{orderRecoveryError && isTableActive === true && (
+  <div
+    className="fixed inset-0 z-[110] flex min-h-screen items-center justify-center bg-black/50 px-6 py-10"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="order-recovery-title"
+  >
+    <div className="w-full max-w-md overflow-hidden rounded-3xl border border-border bg-white shadow-xl">
+      <div className="flex flex-col items-center bg-mint-dark px-6 py-8 text-center text-white">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-3xl font-bold text-mint-dark">
+          !
+        </div>
+
+        <h2
+          id="order-recovery-title"
+          className="mt-5 text-2xl font-bold"
+        >
+          No pudimos verificar el pedido
+        </h2>
+      </div>
+
+      <div className="px-6 py-7 text-center">
+        <p className="text-base leading-relaxed text-text-primary">
+          {orderRecoveryError}
+        </p>
+
+        <button
+          type="button"
+          onClick={() => {
+            setOrderCheckAttempt((attempt) => attempt + 1);
+            setTableCheckAttempt((attempt) => attempt + 1);
+            window.dispatchEvent(new Event("scaneat:retry-shared-cart"));
+          }}
+          className="mt-6 rounded-2xl bg-mint-dark px-5 py-3 text-sm font-semibold text-white hover:bg-mint-darker"
+        >
+          Reintentar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{showOrderClosed && (
+  <OrderClosed
+    onStartNewSession={() => window.location.reload()}
+  />
+)}
+     
       {/* Celular */}
       <section className="lg:hidden">
-
         <div className="mt-4 flex flex-col gap-5">
+          {isAddingToOrder && (
+            <button
+              type="button"
+              onClick={handleReturnFromAdd}
+              className="flex w-fit items-center gap-2 text-mint-dark"
+            >
+              <HiArrowLeft className="h-6 w-6" />
+              <span className="font-semibold">Volver</span>
+            </button>
+          )}
+
           <div className="flex items-center justify-between">
-            <RestaurantLogo
-  className="h-16 w-16 object-contain"
-/>
-            <h2 className="text-2xl font-bold text-black">Menú</h2>
+            <RestaurantLogo className="h-16 w-16 object-contain" />
+
+            <h2 className="text-2xl font-bold text-mint-darker">Menú</h2>
+
             {tableInfo && tableInfo.mesaId === mesaId && (
-              <p className="font-bold text-mint-dark">
+              <p className="font-bold text-white py-1 px-3 rounded-2xl bg-mint-dark">
                 Mesa #{tableInfo.tableNumber}
               </p>
             )}
-
           </div>
+
           <SearchBar
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
@@ -294,7 +649,7 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
 
           <div className="mt-2">
             <CategoryFilter
-            categories={categories}
+              categories={categories}
               selected={selectedCategory}
               onSelect={(id) => {
                 setSelectedCategory(id);
@@ -302,10 +657,11 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
               }}
               disabled={!!searchTerm}
               isLoading={isLoadingCategories}
+              mobileFiveColumns
             />
           </div>
 
-          <div className="-mx-8  bg-neutral-50 px-8 pb-20 rounded-t-4xl ">
+          <div className="-mx-8 rounded-t-4xl bg-neutral-50 px-8 pb-20">
             <div className="mt-8 flex flex-col gap-4">
               <ProductList
                 initialLoading={initialLoading}
@@ -316,6 +672,9 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
                 selectedProductId={selectedProductId}
                 onViewMore={setSelectedProductId}
                 onCloseDetails={() => setSelectedProductId(null)}
+                isAddingToOrder={isAddingToOrder}
+                hasActiveOrder={hasActiveOrder}
+                onAddProduct={addToOrderCart}
               />
             </div>
 
@@ -324,31 +683,36 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
                 type="button"
                 onClick={handleLoadMore}
                 disabled={isLoadingMore}
-                className="w-full mt-6  rounded-2xl bg-white border border-border py-3 text-base font-bold text-mint-dark disabled:opacity-50"
+                className="mt-6 w-full rounded-2xl border border-border bg-white py-3 text-base font-bold text-mint-dark disabled:opacity-50"
               >
                 {isLoadingMore ? "Cargando..." : "Cargar más"}
               </button>
             )}
-
           </div>
         </div>
       </section>
 
       {/* Computadora */}
-
-      <section className="hidden lg:block ml-44 pb-20">
-
-
+      <section className="ml-44 hidden pb-20 lg:block">
         <div className="mt-8 flex flex-col gap-1">
-          <h2 className="text-2xl font-bold text-black">Menú</h2>
+          <h2 className="text-2xl font-bold text-mint-darker">Menú</h2>
+
+          {isAddingToOrder && (
+            <button
+              type="button"
+              onClick={handleReturnFromAdd}
+              className="flex items-center gap-2 text-mint-dark"
+            >
+              <span>Volver</span>
+            </button>
+          )}
+
           {tableInfo && tableInfo.mesaId === mesaId && (
-            <p className="font-bold text-mint-dark text-xl">
+            <p className="text-xl font-bold text-mint-dark">
               Mesa #{tableInfo.tableNumber}
             </p>
           )}
         </div>
-
-
 
         <SearchBar
           searchTerm={searchTerm}
@@ -358,7 +722,7 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
 
         <div className="mt-6">
           <CategoryFilter
-          categories={categories}
+            categories={categories}
             selected={selectedCategory}
             onSelect={(id) => {
               setSelectedCategory(id);
@@ -366,12 +730,14 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
             }}
             disabled={!!searchTerm}
             isLoading={isLoadingCategories}
+            mobileFiveColumns
           />
         </div>
 
-        <h2 className="mt-8 text-2xl font-bold text-black">Menú popular</h2>
+        <h2 className="mt-8 text-2xl font-bold text-mint-darker">
+          Menú popular
+        </h2>
 
-        {/* Platillos */}
         <div className="mt-6 flex flex-wrap gap-4">
           <ProductList
             initialLoading={initialLoading}
@@ -382,62 +748,81 @@ setProducts((prev) => [...prev, ...productsWithRatings]);
             selectedProductId={selectedProductId}
             onViewMore={setSelectedProductId}
             onCloseDetails={() => setSelectedProductId(null)}
+            isAddingToOrder={isAddingToOrder}
+            hasActiveOrder={hasActiveOrder}
+            onAddProduct={addToOrderCart}
           />
         </div>
 
         {hasMore && selectedProductId === null && (
-          <div className="mt-6 flex justify-center ">
+          <div className="mt-6 flex justify-center">
             <button
               type="button"
               onClick={handleLoadMore}
               disabled={isLoadingMore}
-              className="rounded-lg cursor-pointer bg-white border border-border px-8 py-3 text-base font-bold text-mint-dark disabled:opacity-50"
+              className="cursor-pointer rounded-lg border border-border bg-white px-8 py-3 text-base font-bold text-mint-dark disabled:opacity-50"
             >
               {isLoadingMore ? "Cargando..." : "Cargar más"}
             </button>
           </div>
-
         )}
       </section>
 
+      {/* Acceso al carrito o a la comanda actual */}
       <div className="fixed bottom-2 left-8 right-8 z-50 flex h-12 items-center justify-center rounded-2xl border border-border bg-white lg:bottom-8 lg:left-10 lg:right-auto lg:top-8 lg:h-[calc(100vh-4rem)] lg:w-20 lg:rounded-full lg:border-0">
+        <RestaurantLogo className="absolute top-6 hidden h-16 w-16 object-contain lg:block" />
 
-        <RestaurantLogo
-          className="absolute top-6 hidden h-16 w-16 object-contain lg:block"
-        />
-
-{/* nuevo */}
-{currentOrderId !== null ? (
-
-<Link
-    to="/orderStatus"
-    search={{
-      orderId: currentOrderId,
-      tableId: currentOrderTableId ?? mesaId,
-    }}
-    className="absolute cursor-pointer flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
+        {!isAddingToOrder &&
+(isCheckingActiveOrder ||
+  (Boolean(orderRecoveryError) && currentOrderId === null)) ? (
+  <button
+    type="button"
+    disabled
+    aria-label="Verificando el estado del pedido"
+    className="absolute flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark text-xs font-semibold text-white opacity-80 lg:top-1/2 lg:-translate-y-1/2"
   >
-    <LuShoppingBag className="h-7 w-7 text-white" />
-  </Link>
+    Verificando
+  </button>
+) : !isAddingToOrder && currentOrderId !== null ? (
+          <Link
+            to="/orderStatus"
+            search={{
+              orderId: currentOrderId,
+              tableId: currentOrderTableId ?? mesaId,
+            }}
+            className="absolute flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
+          >
+            <UseAnimations animation={shoppingBag} size={32} strokeColor="#ffff"  />
+          </Link>
+        ) : (
+          <Link
+            to="/checkOrder"
+            search={{
+              mesaId,
+              orderId,
+              mode,
+              returnTo,
+            }}
+            className="absolute flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
+          >
+            <UseAnimations animation={shoppingBag} size={32} strokeColor="#ffff" />
 
-):(
-        <Link
-          to="/checkOrder"
-          search={{ mesaId }}
-          className="absolute cursor-pointer flex h-14 w-14 items-center justify-center rounded-full bg-mint-dark lg:top-1/2 lg:-translate-y-1/2"
-        >
-          <LuShoppingBag className="h-7 w-7 text-white" />
-          {cartCount > 0 && (
-            <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">
-              {cartCount}
-            </span>
-          )}
-        </Link>
-)}
+            {(isAddingToOrder ? orderAddCount : cartCount) > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">
+                {isAddingToOrder ? orderAddCount : cartCount}
+              </span>
+            )}
+          </Link>
+        )}
       </div>
 
+      <MenuAssistant
+        mesaId={mesaId}
+        isAddingToOrder={isAddingToOrder}
+        onAddToCart={addToCart}
+        onAddToOrderCart={addToOrderCart}
+      />
     </main>
-
   );
 }
 

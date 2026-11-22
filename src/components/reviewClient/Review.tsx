@@ -1,6 +1,6 @@
 import { Link, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { HiArrowLeft, HiStar } from "react-icons/hi";
+import { HiStar } from "react-icons/hi";
 import { MdDeleteOutline } from "react-icons/md";
 import {
   deleteReview,
@@ -9,6 +9,7 @@ import {
 } from "../../services/reviewService";
 import ConfirmDeleteModal from "../shared/ConfirmDeleteModal";
 import Skeleton from "../shared/Skeleton";
+import { ArrowLeftIcon } from "@animateicons/react/lucide";
 
 function Stars({ rating }: { rating: number }) {
   return (
@@ -16,11 +17,10 @@ function Stars({ rating }: { rating: number }) {
       {[1, 2, 3, 4, 5].map((star) => (
         <HiStar
           key={star}
-          className={`h-5 w-5 ${
-            star <= Math.round(rating)
+          className={`h-5 w-5 ${star <= Math.round(rating)
               ? "fill-yellow text-yellow"
               : "fill-gray-200 text-gray-300"
-          }`}
+            }`}
         />
       ))}
     </div>
@@ -93,9 +93,9 @@ function Review() {
           totalReviews: remainingReviews.length,
           averageRating: remainingReviews.length
             ? remainingReviews.reduce(
-                (total, review) => total + review.rating,
-                0,
-              ) / remainingReviews.length
+              (total, review) => total + review.rating,
+              0,
+            ) / remainingReviews.length
             : 0,
         };
       });
@@ -121,7 +121,10 @@ function Review() {
           search={isAdmin ? undefined : { mesaId }}
           className="flex w-fit items-center gap-2 text-lg font-bold text-mint-dark sm:text-xl"
         >
-          <HiArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+          <ArrowLeftIcon
+            size={25}
+            duration={1}
+          />
           <span>Reseñas</span>
         </Link>
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {FiRefreshCw, FiCpu, FiCheckCircle } from "react-icons/fi";
+import { FiRefreshCw, FiCpu, FiCheckCircle } from "react-icons/fi";
 import SalesChart, { type SalesPeriod, } from "../../components/sales/SalesChart";
 import OrdersList from "../../components/sales/OrdersList";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
@@ -8,11 +8,11 @@ import { generateAISalesReport } from "../../services/aiService";
 import type { SalesAnalytics } from "../../services/analyticsService";
 import { getSalesAnalytics } from "../../services/analyticsService";
 import { Link } from "@tanstack/react-router";
-import { HiArrowLeft } from "react-icons/hi";
 import { getStoredRoleId } from "../../services/authService";
 import { ROLE_IDS } from "../../config/roles";
 import Skeleton from "../shared/Skeleton";
-
+import { ArrowLeftIcon } from "@animateicons/react/lucide";
+import { motion } from "motion/react";
 
 //Este objeto mapea los periodos de tiempo a los valores que se envían a la API para obtener los datos del reporte de ventas.
 const periodToApiValue: Record<SalesPeriod, "today" | "week" | "month" | "year"
@@ -213,35 +213,44 @@ function SalesReport() {
   };
 
   const roleId = getStoredRoleId();
-  
-  const dashboardRoute =
-  roleId === ROLE_IDS.waiter
-    ? "/dashboardWaiter"
-    : "/dashboardAdmin";
 
-  
+  const dashboardRoute =
+    roleId === ROLE_IDS.waiter
+      ? "/dashboardWaiter"
+      : "/dashboardAdmin";
+
+
   return (
     <DashboardLayoutAdmin>
-      <section className="px-6 py-8 lg:px-15 lg:py-15">
+     <motion.section
+  className="w-full max-w-394 px-6 lg:px-15 lg:py-15"
+  initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, ease: "easeOut" }}
+>
+
         <div className="w-full">
-          <div className="mt-4 flex items-center gap-2 md:hidden">
-  <Link
-    to={dashboardRoute}
-    className="flex items-center gap-2 text-mint-dark"
-  >
-    <HiArrowLeft className="h-6 w-6 shrink-0" />
+          <div className="flex items-center gap-2 md:hidden">
+            <Link
+              to={dashboardRoute}
+              className="flex items-center gap-2 text-mint-dark"
+            >
+              <ArrowLeftIcon
+                size={28}
+                duration={1}
+              />
 
-    <span className="text-[32px] font-bold text-mint-dark">
-      Reporte de ventas
-    </span>
-  </Link>
-</div>
+              <span className="text-[32px] font-bold text-mint-dark">
+                Reporte de ventas
+              </span>
+            </Link>
+          </div>
 
-          <div className="mt-7 hidden flex-wrap items-end justify-between gap-4 md:flex">
-  <h2 className="text-3xl font-bold text-mint-dark">
-    Reporte de ventas
-  </h2>
-</div>
+          <div className="hidden flex-wrap items-end justify-between gap-4 md:flex">
+            <h2 className="text-3xl font-bold text-mint-dark">
+              Reporte de ventas
+            </h2>
+          </div>
 
           {/* Filtros y gráfico */}
           <div className="mt-5 grid gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
@@ -260,7 +269,7 @@ function SalesReport() {
                       onClick={() => handlePeriodChange(option)}
                       className={`rounded border px-3 py-1 text-sm transition ${period === option
                         ? "border-mint-dark bg-mint-dark font-semibold text-white"
-                        : "border-mint-dark text-mint-darker hover:bg-mint-light"
+                        : "border-mint-dark text-mint-darker hover:bg-mint-dark hover:text-white"
                         }`}
                     >
                       {option}
@@ -361,7 +370,7 @@ function SalesReport() {
 
               {isGeneratingAI ? (
                 <div className="flex min-h-48 flex-col items-center justify-center text-center">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-mint-light">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-mint-darker">
                     <FiCpu className="h-7 w-7 animate-pulse text-mint-dark" />
                   </div>
 
@@ -458,7 +467,7 @@ function SalesReport() {
                     </article>
                   </div>
 
-                  <div className="mt-4 rounded-xl bg-mint-dark px-5 py-4 text-white">
+                  <div className="mt-4 rounded-xl bg-mint-darker px-5 py-4 text-white">
                     <div className="flex items-center gap-2">
                       <FiCpu className="h-4 w-4" />
 
@@ -493,15 +502,15 @@ function SalesReport() {
 
           <div className="mt-6">
             <OrdersList
-            orders={orders}
-            period={period}
-            isLoading={isLoadingOrders}
-          />
+              orders={orders}
+              period={period}
+              isLoading={isLoadingOrders}
+            />
           </div>
           {/*Aquí es la parte de las ordenes*/}
-          
+
         </div>
-      </section>
+      </motion.section>
     </DashboardLayoutAdmin>
   );
 }

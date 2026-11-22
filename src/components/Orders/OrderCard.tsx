@@ -2,17 +2,23 @@ import { Link } from "@tanstack/react-router";
 
 
 type OrderItem = {
+  detailId?: number;
   name: string;
   quantity: number;
   price: number;
   discountAmount?: number;
   subtotal?: number;
   options?: Record<string, string>;
+  specialInstructions?: {
+    unit: number;
+    instruction: string;
+  }[];
 };
 
 export type Order = {
   orderId: number;
   tableId: number;
+  tableUuid?: string;
   date: string;
   time: string;
   specialInstructions?: string;
@@ -54,15 +60,15 @@ function OrderCard({ order, onDetails, isCashier = false }: OrderCardProps) {
         </div>
 
         <div className="flex flex-col gap-6 lg:gap-8 shrink-0">
-  <p className="py-2 px-2 rounded-lg text-base font-semibold bg-mint-dark text-white min-w-20 text-center">
+  <p className="py-2 px-2 rounded-lg text-base font-semibold bg-mint-darker text-white min-w-20 text-center">
     {order.price}
   </p>
 
   {/* Celular */}
   <Link
-    to={isCashier ? "/paymentMethod" : "/waiterOrderDetails"}
+    to={isCashier ? "/selectOrderProducts" : "/waiterOrderDetails"}
     search={{ orderId: order.orderId }}
-    className="text-center w-20 rounded-lg border border-mint-dark py-2 text-sm font-bold text-mint-darker cursor-pointer hover:bg-mint/10 lg:hidden"
+    className="text-center w-20 rounded-lg border border-mint-dark py-2 text-sm font-bold text-mint-darker cursor-pointer hover:bg-mint-dark/10 lg:hidden"
   >
     {isCashier ? "Pagar" : "Detalles"}
   </Link>
@@ -70,9 +76,9 @@ function OrderCard({ order, onDetails, isCashier = false }: OrderCardProps) {
   {/* Computadora */}
   {isCashier ? (
   <Link
-    to="/paymentMethod"
+    to="/selectOrderProducts"
     search={{ orderId: order.orderId }}
-    className="hidden w-20 cursor-pointer rounded-lg border border-mint-dark py-2 text-center text-sm font-bold text-mint-darker hover:bg-mint/10 lg:block"
+    className="hidden w-20 cursor-pointer rounded-lg border border-mint-dark py-2 text-center text-sm font-bold text-mint-darker hover:bg-mint-dark/10 lg:block"
   >
     Pagar
   </Link>

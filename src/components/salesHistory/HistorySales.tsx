@@ -1,18 +1,22 @@
 
 import { Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { HiArrowLeft } from "react-icons/hi";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
 import HistoryCard from "../salesHistory/HistoryCard";
 import type { Order } from "../Orders/OrderCard";
 import Skeleton from "../shared/Skeleton";
+import { socket } from "../../services/socketClient";
+import SearchOrders from "../Orders/SearchOrders";
+import { ArrowLeftIcon } from "@animateicons/react/lucide";
+import { motion } from "motion/react";
 
 function HistorySales() {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [orders, setOrders] = useState<Order[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
 
     const loadOrders = useCallback(async (showLoading = false) => {
         if (showLoading) {
@@ -40,22 +44,50 @@ function HistorySales() {
     }, []);
 
     useEffect(() => {
-        void loadOrders(true);
 
-        const intervalId = window.setInterval(() => {
+        const handleCashierOrdersUpdated = () => {
             void loadOrders();
-        }, 2000);
+        };
+
+        const handleConnect = () => {
+            void loadOrders(true);
+        };
+
+        socket.on("cashier_orders_updated", handleCashierOrdersUpdated);
+        socket.on("connect", handleConnect);
+
+        if (socket.connected) {
+            void loadOrders(true);
+        } else {
+            socket.connect();
+        }
 
         return () => {
-            window.clearInterval(intervalId);
+            socket.off("cashier_orders_updated", handleCashierOrdersUpdated);
+            socket.off("connect", handleConnect);
         };
+
     }, [loadOrders]);
 
+
+    const filteredOrders = orders.filter((order) => {
+
+        return (
+            order.tableId.toString().includes(searchTerm.trim()) ||
+            order.orderId.toString().includes(searchTerm.trim())
+        );
+    });
 
 
     return (
         <DashboardLayoutAdmin>
-            <main className="min-h-screen bg-white">
+           <motion.main
+    className="min-h-screen bg-white"
+    initial={{ opacity: 0, y: -15 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4, ease: "easeOut" }}
+>
+
                 {/* Celular */}
                 <section className="px-6 lg:hidden">
                     <div className="flex items-center gap-2">
@@ -63,66 +95,75 @@ function HistorySales() {
                             to="/dashboardAdmin"
                             className="flex items-center gap-2 text-mint-dark"
                         >
-                            <HiArrowLeft className="h-6 w-6" />
+                            <ArrowLeftIcon
+                                size={28}
+                                duration={1}
+                            />
 
-                            <span className="text-[32px] font-bold mt-3">
+                            <span className="text-[32px] font-bold">
                                 Historial de ventas
                             </span>
                         </Link>
                     </div>
                     <div className="mt-6">
                     </div>
+                    <div className="my-6 flex flex-col gap-5 bg-white">
+                        <SearchOrders
+                            searchTerm={searchTerm}
+                            setSearchTerm={setSearchTerm}
+                            className="w-full"
+                        />
+                    </div>
 
-                    <div className="mt-8 grid grid-cols-1 gap-6">
+                    <div className="mt-8">
                         <div className="flex min-w-0 flex-col gap-4">
                             {isLoading ? (
                                 Array.from({ length: 4 }, (_, index) => (
                                     <Skeleton key={index} className="h-44 w-full rounded-2xl" />
                                 ))
-                            ) : orders.map((order) => (
-                                <HistoryCard
-                                    key={order.orderId}
-                                    order={order}
-                                    onDetails={() => setSelectedOrder(order)}
-                                />
-                            ))}
-                        </div>
-
-                        <div className="min-w-0">
-                            <p className="pb-4 text-xl font-bold text-text-primary">
-                                Orden actual
-                            </p>
-
-                            {isLoading ? (
-                                <Skeleton className="min-h-80 w-full rounded-4xl" />
-                            ) : selectedOrder ? (
-                                <OrderDetails
-                                    order={selectedOrder}
-                                    embedded
-                                    onStatusChanged={loadOrders}
-                                />
+                            ) : filteredOrders.length > 0 ? (
+                                filteredOrders.map((order, index) => (
+    <motion.div
+        key={order.orderId}
+        initial={{ opacity: 0, x: -35 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{
+            duration: 0.4,
+            delay: index * 0.08,
+            ease: "easeOut",
+        }}
+    >
+        <HistoryCard
+            order={order}
+            onDetails={() => setSelectedOrder(order)}
+        />
+    </motion.div>
+))
                             ) : (
-                                <div className="flex min-h-80 items-center justify-center rounded-4xl bg-neutral-100 px-4">
-                                    <p className="text-center text-base font-semibold text-text-primary">
-                                        Selecciona un pedido para ver sus detalles
-                                    </p>
-                                </div>
+                                <p className="py-8 text-center text-gray-500">
+                                    No hay resultados para esta búsqueda.
+                                </p>
                             )}
+
                         </div>
                     </div>
                 </section>
 
 
                 {/* Computadora */}
-                <section className="hidden px-15 py-15 lg:block">
-                   
+                <section className="w-full max-w-394 hidden px-15 py-15 lg:block">
 
-                    <h2 className=" text-2xl font-bold text-mint-dark">
+
+                    <h2 className="text-3xl font-bold text-mint-dark">
                         Historial de ventas
                     </h2>
 
-
-                    <div className="mt-6">
+                    <div className="my-6 flex flex-col gap-5 bg-white">
+                        <SearchOrders
+                            searchTerm={searchTerm}
+                            setSearchTerm={setSearchTerm}
+                            className="w-full"
+                        />
                     </div>
 
                     <div className="mt-8 grid grid-cols-[minmax(0,612px)_minmax(280px,1fr)] gap-6">
@@ -132,13 +173,30 @@ function HistorySales() {
                                 Array.from({ length: 4 }, (_, index) => (
                                     <Skeleton key={index} className="h-44 w-full rounded-2xl" />
                                 ))
-                            ) : orders.map((order) => (
-                                <HistoryCard
-                                    key={order.orderId}
-                                    order={order}
-                                    onDetails={() => setSelectedOrder(order)}
-                                />
-                            ))}
+                            ) : filteredOrders.length > 0 ? (
+                                filteredOrders.map((order, index) => (
+    <motion.div
+        key={order.orderId}
+        initial={{ opacity: 0, x: -35 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{
+            duration: 0.4,
+            delay: index * 0.08,
+            ease: "easeOut",
+        }}
+    >
+        <HistoryCard
+            order={order}
+            onDetails={() => setSelectedOrder(order)}
+        />
+    </motion.div>
+))
+
+                            ) : (
+                                <p className="py-8 text-center text-gray-500">
+                                    No hay resultados para esta búsqueda.
+                                </p>
+                            )}
                         </div>
 
                         {/* Detalles */}
@@ -162,7 +220,7 @@ function HistorySales() {
                         </div>
                     </div>
                 </section>
-            </main>
+            </motion.main>
         </DashboardLayoutAdmin>
     );
 }

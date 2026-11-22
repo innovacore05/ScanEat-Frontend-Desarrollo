@@ -9,6 +9,8 @@ import OrdersList from "../../components/sales/OrdersList";
 import {getProfile, getStoredFirstName,} from "../../services/authService";
 import { getOrders } from "../../services/orderService";
 import {getSalesAnalytics, type SalesAnalytics,} from "../../services/analyticsService";
+import { motion } from "motion/react";
+import { useLocalDay } from "../../hooks/useLocalDay";
 
 const periodToApiValue: Record< SalesPeriod, "today" | "week" | "month" | "year"
 > = {
@@ -21,6 +23,7 @@ const periodToApiValue: Record< SalesPeriod, "today" | "week" | "month" | "year"
 function DashboardForm() {
   const [firstName, setFirstName] = useState(getStoredFirstName);
   const [period] = useState<SalesPeriod>("Hoy");
+  const localDay = useLocalDay();
 
   const [analytics, setAnalytics] = useState<SalesAnalytics | null>(null);
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(false);
@@ -56,7 +59,7 @@ function DashboardForm() {
     };
 
     void loadAnalytics();
-  }, [period]);
+  }, [period, localDay]);
 
   useEffect(() => {
     const loadOrders = async () => {
@@ -88,34 +91,89 @@ function DashboardForm() {
     };
 
     void loadOrders();
-  }, []);
+  }, [localDay]);
 
   return (
-    <DashboardLayoutAdmin>
-      <section className="px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
-        <div className="mb-6 rounded-2xl bg-mint-dark px-5 py-5 sm:px-8 sm:py-6">
-          <h1 className="text-2xl font-bold text-white sm:text-3xl">
-            ¡Hola, {firstName || "Usuario"}!
-          </h1>
-        </div>
+    
+     
+
+<DashboardLayoutAdmin>
+    <motion.section
+      className="w-full max-w-394 px-4 py-6 sm:px-6 lg:px-15 lg:py-14"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
+      {/* Saludo */}
+      <motion.div
+        className="mb-6 rounded-2xl bg-mint-darker px-5 py-5 sm:px-8 sm:py-6"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+      >
+        <h1 className="text-2xl font-bold text-white sm:text-3xl">
+          ¡Hola, {firstName || "Usuario"}!
+        </h1>
+      </motion.div>
+
+
+      
 
         <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2 xl:gap-6">
           <div className="flex min-w-0 flex-col gap-5">
+           
+           <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+          >
+
+         
             <DataSummary />
+
+             </motion.div>
+
+              <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.25 }}
+          > 
             <PendingTables />
+
+            </motion.div>
+
+              <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.35 }}
+          > 
             <FavoritesToday />
+</motion.div>
+
           </div>
 
           <div className="flex min-w-0 flex-col gap-5">
-            <div className="min-w-0 rounded-xl bg-white">
-              <SalesChart
+           
+             <motion.div
+            className="min-w-0 rounded-xl bg-white"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.25 }}
+          >
+             <SalesChart
                 data={analytics?.salesByPeriod ?? []}
                 period="Hoy"
                 isLoading={isLoadingAnalytics}
               />
-            </div>
+              </motion.div>
+           
+          <motion.div
+            className="mt-3 flex min-w-0 flex-col"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.35 }}
+          >
 
-            <div className="flex min-w-0 flex-col mt-3">
     <h2 className="text-base font-semibold text-black">
       Ventas del día
     </h2>
@@ -126,11 +184,11 @@ function DashboardForm() {
       isLoading={isLoadingOrders}
       showExportButton={false}
     />
-  </div>
-          </div>
+          </motion.div>
         </div>
-      </section>
-    </DashboardLayoutAdmin>
+      </div>
+    </motion.section>
+  </DashboardLayoutAdmin>
   );
 }
 

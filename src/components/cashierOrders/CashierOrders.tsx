@@ -1,44 +1,138 @@
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import OrderCard, { type Order } from "../Orders/OrderCard";
 import { getOrders } from "../../services/orderService";
 import { logout } from "../../services/authService";
 import { LuLogOut } from "react-icons/lu";
-import { Link } from "@tanstack/react-router";
+import { Link, useSearch } from "@tanstack/react-router";
 import Skeleton from "../shared/Skeleton";
+import { socket } from "../../services/socketClient";
+import SearchOrders from "../Orders/SearchOrders";
+import { getPaymentPreview } from "../../services/billingService";
+import { motion } from "motion/react";
 
-function CashierOrders (){
-const [orders,setOrders]=useState<Order[]>([]);
-const [isLoading,setIsLoading]=useState(true);
+const formatCRC = (value: number) =>
+    `₡${value.toLocaleString("es-CR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    })}`;
 
-useEffect(()=>{
-    const loadOrders =async ()=>{
-        try{
-       const data = await getOrders("delivered",true);
-       setOrders(data);
-        }catch(error){
-        console.error("Error caragdno órdenes:", error);
-        } finally {
-        setIsLoading(false);
+const getPendingTotal = (lines: Awaited<ReturnType<typeof getPaymentPreview>>["lines"]) =>
+    lines.reduce((total, line) => {
+        if (line.pendingQuantity <= 0 || line.originalQuantity <= 0) {
+            return total;
         }
-    };
-    loadOrders();
 
-},[]);
+        return total +
+            (Number(line.total) * line.pendingQuantity) / line.originalQuantity;
+    }, 0);
+
+function CashierOrders() {
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const { refresh } = useSearch({
+        from: "/(cashierOrders)/cashierOrders",
+    });
+
+    useEffect(() => {
+        //Consulta las órdenes que están pendientes de pago
+        const loadOrders = async () => {
+            try {
+                setIsLoading(true);
+                const data = await getOrders("delivered", true);
+                const ordersWithPendingTotals = await Promise.all(
+                    data.map(async (order) => {
+                        try {
+                            const paymentPreview = await getPaymentPreview(order.orderId);
+
+                            return {
+                                ...order,
+                                price: formatCRC(getPendingTotal(paymentPreview.lines)),
+                            };
+                        } catch (error) {
+                            console.error(
+                                `No se pudo actualizar el saldo pendiente de la orden ${order.orderId}:`,
+                                error,
+                            );
+                            return order;
+                        }
+                    }),
+                );
+
+                setOrders(ordersWithPendingTotals);
+            } catch (error) {
+                console.error("Error cargando órdenes:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        //Se actualiza las órdenes cuando el backend notifica un cqambio
+        const handleCashierOrdersUpdated = () => {
+            void loadOrders();
+        };
+
+        //Vuelve a consultar las órdenes al conectarse o reconectarse
+        const handleConnect = () => {
+            void loadOrders();
+        };
+
+        //Escucha las notificaciones que están destinadas a la pantalla del cajero
+        socket.on("cashier_orders_updated", handleCashierOrdersUpdated);
+        socket.on("connect", handleConnect);
+
+        //Carga las órdenes iniciales y establece conexión si hace falta (como por ejemplo si se pierde la conexión a internet)
+        if (socket.connected) {
+            void loadOrders();
+        } else {
+            socket.connect();
+        }
+
+        //Elimina los listeners cuando sale de la pantalla
+        return () => {
+            socket.off("cashier_orders_updated", handleCashierOrdersUpdated);
+            socket.off("connect", handleConnect);
+        };
+
+    }, [refresh]);
+
+
+
+
+    const filteredOrders = orders.filter((order) => {
+        if (order.status !== "Entregado") {
+            return false;
+        }
+        return (
+            order.tableId.toString().includes(searchTerm.trim()) ||
+            order.orderId.toString().includes(searchTerm.trim())
+        );
+    });
+
+
 
     return (
         <main className="min-h-screen bg-white">
-            <div className="flex h-30 items-center justify-between gap-4 bg-neutral-50 border-b-4 border-mint-dark px-4 py-4 sm:px-8">
+
+
+            <motion.div
+                initial={{ opacity: 0, y: -15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="flex h-30 items-center justify-between gap-4 bg-neutral-50 border-b-4 border-mint-dark px-4 py-4 sm:px-8"
+            >
+
                 <RestaurantLogo className="h-16 w-16" />
                 <Link
-                          to="/login"
-                          onClick={logout}
-                          className="flex items-center justify-center gap-2 rounded-2xl bg-mint-dark px-3 py-3 text-base font-bold text-white sm:gap-3 sm:px-8 sm:py-4 sm:text-xl"
-                        >
-                          <LuLogOut className="h-4 w-4 sm:h-5 sm:w-5" />
-                          <span>Cerrar sesión</span>
-                        </Link>
-            </div>
+                    to="/login"
+                    onClick={logout}
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-mint-dark px-3 py-3 text-base font-bold text-white sm:gap-3 sm:px-8 sm:py-4 sm:text-xl"
+                >
+                    <LuLogOut className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span>Cerrar sesión</span>
+                </Link>
+            </motion.div>
 
             <section className="px-8 pt-8">
                 <div className="mx-auto max-w-300">
@@ -46,23 +140,56 @@ useEffect(()=>{
                         Próximos pagos
                     </h1>
 
-                    <p className="mt-4 text-gray-600 text-2xl">
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+                        className="my-6 flex flex-col gap-5 bg-white"
+                    >
+                        <SearchOrders
+                            searchTerm={searchTerm}
+                            setSearchTerm={setSearchTerm}
+                            className="w-full"
+                        />
+                    </motion.div>
+
+
+                    <p className="mt-4 text-mint-darker text-2xl">
                         Órdenes
                     </p>
 
-                    <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    <div className="mt-8 mb-20 grid grid-cols-1 gap-6 lg:grid-cols-2">
                         {isLoading ? (
                             Array.from({ length: 4 }, (_, index) => (
                                 <Skeleton key={index} className="h-56 w-full rounded-2xl" />
                             ))
-                        ) : orders.map((order) => (
-                            <OrderCard
-                                key={order.orderId}
-                                order={order}
-                                isCashier
-                            />
-                        ))}
+                        ) : filteredOrders.length > 0 ? (
+                            filteredOrders.map((order, index) => (
+                                <motion.div
+                                    key={order.orderId}
+                                    initial={{ opacity: 0, x: -35 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{
+                                        duration: 0.4,
+                                        delay: index * 0.08,
+                                        ease: "easeOut",
+                                    }}
+                                >
+                                    <OrderCard order={order} isCashier />
+                                </motion.div>
+                            ))
+                            ) : orders.length > 0 ? (
+                                    <p className="text-gray-500">
+                                        No hay resultados para esta búsqueda.
+                                    </p>) : (  
+                                        <p className="text-gray-500">
+                                            No hay órdenes pendientes de pago.
+                            </p>
+                        )}
+
                     </div>
+
                 </div>
             </section>
         </main>

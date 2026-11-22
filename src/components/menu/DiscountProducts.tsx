@@ -2,14 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getStoredRoleId } from "../../services/authService";
 import { getProducts,getCategories, type Product, type Category } from "../../services/productService";
-import { HiArrowLeft } from "react-icons/hi";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import DashboardLayoutWaiter from "../../components/layout/DashboardLayoutWaiter";
 import Skeleton from "../shared/Skeleton";
-
+import { ArrowLeftIcon } from "@animateicons/react/lucide";
+import { motion } from "motion/react";
 
 //limite de muestras
 const PAGE_SIZE = 10;
@@ -53,12 +53,33 @@ function ProductList({
         <p className="text-text-primary">No hay platillos...</p>
       )}
 
-    {visibleProducts.map((product) => (
-    <div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
+    {visibleProducts.map((product, index) => (
+  <motion.div
+    key={product.productId}
+    initial={{ opacity: 0, x: -35 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{
+      duration: 0.4,
+      delay: index * 0.08,
+      ease: "easeOut",
+    }}
+    className={
+      selectedProductId === product.productId
+        ? "w-full lg:w-192.5"
+        : "w-full lg:w-87.5"
+    }
+  >
+    
+         
           <DishCard
             name={product.productName ?? ""}
             description={product.description ?? ""}
             price={product.price}
+
+priceWithTax={product.priceWithTax}
+discountedPriceWithTax={product.discountedPriceWithTax}
+displayIvaRate={product.displayIvaRate}
+
             discount={ Number(product.discount ?? 0) }
             image={product.image ?? ""}
             rating={product.rating}
@@ -67,12 +88,13 @@ function ProductList({
             showActions={false}
             productId={product.productId}
             optionGroups={product.optionGroups}
+            isAvailable={product.isAvailable}
             onDelete={onDeleteProduct}
             isDetailView={selectedProductId === product.productId}
             onViewMore={() => onViewMore(product.productId)}
             onCloseDetails={onCloseDetails}
           />
-        </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -177,15 +199,23 @@ useEffect(() => {
     <Layout>
       <main className="min-h-screen bg-brand-white  ">
         {/* Celular */}
-        <section className="lg:hidden px-8 ">
+       <motion.section
+  className="lg:hidden px-6.5"
+  initial={{ opacity: 0, y: -15 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, ease: "easeOut" }}
+>
           <div className="flex items-center gap-2">
             <Link
               to={dashboardPath}
               className="flex items-center gap-2 text-mint-dark"
             >
-              <HiArrowLeft className="h-6 w-6" />
+              <ArrowLeftIcon
+            size={28}
+            duration={1}
+          />
 
-              <span className="text-[32px] font-bold">Platillos con descuentos</span>
+              <span className="text-[32px] font-bold">Descuentos</span>
             </Link>
           </div>
           
@@ -207,6 +237,7 @@ useEffect(() => {
                 }}
                 disabled={!!searchTerm}
                 isLoading={isLoadingCategories}
+                mobileFiveColumns
               />
             </div>
 
@@ -236,14 +267,18 @@ useEffect(() => {
 
           </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Computadora */}
 
-        <section className="hidden px-15 py-15 lg:block">
-          
+        <motion.section
+  className="hidden px-15 py-12 lg:block"
+  initial={{ opacity: 0, y: -15 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, ease: "easeOut" }}
+>
 
-          <h2 className=" text-2xl font-bold text-black">Menú</h2>
+          <h2 className="text-3xl font-bold text-mint-dark">Menú</h2>
 
 
           <SearchBar
@@ -262,6 +297,7 @@ useEffect(() => {
               }}
               disabled={!!searchTerm}
               isLoading={isLoadingCategories}
+              mobileFiveColumns
             />
           </div>
   
@@ -292,7 +328,7 @@ useEffect(() => {
               </button>
             </div>
           )}
-        </section>
+        </motion.section>
       </main>
     </Layout>
   );

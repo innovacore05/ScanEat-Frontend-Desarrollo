@@ -19,14 +19,18 @@ import { Route as authenticationResetPasswordRouteImport } from './routes/(authe
 import { Route as authenticationVerificationCodeRouteImport } from './routes/(authentication)/verificationCode'
 import { Route as cashierOrdersCashierOrdersRouteImport } from './routes/(cashierOrders)/cashierOrders'
 import { Route as cashierOrdersPaymentMethodRouteImport } from './routes/(cashierOrders)/paymentMethod'
+import { Route as cashierOrdersSelectOrderProductsRouteImport } from './routes/(cashierOrders)/selectOrderProducts'
 import { Route as clientOrdersCheckOrderRouteImport } from './routes/(clientOrders)/checkOrder'
 import { Route as clientOrdersOrderStatusRouteImport } from './routes/(clientOrders)/orderStatus'
 import { Route as clientOrdersReviewPlateRouteImport } from './routes/(clientOrders)/reviewPlate'
 import { Route as cookOrdersCookOrdersRouteImport } from './routes/(cookOrders)/cookOrders'
 import { Route as dashboardDashboardAdminRouteImport } from './routes/(dashboard)/dashboardAdmin'
 import { Route as dashboardDashboardWaiterRouteImport } from './routes/(dashboard)/dashboardWaiter'
+import { Route as dashboardExpensesRouteImport } from './routes/(dashboard)/expenses'
 import { Route as dashboardSalesReportRouteImport } from './routes/(dashboard)/salesReport'
 import { Route as historySalesHistorySalesRouteImport } from './routes/(historySales)/historySales'
+import { Route as historySalesHistorySalesDetailsRouteImport } from './routes/(historySales)/historySalesDetails'
+import { Route as issuedReceiptsIssuedReceiptsRouteImport } from './routes/(issuedReceipts)/issuedReceipts'
 import { Route as issuerInformationIssuerInformationRouteImport } from './routes/(issuerInformation)/issuerInformation'
 import { Route as menuDiscountProductsRouteImport } from './routes/(menu)/discountProducts'
 import { Route as menuAdminCategoryFormRouteImport } from './routes/(menuAdmin)/categoryForm'
@@ -35,6 +39,7 @@ import { Route as menuAdminCustomDishFormRouteImport } from './routes/(menuAdmin
 import { Route as menuAdminEditMenuRouteImport } from './routes/(menuAdmin)/editMenu'
 import { Route as menuAdminMenuManagmentRouteImport } from './routes/(menuAdmin)/menuManagment'
 import { Route as menuAdminSimpleDishFormRouteImport } from './routes/(menuAdmin)/simpleDishForm'
+import { Route as menuClientInvalidTableScreenRouteImport } from './routes/(menuClient)/invalidTableScreen'
 import { Route as menuClientMenuClientRouteImport } from './routes/(menuClient)/menuClient'
 import { Route as menuClientReviewsRouteImport } from './routes/(menuClient)/reviews'
 import { Route as menuWaiterMenuWaiterRouteImport } from './routes/(menuWaiter)/menuWaiter'
@@ -107,6 +112,12 @@ const cashierOrdersPaymentMethodRoute =
     path: '/paymentMethod',
     getParentRoute: () => rootRouteImport,
   } as any)
+const cashierOrdersSelectOrderProductsRoute =
+  cashierOrdersSelectOrderProductsRouteImport.update({
+    id: '/(cashierOrders)/selectOrderProducts',
+    path: '/selectOrderProducts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const clientOrdersCheckOrderRoute = clientOrdersCheckOrderRouteImport.update({
   id: '/(clientOrders)/checkOrder',
   path: '/checkOrder',
@@ -138,6 +149,11 @@ const dashboardDashboardWaiterRoute =
     path: '/dashboardWaiter',
     getParentRoute: () => rootRouteImport,
   } as any)
+const dashboardExpensesRoute = dashboardExpensesRouteImport.update({
+  id: '/(dashboard)/expenses',
+  path: '/expenses',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const dashboardSalesReportRoute = dashboardSalesReportRouteImport.update({
   id: '/(dashboard)/salesReport',
   path: '/salesReport',
@@ -147,6 +163,18 @@ const historySalesHistorySalesRoute =
   historySalesHistorySalesRouteImport.update({
     id: '/(historySales)/historySales',
     path: '/historySales',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const historySalesHistorySalesDetailsRoute =
+  historySalesHistorySalesDetailsRouteImport.update({
+    id: '/(historySales)/historySalesDetails',
+    path: '/historySalesDetails',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const issuedReceiptsIssuedReceiptsRoute =
+  issuedReceiptsIssuedReceiptsRouteImport.update({
+    id: '/(issuedReceipts)/issuedReceipts',
+    path: '/issuedReceipts',
     getParentRoute: () => rootRouteImport,
   } as any)
 const issuerInformationIssuerInformationRoute =
@@ -191,6 +219,12 @@ const menuAdminSimpleDishFormRoute = menuAdminSimpleDishFormRouteImport.update({
   path: '/simpleDishForm',
   getParentRoute: () => rootRouteImport,
 } as any)
+const menuClientInvalidTableScreenRoute =
+  menuClientInvalidTableScreenRouteImport.update({
+    id: '/(menuClient)/invalidTableScreen',
+    path: '/invalidTableScreen',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const menuClientMenuClientRoute = menuClientMenuClientRouteImport.update({
   id: '/(menuClient)/menuClient',
   path: '/menuClient',
@@ -278,14 +312,18 @@ export interface FileRoutesByFullPath {
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/cashierOrders': typeof cashierOrdersCashierOrdersRoute
   '/paymentMethod': typeof cashierOrdersPaymentMethodRoute
+  '/selectOrderProducts': typeof cashierOrdersSelectOrderProductsRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
   '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/expenses': typeof dashboardExpensesRoute
   '/salesReport': typeof dashboardSalesReportRoute
   '/historySales': typeof historySalesHistorySalesRoute
+  '/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
+  '/issuedReceipts': typeof issuedReceiptsIssuedReceiptsRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/discountProducts': typeof menuDiscountProductsRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
@@ -294,6 +332,7 @@ export interface FileRoutesByFullPath {
   '/editMenu': typeof menuAdminEditMenuRoute
   '/menuManagment': typeof menuAdminMenuManagmentRoute
   '/simpleDishForm': typeof menuAdminSimpleDishFormRoute
+  '/invalidTableScreen': typeof menuClientInvalidTableScreenRoute
   '/menuClient': typeof menuClientMenuClientRoute
   '/reviews': typeof menuClientReviewsRoute
   '/menuWaiter': typeof menuWaiterMenuWaiterRoute
@@ -320,14 +359,18 @@ export interface FileRoutesByTo {
   '/verificationCode': typeof authenticationVerificationCodeRoute
   '/cashierOrders': typeof cashierOrdersCashierOrdersRoute
   '/paymentMethod': typeof cashierOrdersPaymentMethodRoute
+  '/selectOrderProducts': typeof cashierOrdersSelectOrderProductsRoute
   '/checkOrder': typeof clientOrdersCheckOrderRoute
   '/orderStatus': typeof clientOrdersOrderStatusRoute
   '/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/cookOrders': typeof cookOrdersCookOrdersRoute
   '/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/expenses': typeof dashboardExpensesRoute
   '/salesReport': typeof dashboardSalesReportRoute
   '/historySales': typeof historySalesHistorySalesRoute
+  '/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
+  '/issuedReceipts': typeof issuedReceiptsIssuedReceiptsRoute
   '/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/discountProducts': typeof menuDiscountProductsRoute
   '/categoryForm': typeof menuAdminCategoryFormRoute
@@ -336,6 +379,7 @@ export interface FileRoutesByTo {
   '/editMenu': typeof menuAdminEditMenuRoute
   '/menuManagment': typeof menuAdminMenuManagmentRoute
   '/simpleDishForm': typeof menuAdminSimpleDishFormRoute
+  '/invalidTableScreen': typeof menuClientInvalidTableScreenRoute
   '/menuClient': typeof menuClientMenuClientRoute
   '/reviews': typeof menuClientReviewsRoute
   '/menuWaiter': typeof menuWaiterMenuWaiterRoute
@@ -363,14 +407,18 @@ export interface FileRoutesById {
   '/(authentication)/verificationCode': typeof authenticationVerificationCodeRoute
   '/(cashierOrders)/cashierOrders': typeof cashierOrdersCashierOrdersRoute
   '/(cashierOrders)/paymentMethod': typeof cashierOrdersPaymentMethodRoute
+  '/(cashierOrders)/selectOrderProducts': typeof cashierOrdersSelectOrderProductsRoute
   '/(clientOrders)/checkOrder': typeof clientOrdersCheckOrderRoute
   '/(clientOrders)/orderStatus': typeof clientOrdersOrderStatusRoute
   '/(clientOrders)/reviewPlate': typeof clientOrdersReviewPlateRoute
   '/(cookOrders)/cookOrders': typeof cookOrdersCookOrdersRoute
   '/(dashboard)/dashboardAdmin': typeof dashboardDashboardAdminRoute
   '/(dashboard)/dashboardWaiter': typeof dashboardDashboardWaiterRoute
+  '/(dashboard)/expenses': typeof dashboardExpensesRoute
   '/(dashboard)/salesReport': typeof dashboardSalesReportRoute
   '/(historySales)/historySales': typeof historySalesHistorySalesRoute
+  '/(historySales)/historySalesDetails': typeof historySalesHistorySalesDetailsRoute
+  '/(issuedReceipts)/issuedReceipts': typeof issuedReceiptsIssuedReceiptsRoute
   '/(issuerInformation)/issuerInformation': typeof issuerInformationIssuerInformationRoute
   '/(menu)/discountProducts': typeof menuDiscountProductsRoute
   '/(menuAdmin)/categoryForm': typeof menuAdminCategoryFormRoute
@@ -379,6 +427,7 @@ export interface FileRoutesById {
   '/(menuAdmin)/editMenu': typeof menuAdminEditMenuRoute
   '/(menuAdmin)/menuManagment': typeof menuAdminMenuManagmentRoute
   '/(menuAdmin)/simpleDishForm': typeof menuAdminSimpleDishFormRoute
+  '/(menuClient)/invalidTableScreen': typeof menuClientInvalidTableScreenRoute
   '/(menuClient)/menuClient': typeof menuClientMenuClientRoute
   '/(menuClient)/reviews': typeof menuClientReviewsRoute
   '/(menuWaiter)/menuWaiter': typeof menuWaiterMenuWaiterRoute
@@ -407,14 +456,18 @@ export interface FileRouteTypes {
     | '/verificationCode'
     | '/cashierOrders'
     | '/paymentMethod'
+    | '/selectOrderProducts'
     | '/checkOrder'
     | '/orderStatus'
     | '/reviewPlate'
     | '/cookOrders'
     | '/dashboardAdmin'
     | '/dashboardWaiter'
+    | '/expenses'
     | '/salesReport'
     | '/historySales'
+    | '/historySalesDetails'
+    | '/issuedReceipts'
     | '/issuerInformation'
     | '/discountProducts'
     | '/categoryForm'
@@ -423,6 +476,7 @@ export interface FileRouteTypes {
     | '/editMenu'
     | '/menuManagment'
     | '/simpleDishForm'
+    | '/invalidTableScreen'
     | '/menuClient'
     | '/reviews'
     | '/menuWaiter'
@@ -449,14 +503,18 @@ export interface FileRouteTypes {
     | '/verificationCode'
     | '/cashierOrders'
     | '/paymentMethod'
+    | '/selectOrderProducts'
     | '/checkOrder'
     | '/orderStatus'
     | '/reviewPlate'
     | '/cookOrders'
     | '/dashboardAdmin'
     | '/dashboardWaiter'
+    | '/expenses'
     | '/salesReport'
     | '/historySales'
+    | '/historySalesDetails'
+    | '/issuedReceipts'
     | '/issuerInformation'
     | '/discountProducts'
     | '/categoryForm'
@@ -465,6 +523,7 @@ export interface FileRouteTypes {
     | '/editMenu'
     | '/menuManagment'
     | '/simpleDishForm'
+    | '/invalidTableScreen'
     | '/menuClient'
     | '/reviews'
     | '/menuWaiter'
@@ -491,14 +550,18 @@ export interface FileRouteTypes {
     | '/(authentication)/verificationCode'
     | '/(cashierOrders)/cashierOrders'
     | '/(cashierOrders)/paymentMethod'
+    | '/(cashierOrders)/selectOrderProducts'
     | '/(clientOrders)/checkOrder'
     | '/(clientOrders)/orderStatus'
     | '/(clientOrders)/reviewPlate'
     | '/(cookOrders)/cookOrders'
     | '/(dashboard)/dashboardAdmin'
     | '/(dashboard)/dashboardWaiter'
+    | '/(dashboard)/expenses'
     | '/(dashboard)/salesReport'
     | '/(historySales)/historySales'
+    | '/(historySales)/historySalesDetails'
+    | '/(issuedReceipts)/issuedReceipts'
     | '/(issuerInformation)/issuerInformation'
     | '/(menu)/discountProducts'
     | '/(menuAdmin)/categoryForm'
@@ -507,6 +570,7 @@ export interface FileRouteTypes {
     | '/(menuAdmin)/editMenu'
     | '/(menuAdmin)/menuManagment'
     | '/(menuAdmin)/simpleDishForm'
+    | '/(menuClient)/invalidTableScreen'
     | '/(menuClient)/menuClient'
     | '/(menuClient)/reviews'
     | '/(menuWaiter)/menuWaiter'
@@ -534,14 +598,18 @@ export interface RootRouteChildren {
   authenticationVerificationCodeRoute: typeof authenticationVerificationCodeRoute
   cashierOrdersCashierOrdersRoute: typeof cashierOrdersCashierOrdersRoute
   cashierOrdersPaymentMethodRoute: typeof cashierOrdersPaymentMethodRoute
+  cashierOrdersSelectOrderProductsRoute: typeof cashierOrdersSelectOrderProductsRoute
   clientOrdersCheckOrderRoute: typeof clientOrdersCheckOrderRoute
   clientOrdersOrderStatusRoute: typeof clientOrdersOrderStatusRoute
   clientOrdersReviewPlateRoute: typeof clientOrdersReviewPlateRoute
   cookOrdersCookOrdersRoute: typeof cookOrdersCookOrdersRoute
   dashboardDashboardAdminRoute: typeof dashboardDashboardAdminRoute
   dashboardDashboardWaiterRoute: typeof dashboardDashboardWaiterRoute
+  dashboardExpensesRoute: typeof dashboardExpensesRoute
   dashboardSalesReportRoute: typeof dashboardSalesReportRoute
   historySalesHistorySalesRoute: typeof historySalesHistorySalesRoute
+  historySalesHistorySalesDetailsRoute: typeof historySalesHistorySalesDetailsRoute
+  issuedReceiptsIssuedReceiptsRoute: typeof issuedReceiptsIssuedReceiptsRoute
   issuerInformationIssuerInformationRoute: typeof issuerInformationIssuerInformationRoute
   menuDiscountProductsRoute: typeof menuDiscountProductsRoute
   menuAdminCategoryFormRoute: typeof menuAdminCategoryFormRoute
@@ -550,6 +618,7 @@ export interface RootRouteChildren {
   menuAdminEditMenuRoute: typeof menuAdminEditMenuRoute
   menuAdminMenuManagmentRoute: typeof menuAdminMenuManagmentRoute
   menuAdminSimpleDishFormRoute: typeof menuAdminSimpleDishFormRoute
+  menuClientInvalidTableScreenRoute: typeof menuClientInvalidTableScreenRoute
   menuClientMenuClientRoute: typeof menuClientMenuClientRoute
   menuClientReviewsRoute: typeof menuClientReviewsRoute
   menuWaiterMenuWaiterRoute: typeof menuWaiterMenuWaiterRoute
@@ -638,6 +707,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof cashierOrdersPaymentMethodRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(cashierOrders)/selectOrderProducts': {
+      id: '/(cashierOrders)/selectOrderProducts'
+      path: '/selectOrderProducts'
+      fullPath: '/selectOrderProducts'
+      preLoaderRoute: typeof cashierOrdersSelectOrderProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(clientOrders)/checkOrder': {
       id: '/(clientOrders)/checkOrder'
       path: '/checkOrder'
@@ -680,6 +756,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof dashboardDashboardWaiterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(dashboard)/expenses': {
+      id: '/(dashboard)/expenses'
+      path: '/expenses'
+      fullPath: '/expenses'
+      preLoaderRoute: typeof dashboardExpensesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(dashboard)/salesReport': {
       id: '/(dashboard)/salesReport'
       path: '/salesReport'
@@ -692,6 +775,20 @@ declare module '@tanstack/react-router' {
       path: '/historySales'
       fullPath: '/historySales'
       preLoaderRoute: typeof historySalesHistorySalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(historySales)/historySalesDetails': {
+      id: '/(historySales)/historySalesDetails'
+      path: '/historySalesDetails'
+      fullPath: '/historySalesDetails'
+      preLoaderRoute: typeof historySalesHistorySalesDetailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(issuedReceipts)/issuedReceipts': {
+      id: '/(issuedReceipts)/issuedReceipts'
+      path: '/issuedReceipts'
+      fullPath: '/issuedReceipts'
+      preLoaderRoute: typeof issuedReceiptsIssuedReceiptsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(issuerInformation)/issuerInformation': {
@@ -748,6 +845,13 @@ declare module '@tanstack/react-router' {
       path: '/simpleDishForm'
       fullPath: '/simpleDishForm'
       preLoaderRoute: typeof menuAdminSimpleDishFormRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(menuClient)/invalidTableScreen': {
+      id: '/(menuClient)/invalidTableScreen'
+      path: '/invalidTableScreen'
+      fullPath: '/invalidTableScreen'
+      preLoaderRoute: typeof menuClientInvalidTableScreenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(menuClient)/menuClient': {
@@ -863,14 +967,18 @@ const rootRouteChildren: RootRouteChildren = {
   authenticationVerificationCodeRoute: authenticationVerificationCodeRoute,
   cashierOrdersCashierOrdersRoute: cashierOrdersCashierOrdersRoute,
   cashierOrdersPaymentMethodRoute: cashierOrdersPaymentMethodRoute,
+  cashierOrdersSelectOrderProductsRoute: cashierOrdersSelectOrderProductsRoute,
   clientOrdersCheckOrderRoute: clientOrdersCheckOrderRoute,
   clientOrdersOrderStatusRoute: clientOrdersOrderStatusRoute,
   clientOrdersReviewPlateRoute: clientOrdersReviewPlateRoute,
   cookOrdersCookOrdersRoute: cookOrdersCookOrdersRoute,
   dashboardDashboardAdminRoute: dashboardDashboardAdminRoute,
   dashboardDashboardWaiterRoute: dashboardDashboardWaiterRoute,
+  dashboardExpensesRoute: dashboardExpensesRoute,
   dashboardSalesReportRoute: dashboardSalesReportRoute,
   historySalesHistorySalesRoute: historySalesHistorySalesRoute,
+  historySalesHistorySalesDetailsRoute: historySalesHistorySalesDetailsRoute,
+  issuedReceiptsIssuedReceiptsRoute: issuedReceiptsIssuedReceiptsRoute,
   issuerInformationIssuerInformationRoute:
     issuerInformationIssuerInformationRoute,
   menuDiscountProductsRoute: menuDiscountProductsRoute,
@@ -880,6 +988,7 @@ const rootRouteChildren: RootRouteChildren = {
   menuAdminEditMenuRoute: menuAdminEditMenuRoute,
   menuAdminMenuManagmentRoute: menuAdminMenuManagmentRoute,
   menuAdminSimpleDishFormRoute: menuAdminSimpleDishFormRoute,
+  menuClientInvalidTableScreenRoute: menuClientInvalidTableScreenRoute,
   menuClientMenuClientRoute: menuClientMenuClientRoute,
   menuClientReviewsRoute: menuClientReviewsRoute,
   menuWaiterMenuWaiterRoute: menuWaiterMenuWaiterRoute,

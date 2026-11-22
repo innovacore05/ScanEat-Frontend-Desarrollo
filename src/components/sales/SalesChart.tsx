@@ -127,7 +127,7 @@ const formatCurrencyAxis = (value: number) => {
 
               <Bar
                 dataKey="sales"
-                fill="var(--color-mint-dark)"
+                fill="var(--color-mint-darker)"
                 radius={[6, 6, 0, 0]}
               />
             </BarChart>

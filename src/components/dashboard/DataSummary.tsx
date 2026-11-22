@@ -3,9 +3,12 @@ import { getSalesAnalytics } from "../../services/analyticsService";
 import type { SalesAnalytics } from "../../services/analyticsService";
 import { getOrders } from "../../services/orderService";
 import Skeleton from "../shared/Skeleton";
+import { motion } from "motion/react";
+import { useLocalDay } from "../../hooks/useLocalDay";
 
 function DataSummary() {
   const [analytics, setAnalytics] = useState<SalesAnalytics | null>(null);
+  const localDay = useLocalDay();
   const [occupiedTables, setOccupiedTables] = useState(0);
   const [ordersInKitchen, setOrdersInKitchen] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,8 +46,7 @@ function DataSummary() {
 
         setOccupiedTables(activeTableIds.size);
 
-        setOccupiedTables(activeTableIds.size);
-
+       
         // Cantidad de pedidos que están en preparación.
         setOrdersInKitchen(preparingOrders.length);
       } catch (error) {
@@ -56,14 +58,30 @@ function DataSummary() {
     };
 
     void loadDashboardData();
-  }, []);
+  }, [localDay]);
 
   const summary = analytics?.summary;
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:gap-4">
-      <div className="flex min-w-0 flex-col gap-1 rounded-lg bg-neutral-50 p-3 sm:p-4">
-        <h2 className="text-sm sm:text-base">Ventas hoy</h2>
+    <motion.div
+    className="grid grid-cols-2 gap-3 sm:gap-4"
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4, ease: "easeOut" }}
+  >
+
+
+       <motion.div
+      className="flex min-w-0 flex-col gap-1 rounded-lg bg-neutral-50 p-3 sm:p-4"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.1 }}
+    >
+       
+        <h2 className="text-sm sm:text-base">
+          Ventas hoy
+          </h2>
+
         <div className="text-xl font-bold text-mint-dark sm:text-2xl">
           {isLoading ? (
             <Skeleton className="h-7 w-24" />
@@ -73,9 +91,17 @@ function DataSummary() {
             `₡${(summary?.totalSales ?? 0).toLocaleString("es-CR")}`
           )}
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex min-w-0 flex-col gap-1 rounded-lg bg-neutral-50 p-3 sm:p-4">
+
+
+       <motion.div
+      className="flex min-w-0 flex-col gap-1 rounded-lg bg-neutral-50 p-3 sm:p-4"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.2 }}
+    >
+      
         <h2 className="text-sm sm:text-base">Órdenes hoy</h2>
         <div className="text-xl font-bold text-mint-dark sm:text-2xl">
           {isLoading ? (
@@ -86,9 +112,15 @@ function DataSummary() {
             summary?.totalOrders ?? 0
           )}
         </div>
-      </div>
+       </motion.div>
 
-      <div className="flex min-w-0 flex-col gap-1 rounded-lg bg-neutral-50 p-3 sm:p-4">
+      <motion.div
+      className="flex min-w-0 flex-col gap-1 rounded-lg bg-neutral-50 p-3 sm:p-4"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.3 }}
+    >
+        
         <h2 className="text-sm sm:text-base">Mesas ocupadas</h2>
         <div className="text-xl font-bold text-mint-dark sm:text-2xl">
           {isLoading ? (
@@ -99,9 +131,15 @@ function DataSummary() {
             occupiedTables
           )}
         </div>
-      </div>
+       </motion.div>
 
-      <div className="flex min-w-0 flex-col gap-1 rounded-lg bg-neutral-50 p-3 sm:p-4">
+     <motion.div
+      className="flex min-w-0 flex-col gap-1 rounded-lg bg-neutral-50 p-3 sm:p-4"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.4 }}
+    >
+
         <h2 className="text-sm sm:text-base">En cocina</h2>
         <div className="text-xl font-bold text-mint-dark sm:text-2xl">
           {isLoading ? (
@@ -112,8 +150,9 @@ function DataSummary() {
             ordersInKitchen
           )}
         </div>
-      </div>
-    </div>
+         </motion.div>
+          </motion.div>
+      
   );
 }
 

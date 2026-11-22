@@ -7,7 +7,7 @@ import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
 import Skeleton from "../shared/Skeleton";
-
+import { motion } from "motion/react";
 
 //limite de muestras
 const PAGE_SIZE = 10;
@@ -22,6 +22,7 @@ function ProductList({
 	selectedProductId,
 	onViewMore,
 	onCloseDetails,
+	onAvailabilityChange,
 }: {
   initialLoading: boolean;
   isFiltering: boolean;
@@ -30,6 +31,7 @@ function ProductList({
 	selectedProductId: number | null;
 	onViewMore: (productId: number) => void;
 	onCloseDetails: () => void;
+	onAvailabilityChange: (productId: number, isAvailable: boolean) => void;
 }) {
 	const visibleProducts = selectedProductId === null
 		? products
@@ -51,26 +53,45 @@ function ProductList({
         <p className="text-text-primary">No hay platillos...</p>
       )}
 
-		{visibleProducts.map((product) => (
-		<div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
+		{visibleProducts.map((product,index) => (
+		  <motion.div
+    key={product.productId}
+    initial={{ opacity: 0, x: -35 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{
+      duration: 0.4,
+      delay: index * 0.08,
+      ease: "easeOut",
+    }}
+    
+    className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
           <DishCard
             name={product.productName ?? ""}
             description={product.description ?? ""}
             price={product.price}
+            priceWithTax={product.priceWithTax}
+discountedPriceWithTax={product.discountedPriceWithTax}
+displayIvaRate={product.displayIvaRate}
             discount={ Number(product.discount ?? 0) }
             image={product.image ?? ""}
             rating={product.rating}
             isAdmin={false}
             showRating={false}
             showActions={false}
+            showAddAction={false}
             productId={product.productId}
             optionGroups={product.optionGroups}
+            isAvailable={product.isAvailable}
+            canManageAvailability
+            onAvailabilityChange={(isAvailable) =>
+              onAvailabilityChange(product.productId, isAvailable)
+            }
             onDelete={onDeleteProduct}
             isDetailView={selectedProductId === product.productId}
             onViewMore={() => onViewMore(product.productId)}
             onCloseDetails={onCloseDetails}
           />
-        </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -160,12 +181,20 @@ useEffect(() => {
 		setSelectedProductId((current) => current === productId ? null : current);
   };
 
+  const handleAvailabilityChange = (productId: number, isAvailable: boolean) => {
+    setProducts((current) =>
+      current.map((item) =>
+        item.productId === productId ? { ...item, isAvailable } : item,
+      ),
+    );
+  };
+
 
   return (
     <DashboardLayoutWaiter>
       <main className="min-h-screen bg-brand-white  ">
         {/* Celular */}
-        <section className="lg:hidden px-8 ">
+        <section className="lg:hidden px-6.5 ">
           <div className="flex items-center gap-2">
             <Link
               to="/dashboardWaiter" 
@@ -195,6 +224,7 @@ useEffect(() => {
                 }}
                 disabled={!!searchTerm}
                 isLoading={isLoadingCategories}
+                mobileFiveColumns
               />
             </div>
 
@@ -208,6 +238,7 @@ useEffect(() => {
 				selectedProductId={selectedProductId}
 				onViewMore={setSelectedProductId}
 				onCloseDetails={() => setSelectedProductId(null)}
+				onAvailabilityChange={handleAvailabilityChange}
               />
             </div>
 
@@ -228,10 +259,10 @@ useEffect(() => {
 
         {/* Computadora */}
 
-        <section className="hidden px-15 py-15 lg:block">
+        <section className="hidden px-15 py-12 lg:block">
           
 
-          <h2 className=" text-2xl font-bold text-black">Menú</h2>
+          <h2 className="text-3xl font-bold text-mint-dark">Menú</h2>
 
 
           <SearchBar
@@ -250,10 +281,11 @@ useEffect(() => {
               }}
               disabled={!!searchTerm}
               isLoading={isLoadingCategories}
+              mobileFiveColumns
             />
           </div>
   
-          <h2 className="mt-8 text-2xl font-bold text-black">Menú popular</h2>
+          <h2 className="mt-8 text-2xl font-bold text-mint-dark">Menú popular</h2>
 
           {/* Platillos */}
           <div className="mt-6 flex flex-wrap gap-4">
@@ -265,6 +297,7 @@ useEffect(() => {
 				selectedProductId={selectedProductId}
 				onViewMore={setSelectedProductId}
 				onCloseDetails={() => setSelectedProductId(null)}
+				onAvailabilityChange={handleAvailabilityChange}
             />
           </div>
 

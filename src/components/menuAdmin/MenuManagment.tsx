@@ -2,14 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getProducts, getCategories, type Product, type Category } from "../../services/productService";
 import { getProductReviews } from "../../services/reviewService";
-import { HiArrowLeft } from "react-icons/hi";
 import { GoPlus, GoTag } from "react-icons/go";
 import DashboardLayoutAdmin from "../layout/DashboardLayoutAdmin";
 import DishCard from "../menu/DishCard";
 import CategoryFilter from "../menu/CategoryFilter";
 import SearchBar from "../menu/SearchBar";
 import Skeleton from "../shared/Skeleton";
-
+import { ArrowLeftIcon } from "@animateicons/react/lucide";
+import { motion } from "motion/react";
 
 //limite de muestras
 const PAGE_SIZE = 10;
@@ -45,6 +45,7 @@ function ProductList({
   selectedProductId,
   onViewMore,
   onCloseDetails,
+  onAvailabilityChange,
 }: {
   initialLoading: boolean;
   isFiltering: boolean;
@@ -53,6 +54,7 @@ function ProductList({
   selectedProductId: number | null;
   onViewMore: (productId: number) => void;
   onCloseDetails: () => void;
+  onAvailabilityChange: (productId: number, isAvailable: boolean) => void;
 }) {
   const visibleProducts = selectedProductId === null
     ? products
@@ -73,25 +75,44 @@ function ProductList({
         <p className="text-text-primary">No hay platillos...</p>
       )}
 
-      {visibleProducts.map((product) => (
-        <div key={product.productId} className={selectedProductId === product.productId ? "w-full lg:w-192.5" : "w-full lg:w-87.5"}>
+      {visibleProducts.map((product,index) => (
+        
+        <motion.div
+    key={product.productId}
+    initial={{ opacity: 0, x: -35 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{
+      duration: 0.4,
+      delay: index * 0.08,
+      ease: "easeOut",
+    }}
+        className={selectedProductId === product.productId 
+        ? "w-full lg:w-192.5" 
+        : "w-full lg:w-87.5"
+        }>
+
           <DishCard
             name={product.productName ?? ""}
             description={product.description ?? ""}
             price={product.price}
-            discount={ Number(product.discount ?? 0) }
+            discount={Number(product.discount ?? 0)}
             image={product.image ?? ""}
             rating={product.rating}
             isAdmin={true}
             showReviews
             productId={product.productId}
             optionGroups={product.optionGroups}
+            isAvailable={product.isAvailable}
+            canManageAvailability
+            onAvailabilityChange={(isAvailable) =>
+              onAvailabilityChange(product.productId, isAvailable)
+            }
             onDelete={onDeleteProduct}
             isDetailView={selectedProductId === product.productId}
             onViewMore={() => onViewMore(product.productId)}
             onCloseDetails={onCloseDetails}
           />
-        </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -183,18 +204,33 @@ function MenuManagment() {
     setSelectedProductId((current) => current === productId ? null : current);
   };
 
+  const handleAvailabilityChange = (productId: number, isAvailable: boolean) => {
+    setProducts((current) =>
+      current.map((item) =>
+        item.productId === productId ? { ...item, isAvailable } : item,
+      ),
+    );
+  };
+
 
   return (
     <DashboardLayoutAdmin>
-      <main className="min-h-screen bg-white  ">
+      <motion.main 
+       initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, ease: "easeOut" }}
+  className="min-h-screen bg-white">
         {/* Celular */}
-        <section className="lg:hidden px-8 ">
+        <section className="lg:hidden px-6.5 ">
           <div className="flex items-center gap-2">
             <Link
               to="/dashboardAdmin"
               className="flex items-center gap-2 text-mint-dark"
             >
-              <HiArrowLeft className="h-6 w-6" />
+              <ArrowLeftIcon
+                size={28}
+                duration={1}
+              />
 
               <span className="text-[32px] font-bold">Menú</span>
             </Link>
@@ -252,6 +288,7 @@ function MenuManagment() {
                 }}
                 disabled={!!searchTerm}
                 isLoading={isLoadingCategories}
+                mobileFiveColumns
               />
             </div>
 
@@ -265,18 +302,23 @@ function MenuManagment() {
                   selectedProductId={selectedProductId}
                   onViewMore={setSelectedProductId}
                   onCloseDetails={() => setSelectedProductId(null)}
+                  onAvailabilityChange={handleAvailabilityChange}
                 />
               </div>
 
               {hasMore && selectedProductId === null && (
-                <button
-                  type="button"
-                  onClick={handleLoadMore}
-                  disabled={isLoadingMore}
-                  className="w-full mt-6  rounded-2xl bg-white border border-border py-3 text-base font-bold text-mint-dark disabled:opacity-50"
-                >
-                  {isLoadingMore ? "Cargando..." : "Cargar más"}
-                </button>
+                <motion.button
+  type="button"
+  onClick={handleLoadMore}
+  disabled={isLoadingMore}
+  whileHover={!isLoadingMore ? { scale: 1.04 } : {}}
+  whileTap={!isLoadingMore ? { scale: 0.97 } : {}}
+  transition={{ duration: 0.2, ease: "easeOut" }}
+  className="w-full mt-6 rounded-2xl bg-white border border-border py-3 text-base font-bold text-mint-dark disabled:opacity-50"
+>
+  {isLoadingMore ? "Cargando..." : "Cargar más"}
+</motion.button>
+
               )}
 
             </div>
@@ -285,10 +327,10 @@ function MenuManagment() {
 
         {/* Computadora */}
 
-        <section className="hidden px-15 py-15 lg:block">
-          
+        <section className="hidden px-15 py-12 lg:block">
 
-          <h2 className="text-2xl font-bold text-black">Menú</h2>
+
+          <h2 className="text-3xl font-bold text-mint-dark">Menú</h2>
 
           <div className="mt-6 flex gap-4">
             <Link
@@ -340,6 +382,7 @@ function MenuManagment() {
               }}
               disabled={!!searchTerm}
               isLoading={isLoadingCategories}
+              mobileFiveColumns
             />
           </div>
 
@@ -355,23 +398,27 @@ function MenuManagment() {
               selectedProductId={selectedProductId}
               onViewMore={setSelectedProductId}
               onCloseDetails={() => setSelectedProductId(null)}
+              onAvailabilityChange={handleAvailabilityChange}
             />
           </div>
 
           {hasMore && selectedProductId === null && (
             <div className="mt-6 flex justify-center ">
-              <button
-                type="button"
-                onClick={handleLoadMore}
-                disabled={isLoadingMore}
-                className="rounded-lg bg-white border border-border px-8 py-3 text-base font-bold text-mint-dark disabled:opacity-50"
-              >
-                {isLoadingMore ? "Cargando..." : "Cargar más"}
-              </button>
+              <motion.button
+  type="button"
+  onClick={handleLoadMore}
+  disabled={isLoadingMore}
+  whileHover={!isLoadingMore ? { scale: 1.04 } : {}}
+  whileTap={!isLoadingMore ? { scale: 0.97 } : {}}
+  transition={{ duration: 0.2, ease: "easeOut" }}
+  className="w-full mt-6 rounded-2xl bg-white border border-border py-3 text-base font-bold text-mint-dark disabled:opacity-50"
+>
+  {isLoadingMore ? "Cargando..." : "Cargar más"}
+</motion.button>
             </div>
           )}
         </section>
-      </main>
+      </motion.main>
     </DashboardLayoutAdmin>
   );
 }

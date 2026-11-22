@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getProducts, type Product } from "../../services/productService";
 import SearchBar from "../menu/SearchBar";
 import Skeleton from "../shared/Skeleton";
+import { motion, AnimatePresence } from "motion/react";
 
 function DiscountsToday() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -11,11 +12,20 @@ function DiscountsToday() {
   useEffect(() => {
     const loadDiscounts = async () => {
       try {
-        const data = await getProducts({ limit: 20 });
+        const allProducts: Product[] = [];
+        let offset = 0;
+        let hasMore = true;
 
-        const discounts = data.products
-          .filter((product) => Number(product.discount ?? 0) > 0)
-          .slice(0, 3);
+        while (hasMore) {
+          const data = await getProducts({ limit: 20, offset });
+          allProducts.push(...data.products);
+          hasMore = data.hasMore && data.products.length > 0;
+          offset += data.products.length;
+        }
+
+        const discounts = allProducts.filter(
+          (product) => Number(product.discount ?? 0) > 0,
+        );
 
         setProducts(discounts);
       } catch (error) {
@@ -34,51 +44,76 @@ function DiscountsToday() {
 
   return (
     <section>
-      <h2 className=" text-2xl font-bold text-mint-dark">
-        Descuentos de hoy
-      </h2>
+        <motion.h2
+      className="text-2xl font-bold text-mint-dark"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      Descuentos de hoy
+    </motion.h2>
 
-      <div className="mb-6 flex items-center">
-        <SearchBar
-              searchTerm={search}
-              setSearchTerm={setSearch}
-              className="mt-6 w-full"
-            />
-      </div>
+      <motion.div
+      className="mb-6 flex items-center"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.1 }}
+    >
+      <SearchBar
+        searchTerm={search}
+        setSearchTerm={setSearch}
+        className="mt-6 w-full"
+      />
+    </motion.div>
 
-      <div className="flex flex-col gap-3 border border-border rounded-2xl">
+
+      <div className="flex max-h-96 flex-col gap-3 overflow-y-auto rounded-2xl border border-border">
         {isLoading ? (
           Array.from({ length: 3 }, (_, index) => (
-            <div key={index} className="flex h-30 overflow-hidden rounded-xl bg-white">
-              <Skeleton className="h-full w-44 rounded-none" />
-              <div className="flex flex-1 flex-col gap-3 px-4 py-3">
+             <motion.div
+            key={index}
+            className="flex h-30 shrink-0 overflow-hidden rounded-xl bg-white"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.1 }}
+          >
+              <Skeleton className="h-full w-44 shrink-0 rounded-none" />
+              <div className="flex min-w-0 flex-1 flex-col gap-3 px-4 py-3">
                 <Skeleton className="h-4 w-36" />
                 <Skeleton className="h-3 w-full max-w-sm" />
                 <Skeleton className="mt-auto h-4 w-28" />
               </div>
-            </div>
+            </motion.div>
           ))
-        ) : visibleProducts.map((product) => {
-          const discount = Number(product.discount ?? 0);
-          const finalPrice = product.price * (1 - discount / 100);
-
+        ) : 
+        
+        (
+        <AnimatePresence mode="popLayout">
+          {visibleProducts.map((product) => {
+            const discount = Number(product.discount ?? 0);
+            const finalPrice = product.price * (1 - discount / 100);
           return (
-            <article
-              key={product.productId}
-              className="flex h-30 overflow-hidden rounded-xl bg-white"
-            >
+             <motion.article
+                key={product.productId}
+                className="flex h-30 min-w-0 shrink-0 overflow-hidden rounded-xl bg-white"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                layout
+              >
               <img
                 src={product.image ?? "/img/placeholder.jpg"}
                 alt={product.productName}
-                className="w-44 object-cover"
+                className="h-full w-44 min-w-44 flex-none object-cover"
               />
 
-              <div className="px-4 py-2">
+              <div className="min-w-0 overflow-hidden px-4 py-2">
                 <h3 className="text-sm font-bold text-mint-dark">
                   {product.productName}
                 </h3>
 
-                <p className="text-xs text-text-primary">
+                <p className="line-clamp-2 text-xs text-text-primary">
                   {product.description}
                 </p>
 
@@ -93,9 +128,11 @@ function DiscountsToday() {
                   </span>
                 </div>
               </div>
-            </article>
-          );
+            </motion.article>
+            );      
         })}
+      </AnimatePresence>
+      )}
       </div>
     </section>
   );

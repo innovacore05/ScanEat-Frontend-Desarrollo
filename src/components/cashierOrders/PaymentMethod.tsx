@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Skeleton from "../shared/Skeleton";
 import { Link, useSearch, useNavigate } from "@tanstack/react-router";
-
 import { RestaurantLogo } from "../theme/RestaurantLogo";
 import PaymentStatus, { type StatusType } from "./PaymentStatus";
 import { HiArrowLeft } from "react-icons/hi";
@@ -19,6 +18,7 @@ import PaymentModal, {
   type PaymentType,
 } from "./PaymentModal";
 import InvoiceModal from "./InvoiceModal";
+import { motion } from "motion/react";
 
 const formatCRC = (value: string | number) =>
   `₡${Number(value).toLocaleString("es-CR", {
@@ -28,33 +28,251 @@ const formatCRC = (value: string | number) =>
 
 const IN_FLIGHT = new Set(["queued", "signing", "sent", "polling", "pending"]);
 
+type SelectedLineAmounts = {
+  gross: number;
+  discount: number;
+  subtotal: number;
+  tax: number;
+  total: number;
+};
+
+const toCents = (value: string | number): number => {
+  const amount = Number(value);
+
+  if (!Number.isFinite(amount)) {
+    throw new Error("Monto no válido");
+  }
+
+  return Math.round(amount * 100);
+};
+
+const allocatedDiscountCents = (
+  totalDiscountCents: number,
+  totalQuantity: number,
+  alreadyPaid: number,
+  selectedQuantity: number,
+): number => {
+  if (
+    totalQuantity <= 0 ||
+    alreadyPaid < 0 ||
+    selectedQuantity < 0 ||
+    alreadyPaid + selectedQuantity > totalQuantity
+  ) {
+    throw new Error("Cantidad no válida para distribuir el descuento");
+  }
+
+  const cumulative = (units: number) =>
+    Number(
+      (BigInt(totalDiscountCents) * BigInt(units)) /
+        BigInt(totalQuantity),
+    );
+
+  return (
+    cumulative(alreadyPaid + selectedQuantity) -
+    cumulative(alreadyPaid)
+  );
+};
+
+const taxCentsFor = (subtotalCents: number, ivaRate: string): number => {
+  const rateBasisPoints = Math.round(Number(ivaRate) * 100);
+
+  if (!Number.isFinite(rateBasisPoints) || rateBasisPoints < 0) {
+    throw new Error("Tarifa de IVA no válida");
+  }
+
+  return Number(
+    (BigInt(subtotalCents) * BigInt(rateBasisPoints) + 5_000n) /
+      10_000n,
+  );
+};
+
+function getSelectedLineAmounts(
+  line: PaymentPreview["lines"][number],
+  quantity: number,
+): SelectedLineAmounts {
+  if (quantity <= 0) {
+    return { gross: 0, discount: 0, subtotal: 0, tax: 0, total: 0 };
+  }
+
+  const grossCents = toCents(line.unitPrice) * quantity;
+  const discountCents = allocatedDiscountCents(
+    toCents(line.discount),
+    line.quantity,
+    line.paidQuantity,
+    quantity,
+  );
+  const subtotalCents = grossCents - discountCents;
+  const taxCents = taxCentsFor(subtotalCents, line.ivaRate);
+
+  return {
+    gross: grossCents / 100,
+    discount: discountCents / 100,
+    subtotal: subtotalCents / 100,
+    tax: taxCents / 100,
+    total: (subtotalCents + taxCents) / 100,
+  };
+}
+
+function getSelectedTotals(
+  lines: PaymentPreview["lines"],
+  selectedQuantities: Record<number, number>,
+  includeService: boolean,
+) {
+  let grossCents = 0;
+  let subtotalCents = 0;
+  let discountCents = 0;
+  let taxCents = 0;
+
+  const taxByRate = new Map<number, number>();
+
+  for (const line of lines) {
+    const quantity = selectedQuantities[line.detailId] ?? 0;
+    if (quantity <= 0) continue;
+
+    const amounts = getSelectedLineAmounts(line, quantity);
+    const lineGrossCents = toCents(amounts.gross);
+    const lineSubtotalCents = toCents(amounts.subtotal);
+    const lineDiscountCents = toCents(amounts.discount);
+    const lineTaxCents = toCents(amounts.tax);
+    const rate = Number(line.ivaRate);
+
+    grossCents += lineGrossCents;
+    subtotalCents += lineSubtotalCents;
+    discountCents += lineDiscountCents;
+    taxCents += lineTaxCents;
+    taxByRate.set(rate, (taxByRate.get(rate) ?? 0) + lineTaxCents);
+  }
+
+  const serviceCents = includeService
+    ? Math.floor((subtotalCents + 5) / 10)
+    : 0;
+
+  const money = (cents: number) => (cents / 100).toFixed(2);
+
+  return {
+    totalSale: money(grossCents),
+    totalNetSale: money(subtotalCents),
+    totalDiscount: money(discountCents),
+    totalTax: money(taxCents),
+    serviceCharge: money(serviceCents),
+    totalVoucher: money(subtotalCents + taxCents + serviceCents),
+    taxSummary: [...taxByRate.entries()].map(([rate, cents]) => ({
+      rate,
+      amount: money(cents),
+    })),
+  };
+}
+
 function PaymentMethod() {
   const search = useSearch({ strict: false });
   const orderId = Number(search.orderId);
+  const navigate = useNavigate();
+
 
   const [order, setOrder] = useState<PaymentPreview | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState<PaymentType | "">("");
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
-  const navigate = useNavigate();
-
+  const [loadError, setLoadError] = useState("");
   const [isPaying, setIsPaying] = useState(false);
   const [payError, setPayError] = useState("");
   const [receipt, setReceipt] = useState<PayOrderResponse | null>(null);
   const [isPaymentStatusOpen, setIsPaymentStatusOpen] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<StatusType | "">("");
   const [includeService, setIncludeService] = useState(true);
+  const [selectedQuantities, setSelectedQuantities] = useState<
+    Record<number, number>
+  >({});
+  const [pollTick, setPollTick] = useState(0);
+
+  const selectedItems =
+    order?.lines
+      .map((line) => ({
+        detailId: line.detailId,
+        quantity: selectedQuantities[line.detailId] ?? 0,
+      }))
+      .filter((item) => item.quantity > 0) ?? [];
+
+  const selectedTotals = order
+    ? getSelectedTotals(order.lines, selectedQuantities, includeService)
+    : null;
 
   useEffect(() => {
+    let isActive = true;
+
     const loadOrder = async () => {
+      setLoading(true);
+      setLoadError("");
+
       try {
-        const data = await getPaymentPreview(orderId, includeService);
+        const data = await getPaymentPreview(orderId, true);
+
+        if (!isActive) return;
+
         setOrder(data);
+
+        const rawSelection = search.selectedItems;
+
+let quantities: Record<number, number>;
+
+if (typeof rawSelection === "string") {
+  const items: unknown = JSON.parse(rawSelection);
+
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new Error("No hay productos seleccionados para cobrar.");
+  }
+
+  quantities = {};
+
+  for (const item of items) {
+    if (
+      typeof item !== "object" ||
+      item === null ||
+      !("detailId" in item) ||
+      !("quantity" in item) ||
+      !Number.isSafeInteger(item.detailId) ||
+      !Number.isSafeInteger(item.quantity) ||
+      item.quantity <= 0 ||
+      quantities[item.detailId] !== undefined
+    ) {
+      throw new Error("La selección de productos no es válida.");
+    }
+
+    const line = data.lines.find(
+      (line) => line.detailId === item.detailId,
+    );
+
+    if (!line || item.quantity > line.pendingQuantity) {
+      throw new Error("La selección ya no está disponible.");
+    }
+
+    quantities[item.detailId] = item.quantity;
+  }
+} else {
+ 
+  quantities = Object.fromEntries(
+    data.lines.map((line) => [line.detailId, line.pendingQuantity]),
+  );
+}
+
+setOrder(data);
+setSelectedQuantities(quantities);
+
+
+
       } catch (error) {
-        console.error("Error cargando la orden", error);
+        if (!isActive) return;
+
+        console.error("Error cargando la orden:", { orderId, error });
+        setLoadError(
+          error && typeof error === "object" && "message" in error
+            ? String((error as { message?: string }).message)
+            : "No se pudo cargar la orden.",
+        );
       } finally {
-        setLoading(false);
+        if (isActive) setLoading(false);
       }
     };
 
@@ -62,41 +280,47 @@ function PaymentMethod() {
       void loadOrder();
     } else {
       setLoading(false);
+      setLoadError("El identificador de la orden no es válido.");
     }
-  }, [orderId, includeService]);
 
-  const [pollTick, setPollTick] = useState(0);
+    return () => {
+      isActive = false;
+    };
+  }, [orderId]);
+
   const receiptId = receipt?.receiptId;
   const fiscalStatus = receipt?.haciendaStatus;
 
   useEffect(() => {
-    if (!receiptId || !fiscalStatus || !IN_FLIGHT.has(fiscalStatus)) return;
+    if (!receiptId || !fiscalStatus || !IN_FLIGHT.has(fiscalStatus)) {
+      return;
+    }
 
-    // espera progresiva: 5 s, 10 s, 20 s, 40 s (tope)
     const delay = Math.min(5000 * 2 ** Math.min(pollTick, 3), 40000);
 
-    const timer = setTimeout(async () => {
+    const timer = window.setTimeout(async () => {
       try {
         const next = await getReceiptStatus(receiptId);
-        setReceipt((prev) =>
-          prev && prev.receiptId === next.receiptId
+
+        setReceipt((previous) =>
+          previous && previous.receiptId === next.receiptId
             ? {
-                ...prev,
-                haciendaStatus: next.haciendaStatus,
-                haciendaMessage: next.haciendaMessage,
-                clave: next.clave,
-                consecutiveNumber: next.consecutiveNumber,
-              }
-            : prev,
+              ...previous,
+              haciendaStatus: next.haciendaStatus,
+              haciendaMessage: next.haciendaMessage,
+              clave: next.clave,
+              consecutiveNumber: next.consecutiveNumber,
+            }
+            : previous,
         );
       } catch (error) {
-        console.error("Error consultando el estado del tiquete", error);
+        console.error("Error consultando el estado del tiquete:", error);
       } finally {
         setPollTick((tick) => tick + 1);
       }
     }, delay);
 
-    return () => clearTimeout(timer);
+    return () => window.clearTimeout(timer);
   }, [receiptId, fiscalStatus, pollTick]);
 
   const openPaymentModal = (method: PaymentType) => {
@@ -107,6 +331,7 @@ function PaymentMethod() {
 
   const closePaymentModal = () => {
     if (isPaying) return;
+
     setIsPaymentModalOpen(false);
     setPaymentMethod("");
     setPayError("");
@@ -116,23 +341,34 @@ function PaymentMethod() {
     method: PaymentType,
     details: PaymentDetails,
   ): PayOrderPayload | null => {
-    if (method === "efectivo") {
-      if (details.amountTendered === undefined) return null;
-      return {
-        method: "cash",
-        amountTendered: details.amountTendered,
-        includeServiceCharge: includeService,
-      };
-    }
-
-    if (!details.reference) return null;
-    return {
-      method: method === "tarjeta" ? "card" : "sinpe",
-      reference: details.reference,
-      includeServiceCharge: includeService,
+    if (selectedItems.length === 0) {
+      setPayError("No hay productos seleccionados para cobrar.");
+      return null;
     };
-  };
 
+  const common = {
+  includeServiceCharge: includeService,
+  items: selectedItems,
+};
+
+if (method === "efectivo") {
+  if (details.amountTendered === undefined) return null;
+
+  return {
+    ...common,
+    method: "cash",
+    amountTendered: details.amountTendered,
+  };
+}
+
+if (!details.reference) return null;
+
+return {
+  ...common,
+  method: method === "tarjeta" ? "card" : "sinpe",
+  reference: details.reference,
+};
+  }
   const handleCharge = async (details: PaymentDetails) => {
     if (!paymentMethod || isPaying || receipt) return;
 
@@ -142,7 +378,9 @@ function PaymentMethod() {
     try {
       setIsPaying(true);
       setPayError("");
+
       const response = await payOrder(orderId, payload);
+
       setReceipt(response);
       setIsPaymentModalOpen(false);
       setPaymentStatus("Aprobado");
@@ -151,7 +389,7 @@ function PaymentMethod() {
       setPayError(
         error && typeof error === "object" && "message" in error
           ? String((error as { message?: string }).message)
-          : "No se pudo registrar el cobro",
+          : "No se pudo registrar el cobro.",
       );
     } finally {
       setIsPaying(false);
@@ -160,10 +398,20 @@ function PaymentMethod() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-white">
+      
+    <motion.main
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+            duration: 0.5,
+            ease: "easeOut",
+        }}
+        className="min-h-screen bg-white"
+    >
         <div className="flex h-30 items-center justify-between gap-4 border-b-4 border-mint-dark bg-neutral-50 px-4 py-4 sm:px-8">
           <RestaurantLogo className="h-16 w-16" />
         </div>
+
         <section className="px-6 py-8 lg:px-8">
           <div className="mx-auto max-w-300">
             <div className="flex items-center gap-4">
@@ -216,17 +464,26 @@ function PaymentMethod() {
             </div>
           </div>
         </section>
-      </main>
+      </motion.main>
     );
   }
 
   if (!order) {
-    return <p>No se pudo cargar la orden.</p>;
+    return (
+      <main className="p-6">
+        <p className="text-red-600">
+          {loadError || "No se pudo cargar la orden."}
+        </p>
+      </main>
+    );
   }
+
+
+
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="flex h-30 items-center justify-between gap-4 bg-neutral-50 border-b-4 border-mint-dark px-4 py-4 sm:px-8">
+      <div className="flex h-30 items-center justify-between gap-4 border-b-4 border-mint-dark bg-neutral-50 px-4 py-4 sm:px-8">
         <RestaurantLogo className="h-16 w-16" />
       </div>
 
@@ -262,115 +519,138 @@ function PaymentMethod() {
                   type="checkbox"
                   checked={includeService}
                   disabled={isPaying || receipt !== null}
-                  onChange={(e) => setIncludeService(e.target.checked)}
+                  onChange={(event) => setIncludeService(event.target.checked)}
                   className="h-5 w-5 accent-mint-dark"
                 />
               </label>
 
               <h3 className="mt-7 text-lg font-bold text-mint-dark lg:text-xl">
-                Total de pedido
+                Productos de la cuenta
               </h3>
 
-              <div className="mt-5 max-h-60 overflow-y-auto pr-6">
+              <div className="mt-5 max-h-80 overflow-y-auto pr-2">
                 <div className="flex flex-col gap-4">
-                  {order.lines.map((line) => (
-                    <div
-                      key={line.detailId}
-                      className="flex items-center justify-between gap-4"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p>
-                          {line.detail} x {line.quantity}
-                        </p>
-                        {order.chargesVat !== false && (
-                          <p className="text-xs text-gray-500">
-                            IVA {Number(line.ivaRate)} %
-                          </p>
-                        )}
-                      </div>
+                 {order.lines
+  .filter((line) => (selectedQuantities[line.detailId] ?? 0) > 0)
+  .map((line, index) => {
+  const quantity =
+    selectedQuantities[line.detailId] ?? line.pendingQuantity;
+  const amounts = getSelectedLineAmounts(line, quantity);
 
-                      <div className="flex shrink-0 items-center justify-end gap-2">
-                        {Number(line.discount) > 0 && (
-                          <p className="text-sm text-gray-500 line-through">
-                            {formatCRC(
-                              Number(line.gross) *
-                                (1 + Number(line.ivaRate) / 100),
-                            )}
-                          </p>
-                        )}
+  return (
+    <motion.div
+        key={line.detailId}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+            duration: 0.35,
+            delay: index * 0.06,
+            ease: "easeOut",
+        }}
+        className="flex items-center justify-between gap-4 border-b border-border pb-4"
+    >
+      <div className="min-w-0 flex-1">
+        <p className="font-medium">{line.detail}</p>
+        <p className="text-xs text-gray-500">
+          Pendientes: {line.pendingQuantity} ·{" "}
+          {order.chargesVat === false || line.ivaRateCode === "10"
+            ? "Exento de IVA"
+            : `IVA ${Number(line.ivaRate)} %`}
+        </p>
 
-                        <p className="tracking-wider">
-                          {formatCRC(line.total)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+       
+      </div>
+
+      <p className="shrink-0 tracking-wider">
+        {formatCRC(amounts.total)}
+      </p>
+    </motion.div>
+  );
+})}
                 </div>
               </div>
 
-              <div className="mt-6 border-t border-border pt-4">
-                <div className="flex items-center justify-between">
-                  <p>Subtotal (sin IVA)</p>
-                  <p className="tracking-wider">
-                    {formatCRC(order.totals.totalNetSale)}
-                  </p>
-                </div>
+              {selectedTotals && (
+  <div className="mt-6 border-t border-border pt-4">
+    <div className="flex justify-between">
+      <p>Venta antes del descuento (sin IVA)</p>
+      <p>{formatCRC(selectedTotals.totalSale)}</p>
+    </div>
 
-                <div className="flex items-center justify-between">
-                  <p>Descuento</p>
-                  <p className="tracking-wider">
-                    {formatCRC(order.totals.totalDiscount)}
-                  </p>
-                </div>
+    <div className="mt-2 flex justify-between">
+      <p>Descuento</p>
+      <p>{formatCRC(selectedTotals.totalDiscount)}</p>
+    </div>
 
-                {order.chargesVat !== false &&
-                  order.taxSummary
-                    .filter(({ amount }) => Number(amount) > 0)
-                    .map(({ rate, amount }) => (
-                      <div
-                        key={rate}
-                        className="mt-2 flex items-center justify-between"
-                      >
-                        <p>IVA {rate} %</p>
-                        <p className="tracking-wider">{formatCRC(amount)}</p>
-                      </div>
-                    ))}
+    <div className="mt-2 flex justify-between">
+      <p>Neto después del descuento (sin IVA)</p>
+      <p>{formatCRC(selectedTotals.totalNetSale)}</p>
+    </div>
 
-                {Number(order.totals.serviceCharge) > 0 && (
-                  <div className="mt-2 flex items-center justify-between">
-                    <p>Servicio 10 %</p>
-                    <p className="tracking-wider">
-                      {formatCRC(order.totals.serviceCharge)}
-                    </p>
-                  </div>
-                )}
+    {selectedTotals.taxSummary.map(({ rate, amount }) => (
+      <div key={rate} className="mt-2 flex justify-between">
+        <p>
+          {order.chargesVat === false
+            ? "Exento de IVA"
+            : `IVA ${rate} %`}
+        </p>
+        <p>{formatCRC(amount)}</p>
+      </div>
+    ))}
 
-                <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-                  <p className="text-xl font-bold text-mint-dark">Total</p>
-                  <p className="text-xl font-bold tracking-wider text-mint-dark">
-                    {formatCRC(order.totals.totalVoucher)}
-                  </p>
-                </div>
-              </div>
+    {includeService && Number(selectedTotals.serviceCharge) > 0 && (
+      <div className="mt-2 flex justify-between">
+        <p>Servicio 10 %</p>
+        <p>{formatCRC(selectedTotals.serviceCharge)}</p>
+      </div>
+    )}
+
+    <div className="mt-3 flex justify-between border-t border-border pt-3">
+      <p className="text-xl font-bold text-mint-dark">Total</p>
+      <p className="text-xl font-bold text-mint-dark">
+        {formatCRC(selectedTotals.totalVoucher)}
+      </p>
+    </div>
+  </div>
+)}
 
               <div className="mt-6 flex justify-end">
-                <button type="button" className="cursor-pointer">
-                  <BsFillPlusCircleFill className="h-9 w-9 text-mint-dark" />
-                </button>
+                <Link
+                  to="/menuClient"
+                  search={{
+                    mesaId: order.tableId,
+                    orderId: order.orderId,
+                    mode: "add",
+                    returnTo: "cashier",
+                  }}
+                  aria-label="Agregar productos a la orden"
+                >
+                  <BsFillPlusCircleFill className="h-8 w-8 text-mint-dark" />
+                </Link>
               </div>
             </div>
 
             <div className="flex flex-col justify-center px-2 lg:px-8">
-              <div className="flex flex-col items-center gap-5">
+              <motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{
+    duration: 0.5,
+    delay: 0.2,
+    ease: "easeOut",
+  }}
+  className="flex flex-col items-center gap-5"
+>
                 <button
                   type="button"
                   onClick={() => openPaymentModal("sinpe")}
-                  disabled={isPaying || receipt !== null}
-                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                    paymentMethod === "sinpe"
+                  disabled={
+                    isPaying || receipt !== null || selectedItems.length === 0
+                  }
+                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${paymentMethod === "sinpe"
                       ? "bg-mint-darker text-white"
                       : "text-gray-700"
-                  }`}
+                    }`}
                 >
                   SINPE Móvil
                 </button>
@@ -378,12 +658,13 @@ function PaymentMethod() {
                 <button
                   type="button"
                   onClick={() => openPaymentModal("tarjeta")}
-                  disabled={isPaying || receipt !== null}
-                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                    paymentMethod === "tarjeta"
+                  disabled={
+                    isPaying || receipt !== null || selectedItems.length === 0
+                  }
+                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${paymentMethod === "tarjeta"
                       ? "bg-mint-darker text-white"
                       : "text-gray-700"
-                  }`}
+                    }`}
                 >
                   Tarjeta
                 </button>
@@ -391,16 +672,17 @@ function PaymentMethod() {
                 <button
                   type="button"
                   onClick={() => openPaymentModal("efectivo")}
-                  disabled={isPaying || receipt !== null}
-                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                    paymentMethod === "efectivo"
+                  disabled={
+                    isPaying || receipt !== null || selectedItems.length === 0
+                  }
+                  className={`w-full max-w-72 cursor-pointer rounded-xl border border-border py-3 text-xl transition disabled:cursor-not-allowed disabled:opacity-50 ${paymentMethod === "efectivo"
                       ? "bg-mint-darker text-white"
                       : "text-gray-700"
-                  }`}
+                    }`}
                 >
                   Efectivo
                 </button>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -409,7 +691,7 @@ function PaymentMethod() {
       <PaymentModal
         isOpen={isPaymentModalOpen}
         paymentMethod={paymentMethod}
-        total={order.totals.totalVoucher}
+        total={selectedTotals?.totalVoucher ?? "0.00"}
         isSubmitting={isPaying}
         errorMessage={payError}
         onClose={closePaymentModal}
@@ -430,13 +712,40 @@ function PaymentMethod() {
       />
 
       <InvoiceModal
-        isOpen={isInvoiceModalOpen}
-        receipt={receipt}
-        onClose={() => {
-          setIsInvoiceModalOpen(false);
-          void navigate({ to: "/cashierOrders" });
-        }}
-      />
+  isOpen={isInvoiceModalOpen}
+  receipt={receipt}
+  onReceiptUpdated={(updatedReceipt) => {
+    setReceipt((previous) => {
+      if (!previous) return previous;
+
+      const isSameReceipt =
+        previous.receiptId === updatedReceipt.receiptId;
+
+      const isReplacement =
+        "replacesReceiptId" in updatedReceipt &&
+        previous.receiptId === updatedReceipt.replacesReceiptId;
+
+      if (!isSameReceipt && !isReplacement) return previous;
+
+      return {
+        ...previous,
+        receiptId: updatedReceipt.receiptId,
+        haciendaStatus: updatedReceipt.haciendaStatus,
+        clave: updatedReceipt.clave,
+        consecutiveNumber: updatedReceipt.consecutiveNumber,
+        haciendaMessage:
+          "emissionError" in updatedReceipt
+            ? updatedReceipt.emissionError ?? null
+            : null,
+      };
+    });
+  }}
+  onClose={() => {
+    setIsInvoiceModalOpen(false);
+    setReceipt(null);
+    void navigate({ to: "/cashierOrders" });
+  }}
+/>
     </main>
   );
 }

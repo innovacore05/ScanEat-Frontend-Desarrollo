@@ -2,13 +2,15 @@ import { Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { HiArrowLeft } from "react-icons/hi";
 import FilterOrders from "../waiterOrders/FilterOrders";
-import SearchOrders from "../waiterOrders/SearchOrders";
+import SearchOrders from "../Orders/SearchOrders";
 import DashboardLayoutWaiter from "../layout/DashboardLayoutWaiter";
 import OrderCard from "../Orders/OrderCard";
 import type { Order } from "../Orders/OrderCard";
 import OrderDetails from "../Orders/OrderDetails";
 import { getOrders } from "../../services/orderService";
 import Skeleton from "../shared/Skeleton";
+import { socket } from "../../services/socketClient";
+import { motion } from "motion/react";
 
 function WaiterOrders() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,27 +33,32 @@ function WaiterOrders() {
 
         return backendOrders[0] ?? null;
       });
+      return backendOrders;
     } catch (error) {
       console.error("No se pudieron cargar los pedidos:", error);
       setOrders([]);
+      return [];
     } finally {
       if (showLoading) setIsLoadingOrders(false);
     }
   }, []);
 
-  useEffect(() => {
-    void loadOrders(true);
 
-    const intervalId = window.setInterval(() => {
+  useEffect(() => {
+    const handleWaiterOrdersUpdated = () => {
       void loadOrders();
-    }, 2000);
+    };
+
+    socket.on("waiter_orders_updated", handleWaiterOrdersUpdated);
+    void Promise.resolve().then(() => loadOrders(true));
 
     return () => {
-      window.clearInterval(intervalId);
+      socket.off("waiter_orders_updated", handleWaiterOrdersUpdated);
     };
   }, [loadOrders]);
 
-  const filteredOrders = orders.filter((order) => {
+
+  const filteredOrders = orders.filter( (order) => {
     if (order.status === "Pagado") {
       return false;
     }
@@ -78,8 +85,6 @@ function WaiterOrders() {
   return (
     <DashboardLayoutWaiter>
       <main className="min-h-screen bg-white">
-
-
         {/* Celular */}
         <section className="px-6 lg:hidden">
           <div className="flex items-center gap-2">
@@ -119,25 +124,46 @@ function WaiterOrders() {
             </p>
 
             <div className="flex flex-col gap-8 pb-20">
-              {isLoadingOrders ? Array.from({ length: 3 }, (_, index) => (
-                <Skeleton key={index} className="h-44 w-full rounded-2xl" />
-              )) : filteredOrders.map((order) => (
-                <OrderCard
-                  key={order.orderId}
-                  order={order}
-                  onDetails={() => setSelectedOrder(order)}
-                />
-              ))}
-            </div>
+             {isLoadingOrders ? (
+  Array.from({ length: 3 }, (_, index) => (
+    <Skeleton
+      key={index}
+      className="h-44 w-full rounded-2xl"
+    />
+  ))
+) : filteredOrders.length > 0 ? (
+  filteredOrders.map((order, index) => (
+    <motion.div
+      key={order.orderId}
+      initial={{ opacity: 0, x: -35 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{
+        duration: 0.4,
+        delay: index * 0.08,
+        ease: "easeOut",
+      }}
+    >
+      <OrderCard
+        order={order}
+        onDetails={() => setSelectedOrder(order)}
+      />
+    </motion.div>
+  ))
+) : (
+  <p className="py-8 text-center text-gray-500">
+    No hay resultados para esta búsqueda.
+  </p>
+)}
+          </div>
           </div>
         </section>
 
 
 
         {/* Computadora */}
-        <section className="hidden px-15 py-15 lg:block">
+        <section className="w-full max-w-394 hidden px-15 py-12 lg:block">
 
-          <h2 className=" text-2xl font-bold text-mint-dark">
+          <h2 className="text-3xl font-bold text-mint-dark">
             Pedidos
           </h2>
 
@@ -164,17 +190,45 @@ function WaiterOrders() {
             <div className="flex flex-col gap-12">
               {isLoadingOrders ? Array.from({ length: 4 }, (_, index) => (
                 <Skeleton key={index} className="h-44 w-full rounded-2xl" />
-              )) : filteredOrders.map((order) => (
-                <OrderCard
-                  key={order.orderId}
-                  order={order}
-                  onDetails={() => setSelectedOrder(order)}
-                />
-              ))}
+              )) 
+              
+              : filteredOrders.length > 0 ? (
+                  
+               filteredOrders.map((order, index) => (
+    <motion.div
+        key={order.orderId}
+        initial={{ opacity: 0, x: -35 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{
+            duration: 0.4,
+            delay: index * 0.08,
+            ease: "easeOut",
+        }}
+    >
+        <OrderCard
+            order={order}
+            onDetails={() => setSelectedOrder(order)}
+        />
+    </motion.div>
+))
+                ) : (
+                      <p className="py-8 text-center text-gray-500">
+                        No hay resultados para esta búsqueda.
+                </p>
+                    )}
             </div>
 
             {/* Detalles */}
-            <div>
+            <motion.div
+    key={orderForDetails?.orderId ?? "empty"}
+    className="sticky top-6 self-start"
+    initial={{ opacity: 0, y: 25 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{
+        duration: 0.4,
+        ease: "easeOut",
+    }}
+>
               <p className="pb-4 text-xl text-text-primary font-bold ">Orden actual</p>
               {isLoadingOrders ? (
                 <Skeleton className="min-h-80 w-full rounded-4xl" />
@@ -182,7 +236,10 @@ function WaiterOrders() {
                 <OrderDetails
                   order={orderForDetails}
                   embedded
-                  onStatusChanged={loadOrders}
+                  canAddProducts
+                  onStatusChanged={() => {
+                    void loadOrders();
+                  }}
                 />
               ) : (
                 <div className="flex min-h-80 items-center justify-center rounded-4xl bg-neutral-100 px-8">
@@ -191,7 +248,7 @@ function WaiterOrders() {
                   </p>
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
         </section>
       </main>

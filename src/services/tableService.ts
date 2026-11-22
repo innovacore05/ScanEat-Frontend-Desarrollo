@@ -16,13 +16,25 @@ const getTablePath = (tableId: string, baseUrl = TABLES_BASE_URL) => {
 };
 
 export const getPublicTableNumber = async (tableId: string) =>
-  cookieSessionClient.request<{ tableNumber: number }>(
+  cookieSessionClient.request<{
+    tableNumber: number;
+    active: boolean;
+  }>(
     getTablePath(tableId, "/api/public/tables"),
     {
       method: "GET",
-      fallBackMessage: "No se pudo obtener el número de mesa",
+      fallBackMessage: "No se pudo validar la mesa",
     },
   );
+
+// export const getPublicTableNumber = async (tableId: string) =>
+//   cookieSessionClient.request<{ tableNumber: number }>(
+//     getTablePath(tableId, "/api/public/tables"),
+//     {
+//       method: "GET",
+//       fallBackMessage: "No se pudo obtener el número de mesa",
+//     },
+//   );
 
 
 
@@ -213,4 +225,15 @@ export const deleteTable = async (tableId: string) => {
     method:"DELETE",
     fallBackMessage: "No se pudo eliminar la mesa",
 });
+};
+
+// Activar una mesa
+export const activateTable = async (tableId: string) => {
+  return cookieSessionClient.request<{ message: string }>(
+    `${getTablePath(tableId)}/activate`,
+    {
+      method: "PATCH",
+      fallBackMessage: "No se pudo activar la mesa",
+    },
+  );
 };
