@@ -164,6 +164,8 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
         return;
       }
 
+      playBell("newOrder");
+
       const eventTableNumber =
         event.tableNumber ??
         event.order?.tableNumber ??
@@ -189,7 +191,7 @@ function DashboardLayoutWaiter({ children }: DashboardLayoutProps) {
     return () => {
       socket.off("waiter_orders_updated", handleNewOrder);
     };
-  }, []);
+  }, [playBell]);
 
   useEffect(() => {
     if (shouldAnimateSidebar) {
